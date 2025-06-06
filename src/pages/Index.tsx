@@ -1,11 +1,10 @@
-
 import { useState } from 'react';
 import { Dice1, Dice6, Users, Scroll, Sparkles, ChevronRight, Crown, Sword, Shield, Map } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SessionGenerator } from '@/components/SessionGenerator';
-import { QuickGenerators } from '@/components/QuickGenerators';
+import QuickGenerators from '@/components/QuickGenerators';
 import { toast } from '@/hooks/use-toast';
 
 const Index = () => {

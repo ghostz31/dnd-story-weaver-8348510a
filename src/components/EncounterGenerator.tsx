@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -49,7 +48,7 @@ const EncounterGenerator = () => {
     7: { easy: 350, medium: 750, hard: 1100, deadly: 1700 },
     8: { easy: 450, medium: 900, hard: 1400, deadly: 2100 },
     9: { easy: 550, medium: 1100, hard: 1600, deadly: 2400 },
-    10: { easy: 600, medium: 1200, hard: 1900, dynasty: 2800 },
+    10: { easy: 600, medium: 1200, hard: 1900, deadly: 2800 },
   };
 
   const monsters: Monster[] = [
@@ -136,7 +135,7 @@ const EncounterGenerator = () => {
         easy: thresholds.easy * partySize,
         medium: thresholds.medium * partySize,
         hard: thresholds.hard * partySize,
-        deadly: (thresholds.deadly || thresholds.hard * 1.5) * partySize,
+        deadly: thresholds.deadly * partySize,
       };
       
       let actualDifficulty = 'trivial';
