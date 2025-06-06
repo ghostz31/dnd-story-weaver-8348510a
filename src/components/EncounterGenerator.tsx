@@ -31,7 +31,7 @@ interface EncounterResult {
 const EncounterGenerator = () => {
   const [partySize, setPartySize] = useState(4);
   const [partyLevel, setPartyLevel] = useState(5);
-  const [environment, setEnvironment] = useState('');
+  const [environment, setEnvironment] = useState('all');
   const [difficulty, setDifficulty] = useState('medium');
   const [encounterType, setEncounterType] = useState('combat');
   const [result, setResult] = useState<EncounterResult | null>(null);
@@ -101,7 +101,7 @@ const EncounterGenerator = () => {
       let availableMonsters = monsters;
       
       // Filtrer par environnement si spécifié
-      if (environment) {
+      if (environment && environment !== 'all') {
         availableMonsters = monsters.filter(monster => 
           monster.environment.includes(environment)
         );
@@ -149,7 +149,7 @@ const EncounterGenerator = () => {
         totalXP,
         adjustedXP,
         difficulty: actualDifficulty,
-        environment: environment || 'variée',
+        environment: environment === 'all' ? 'variée' : environment,
       });
       
       toast({
@@ -236,7 +236,7 @@ const EncounterGenerator = () => {
                   <SelectValue placeholder="Tous" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tous</SelectItem>
+                  <SelectItem value="all">Tous</SelectItem>
                   {environments.map((env) => (
                     <SelectItem key={env.value} value={env.value}>
                       {env.label}
