@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Dice1, Dice6, Users, Scroll, Sparkles, ChevronRight, Crown, Sword, Shield, Map } from 'lucide-react';
+import { Dice1, Dice6, Users, Scroll, Sparkles, ChevronRight, Crown, Sword, Shield, Map, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SessionGenerator } from '@/components/SessionGenerator';
 import QuickGenerators from '@/components/QuickGenerators';
+import EncounterGenerator from '@/components/EncounterGenerator';
 import { toast } from '@/hooks/use-toast';
 
 const Index = () => {
@@ -13,6 +14,18 @@ const Index = () => {
   const handleGetStarted = () => {
     setActiveTab('session');
     document.getElementById('generators')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleEncounterGenerator = () => {
+    setActiveTab('quick');
+    document.getElementById('generators')?.scrollIntoView({ behavior: 'smooth' });
+    // Small delay to ensure tab switch happens first
+    setTimeout(() => {
+      const encounterTab = document.querySelector('[value="encounters"]');
+      if (encounterTab) {
+        (encounterTab as HTMLElement).click();
+      }
+    }, 100);
   };
 
   return (
@@ -121,6 +134,72 @@ const Index = () => {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Encounter Generator Highlight Section */}
+      <section className="py-24 bg-background">
+        <div className="container px-4 mx-auto">
+          <div className="max-w-4xl mx-auto">
+            <Card className="card-shadow border-2 border-primary/20 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+              <CardHeader className="text-center relative z-10">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Sword className="w-8 h-8 text-primary" />
+                </div>
+                <CardTitle className="text-3xl md:text-4xl font-cinzel font-bold mb-4">
+                  Générateur de Rencontres D&D
+                </CardTitle>
+                <CardDescription className="text-lg max-w-2xl mx-auto">
+                  Créez des rencontres équilibrées en quelques clics. Notre IA calcule automatiquement 
+                  la difficulté, l'XP et sélectionne les créatures adaptées à votre groupe.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                      <Users className="w-6 h-6 text-primary" />
+                    </div>
+                    <h4 className="font-semibold mb-2">Adapté à votre groupe</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Niveau, taille du groupe et difficulté souhaitée
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                      <Shield className="w-6 h-6 text-primary" />
+                    </div>
+                    <h4 className="font-semibold mb-2">Calculs automatiques</h4>
+                    <p className="text-sm text-muted-foreground">
+                      XP, multiplicateurs et équilibrage selon les règles D&D 5e
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                      <Map className="w-6 h-6 text-primary" />
+                    </div>
+                    <h4 className="font-semibold mb-2">Environnements variés</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Créatures adaptées au lieu de l'aventure
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="text-center">
+                  <Button 
+                    size="lg" 
+                    className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 transition-all duration-300 shadow-lg hover:shadow-xl group"
+                    onClick={handleEncounterGenerator}
+                  >
+                    <Zap className="w-5 h-5 mr-2" />
+                    Tester le générateur
+                    <ChevronRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
