@@ -123,15 +123,56 @@ export const getEncounterMultiplier = (monsterCount: number, partySize: number):
 
 export const environments = [
   { value: 'all', label: 'Tous' },
-  { value: 'arctic', label: 'Arctique' },
-  { value: 'coastal', label: 'Côtier' },
-  { value: 'desert', label: 'Désert' },
-  { value: 'forest', label: 'Forêt' },
-  { value: 'grassland', label: 'Plaine' },
-  { value: 'hill', label: 'Collines' },
-  { value: 'mountain', label: 'Montagne' },
-  { value: 'swamp', label: 'Marais' },
-  { value: 'underdark', label: 'Outreterre' },
-  { value: 'underwater', label: 'Sous-marin' },
-  { value: 'urban', label: 'Urbain' }
+  { value: 'air', label: 'Air' },
+  { value: 'aquatique', label: 'Aquatique' },
+  { value: 'colline', label: 'Collines' },
+  { value: 'désert', label: 'Désert' },
+  { value: 'donjon', label: 'Donjon' },
+  { value: 'forêt', label: 'Forêt' },
+  { value: 'marais', label: 'Marais' },
+  { value: 'montagne', label: 'Montagne' },
+  { value: 'plans élémentaires', label: 'Plans élémentaires' },
+  { value: 'plans inférieurs', label: 'Plans inférieurs' },
+  { value: 'plaine', label: 'Plaine' },
+  { value: 'route', label: 'Route' },
+  { value: 'ruine', label: 'Ruine' },
+  { value: 'souterrain', label: 'Souterrain' },
+  { value: 'temple', label: 'Temple' },
+  { value: 'urbain', label: 'Urbain' },
+  { value: 'volcan', label: 'Volcan' }
+];
+
+export const monsterCategories = [
+  { value: 'all', label: 'Tous' },
+  { value: 'monstre', label: 'Monstres' },
+  { value: 'animal', label: 'Animaux' },
+  { value: 'pnj', label: 'PNJ' }
+];
+
+export const monsterTypes = [
+  { value: 'all', label: 'Tous' },
+  { value: 'Humanoïde', label: 'Humanoïde' },
+  { value: 'Aberration', label: 'Aberration' },
+  { value: 'Artificiel', label: 'Artificiel' },
+  { value: 'Bête', label: 'Bête' },
+  { value: 'Céleste', label: 'Céleste' },
+  { value: 'Dragon', label: 'Dragon' },
+  { value: 'Élémentaire', label: 'Élémentaire' },
+  { value: 'Fée', label: 'Fée' },
+  { value: 'Fiélon', label: 'Fiélon' },
+  { value: 'Géant', label: 'Géant' },
+  { value: 'Monstruosité', label: 'Monstruosité' },
+  { value: 'Mort-vivant', label: 'Mort-vivant' },
+  { value: 'Plante', label: 'Plante' },
+  { value: 'Vase', label: 'Vase' }
+];
+
+export const monsterSizes = [
+  { value: 'all', label: 'Toutes' },
+  { value: 'TP', label: 'TP' },
+  { value: 'P', label: 'P' },
+  { value: 'M', label: 'M' },
+  { value: 'G', label: 'G' },
+  { value: 'TG', label: 'TG' },
+  { value: 'Gig', label: 'Gig' }
 ]; 

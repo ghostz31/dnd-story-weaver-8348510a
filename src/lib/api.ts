@@ -5,7 +5,6 @@ import { v4 as uuid } from 'uuid';
 const MONSTERS_KEY = 'dnd_monsters';
 const PARTIES_KEY = 'dnd_parties';
 const ENCOUNTERS_KEY = 'dnd_encounters';
-const FAVORITES_KEY = 'dnd_favorite_monsters';
 
 // API AideDD ou DnD 5e API
 const API_URL = 'https://www.dnd5eapi.co/api';
@@ -199,20 +198,48 @@ export const searchMonsters = (query: string, filters: Record<string, any> = {})
     }
     
     // Filtre par type
-    if (filters.type && monster.type !== filters.type) {
-      return false;
-    }
-    
-    // Filtre par environnement
-    if (filters.environment && filters.environment !== 'all') {
-      if (!monster.environment?.includes(filters.environment)) {
+    if (filters.type && filters.type !== 'all') {
+      if (monster.type !== filters.type) {
         return false;
       }
     }
     
     // Filtre par taille
-    if (filters.size && monster.size !== filters.size) {
-      return false;
+    if (filters.size && filters.size !== 'all') {
+      if (monster.size !== filters.size) {
+        return false;
+      }
+    }
+    
+    // Filtre par catégorie
+    if (filters.category === 'animal') {
+      // Seules les bêtes sont des animaux
+      if (monster.type !== 'Bête') {
+        return false;
+      }
+    } else if (filters.category === 'pnj') {
+      // Seuls les humanoïdes sont des PNJ
+      if (!monster.type.includes('Humanoïde')) {
+        return false;
+      }
+    } else if (filters.category === 'monstre') {
+      // Les monstres sont tout ce qui n'est pas spécifiquement des animaux ou des PNJ
+      if (monster.type === 'Bête' || monster.type.includes('Humanoïde')) {
+        // On garde certains humanoïdes qui sont des monstres comme les gobelins, kobolds, etc.
+        // On pourrait affiner avec d'autres critères si nécessaire
+        if (!monster.name.toLowerCase().includes('gobelin') && 
+            !monster.name.toLowerCase().includes('kobold') && 
+            !monster.name.toLowerCase().includes('yuan-ti')) {
+          return false;
+        }
+      }
+    }
+    
+    // Filtre par environnement
+    if (filters.environment && filters.environment !== 'all') {
+      if (!monster.environment || !monster.environment.includes(filters.environment)) {
+        return false;
+      }
     }
     
     return true;
@@ -514,48 +541,4 @@ export const calculateEncounterDifficulty = (
   }
   
   return { totalXP, adjustedXP, difficulty };
-};
-
-// ====== Favoris ======
-
-// Récupérer les monstres favoris
-export const getFavoriteMonsters = (): string[] => {
-  const storedFavorites = localStorage.getItem(FAVORITES_KEY);
-  if (storedFavorites) {
-    return JSON.parse(storedFavorites);
-  }
-  return [];
-};
-
-// Ajouter un monstre aux favoris
-export const addMonsterToFavorites = (monsterId: string): boolean => {
-  const favorites = getFavoriteMonsters();
-  
-  if (favorites.includes(monsterId)) {
-    return false;
-  }
-  
-  favorites.push(monsterId);
-  localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-  
-  return true;
-};
-
-// Retirer un monstre des favoris
-export const removeMonsterFromFavorites = (monsterId: string): boolean => {
-  const favorites = getFavoriteMonsters();
-  const newFavorites = favorites.filter(id => id !== monsterId);
-  
-  if (newFavorites.length === favorites.length) {
-    return false;
-  }
-  
-  localStorage.setItem(FAVORITES_KEY, JSON.stringify(newFavorites));
-  return true;
-};
-
-// Vérifier si un monstre est dans les favoris
-export const isMonsterFavorite = (monsterId: string): boolean => {
-  const favorites = getFavoriteMonsters();
-  return favorites.includes(monsterId);
 }; 
