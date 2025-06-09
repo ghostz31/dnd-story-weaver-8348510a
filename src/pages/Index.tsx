@@ -15,9 +15,9 @@ const Index: React.FC = () => {
       <section className="text-center py-10">
         <div className="max-w-3xl mx-auto px-4">
           <Shield className="h-16 w-16 text-primary mx-auto mb-4" />
-          <h1 className="text-4xl font-bold mb-4 font-cinzel">D&D Story Weaver</h1>
+          <h1 className="text-4xl font-bold mb-4 font-cinzel">Trame</h1>
           <p className="text-xl text-gray-600 mb-8">
-            Créez des rencontres épiques pour vos aventures Donjons & Dragons
+            Créez facilement des rencontres équilibrées pour vos aventures D&D
           </p>
           
           {!isAuthenticated ? (

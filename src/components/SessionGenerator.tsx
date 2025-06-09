@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -51,8 +50,11 @@ export const SessionGenerator = () => {
       setResult(mockResult);
       setIsGenerating(false);
       toast({
-        title: "Session générée !",
-        description: "Votre session D&D a été créée avec succès.",
+        title: "Session générée",
+        description: "Votre session Trame a été créée avec succès.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
       });
     }, 3000);
   };
@@ -181,7 +183,7 @@ export const SessionGenerator = () => {
               Paramètres de Session
             </CardTitle>
             <CardDescription>
-              Configurez votre session D&D parfaite
+              Configurez votre session Trame parfaite
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -300,7 +302,7 @@ export const SessionGenerator = () => {
                 Prêt à créer votre session ?
               </CardTitle>
               <CardDescription className="text-lg">
-                Configurez les paramètres et cliquez sur "Générer" pour créer votre session D&D personnalisée
+                Configurez les paramètres et cliquez sur "Générer" pour créer votre session Trame personnalisée
               </CardDescription>
             </CardContent>
           </Card>

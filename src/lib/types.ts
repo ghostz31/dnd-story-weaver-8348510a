@@ -1,4 +1,4 @@
-// Types pour l'application Rencontre D&D
+// Types pour l'application Trame
 
 export interface User {
   uid: string;

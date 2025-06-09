@@ -65,7 +65,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
       <CardHeader>
         <CardTitle>Connexion</CardTitle>
         <CardDescription>
-          Connectez-vous à votre compte D&D Story Weaver
+          Connectez-vous à votre compte Trame
         </CardDescription>
       </CardHeader>
       

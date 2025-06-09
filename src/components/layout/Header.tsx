@@ -51,7 +51,7 @@ const Header: React.FC = () => {
           <div className="flex items-center space-x-2">
             <Sword className="h-6 w-6 text-primary" />
             <Link to="/" className="text-xl font-bold font-cinzel">
-              D&D Story Weaver
+              Trame
             </Link>
           </div>
           

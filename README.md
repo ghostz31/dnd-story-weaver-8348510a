@@ -1,4 +1,4 @@
-# D&D Story Weaver
+# Trame
 
 Outil de gestion pour les maîtres de jeu Donjons & Dragons 5e.
 
@@ -19,6 +19,16 @@ Outil de gestion pour les maîtres de jeu Donjons & Dragons 5e.
   - Sauvegarde des rencontres générées
   - Possibilité de recharger des rencontres précédentes
   - Lancement direct dans le tracker de combat
+
+- **Gestion des groupes**
+  - Création et édition de groupes d'aventuriers
+  - Ajout et suppression de personnages
+  - Utilisation pour calculer la difficulté des rencontres
+
+- **Système d'authentification**
+  - Création de compte et connexion
+  - Gestion du profil utilisateur
+  - Plan gratuit limité à 1 groupe et 3 rencontres
 
 ## Installation
 
@@ -62,6 +72,25 @@ npm run build
 - Tailwind CSS
 - shadcn/ui
 - Vite
+- Firebase (Authentication & Firestore)
+
+## Structure du projet
+
+```
+trame/
+├── public/
+│   └── data/                 # Données des monstres
+├── src/
+│   ├── auth/                 # Authentification
+│   ├── components/           # Composants React
+│   │   ├── auth/             # Composants d'authentification
+│   │   ├── layout/           # Composants de mise en page
+│   │   └── ui/               # Composants d'interface
+│   ├── firebase/             # Configuration Firebase
+│   ├── lib/                  # Utilitaires et API
+│   └── pages/                # Pages principales
+└── ...
+```
 
 ## Project info
 

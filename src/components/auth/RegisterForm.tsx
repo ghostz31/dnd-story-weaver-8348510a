@@ -70,7 +70,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
       <CardHeader>
         <CardTitle>Inscription</CardTitle>
         <CardDescription>
-          Créez votre compte D&D Story Weaver
+          Créez votre compte Trame
         </CardDescription>
       </CardHeader>
       
