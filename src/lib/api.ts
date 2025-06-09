@@ -91,11 +91,41 @@ export const initializeMonsters = async (): Promise<void> => {
 // Charger des monstres à partir du fichier JSON
 export const getDefaultMonsters = async (): Promise<Monster[]> => {
   try {
-    const response = await fetch('/data/monsters.json');
+    const response = await fetch('/data/aidedd-monsters-complete.json');
     if (!response.ok) {
       throw new Error('Impossible de charger les monstres');
     }
-    return await response.json();
+    const monsters = await response.json();
+    
+    // Transformer les données pour correspondre au format attendu
+    return monsters.map((monster: any) => ({
+      id: uuid(),
+      name: monster.name,
+      cr: monster.cr,
+      challengeRating: monster.cr,
+      xp: monster.xp || calculateXPFromCR(monster.cr),
+      type: monster.type,
+      size: monster.size,
+      alignment: monster.alignment,
+      environment: monster.environment || [],
+      source: monster.source || 'MM',
+      ac: monster.ac || 10,
+      hp: monster.hp || 0,
+      speed: monster.speed ? 
+        {
+          walk: 30,
+          fly: monster.speed.includes('vol') ? 60 : 0,
+          swim: monster.speed.includes('nage') ? 30 : 0,
+          climb: monster.speed.includes('escalade') ? 20 : 0
+        } : { walk: 30 },
+      str: monster.str || 10,
+      dex: monster.dex || 10,
+      con: monster.con || 10,
+      int: monster.int || 10,
+      wis: monster.wis || 10,
+      cha: monster.cha || 10,
+      legendary: monster.legendary || false
+    }));
   } catch (error) {
     console.error('Erreur lors du chargement des monstres:', error);
     // Retourner un tableau vide en cas d'échec

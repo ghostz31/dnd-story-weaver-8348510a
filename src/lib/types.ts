@@ -35,11 +35,35 @@ export interface UserStats {
 export interface Monster {
   id: string;
   name: string;
-  challengeRating: number;
+  cr?: number;
+  challengeRating?: number;
+  xp: number;
   type: string;
   size: string;
   source: string;
   custom?: boolean;
+  alignment?: string;
+  environment?: string[];
+  legendary?: boolean;
+  ac?: number;
+  hp?: number;
+  speed?: {
+    walk?: number;
+    fly?: number;
+    swim?: number;
+    climb?: number;
+  };
+  str?: number;
+  dex?: number;
+  con?: number;
+  int?: number;
+  wis?: number;
+  cha?: number;
+}
+
+export interface EncounterMonster {
+  monster: Monster;
+  quantity: number;
 }
 
 export interface Encounter {
