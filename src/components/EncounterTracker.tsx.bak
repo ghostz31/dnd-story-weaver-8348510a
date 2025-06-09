@@ -1,0 +1,622 @@
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Sword, Shield, Heart, SkipForward, RefreshCw, Play, Pause, Skull, Plus, Minus, Pencil } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { toast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+
+interface Monster {
+  name: string;
+  originalName?: string;
+  cr: number;
+  xp: number;
+  type: string;
+  subtype?: string;
+  size: string;
+  ac: number;
+  hp: number;
+  maxHp?: number;
+  speed: string[];
+  alignment: string;
+  legendary: boolean;
+  source: string;
+  environment: string[];
+  initiative?: number;
+}
+
+interface EncounterParticipant extends Monster {
+  id: string;
+  initiative: number;
+  currentHp: number;
+  maxHp: number;
+  isPC: boolean;
+  name: string;
+  conditions: string[];
+  notes: string;
+}
+
+interface PlayerCharacter {
+  id: string;
+  name: string;
+  initiative: number;
+  ac: number;
+  currentHp: number;
+  maxHp: number;
+  isPC: true;
+  conditions: string[];
+  notes: string;
+}
+
+const EncounterTracker: React.FC = () => {
+  const [encounter, setEncounter] = useState<{
+    name: string;
+    participants: EncounterParticipant[];
+    currentTurn: number;
+    round: number;
+    isActive: boolean;
+  }>({
+    name: 'Rencontre',
+    participants: [],
+    currentTurn: 0,
+    round: 1,
+    isActive: false
+  });
+
+  const [newPC, setNewPC] = useState<{
+    name: string;
+    initiative: number;
+    ac: number;
+    hp: number;
+  }>({
+    name: '',
+    initiative: 10,
+    ac: 15,
+    hp: 30
+  });
+
+  // Charger les données de la rencontre à partir des paramètres d'URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const encounterData = params.get('encounter');
+    
+    if (encounterData) {
+      try {
+        const decodedData = decodeURIComponent(encounterData);
+        const parsedEncounter = JSON.parse(decodedData);
+        
+        // Transformer les monstres en participants de rencontre
+        const participants = parsedEncounter.monsters.flatMap(({ monster, quantity }: { monster: Monster, quantity: number }) => {
+          return Array.from({ length: quantity }, (_, index) => ({
+            ...monster,
+            id: `${monster.name}-${index}`,
+            initiative: Math.floor(Math.random() * 20) + 1,
+            currentHp: monster.hp,
+            maxHp: monster.hp,
+            isPC: false,
+            conditions: [],
+            notes: ''
+          }));
+        });
+        
+        setEncounter({
+          name: parsedEncounter.name,
+          participants: participants,
+          currentTurn: 0,
+          round: 1,
+          isActive: false
+        });
+
+        toast({
+          title: "Rencontre chargée",
+          description: `${participants.length} participants ajoutés.`
+        });
+      } catch (error) {
+        console.error('Erreur lors du chargement de la rencontre:', error);
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les données de la rencontre.",
+          variant: "destructive"
+        });
+      }
+    }
+  }, []);
+
+  // Trier les participants par initiative (décroissante)
+  const sortedParticipants = [...encounter.participants].sort((a, b) => b.initiative - a.initiative);
+
+  // Ajouter un personnage joueur
+  const addPlayerCharacter = () => {
+    if (!newPC.name) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez donner un nom au personnage.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const newParticipant: PlayerCharacter = {
+      id: `pc-${Date.now()}`,
+      name: newPC.name,
+      initiative: newPC.initiative,
+      ac: newPC.ac,
+      currentHp: newPC.hp,
+      maxHp: newPC.hp,
+      isPC: true,
+      conditions: [],
+      notes: ''
+    };
+
+    setEncounter(prev => ({
+      ...prev,
+      participants: [...prev.participants, newParticipant]
+    }));
+
+    setNewPC({
+      name: '',
+      initiative: 10,
+      ac: 15,
+      hp: 30
+    });
+
+    toast({
+      title: "Personnage ajouté",
+      description: `${newPC.name} a rejoint la rencontre.`
+    });
+  };
+
+  // Gérer les points de vie
+  const updateHp = (id: string, amount: number) => {
+    setEncounter(prev => ({
+      ...prev,
+      participants: prev.participants.map(p => {
+        if (p.id === id) {
+          const newHp = Math.max(0, Math.min(p.maxHp, p.currentHp + amount));
+          return { ...p, currentHp: newHp };
+        }
+        return p;
+      })
+    }));
+  };
+
+  // Définir directement les points de vie actuels
+  const setCurrentHp = (id: string, hp: number) => {
+    setEncounter(prev => ({
+      ...prev,
+      participants: prev.participants.map(p => {
+        if (p.id === id) {
+          const newHp = Math.max(0, Math.min(p.maxHp, hp));
+          return { ...p, currentHp: newHp };
+        }
+        return p;
+      })
+    }));
+    toast({
+      title: "Points de vie modifiés",
+      description: "Les PV actuels ont été mis à jour."
+    });
+  };
+
+  // Définir directement les points de vie maximum
+  const setMaxHp = (id: string, maxHp: number) => {
+    setEncounter(prev => ({
+      ...prev,
+      participants: prev.participants.map(p => {
+        if (p.id === id) {
+          const newMaxHp = Math.max(1, maxHp); // Minimum 1 PV max
+          const newCurrentHp = Math.min(p.currentHp, newMaxHp); // Ajuster les PV actuels si nécessaire
+          return { ...p, maxHp: newMaxHp, currentHp: newCurrentHp };
+        }
+        return p;
+      })
+    }));
+    toast({
+      title: "Points de vie maximums modifiés",
+      description: "Les PV maximum ont été mis à jour."
+    });
+  };
+
+  // Passer au tour suivant
+  const nextTurn = () => {
+    setEncounter(prev => {
+      let nextTurn = prev.currentTurn + 1;
+      let nextRound = prev.round;
+      
+      if (nextTurn >= sortedParticipants.length) {
+        nextTurn = 0;
+        nextRound++;
+      }
+      
+      return {
+        ...prev,
+        currentTurn: nextTurn,
+        round: nextRound
+      };
+    });
+  };
+
+  // Démarrer/arrêter la rencontre
+  const toggleEncounterState = () => {
+    setEncounter(prev => ({
+      ...prev,
+      isActive: !prev.isActive
+    }));
+  };
+
+  // Réinitialiser la rencontre
+  const resetEncounter = () => {
+    setEncounter(prev => ({
+      ...prev,
+      currentTurn: 0,
+      round: 1,
+      isActive: false,
+      participants: prev.participants.map(p => ({
+        ...p,
+        currentHp: p.maxHp,
+        conditions: []
+      }))
+    }));
+  };
+
+  // Retirer un participant
+  const removeParticipant = (id: string) => {
+    setEncounter(prev => ({
+      ...prev,
+      participants: prev.participants.filter(p => p.id !== id)
+    }));
+  };
+
+  // Ajouter/retirer une condition
+  const toggleCondition = (id: string, condition: string) => {
+    setEncounter(prev => ({
+      ...prev,
+      participants: prev.participants.map(p => {
+        if (p.id === id) {
+          const hasCondition = p.conditions.includes(condition);
+          return {
+            ...p,
+            conditions: hasCondition 
+              ? p.conditions.filter(c => c !== condition)
+              : [...p.conditions, condition]
+          };
+        }
+        return p;
+      })
+    }));
+  };
+
+  // Mettre à jour les notes
+  const updateNotes = (id: string, notes: string) => {
+    setEncounter(prev => ({
+      ...prev,
+      participants: prev.participants.map(p => {
+        if (p.id === id) {
+          return { ...p, notes };
+        }
+        return p;
+      })
+    }));
+  };
+
+  // Conditions possibles
+  const possibleConditions = [
+    'Assourdi', 'Aveuglé', 'Charmé', 'Empoisonné', 'Entravé', 
+    'Étourdi', 'Inconscient', 'Paralysé', 'Pétrifié', 'Terrorisé'
+  ];
+
+  // Afficher un badge de statut pour la créature
+  const getStatusBadge = (participant: EncounterParticipant) => {
+    const hpPercentage = (participant.currentHp / participant.maxHp) * 100;
+    
+    if (participant.currentHp <= 0) {
+      return <Badge className="bg-gray-500">Mort</Badge>;
+    } else if (hpPercentage <= 25) {
+      return <Badge className="bg-red-500">Critique</Badge>;
+    } else if (hpPercentage <= 50) {
+      return <Badge className="bg-orange-500">Blessé</Badge>;
+    } else if (hpPercentage < 100) {
+      return <Badge className="bg-yellow-500">Touché</Badge>;
+    } else {
+      return <Badge className="bg-green-500">Indemne</Badge>;
+    }
+  };
+
+  // État pour le dialogue d'édition des PV
+  const [editingHP, setEditingHP] = useState<{
+    id: string;
+    currentHp: number;
+    maxHp: number;
+    isOpen: boolean;
+  }>({
+    id: '',
+    currentHp: 0,
+    maxHp: 0,
+    isOpen: false
+  });
+
+  // Ouvrir le dialogue d'édition des PV
+  const openHPEditor = (participant: EncounterParticipant) => {
+    setEditingHP({
+      id: participant.id,
+      currentHp: participant.currentHp,
+      maxHp: participant.maxHp,
+      isOpen: true
+    });
+  };
+
+  // Sauvegarder les modifications de PV
+  const saveHPChanges = () => {
+    setCurrentHp(editingHP.id, editingHP.currentHp);
+    setMaxHp(editingHP.id, editingHP.maxHp);
+    setEditingHP(prev => ({ ...prev, isOpen: false }));
+  };
+
+  return (
+    <div className="container mx-auto p-4">
+      <Card className="mb-6">
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle className="flex items-center gap-2 font-cinzel">
+              <Sword className="w-5 h-5 text-primary" />
+              {encounter.name}
+            </CardTitle>
+            <div className="flex gap-2">
+              <Button 
+                onClick={toggleEncounterState}
+                variant={encounter.isActive ? "outline" : "default"}
+                size="sm"
+              >
+                {encounter.isActive ? (
+                  <><Pause className="w-4 h-4 mr-1" /> Pause</>
+                ) : (
+                  <><Play className="w-4 h-4 mr-1" /> Démarrer</>
+                )}
+              </Button>
+              <Button 
+                onClick={resetEncounter}
+                variant="outline"
+                size="sm"
+              >
+                <RefreshCw className="w-4 h-4 mr-1" /> Réinitialiser
+              </Button>
+            </div>
+          </div>
+          <CardDescription>
+            <div className="flex justify-between">
+              <span>Round {encounter.round}</span>
+              <span>{encounter.participants.length} participants</span>
+            </div>
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {/* Ajouter un PJ */}
+          <div className="mb-6 p-3 border rounded-md">
+            <h3 className="text-sm font-semibold mb-2">Ajouter un personnage joueur</h3>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+              <div>
+                <Label htmlFor="pcName" className="text-xs">Nom</Label>
+                <Input 
+                  id="pcName" 
+                  value={newPC.name} 
+                  onChange={(e) => setNewPC(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Nom du PJ"
+                />
+              </div>
+              <div>
+                <Label htmlFor="pcInitiative" className="text-xs">Initiative</Label>
+                <Input 
+                  id="pcInitiative" 
+                  type="number" 
+                  value={newPC.initiative} 
+                  onChange={(e) => setNewPC(prev => ({ ...prev, initiative: parseInt(e.target.value) || 0 }))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="pcAC" className="text-xs">CA</Label>
+                <Input 
+                  id="pcAC" 
+                  type="number" 
+                  value={newPC.ac} 
+                  onChange={(e) => setNewPC(prev => ({ ...prev, ac: parseInt(e.target.value) || 0 }))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="pcHP" className="text-xs">PV</Label>
+                <div className="flex gap-2">
+                  <Input 
+                    id="pcHP" 
+                    type="number" 
+                    value={newPC.hp} 
+                    onChange={(e) => setNewPC(prev => ({ ...prev, hp: parseInt(e.target.value) || 0 }))}
+                  />
+                  <Button onClick={addPlayerCharacter} className="whitespace-nowrap">
+                    <Plus className="w-4 h-4 mr-1" /> Ajouter
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Liste des participants */}
+          <div className="space-y-3">
+            {sortedParticipants.map((participant, index) => (
+              <div 
+                key={participant.id} 
+                className={`border p-3 rounded-md ${encounter.currentTurn === index ? 'ring-2 ring-primary bg-primary/5' : ''}`}
+              >
+                <div className="flex flex-col md:flex-row gap-3 justify-between">
+                  <div className="flex-1">
+                    <div className="flex justify-between items-center mb-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold flex items-center gap-1">
+                          {participant.isPC ? '👤' : '👹'} {participant.name}
+                        </span>
+                        {getStatusBadge(participant)}
+                        {participant.conditions.map(condition => (
+                          <Badge key={condition} className="bg-purple-500">{condition}</Badge>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-1 text-xs">
+                        <div className="flex items-center">
+                          <Shield className="w-3 h-3 mr-1" /> {participant.ac}
+                        </div>
+                        <div className="flex items-center ml-2">
+                          <Sword className="w-3 h-3 mr-1" /> {participant.initiative}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center mb-2">
+                      <div className="flex-1 mr-3">
+                        <Progress
+                          value={(participant.currentHp / participant.maxHp) * 100}
+                          className="h-2"
+                          indicatorClassName={
+                            participant.currentHp <= 0 ? "bg-gray-500" :
+                            participant.currentHp <= participant.maxHp * 0.25 ? "bg-red-500" :
+                            participant.currentHp <= participant.maxHp * 0.5 ? "bg-orange-500" :
+                            participant.currentHp < participant.maxHp ? "bg-yellow-500" :
+                            "bg-green-500"
+                          }
+                        />
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="h-6 w-6 p-0"
+                          onClick={() => updateHp(participant.id, -1)}
+                        >
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                        <div 
+                          className="flex items-center min-w-[80px] justify-center cursor-pointer hover:bg-muted/50 px-1 rounded"
+                          onClick={() => openHPEditor(participant)}
+                        >
+                          <Heart className="w-3 h-3 mr-1 text-red-500" />
+                          <span className="text-sm">{participant.currentHp} / {participant.maxHp}</span>
+                          <Pencil className="w-3 h-3 ml-1 text-muted-foreground" />
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="h-6 w-6 p-0"
+                          onClick={() => updateHp(participant.id, 1)}
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-1 mb-2">
+                      {possibleConditions.map(condition => (
+                        <Button
+                          key={condition}
+                          variant={participant.conditions.includes(condition) ? "default" : "outline"}
+                          size="sm"
+                          className="text-xs h-7"
+                          onClick={() => toggleCondition(participant.id, condition)}
+                        >
+                          {condition}
+                        </Button>
+                      ))}
+                    </div>
+                    
+                    <div>
+                      <Input
+                        placeholder="Notes..."
+                        value={participant.notes}
+                        onChange={(e) => updateNotes(participant.id, e.target.value)}
+                        className="text-xs"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex md:flex-col justify-end gap-2">
+                    {encounter.currentTurn === index && (
+                      <Button size="sm" onClick={nextTurn}>
+                        <SkipForward className="w-4 h-4 mr-1" /> Tour suivant
+                      </Button>
+                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-red-500 hover:text-red-700"
+                      onClick={() => removeParticipant(participant.id)}
+                    >
+                      <Skull className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {sortedParticipants.length === 0 && (
+            <div className="text-center p-6 text-muted-foreground">
+              <p>Aucun participant dans cette rencontre.</p>
+              <p className="text-sm">Ajoutez des personnages joueurs ou chargez une rencontre.</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Dialogue d'édition des points de vie */}
+      <Dialog open={editingHP.isOpen} onOpenChange={(open) => setEditingHP(prev => ({ ...prev, isOpen: open }))}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Modifier les points de vie</DialogTitle>
+            <DialogDescription>
+              Ajustez les valeurs des points de vie actuels et maximum.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="currentHp" className="text-right">
+                PV actuels
+              </Label>
+              <Input
+                id="currentHp"
+                type="number"
+                value={editingHP.currentHp}
+                onChange={(e) => setEditingHP(prev => ({ ...prev, currentHp: parseInt(e.target.value) || 0 }))}
+                className="col-span-3"
+                min={0}
+                max={editingHP.maxHp}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="maxHp" className="text-right">
+                PV maximum
+              </Label>
+              <Input
+                id="maxHp"
+                type="number"
+                value={editingHP.maxHp}
+                onChange={(e) => setEditingHP(prev => ({ ...prev, maxHp: Math.max(1, parseInt(e.target.value) || 1) }))}
+                className="col-span-3"
+                min={1}
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingHP(prev => ({ ...prev, isOpen: false }))}>
+              Annuler
+            </Button>
+            <Button onClick={saveHPChanges}>
+              Sauvegarder
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+export default EncounterTracker; 

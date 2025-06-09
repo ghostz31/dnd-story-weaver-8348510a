@@ -1,11 +1,12 @@
-
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, MapPin, Scroll, Sword, Zap, Copy } from 'lucide-react';
+import { Users, MapPin, Scroll, Sword, Zap, Copy, FileText, Wand2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import EncounterGenerator from './EncounterGenerator';
+import { SessionGenerator } from './SessionGenerator';
+import CustomEncounterGenerator from './CustomEncounterGenerator';
 
 const QuickGenerators = () => {
   const [npcResult, setNpcResult] = useState('');
@@ -133,10 +134,14 @@ const QuickGenerators = () => {
   return (
     <div className="max-w-6xl mx-auto">
       <Tabs defaultValue="encounters" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 h-12 bg-muted/50 p-1">
+        <TabsList className="grid w-full grid-cols-6 h-12 bg-muted/50 p-1">
           <TabsTrigger value="encounters" className="text-sm data-[state=active]:bg-white">
             <Sword className="w-4 h-4 mr-1" />
             Rencontres
+          </TabsTrigger>
+          <TabsTrigger value="custom" className="text-sm data-[state=active]:bg-white">
+            <Wand2 className="w-4 h-4 mr-1" />
+            Personnalisé
           </TabsTrigger>
           <TabsTrigger value="npcs" className="text-sm data-[state=active]:bg-white">
             <Users className="w-4 h-4 mr-1" />
@@ -150,10 +155,22 @@ const QuickGenerators = () => {
             <Scroll className="w-4 h-4 mr-1" />
             Quêtes
           </TabsTrigger>
+          <TabsTrigger value="session" className="text-sm data-[state=active]:bg-white">
+            <FileText className="w-4 h-4 mr-1" />
+            Session
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="encounters" className="mt-6">
           <EncounterGenerator />
+        </TabsContent>
+
+        <TabsContent value="custom" className="mt-6">
+          <CustomEncounterGenerator />
+        </TabsContent>
+
+        <TabsContent value="session" className="mt-6">
+          <SessionGenerator />
         </TabsContent>
 
         <TabsContent value="npcs" className="mt-6">
@@ -262,7 +279,7 @@ const QuickGenerators = () => {
                 Générateur de Quêtes
               </CardTitle>
               <CardDescription>
-                Générez des aventures secondaires captivantes
+                Créez rapidement des aventures pour vos joueurs
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

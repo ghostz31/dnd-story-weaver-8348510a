@@ -1,0 +1,78 @@
+[
+  {
+    "name": "Gobelin",
+    "originalName": "Goblin",
+    "cr": 0.25,
+    "xp": 50,
+    "type": "Humanoïde",
+    "size": "P",
+    "ac": 15,
+    "hp": 7,
+    "speed": [],
+    "alignment": "neutre mauvais",
+    "legendary": false,
+    "source": "Monster Manual",
+    "environment": ["forêt", "montagne"]
+  },
+  {
+    "name": "Dragon rouge",
+    "originalName": "Red Dragon",
+    "cr": 17,
+    "xp": 18000,
+    "type": "Dragon",
+    "size": "TG",
+    "ac": 19,
+    "hp": 256,
+    "speed": ["vol"],
+    "alignment": "chaotique mauvais",
+    "legendary": true,
+    "source": "Monster Manual",
+    "environment": ["montagne", "volcan"]
+  },
+  {
+    "name": "Zombie",
+    "originalName": "Zombie",
+    "cr": 0.25,
+    "xp": 50,
+    "type": "Mort-vivant",
+    "size": "M",
+    "ac": 8,
+    "hp": 22,
+    "speed": [],
+    "alignment": "neutre mauvais",
+    "legendary": false,
+    "source": "Monster Manual",
+    "environment": ["donjon", "cimetière"]
+  },
+  {
+    "name": "Loup",
+    "originalName": "Wolf",
+    "cr": 0.25,
+    "xp": 50,
+    "type": "Bête",
+    "size": "M",
+    "ac": 13,
+    "hp": 11,
+    "speed": [],
+    "alignment": "sans alignement",
+    "legendary": false,
+    "source": "Monster Manual",
+    "environment": ["forêt", "plaine"]
+  },
+  {
+    "name": "Squelette",
+    "originalName": "Skeleton",
+    "cr": 0.25,
+    "xp": 50,
+    "type": "Mort-vivant",
+    "size": "M",
+    "ac": 13,
+    "hp": 13,
+    "speed": [],
+    "alignment": "loyal mauvais",
+    "legendary": false,
+    "source": "Monster Manual",
+    "environment": ["donjon", "ruine"]
+  }
+]
+ 

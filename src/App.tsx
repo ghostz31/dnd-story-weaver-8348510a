@@ -1,27 +1,119 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
+import React, { useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import Index from './pages/Index';
+import AuthPage from './pages/AuthPage';
+import SubscriptionPage from './pages/SubscriptionPage';
+import MonsterBrowser from './components/MonsterBrowser';
+import EncounterBuilder from './components/EncounterBuilder';
+import CustomEncounterGenerator from './components/CustomEncounterGenerator';
+import EncounterTracker from './components/EncounterTracker';
+import EncounterHistory from './components/EncounterHistory';
+import PartyEditor from './components/PartyEditor';
+import UserProfile from './components/auth/UserProfile';
+import Header from './components/layout/Header';
+import { useAuth } from './auth/AuthContext';
+import './App.css';
 
-const queryClient = new QueryClient();
+// Composant de protection des routes authentifiées
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
+  if (loading) {
+    // Affichage d'un chargement pendant la vérification de l'authentification
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    // Redirection vers la page de connexion avec l'URL actuelle en "from"
+    return <Navigate to="/auth" state={{ from: location }} replace />;
+  }
+
+  return <>{children}</>;
+};
+
+function App() {
+  const location = useLocation();
+  const { isAuthenticated } = useAuth();
+
+  // Vérifier si nous sommes sur la page du tracker
+  const isTrackerPage = location.pathname === '/encounter-tracker';
+
+  // Si nous sommes sur la page du tracker, afficher uniquement le composant de suivi
+  if (isTrackerPage) {
+    return <EncounterTracker />;
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      {!isTrackerPage && <Header />}
+      
+      <main className="container mx-auto p-4">
         <Routes>
+          {/* Routes publiques */}
           <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/login" element={<Navigate to="/auth" replace />} />
+          <Route path="/monsters" element={<MonsterBrowser />} />
+          
+          {/* Routes protégées (utilisateur connecté) */}
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <UserProfile />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/subscription" element={
+            <ProtectedRoute>
+              <SubscriptionPage />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/parties" element={
+            <ProtectedRoute>
+              <PartyEditor />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/encounters" element={
+            <ProtectedRoute>
+              <EncounterBuilder />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/custom" element={
+            <ProtectedRoute>
+              <CustomEncounterGenerator />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/history" element={
+            <ProtectedRoute>
+              <EncounterHistory />
+            </ProtectedRoute>
+          } />
+          
+          {/* Redirection vers la page d'accueil si la route n'existe pas */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+      </main>
+      
+      <footer className="bg-gray-800 text-white p-4 mt-8">
+        <div className="container mx-auto text-center">
+          <p>Outil pour maîtres de jeu</p>
+          {!isAuthenticated && (
+            <p className="text-sm mt-2">
+              <a href="/auth" className="text-blue-300 hover:underline">Connectez-vous</a> pour sauvegarder vos rencontres et groupes
+            </p>
+          )}
+        </div>
+      </footer>
+    </div>
+  );
+}
 
 export default App;
