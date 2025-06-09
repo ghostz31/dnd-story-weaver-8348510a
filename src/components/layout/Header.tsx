@@ -15,14 +15,15 @@ import {
   Home, 
   Users, 
   Book, 
-  Sword, 
+  Sword,
   History, 
   Settings, 
   LogOut, 
   User, 
   ChevronDown,
   LogIn,
-  CreditCard
+  CreditCard,
+  PenTool
 } from 'lucide-react';
 
 const Header: React.FC = () => {
@@ -49,7 +50,7 @@ const Header: React.FC = () => {
         <div className="flex justify-between items-center">
           {/* Logo et titre */}
           <div className="flex items-center space-x-2">
-            <Sword className="h-6 w-6 text-primary" />
+            <PenTool className="h-6 w-6 text-primary" />
             <Link to="/" className="text-xl font-bold font-cinzel">
               Trame
             </Link>
@@ -93,7 +94,7 @@ const Header: React.FC = () => {
               asChild
             >
               <Link to="/encounters" className="flex items-center">
-                <Sword className="mr-1 h-4 w-4" /> Rencontres
+                <PenTool className="mr-1 h-4 w-4" /> Rencontres
               </Link>
             </Button>
             

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Card } from '@/components/ui/card';
+import { useNavigate, useLocation } from 'react-router-dom';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
 import ResetPasswordForm from '@/components/auth/ResetPasswordForm';
 import { useAuth } from '@/auth/AuthContext';
-import { Shield, Sword } from 'lucide-react';
+import { PenTool } from 'lucide-react';
 
 type AuthMode = 'login' | 'register' | 'reset-password';
 
@@ -24,7 +25,7 @@ const AuthPage: React.FC = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
       <div className="mb-8 text-center">
         <div className="flex justify-center mb-4">
-          <Sword className="h-12 w-12 text-primary" />
+          <PenTool className="h-12 w-12 text-primary" />
         </div>
         <h1 className="text-3xl font-bold mb-2 font-cinzel">Trame</h1>
         <p className="text-gray-600 max-w-md">

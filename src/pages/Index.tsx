@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, Sword, Users, Book, History, CreditCard, Check } from 'lucide-react';
+import { Shield, Swords, Users, Book, History, CreditCard, Check, PenTool } from 'lucide-react';
 import { useAuth } from '@/auth/AuthContext';
 
 const Index: React.FC = () => {
@@ -14,9 +14,9 @@ const Index: React.FC = () => {
       {/* Hero section */}
       <section className="text-center py-10">
         <div className="max-w-3xl mx-auto px-4">
-          <Shield className="h-16 w-16 text-primary mx-auto mb-4" />
-          <h1 className="text-4xl font-bold mb-4 font-cinzel">Trame</h1>
-          <p className="text-xl text-gray-600 mb-8">
+          <PenTool className="h-16 w-16 text-primary mx-auto mb-4" />
+          <h1 className="text-4xl font-bold mb-4 font-cinzel text-center">Trame</h1>
+          <p className="text-xl text-gray-600 mb-8 text-center">
             Créez facilement des rencontres équilibrées pour vos aventures D&D
           </p>
           
@@ -48,7 +48,7 @@ const Index: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
             <CardHeader>
-              <Sword className="h-8 w-8 text-primary mb-2" />
+              <Swords className="h-8 w-8 text-primary mb-2" />
               <CardTitle>Générateur de Rencontres</CardTitle>
               <CardDescription>
                 Créez des rencontres équilibrées pour votre groupe d'aventuriers
