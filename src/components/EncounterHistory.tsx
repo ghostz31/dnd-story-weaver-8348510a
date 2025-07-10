@@ -87,17 +87,9 @@ const EncounterHistory: React.FC = () => {
   const loadEncounterToTracker = (encounter: Encounter) => {
     try {
       console.log("Chargement de la rencontre vers le tracker:", encounter.id);
-      // Stocker les données dans le localStorage pour que le tracker puisse les récupérer
-      localStorage.setItem(`encounter_${encounter.id}`, JSON.stringify(encounter));
       
-      // Préparer aussi la rencontre dans sessionStorage pour compatibilité
-      const completeEncounterData = {
-        ...encounter,
-        participants: []
-      };
-      sessionStorage.setItem('current_encounter', JSON.stringify(completeEncounterData));
-      
-      // Naviguer vers le tracker avec l'ID de la rencontre (avec window.location pour être sûr)
+      // Naviguer directement vers le tracker avec l'ID de la rencontre
+      // Le tracker se chargera de récupérer les données depuis Firebase
       console.log("Navigation vers /encounter-tracker/" + encounter.id);
       window.location.href = `/encounter-tracker/${encounter.id}`;
     } catch (error) {

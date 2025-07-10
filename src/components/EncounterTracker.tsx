@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Sword, Shield, Heart, SkipForward, RefreshCw, Play, Pause, Skull, Plus, Minus, Pencil, Square, RotateCcw, Calendar, User, Dice4, Save } from 'lucide-react';
+import { Sword, Shield, Heart, SkipForward, RefreshCw, Skull, Plus, Minus, Pencil, Square, RotateCcw, Calendar, User, Dice4, Save, Zap, Droplets, Eye, EyeOff, Smile, Users, Link, Snowflake, Clock, Ghost, Anchor, ArrowDown, Brain, Footprints, ShieldX, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { toast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Player } from '../lib/types';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { MonsterCard } from './MonsterCard';
@@ -34,12 +34,12 @@ interface MonsterNameMapping {
   [key: string]: string;
 }
 
-// Interface de mapping d'URL
+// Interface pour le dictionnaire d'URL
 interface UrlMapping {
   [key: string]: string;
 }
 
-// Interfaces de base pour les entités
+// Interface pour les monstres
 interface Monster {
   name: string;
   originalName?: string;
@@ -59,20 +59,50 @@ interface Monster {
   initiative?: number;
 }
 
+// Définir les conditions avec leurs icônes et couleurs
+const CONDITIONS = [
+  'À terre', 'Assourdi', 'Aveuglé', 'Charmé', 'Empoisonné',
+  'Empoigné', 'Entravé', 'Épuisé', 'Étourdi', 'Inconscient',
+  'Invisible', 'Neutralisé', 'Pétrifié', 'Effrayé', 'Paralysé',
+  'Concentré', 'Béni', 'Maudit', 'Ralenti', 'Hâté'
+] as const;
 
+type Condition = typeof CONDITIONS[number];
 
-// Liste des conditions standard D&D 5e
-const possibleConditions = [
-  "À terre", "Assourdi", "Aveuglé", "Charmé", "Empoisonné",
-  "Empoigné", "Entravé", "Épuisé", "Étourdi", "Inconscient",
-  "Invisible", "Neutralisé", "Pétrifié", "Effrayé", "Paralysé"
-];
+// Fonction pour obtenir les informations d'une condition
+const getConditionInfo = (conditionName: string) => {
+  const conditionMap = {
+    'À terre': { icon: ArrowDown, color: 'text-orange-600 border-orange-600' },
+    'Assourdi': { icon: Users, color: 'text-gray-600 border-gray-600' },
+    'Aveuglé': { icon: EyeOff, color: 'text-red-600 border-red-600' },
+    'Charmé': { icon: Smile, color: 'text-pink-600 border-pink-600' },
+    'Empoisonné': { icon: Droplets, color: 'text-green-600 border-green-600' },
+    'Empoigné': { icon: Anchor, color: 'text-brown-600 border-brown-600' },
+    'Entravé': { icon: Link, color: 'text-gray-800 border-gray-800' },
+    'Épuisé': { icon: Clock, color: 'text-yellow-600 border-yellow-600' },
+    'Étourdi': { icon: Brain, color: 'text-purple-600 border-purple-600' },
+    'Inconscient': { icon: Ghost, color: 'text-gray-500 border-gray-500' },
+    'Invisible': { icon: Eye, color: 'text-blue-400 border-blue-400' },
+    'Neutralisé': { icon: ShieldX, color: 'text-red-800 border-red-800' },
+    'Pétrifié': { icon: Square, color: 'text-gray-700 border-gray-700' },
+    'Effrayé': { icon: Skull, color: 'text-red-700 border-red-700' },
+    'Paralysé': { icon: Zap, color: 'text-blue-600 border-blue-600' },
+    'Concentré': { icon: Brain, color: 'text-indigo-600 border-indigo-600' },
+    'Béni': { icon: Heart, color: 'text-yellow-500 border-yellow-500' },
+    'Maudit': { icon: Skull, color: 'text-purple-700 border-purple-700' },
+    'Ralenti': { icon: Clock, color: 'text-blue-500 border-blue-500' },
+    'Hâté': { icon: Zap, color: 'text-green-500 border-green-500' }
+  };
+  
+  return conditionMap[conditionName as keyof typeof conditionMap] || { icon: Square, color: 'text-gray-500 border-gray-500' };
+};
 
-// Interface pour un participant à une rencontre
+// Interface pour les participants de la rencontre
 interface EncounterParticipant {
   id: string;
   name: string;
   initiative: number;
+  initiativeModifier?: number; // Ajout du modificateur d'initiative
   ac: number;
   currentHp: number;
   maxHp: number;
@@ -95,8 +125,14 @@ interface EncounterParticipant {
   // Actions et traits - propriétés pour MonsterCard
   actions?: any[];
   traits?: any[];
+  // Gestion des actions par tour
+  hasUsedAction?: boolean;
+  hasUsedBonusAction?: boolean;
+  hasUsedReaction?: boolean;
+  remainingMovement?: number;
 }
 
+// Interface pour les personnages joueurs
 interface PlayerCharacter {
   id: string;
   name: string;
@@ -111,6 +147,8 @@ interface PlayerCharacter {
 
 const EncounterTracker: React.FC = () => {
   console.log("=== CHARGEMENT DU COMPOSANT ENCOUNTERTRACKER ===");
+  console.log("EncounterTracker: Composant monté");
+  console.log("EncounterTracker: URL actuelle:", window.location.href);
   
   // État de la rencontre
   const [encounter, setEncounter] = useState<{
@@ -118,13 +156,11 @@ const EncounterTracker: React.FC = () => {
     participants: EncounterParticipant[];
     currentTurn: number;
     round: number;
-    isActive: boolean;
   }>({
     name: 'Rencontre',
     participants: [],
     currentTurn: 0,
-    round: 1,
-    isActive: false
+    round: 1
   });
 
   // État pour le nouveau personnage joueur
@@ -154,8 +190,35 @@ const EncounterTracker: React.FC = () => {
     maxHp: 0
   });
   
+  // État pour l'édition rapide des PV
+  const [hpModifierValue, setHpModifierValue] = useState<number>(1);
+  const [showHpModifier, setShowHpModifier] = useState<string | null>(null);
+  
   // État pour le dialogue d'édition de l'initiative
   const [initiativeDialogOpen, setInitiativeDialogOpen] = useState(false);
+  const [editingInitiative, setEditingInitiative] = useState<{
+    id: string;
+    name: string;
+    initiative: number;
+    modifier: number;
+  }>({
+    id: '',
+    name: '',
+    initiative: 0,
+    modifier: 0
+  });
+
+  // État pour le dialogue d'édition des notes
+  const [notesDialogOpen, setNotesDialogOpen] = useState(false);
+  const [editingNotes, setEditingNotes] = useState<{
+    id: string;
+    name: string;
+    notes: string;
+  }>({
+    id: '',
+    name: '',
+    notes: ''
+  });
   
   // État pour stocker le dictionnaire de correspondance des noms
   const [monsterNameMap, setMonsterNameMap] = useState<MonsterNameMapping>({});
@@ -167,6 +230,13 @@ const EncounterTracker: React.FC = () => {
   const [monsterDetails, setMonsterDetails] = useState<Record<string, any>>({});
   const [loadingDetails, setLoadingDetails] = useState<boolean>(false);
   const [currentMonsterDetails, setCurrentMonsterDetails] = useState<any>(null);
+  
+  // État pour l'iframe des créatures
+  const [selectedCreatureUrl, setSelectedCreatureUrl] = useState<string | null>(null);
+  const [showCreatureFrame, setShowCreatureFrame] = useState<boolean>(false);
+  
+  // État pour le mode édition rapide d'initiative
+  const [quickInitiativeMode, setQuickInitiativeMode] = useState<boolean>(false);
   const [isLoadingEncounter, setIsLoadingEncounter] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -180,9 +250,24 @@ const EncounterTracker: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
 
+  // Fonction pour extraire la valeur numérique des PV depuis une chaîne comme "51 (6d10 + 18)"
+  const extractNumericHP = (hpValue: any): number => {
+    if (typeof hpValue === 'number') {
+      return hpValue;
+    }
+    if (typeof hpValue === 'string') {
+      const match = hpValue.match(/^(\d+)/);
+      if (match) {
+        return parseInt(match[1], 10);
+      }
+    }
+    return 10; // Valeur par défaut
+  };
+
   // Afficher un badge de statut pour la créature
   const getStatusBadge = (participant: EncounterParticipant) => {
-    const hpPercentage = (participant.currentHp / participant.maxHp) * 100;
+    const numericMaxHp = extractNumericHP(participant.maxHp);
+    const hpPercentage = (participant.currentHp / numericMaxHp) * 100;
     
     if (participant.currentHp <= 0) {
       return <Badge className="bg-gray-500">Mort</Badge>;
@@ -199,12 +284,20 @@ const EncounterTracker: React.FC = () => {
 
   // Charger les données de la rencontre
   useEffect(() => {
+    // Éviter de recharger si les données sont déjà présentes
+    if (encounter.participants.length > 0) {
+      console.log("Données déjà présentes, pas de rechargement nécessaire");
+      return;
+    }
+
     console.log("=== CHARGEMENT DES DONNÉES DE RENCONTRE ===");
     console.log("URL de la page:", window.location.href);
     console.log("Paramètres:", params);
+    console.log("Utilisateur authentifié:", isAuthenticated);
+    console.log("User:", user);
     
     // Ajout d'un délai pour s'assurer que sessionStorage est chargé
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       const searchParams = new URLSearchParams(window.location.search);
       const source = searchParams.get('source');
       
@@ -213,10 +306,15 @@ const EncounterTracker: React.FC = () => {
         if (source === 'session') {
           console.log("Chargement des données depuis sessionStorage");
           const sessionData = sessionStorage.getItem('current_encounter');
+          console.log("Données brutes sessionStorage:", sessionData);
           
           if (!sessionData) {
             console.error("Aucune donnée trouvée dans sessionStorage");
-            alert("Aucune donnée trouvée dans sessionStorage. URL: " + window.location.href);
+            toast({
+              title: "Erreur de chargement",
+              description: "Aucune donnée de rencontre trouvée. Veuillez créer une nouvelle rencontre.",
+              variant: "destructive"
+            });
             return;
           }
           
@@ -232,9 +330,18 @@ const EncounterTracker: React.FC = () => {
                 name: parsedData.name || "Rencontre",
                 participants: parsedData.participants,
                 currentTurn: parsedData.currentTurn || 0,
-                round: parsedData.round || 1,
-                isActive: parsedData.isActive || false
+                round: parsedData.round || 1
               });
+              
+              // Charger automatiquement les vraies données des monstres dès le début
+              setTimeout(async () => {
+                const monsterParticipants = parsedData.participants.filter((p: any) => !p.isPC);
+                console.log(`Chargement des vraies données pour ${monsterParticipants.length} monstres`);
+                
+                for (const participant of monsterParticipants) {
+                  await loadRealMonsterData(participant.id);
+                }
+              }, 100); // Réduire le délai pour un chargement plus rapide
               
               toast({
                 title: "Rencontre chargée",
@@ -246,7 +353,11 @@ const EncounterTracker: React.FC = () => {
             }
           } catch (jsonError) {
             console.error("Erreur lors du parsing des données JSON:", jsonError);
-            alert("Erreur de parsing JSON: " + jsonError);
+            toast({
+              title: "Erreur de parsing",
+              description: "Les données de rencontre sont corrompues.",
+              variant: "destructive"
+            });
             return;
           }
         } 
@@ -258,15 +369,19 @@ const EncounterTracker: React.FC = () => {
           return;
         }
         
-        // Pour les autres cas, comme les données dans l'URL ou les IDs, 
-        // nous pouvons conserver le code existant...
-        
       } catch (error) {
         console.error("Erreur lors du chargement des données:", error);
-        alert("Erreur lors du chargement des données: " + error);
+        toast({
+          title: "Erreur de chargement",
+          description: "Impossible de charger les données de rencontre.",
+          variant: "destructive"
+        });
       }
     }, 500); // Délai de 500ms pour s'assurer que tout est initialisé
-  }, []);
+
+    // Nettoyer le timeout si le composant est démonté
+    return () => clearTimeout(timeoutId);
+  }, [params.encounterId, encounter.participants.length, toast]);
 
   // Charger le dictionnaire de correspondance
   useEffect(() => {
@@ -318,8 +433,33 @@ const EncounterTracker: React.FC = () => {
       });
   }, []);
 
-  // Trier les participants par initiative (décroissante)
-  const sortedParticipants = [...encounter.participants].sort((a, b) => b.initiative - a.initiative);
+  // Charger automatiquement les données des monstres dès qu'ils sont ajoutés
+  useEffect(() => {
+    const monsterParticipants = encounter.participants.filter(p => !p.isPC);
+    
+    if (monsterParticipants.length > 0) {
+      // Vérifier si certains monstres ont encore les valeurs par défaut
+      const monstersWithDefaultValues = monsterParticipants.filter(p => 
+        p.maxHp === 10 && p.ac === 10
+      );
+      
+      if (monstersWithDefaultValues.length > 0) {
+        console.log(`Chargement automatique des données pour ${monstersWithDefaultValues.length} monstres`);
+        
+        // Charger les données avec un petit délai pour éviter les appels simultanés
+        setTimeout(async () => {
+          for (const participant of monstersWithDefaultValues) {
+            await loadRealMonsterData(participant.id);
+          }
+        }, 200);
+      }
+    }
+  }, [encounter.participants.length]); // Se déclenche quand le nombre de participants change
+
+  // Trier les participants par initiative (décroissante) avec useMemo pour optimiser les performances
+  const sortedParticipants = useMemo(() => {
+    return [...encounter.participants].sort((a, b) => b.initiative - a.initiative);
+  }, [encounter.participants]);
 
   // Ajouter un personnage joueur
   const addPlayerCharacter = () => {
@@ -374,13 +514,14 @@ const EncounterTracker: React.FC = () => {
     });
   };
 
-  // Gérer les points de vie
+  // Gérer les points de vie (permettre le dépassement du maximum)
   const updateHp = (id: string, amount: number) => {
     setEncounter(prev => ({
       ...prev,
       participants: prev.participants.map(p => {
         if (p.id === id) {
-          const newHp = Math.max(0, Math.min(p.maxHp, p.currentHp + amount));
+          // Permettre le dépassement du maximum mais pas en dessous de 0
+          const newHp = Math.max(0, p.currentHp + amount);
           return { ...p, currentHp: newHp };
         }
         return p;
@@ -405,9 +546,9 @@ const EncounterTracker: React.FC = () => {
       ...prev,
       participants: prev.participants.map(p => {
         if (p.id === editingParticipant.id) {
-          // S'assurer que les valeurs sont valides
+          // S'assurer que les valeurs sont valides (permettre le dépassement des PV max)
           const newMaxHp = Math.max(1, editingParticipant.maxHp);
-          const newCurrentHp = Math.max(0, Math.min(newMaxHp, editingParticipant.currentHp));
+          const newCurrentHp = Math.max(0, editingParticipant.currentHp); // Pas de limite max
           
           return { ...p, currentHp: newCurrentHp, maxHp: newMaxHp };
         }
@@ -423,60 +564,546 @@ const EncounterTracker: React.FC = () => {
     });
   };
 
-  // Passer au tour suivant
-  const nextTurn = () => {
-    // Trouver le prochain participant actif (ignorer les morts)
-    let nextParticipantIndex = encounter.currentTurn;
-    let newRound = encounter.round;
-    
-    // Initialiser le combat si on est au premier tour
-    if (encounter.round === 1 && encounter.currentTurn === 0) {
-      initializeCombatData();
-    }
-    
-    // Parcourir les participants jusqu'à trouver un participant vivant
-    let participantsChecked = 0;
-    do {
-      nextParticipantIndex = (nextParticipantIndex + 1) % encounter.participants.length;
-      participantsChecked++;
-      
-      // Si on a fait le tour complet sans trouver de participant vivant, incrémenter le tour
-      if (nextParticipantIndex === 0) {
-        newRound++;
-      }
-      
-      // Éviter une boucle infinie si tous les participants sont morts
-      if (participantsChecked > encounter.participants.length) {
-        toast({
-          title: "Fin de la rencontre",
-          description: "Tous les participants sont hors combat",
-          variant: "destructive"
-        });
-        return;
-      }
-    } while (encounter.participants[nextParticipantIndex].currentHp <= 0);
-    
-    // Mettre à jour l'état
+  // Fonction pour sauvegarder les modifications d'initiative
+  const saveInitiativeChanges = () => {
     setEncounter(prev => ({
-        ...prev,
-      currentTurn: nextParticipantIndex,
-      round: newRound
+      ...prev,
+      participants: prev.participants.map(p => 
+        p.id === editingInitiative.id 
+          ? { 
+              ...p, 
+              initiative: editingInitiative.initiative,
+              initiativeModifier: editingInitiative.modifier
+            }
+          : p
+      ).sort((a, b) => b.initiative - a.initiative) // Re-trier par initiative
     }));
     
-    // Charger automatiquement les détails du monstre actif s'il n'est pas un PJ
-    const activeParticipant = encounter.participants[nextParticipantIndex];
-    if (!activeParticipant.isPC) {
-      loadMonsterOnDemand(activeParticipant.id);
+    setInitiativeDialogOpen(false);
+    
+    toast({
+      title: "Initiative mise à jour",
+      description: `${editingInitiative.name} : Initiative ${editingInitiative.initiative} (modificateur ${editingInitiative.modifier >= 0 ? '+' : ''}${editingInitiative.modifier})`,
+      variant: "default"
+    });
+  };
+
+  // Fonction pour ouvrir l'éditeur d'initiative
+  const openInitiativeEditor = (participant: EncounterParticipant) => {
+    setEditingInitiative({
+      id: participant.id,
+      name: participant.name,
+      initiative: participant.initiative,
+      modifier: participant.initiativeModifier || estimateDexModifier(participant)
+    });
+    setInitiativeDialogOpen(true);
+  };
+
+  // Fonction pour déplacer un participant dans l'ordre d'initiative
+  const moveParticipant = (participantId: string, direction: 'up' | 'down') => {
+    setEncounter(prev => {
+      const participants = [...prev.participants];
+      const currentIndex = participants.findIndex(p => p.id === participantId);
+      
+      if (currentIndex === -1) return prev;
+      
+      const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+      
+      if (newIndex < 0 || newIndex >= participants.length) return prev;
+      
+      // Échanger les participants
+      [participants[currentIndex], participants[newIndex]] = [participants[newIndex], participants[currentIndex]];
+      
+      return {
+        ...prev,
+        participants
+      };
+    });
+    
+    toast({
+      title: "Ordre d'initiative modifié",
+      description: `L'ordre d'initiative a été ajusté.`,
+      variant: "default"
+    });
+  };
+
+  // Fonction pour charger une rencontre sauvegardée
+  const loadSavedEncounter = async () => {
+    if (!params.encounterId) {
+      console.error("Aucun ID de rencontre fourni");
+      return;
+    }
+
+    setIsLoadingEncounter(true);
+    try {
+      if (isAuthenticated) {
+        // Charger depuis Firestore avec la bonne référence de collection
+        const docRef = doc(db, 'users', user.uid, 'encounters', params.encounterId);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          const encounterData = docSnap.data() as EncounterType;
+          
+          // Si la rencontre n'a pas de participants initialisés, les créer à partir des données
+          let participants = encounterData.participants || [];
+          
+          // Si pas de participants mais qu'il y a des monstres et un groupe, les initialiser
+          if (participants.length === 0 && encounterData.monsters && encounterData.party) {
+            console.log("Initialisation des participants à partir des données de rencontre");
+            
+            // Participants pour les joueurs
+            const playerParticipants = (encounterData.party.players || []).map(player => {
+              const maxHp = player.maxHp || 10;
+              return {
+                id: `pc-${player.id}`,
+                name: player.name,
+                initiative: Math.floor(Math.random() * 20) + 1,
+                ac: player.ac || 10,
+                currentHp: player.currentHp || maxHp,
+                maxHp: maxHp,
+                isPC: true,
+                conditions: [],
+                notes: `${player.characterClass} niveau ${player.level}`
+              };
+            });
+            
+            // Participants pour les monstres
+            const monsterParticipants = encounterData.monsters.flatMap(({ monster, quantity }) => 
+              Array.from({ length: quantity }, (_, index) => {
+                const maxHp = monster.hp || 10;
+                return {
+                  id: `monster-${monster.id}-${index}`,
+                  name: monster.name,
+                  initiative: Math.floor(Math.random() * 20) + 1,
+                  ac: monster.ac || 10,
+                  currentHp: maxHp,
+                  maxHp: maxHp,
+                  isPC: false,
+                  conditions: [],
+                  notes: "",
+                  cr: monster.cr,
+                  type: monster.type,
+                  size: monster.size
+                };
+              })
+            );
+            
+            participants = [...playerParticipants, ...monsterParticipants];
+          }
+          
+          // Convertir les données de Firestore au format EncounterTracker
+          setEncounter({
+            name: encounterData.name,
+            participants: participants,
+            currentTurn: encounterData.currentTurn || 0,
+            round: encounterData.round || 1,
+            
+          });
+          
+          toast({
+            title: "Rencontre chargée",
+            description: `Rencontre "${encounterData.name}" chargée avec succès.`,
+            variant: "default"
+          });
+        } else {
+          throw new Error("Rencontre non trouvée");
+        }
+      } else {
+        // Charger depuis localStorage - essayer d'abord avec la clé spécifique
+        let encounterData = null;
+        
+        // Essayer la clé spécifique d'abord
+        const specificEncounter = localStorage.getItem(`encounter_${params.encounterId}`);
+        if (specificEncounter) {
+          encounterData = JSON.parse(specificEncounter);
+        } else {
+          // Sinon chercher dans la liste générale
+        const savedEncounters = JSON.parse(localStorage.getItem('dnd_encounters') || '[]');
+          encounterData = savedEncounters.find((e: any) => e.id === params.encounterId);
+        }
+        
+        if (encounterData) {
+          // Si la rencontre n'a pas de participants initialisés, les créer à partir des données
+          let participants = encounterData.participants || [];
+          
+          // Si pas de participants mais qu'il y a des monstres et un groupe, les initialiser
+          if (participants.length === 0 && encounterData.monsters && encounterData.party) {
+            console.log("Initialisation des participants à partir des données de rencontre (localStorage)");
+            
+            // Participants pour les joueurs
+            const playerParticipants = (encounterData.party.players || []).map(player => {
+              const maxHp = player.maxHp || 10;
+              return {
+                id: `pc-${player.id}`,
+                name: player.name,
+                initiative: Math.floor(Math.random() * 20) + 1,
+                ac: player.ac || 10,
+                currentHp: player.currentHp || maxHp,
+                maxHp: maxHp,
+                isPC: true,
+                conditions: [],
+                notes: `${player.characterClass} niveau ${player.level}`
+              };
+            });
+            
+            // Participants pour les monstres
+            const monsterParticipants = encounterData.monsters.flatMap(({ monster, quantity }) => 
+              Array.from({ length: quantity }, (_, index) => {
+                const maxHp = monster.hp || 10;
+                return {
+                  id: `monster-${monster.id}-${index}`,
+                  name: monster.name,
+                  initiative: Math.floor(Math.random() * 20) + 1,
+                  ac: monster.ac || 10,
+                  currentHp: maxHp,
+                  maxHp: maxHp,
+                  isPC: false,
+                  conditions: [],
+                  notes: "",
+                  cr: monster.cr,
+                  type: monster.type,
+                  size: monster.size
+                };
+              })
+            );
+            
+            participants = [...playerParticipants, ...monsterParticipants];
+          }
+          
+          setEncounter({
+            name: encounterData.name,
+            participants: participants,
+            currentTurn: encounterData.currentTurn || 0,
+            round: encounterData.round || 1,
+            
+          });
+          
+          toast({
+            title: "Rencontre chargée",
+            description: `Rencontre "${encounterData.name}" chargée avec succès.`,
+            variant: "default"
+          });
+        } else {
+          throw new Error("Rencontre non trouvée dans localStorage");
+        }
+      }
+    } catch (error) {
+      console.error("Erreur lors du chargement de la rencontre:", error);
+      toast({
+        title: "Erreur de chargement",
+        description: "Impossible de charger la rencontre sauvegardée.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoadingEncounter(false);
     }
   };
 
-  // Démarrer/arrêter la rencontre
-  const toggleEncounterState = () => {
+  // Fonction pour ouvrir l'éditeur de notes
+  const openNotesEditor = (participant: EncounterParticipant) => {
+    setEditingNotes({
+      id: participant.id,
+      name: participant.name,
+      notes: participant.notes
+    });
+    setNotesDialogOpen(true);
+  };
+
+  // Fonction pour sauvegarder les modifications de notes
+  const saveNotesChanges = () => {
     setEncounter(prev => ({
       ...prev,
-      isActive: !prev.isActive
+      participants: prev.participants.map(p => 
+        p.id === editingNotes.id 
+          ? { ...p, notes: editingNotes.notes }
+          : p
+      )
+    }));
+    
+    setNotesDialogOpen(false);
+    
+    toast({
+      title: "Notes mises à jour",
+      description: `Notes de ${editingNotes.name} mises à jour.`,
+      variant: "default"
+    });
+  };
+
+  // Fonction pour sauvegarder l'état actuel de la rencontre
+  const saveCurrentEncounterState = async () => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Sauvegarde impossible",
+        description: "Vous devez être connecté pour sauvegarder une rencontre.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Vérifier qu'on a un ID de rencontre
+    if (!params.encounterId) {
+      toast({
+        title: "Sauvegarde impossible",
+        description: "Aucun ID de rencontre disponible pour la sauvegarde.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const encounterData = {
+        name: encounter.name,
+        participants: encounter.participants,
+        currentTurn: encounter.currentTurn,
+        round: encounter.round,
+        // isActive supprimé
+        environment: '',
+        notes: ''
+      };
+
+      // Utiliser l'ID de la rencontre au lieu du nom
+      await updateFirestoreEncounter(params.encounterId, encounterData);
+      
+      toast({
+        title: "Rencontre sauvegardée",
+        description: "L'état de la rencontre a été sauvegardé avec succès.",
+        variant: "default"
+      });
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde:", error);
+      toast({
+        title: "Erreur de sauvegarde",
+        description: "Impossible de sauvegarder la rencontre.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Fonction pour réinitialiser les actions lors du changement de tour
+  const resetActionsForParticipant = (participantId: string) => {
+    setEncounter(prev => ({
+      ...prev,
+      participants: prev.participants.map(p => {
+        if (p.id === participantId) {
+          return {
+            ...p,
+            hasUsedAction: false,
+            hasUsedBonusAction: false,
+            hasUsedReaction: false,
+            remainingMovement: calculateMovementSpeed(p)
+          };
+        }
+        return p;
+      })
     }));
   };
+
+  // Calculer la vitesse de déplacement en cases (1 case = 1,5 mètre)
+  const calculateMovementSpeed = (participant: EncounterParticipant): number => {
+    if (!participant.speed || participant.speed.length === 0) {
+      // Valeur par défaut : 6 cases (9 mètres)
+      return 6;
+    }
+    
+    // Essayer de trouver la vitesse de base dans le format "X m" ou "X ft"
+    const speedText = participant.speed[0];
+    const speedMatch = speedText.match(/(\d+)\s*(?:m|ft)/);
+    
+    if (speedMatch && speedMatch[1]) {
+      const speedInMeters = parseInt(speedMatch[1], 10);
+      // Convertir en cases (arrondir au plus proche)
+      return Math.round(speedInMeters / 1.5);
+    }
+    
+    // Si aucune information, retourner une valeur par défaut
+    return 6;
+  };
+
+  // Marquer une action comme utilisée
+  const useAction = (participantId: string, actionType: 'action' | 'bonusAction' | 'reaction') => {
+    setEncounter(prev => ({
+      ...prev,
+      participants: prev.participants.map(p => {
+        if (p.id === participantId) {
+          switch (actionType) {
+            case 'action':
+              return { ...p, hasUsedAction: true };
+            case 'bonusAction':
+              return { ...p, hasUsedBonusAction: true };
+            case 'reaction':
+              return { ...p, hasUsedReaction: true };
+            default:
+              return p;
+          }
+        }
+        return p;
+      })
+    }));
+    
+    toast({
+      title: `${actionType === 'action' ? 'Action' : actionType === 'bonusAction' ? 'Action bonus' : 'Réaction'} utilisée`,
+      description: `${encounter.participants.find(p => p.id === participantId)?.name} a utilisé son ${actionType === 'action' ? 'action' : actionType === 'bonusAction' ? 'action bonus' : 'réaction'} pour ce tour.`
+    });
+  };
+
+  // Utiliser une partie du mouvement
+  const useMovement = (participantId: string, distance: number) => {
+    setEncounter(prev => ({
+      ...prev,
+      participants: prev.participants.map(p => {
+        if (p.id === participantId) {
+          const newMovement = Math.max(0, (p.remainingMovement || 0) - distance);
+          return { ...p, remainingMovement: newMovement };
+        }
+        return p;
+      })
+    }));
+  };
+
+  // Fonction pour charger les vraies données des monstres
+  const loadRealMonsterData = async (participantId: string): Promise<void> => {
+    const participant = encounter.participants.find(p => p.id === participantId);
+    if (!participant || participant.isPC) return;
+
+    try {
+      console.log(`Chargement des vraies données pour ${participant.name}`);
+      
+      // Charger les données complètes du monstre depuis AideDD
+      const monsterDetails = await findMonsterDetails(participant.name, false);
+      
+      if (monsterDetails && monsterDetails.hp) {
+        // Extraire la valeur numérique des PV depuis la chaîne "51 (6d10 + 18)"
+        let realMaxHp = 10; // Valeur par défaut
+        
+        if (typeof monsterDetails.hp === 'string') {
+          // Chercher le premier nombre dans la chaîne (avant la parenthèse)
+          const hpMatch = monsterDetails.hp.match(/^(\d+)/);
+          if (hpMatch) {
+            realMaxHp = parseInt(hpMatch[1], 10);
+          }
+        } else if (typeof monsterDetails.hp === 'number') {
+          realMaxHp = monsterDetails.hp;
+        }
+        
+        console.log(`PV réels trouvés pour ${participant.name}: ${realMaxHp} (source: ${monsterDetails.hp})`);
+        
+        // Extraire la CA numérique aussi
+        let realAC = participant.ac;
+        if (monsterDetails.ac) {
+          if (typeof monsterDetails.ac === 'string') {
+            const acMatch = monsterDetails.ac.match(/(\d+)/);
+            if (acMatch) {
+              realAC = parseInt(acMatch[1], 10);
+            }
+          } else if (typeof monsterDetails.ac === 'number') {
+            realAC = monsterDetails.ac;
+          }
+        }
+        
+        // Mettre à jour le participant avec les vraies données
+        setEncounter(prev => ({
+          ...prev,
+          participants: prev.participants.map(p => {
+            if (p.id === participantId) {
+              return {
+                ...p,
+                maxHp: realMaxHp, // Stocker comme nombre
+                currentHp: p.currentHp === 10 ? realMaxHp : p.currentHp, // Si c'est la valeur par défaut (10), utiliser les vrais PV max
+                ac: realAC,
+                str: monsterDetails.str || p.str,
+                dex: monsterDetails.dex || p.dex,
+                con: monsterDetails.con || p.con,
+                int: monsterDetails.int || p.int,
+                wis: monsterDetails.wis || p.wis,
+                cha: monsterDetails.cha || p.cha,
+                actions: monsterDetails.actions || [],
+                traits: monsterDetails.traits || []
+              };
+            }
+            return p;
+          })
+        }));
+      }
+    } catch (error) {
+      console.error(`Erreur lors du chargement des données pour ${participant.name}:`, error);
+    }
+  };
+
+  // Fonction pour charger toutes les données des monstres dès le début
+  const loadAllMonsterData = async (): Promise<void> => {
+    try {
+      console.log("Chargement des vraies données de tous les monstres...");
+      const monsterParticipants = encounter.participants.filter(p => !p.isPC);
+      
+      if (monsterParticipants.length === 0) {
+        console.log("Aucun monstre à charger");
+        return;
+      }
+      
+      // Charger les données de tous les monstres en parallèle
+      const loadPromises = monsterParticipants.map(participant => 
+        loadRealMonsterData(participant.id)
+      );
+      
+      await Promise.all(loadPromises);
+      
+      console.log(`Données chargées pour ${monsterParticipants.length} monstres`);
+      
+      toast({
+        title: "Données des monstres chargées",
+        description: `${monsterParticipants.length} monstres ont été mis à jour avec leurs vraies valeurs.`
+      });
+    } catch (error) {
+      console.error("Erreur lors du chargement des données des monstres:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les données des monstres",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Fonction pour initialiser les données de combat (actions réinitialisées)
+  const initializeCombatData = async (): Promise<void> => {
+    try {
+      // Initialiser l'ordre d'initiative s'il n'est pas déjà fait
+      if (encounter.participants.every(p => p.initiative === 0)) {
+        await rollInitiativeForAll();
+      }
+      
+      // Charger les vraies données des monstres
+      await loadAllMonsterData();
+      
+      // Initialiser les actions pour tous les participants
+      setEncounter(prev => ({
+        ...prev,
+        participants: prev.participants.map(p => ({
+          ...p,
+          hasUsedAction: false,
+          hasUsedBonusAction: false,
+          hasUsedReaction: false,
+          remainingMovement: calculateMovementSpeed(p)
+        }))
+      }));
+      
+      toast({
+        title: "Combat initialisé",
+        description: "Le combat a été initialisé avec les vraies données des monstres."
+      });
+    } catch (error) {
+      console.error("Erreur lors de l'initialisation du combat:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible d'initialiser le combat",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Composant ActionTracker supprimé - plus d'affichage des actions sous les participants
 
   // Réinitialiser la rencontre
   const resetEncounter = () => {
@@ -484,13 +1111,20 @@ const EncounterTracker: React.FC = () => {
       ...prev,
       currentTurn: 0,
       round: 1,
-      isActive: false,
       participants: prev.participants.map(p => ({
         ...p,
         currentHp: p.maxHp,
-        conditions: []
+        conditions: [],
+        hasUsedAction: false,
+        hasUsedBonusAction: false,
+        hasUsedReaction: false,
+        remainingMovement: calculateMovementSpeed(p)
       }))
     }));
+    
+    // Fermer l'iframe lors du reset
+    setShowCreatureFrame(false);
+    setSelectedCreatureUrl(null);
   };
 
   // Retirer un participant
@@ -538,30 +1172,58 @@ const EncounterTracker: React.FC = () => {
     if (!encounter || !encounter.participants) return;
 
     const updatedParticipants = encounter.participants.map(participant => {
+      // Calculer le modificateur d'initiative
+      const dexMod = participant.dex ? Math.floor((participant.dex - 10) / 2) : 0;
+      const initiativeModifier = participant.isPC 
+        ? estimateDexModifier(participant) 
+        : dexMod;
+      
+      // Lancer le dé d'initiative
       const diceRoll = Math.floor(Math.random() * 20) + 1;
-      const modifier = participant.isPC ? estimateDexModifier(participant) : 0;
-      const newInitiative = diceRoll + modifier;
+      const newInitiative = diceRoll + initiativeModifier;
       
       return {
         ...participant,
-        initiative: newInitiative
+        initiative: newInitiative,
+        initiativeModifier
       };
+    });
+    
+    // Trier les participants par initiative (du plus haut au plus bas)
+    const sortedParticipants = [...updatedParticipants].sort((a, b) => {
+      // Priorité à l'initiative la plus élevée
+      if (b.initiative !== a.initiative) return b.initiative - a.initiative;
+      
+      // En cas d'égalité, priorité au modificateur de DEX le plus élevé
+      const aDexMod = a.dex ? Math.floor((a.dex - 10) / 2) : 0;
+      const bDexMod = b.dex ? Math.floor((b.dex - 10) / 2) : 0;
+      
+      return bDexMod - aDexMod;
     });
     
     setEncounter(prev => ({
       ...prev,
-      participants: updatedParticipants
+      participants: sortedParticipants,
+      currentTurn: 0 // Réinitialiser le tour au début
     }));
     
     toast({
       title: "Initiative lancée pour tous",
-      description: `${updatedParticipants.length} participants ont lancé l'initiative`
+      description: `${updatedParticipants.length} participants ont lancé l'initiative et ont été triés`
     });
   };
-  
+
   // Fonction pour estimer le modificateur de Dextérité basé sur la classe et le niveau
   const estimateDexModifier = (participant: EncounterParticipant): number => {
-    if (!participant.isPC) return 0;
+    if (!participant.isPC) {
+      // Pour les monstres, utiliser le modificateur de DEX réel
+      return participant.dex ? Math.floor((participant.dex - 10) / 2) : 0;
+    }
+    
+    // Pour les PJs, utiliser le modificateur explicite s'il existe
+    if (participant.initiativeModifier !== undefined) {
+      return participant.initiativeModifier;
+    }
     
     // Estimer le modificateur de DEX basé sur la classe
     const classModifiers: Record<string, number> = {
@@ -594,10 +1256,10 @@ const EncounterTracker: React.FC = () => {
     }
     
     // 2. Essayer avec le nom corrigé des accents
-          const nameWithCorrectAccents = getAideDDMonsterName(name);
-      if (urlMap[nameWithCorrectAccents]) {
-        return urlMap[nameWithCorrectAccents]; // Retourne directement le slug sans encodage
-      }
+    const nameWithCorrectAccents = getAideDDMonsterName(name);
+    if (urlMap[nameWithCorrectAccents]) {
+      return urlMap[nameWithCorrectAccents]; // Retourne directement le slug sans encodage
+    }
     
     // 3. Cas spéciaux connus pour la correction manuelle
     const specialCases: Record<string, string> = {
@@ -685,177 +1347,7 @@ const EncounterTracker: React.FC = () => {
       return null;
     }
   };
-  
-  // Fonction pour extraire les données d'un monstre à partir du HTML
-  const extractMonsterDataFromHTML = (html: string, url: string): any => {
-    try {
-      // Extraire le nom
-      const nameMatch = html.match(/<h1>([^<]+)<\/h1>/);
-      const name = nameMatch ? nameMatch[1].trim() : "Monstre inconnu";
-      
-      // Extraire le nom original (VO)
-      const originalNameMatch = html.match(/\[ <a href='monstres\.php\?vo=([^']+)'>([^<]+)<\/a> \]/);
-      const originalName = originalNameMatch ? originalNameMatch[2].trim() : "";
-      
-      // Extraire le type et l'alignement
-      const typeMatch = html.match(/<div class='type'>([^<]+)<\/div>/);
-      let type = "Inconnu";
-      let size = "M";
-      let alignment = "non aligné";
-      
-      if (typeMatch && typeMatch[1]) {
-        const typeParts = typeMatch[1].split(',');
-        if (typeParts.length >= 2) {
-          // Premier élément contient taille et type
-          const sizeAndType = typeParts[0].trim().split(' de taille ');
-          if (sizeAndType.length === 2) {
-            type = sizeAndType[0].trim();
-            size = sizeAndType[1].trim();
-          }
-          
-          // Deuxième élément est l'alignement
-          alignment = typeParts[1].trim();
-        }
-      }
-      
-      // Extraire les caractéristiques de base (AC, HP, vitesse)
-      const acMatch = html.match(/<strong>Classe d'armure<\/strong>([^<]+)<br>/);
-      const ac = acMatch ? acMatch[1].trim() : "10";
-      
-      const hpMatch = html.match(/<strong>Points de vie<\/strong>([^<]+)<br>/);
-      const hp = hpMatch ? hpMatch[1].trim() : "10 (1d8+2)";
-      
-      const speedMatch = html.match(/<strong>Vitesse<\/strong>([^<]+)<div>/);
-      const speed = speedMatch ? speedMatch[1].trim() : "9 m";
-      
-      // Extraire les caractéristiques d'abilités
-      const strMatch = html.match(/<strong>FOR<\/strong><br>(\d+)/);
-      const dexMatch = html.match(/<strong>DEX<\/strong><br>(\d+)/);
-      const conMatch = html.match(/<strong>CON<\/strong><br>(\d+)/);
-      const intMatch = html.match(/<strong>INT<\/strong><br>(\d+)/);
-      const wisMatch = html.match(/<strong>SAG<\/strong><br>(\d+)/);
-      const chaMatch = html.match(/<strong>CHA<\/strong><br>(\d+)/);
-      
-      const abilities = {
-        str: strMatch ? parseInt(strMatch[1], 10) : 10,
-        dex: dexMatch ? parseInt(dexMatch[1], 10) : 10,
-        con: conMatch ? parseInt(conMatch[1], 10) : 10,
-        int: intMatch ? parseInt(intMatch[1], 10) : 10,
-        wis: wisMatch ? parseInt(wisMatch[1], 10) : 10,
-        cha: chaMatch ? parseInt(chaMatch[1], 10) : 10
-      };
-      
-      // Extraire les autres caractéristiques
-      const savingThrowsMatch = html.match(/<strong>Jets de sauvegarde<\/strong>([^<]+)<br>/);
-      const savingThrows = savingThrowsMatch ? savingThrowsMatch[1].trim() : "";
-      
-      const skillsMatch = html.match(/<strong>Compétences<\/strong>([^<]+)<br>/);
-      const skills = skillsMatch ? skillsMatch[1].trim() : "";
-      
-      const resistancesMatch = html.match(/<strong>Résistances aux dégâts<\/strong>([^<]+)<br>/);
-      const damageResistances = resistancesMatch ? resistancesMatch[1].trim() : "";
-      
-      const immunitiesMatch = html.match(/<strong>Immunités aux dégâts<\/strong>([^<]+)<br>/);
-      const damageImmunities = immunitiesMatch ? immunitiesMatch[1].trim() : "";
-      
-      const conditionsMatch = html.match(/<strong>Immunités aux états<\/strong>([^<]+)<br>/);
-      const conditionImmunities = conditionsMatch ? conditionsMatch[1].trim() : "";
-      
-      const sensesMatch = html.match(/<strong>Sens<\/strong>([^<]+)<br>/);
-      const senses = sensesMatch ? sensesMatch[1].trim() : "";
-      
-      const languagesMatch = html.match(/<strong>Langues<\/strong>([^<]+)<br>/);
-      const languages = languagesMatch ? languagesMatch[1].trim() : "";
-      
-      const crMatch = html.match(/<strong>Puissance<\/strong>([^(]+)\(([^)]+)/);
-      let cr = "0";
-      let xp = 0;
-      
-      if (crMatch && crMatch[1] && crMatch[2]) {
-        cr = crMatch[1].trim();
-        xp = parseInt(crMatch[2].replace(/[^\d]/g, ''), 10);
-      }
-      
-      // Extraire les traits (capacités)
-      const traits: any[] = [];
-      const traitsSection = html.match(/<\/div><div><svg>.*?<\/svg><\/div>(.*?)<div class='rub'>Actions<\/div>/s);
-      
-      if (traitsSection && traitsSection[1]) {
-        const traitMatches = [...traitsSection[1].matchAll(/<strong><em>([^<]+)<\/em><\/strong>\. (.*?)(?=<\/p>)/g)];
-        traitMatches.forEach(match => {
-          traits.push({
-            name: match[1],
-            description: match[2]
-          });
-        });
-      }
-      
-      // Extraire les actions
-      const actions: any[] = [];
-      const actionsSection = html.match(/<div class='rub'>Actions<\/div>(.*?)(?=<\/div><\/div>|<div class='rub'>)/s);
-      
-      if (actionsSection && actionsSection[1]) {
-        const actionMatches = [...actionsSection[1].matchAll(/<strong><em>([^<]+)<\/em><\/strong>\. (.*?)(?=<\/p>)/g)];
-        actionMatches.forEach(match => {
-          actions.push({
-            name: match[1],
-            description: match[2]
-          });
-        });
-      }
-      
-      // Extraire les actions légendaires
-      const legendaryActions: any[] = [];
-      const legendarySection = html.match(/<div class='rub'>Actions légendaires<\/div>(.*?)(?=<\/div><\/div>)/s);
-      
-      if (legendarySection && legendarySection[1]) {
-        const legendaryMatches = [...legendarySection[1].matchAll(/<strong><em>([^<]+)<\/em><\/strong>\. (.*?)(?=<\/p>)/g)];
-        legendaryMatches.forEach(match => {
-          legendaryActions.push({
-            name: match[1],
-            description: match[2]
-          });
-        });
-      }
-      
-                return {
-        name,
-        originalName,
-        originalUrl: url,
-        type,
-        size,
-        alignment,
-        ac,
-        hp,
-        speed,
-        abilities,
-        str: abilities.str,
-        dex: abilities.dex,
-        con: abilities.con,
-        int: abilities.int,
-        wis: abilities.wis,
-        cha: abilities.cha,
-        savingThrows,
-        skills,
-        damageResistances,
-        damageImmunities,
-        conditionImmunities,
-        senses,
-        languages,
-        cr,
-        xp,
-        traits,
-        actions,
-        legendaryActions,
-        isLegendary: legendaryActions.length > 0,
-        fullHtml: html
-      };
-    } catch (error) {
-      console.error("Erreur lors de l'extraction des données du HTML:", error);
-      return { name: "Erreur d'extraction", fullHtml: html };
-    }
-  };
-  
+
   // Création d'un monstre générique quand aucune information n'est trouvée
   const createGenericMonster = (name: string): any => {
     return {
@@ -893,10 +1385,10 @@ const EncounterTracker: React.FC = () => {
       isLegendary: false
     };
   };
-  
+
   // Remplacer la fonction loadMonsterOnDemand avec une version améliorée
   const loadMonsterOnDemand = async (participantId: string): Promise<void> => {
-      const participant = encounter.participants.find(p => p.id === participantId);
+    const participant = encounter.participants.find(p => p.id === participantId);
     if (!participant || participant.isPC) return;
       
     try {
@@ -913,7 +1405,7 @@ const EncounterTracker: React.FC = () => {
       // Force un nouveau chargement
       const monsterDetails = await findMonsterDetails(monsterName, true);
           
-          if (monsterDetails) {
+      if (monsterDetails) {
         console.log(`Détails trouvés pour ${monsterName}:`, monsterDetails);
         
         // Mettre à jour l'état avec les détails du monstre
@@ -923,9 +1415,9 @@ const EncounterTracker: React.FC = () => {
         setEncounter(prev => ({
           ...prev,
           participants: prev.participants.map(p => {
-              if (p.id === participantId) {
-                return {
-                  ...p,
+            if (p.id === participantId) {
+              return {
+                ...p,
                 ac: monsterDetails.ac || p.ac,
                 maxHp: monsterDetails.hp || p.maxHp,
                 // Ne pas modifier les points de vie actuels pour ne pas perturber le combat
@@ -939,19 +1431,19 @@ const EncounterTracker: React.FC = () => {
                 // Ajouter les actions et traits s'ils existent
                 actions: monsterDetails.actions || [],
                 traits: monsterDetails.traits || []
-                };
-              }
-              return p;
+              };
+            }
+            return p;
           })
         }));
         
-            toast({
+        toast({
           title: "Succès",
           description: `Informations de ${monsterName} mises à jour`,
-              variant: "default"
-            });
-          } else {
-            console.warn(`Aucun détail trouvé pour ${monsterName}`);
+          variant: "default"
+        });
+      } else {
+        console.warn(`Aucun détail trouvé pour ${monsterName}`);
         
         // Créer un monstre générique si aucun détail n'est trouvé
         const genericMonster = createGenericMonster(monsterName);
@@ -962,630 +1454,408 @@ const EncounterTracker: React.FC = () => {
           description: `Aucune information trouvée pour ${monsterName}`,
           variant: "default"
         });
-          }
-        } catch (error) {
+      }
+    } catch (error) {
       console.error(`Erreur lors du chargement des détails pour ${participant.name}:`, error);
       toast({
         title: "Erreur",
         description: "Impossible de charger les détails du monstre",
         variant: "destructive"
       });
-        } finally {
+    } finally {
       // Toujours désactiver l'indicateur de chargement à la fin
-          setLoadingDetails(false);
+      setLoadingDetails(false);
     }
   };
 
-  // Fonction pour initialiser les données de combat
-  const initializeCombatData = async (): Promise<void> => {
-    try {
-      // Activer l'indicateur de chargement
-      setLoadingDetails(true);
-      
-      // Copier les participants existants
-      const combatParticipants = [...encounter.participants];
-      
-      // Pour chaque participant non-PC
-      for (let i = 0; i < combatParticipants.length; i++) {
-        const participant = combatParticipants[i];
-        
-        if (!participant.isPC) {
-          console.log(`Initialisation des données pour: ${participant.name}`);
-          
-            // Rechercher les détails du monstre
-          const monsterName = participant.name;
-          const monsterDetails = await findMonsterDetails(monsterName);
-            
-            if (monsterDetails) {
-            console.log(`Détails trouvés pour ${monsterName}:`, monsterDetails);
-            
-            // Mettre à jour le cache
-            setMonsterDetails(prev => ({
-              ...prev,
-              [participant.id]: monsterDetails
-            }));
-            
-            // Mettre à jour les propriétés du participant
-            combatParticipants[i] = {
-                ...participant,
-              ac: monsterDetails.ac || participant.ac,
-              currentHp: monsterDetails.hp || participant.currentHp,
-              maxHp: monsterDetails.hp || participant.maxHp,
-              // Autres propriétés
-              str: monsterDetails.str,
-              dex: monsterDetails.dex,
-              con: monsterDetails.con,
-              int: monsterDetails.int,
-              wis: monsterDetails.wis,
-              cha: monsterDetails.cha,
-              actions: monsterDetails.actions || [],
-              traits: monsterDetails.traits || []
-            };
-          }
-        }
-      }
-      
-      // Mettre à jour l'état de l'encounter avec les participants mis à jour
+  // Fonction pour ouvrir l'iframe de la créature depuis aidedd.org
+  const openCreatureFrame = (participantId: string) => {
+    const participant = encounter.participants.find(p => p.id === participantId);
+    if (!participant || participant.isPC) return;
+
+    const monsterSlug = getAideDDMonsterSlug(participant.name);
+    const creatureUrl = `https://www.aidedd.org/dnd/monstres.php?vf=${monsterSlug}`;
+    
+    setSelectedCreatureUrl(creatureUrl);
+    setShowCreatureFrame(true);
+    
+    // Charger aussi les détails pour la carte locale
+    loadMonsterOnDemand(participantId);
+  };
+
+  // Modifier la fonction nextTurn pour réinitialiser les actions
+  const nextTurn = () => {
+    if (sortedParticipants.length === 0) return;
+    
+    // Trouver le prochain participant actif (ignorer les morts)
+    let nextParticipantIndex = encounter.currentTurn;
+    let newRound = encounter.round;
+    
+    // Initialiser le combat si on est au premier tour (sans recharger les données des monstres)
+    if (encounter.round === 1 && encounter.currentTurn === 0) {
+      // Juste initialiser les actions, les données des monstres sont déjà chargées
       setEncounter(prev => ({
         ...prev,
-        participants: combatParticipants
+        participants: prev.participants.map(p => ({
+          ...p,
+          hasUsedAction: false,
+          hasUsedBonusAction: false,
+          hasUsedReaction: false,
+          remainingMovement: calculateMovementSpeed(p)
+        }))
       }));
+    }
+    
+    // Parcourir les participants jusqu'à trouver un participant vivant
+    let participantsChecked = 0;
+    do {
+      nextParticipantIndex = (nextParticipantIndex + 1) % sortedParticipants.length;
+      participantsChecked++;
       
-      // Désactiver l'indicateur de chargement
-      setLoadingDetails(false);
-    } catch (error) {
-      console.error("Erreur lors de l'initialisation des données de combat:", error);
-      setLoadingDetails(false);
+      // Si on a fait le tour complet sans trouver de participant vivant, incrémenter le tour
+      if (nextParticipantIndex === 0) {
+        newRound++;
+      }
+      
+      // Éviter une boucle infinie si tous les participants sont morts
+      if (participantsChecked > sortedParticipants.length) {
+        toast({
+          title: "Fin de la rencontre",
+          description: "Tous les participants sont hors combat",
+          variant: "destructive"
+        });
+        return;
+      }
+    } while (sortedParticipants[nextParticipantIndex].currentHp <= 0);
+    
+    // Réinitialiser les actions du nouveau participant actif
+    const nextParticipantId = sortedParticipants[nextParticipantIndex].id;
+    resetActionsForParticipant(nextParticipantId);
+    
+    // Mettre à jour l'état
+    setEncounter(prev => ({
+      ...prev,
+      currentTurn: nextParticipantIndex,
+      round: newRound
+    }));
+    
+    // Charger automatiquement l'iframe et les détails du monstre actif s'il n'est pas un PJ
+    const activeParticipant = sortedParticipants[nextParticipantIndex];
+    if (!activeParticipant.isPC) {
+      openCreatureFrame(activeParticipant.id);
+    } else {
+      // Si c'est un PJ, fermer l'iframe
+      setShowCreatureFrame(false);
+      setSelectedCreatureUrl(null);
     }
   };
 
-  // Modifier le SimpleMonsterCard pour utiliser le nouveau MonsterCard
-  const SimpleMonsterCard = ({ monster }: { monster: any }) => {
-    // Si nous avons suffisamment d'informations, utiliser MonsterCard
-    if (monster && monster.name && monster.name !== "Monstre inconnu") {
-      return <MonsterCard monster={monster} />;
-    }
+  // Fonction pour aller au tour précédent
+  const previousTurn = () => {
+    if (sortedParticipants.length === 0) return;
     
-    // Sinon, utiliser la version simplifiée
+    // Trouver le participant précédent actif (ignorer les morts)
+    let prevParticipantIndex = encounter.currentTurn;
+    let newRound = encounter.round;
+    
+    // Parcourir les participants jusqu'à trouver un participant vivant
+    let participantsChecked = 0;
+    do {
+      prevParticipantIndex = prevParticipantIndex === 0 ? sortedParticipants.length - 1 : prevParticipantIndex - 1;
+      participantsChecked++;
+      
+      // Si on revient au dernier participant, décrémenter le tour (si on n'est pas déjà au tour 1)
+      if (prevParticipantIndex === sortedParticipants.length - 1 && newRound > 1) {
+        newRound--;
+      }
+      
+      // Éviter une boucle infinie si tous les participants sont morts
+      if (participantsChecked > sortedParticipants.length) {
+        return;
+      }
+    } while (sortedParticipants[prevParticipantIndex].currentHp <= 0);
+    
+    // Réinitialiser les actions du participant précédent
+    const prevParticipantId = sortedParticipants[prevParticipantIndex].id;
+    resetActionsForParticipant(prevParticipantId);
+    
+    // Mettre à jour l'état
+    setEncounter(prev => ({
+      ...prev,
+      currentTurn: prevParticipantIndex,
+      round: newRound
+    }));
+    
+    // Charger automatiquement l'iframe et les détails du monstre actif s'il n'est pas un PJ
+    const activeParticipant = sortedParticipants[prevParticipantIndex];
+    if (!activeParticipant.isPC) {
+      openCreatureFrame(activeParticipant.id);
+    } else {
+      // Si c'est un PJ, fermer l'iframe
+      setShowCreatureFrame(false);
+      setSelectedCreatureUrl(null);
+    }
+  };
+
+  // Améliorer l'affichage des détails du monstre
+  const SimpleMonsterCard = ({ monster }: { monster: any }) => {
+    // Fonction utilitaire pour obtenir le modificateur à partir d'une valeur de caractéristique
     const getAbilityModifier = (value: number): string => {
+      if (!value) return "0";
       const modifier = Math.floor((value - 10) / 2);
       return modifier >= 0 ? `+${modifier}` : `${modifier}`;
     };
 
-    // Version simplifiée comme fallback
     return (
-      <div className="bg-white border border-gray-300 rounded-md p-4">
-        <div className="text-xl font-bold border-b pb-2 mb-2">{monster.name}</div>
-        <div className="text-sm italic mb-3">
-          {monster.size || 'M'} {monster.type || 'créature'}, {monster.alignment || 'non aligné'}
-        </div>
-        
-        <div className="mb-3">
-            <div className="font-semibold">Classe d'armure</div>
-          <div>{monster.ac || 10} (armure naturelle)</div>
+      <div className="monster-card">
+        <div className="bg-amber-50 p-4 rounded-lg mb-4">
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className="text-xl font-bold">{monster.name}</h3>
+              <p className="text-sm text-gray-600">
+                {monster.size} {monster.type}, {monster.alignment}
+              </p>
+            </div>
+            <Badge 
+              className={`
+                ${monster.cr <= 1 ? 'bg-green-100 text-green-800' : 
+                monster.cr <= 5 ? 'bg-yellow-100 text-yellow-800' : 
+                monster.cr <= 10 ? 'bg-orange-100 text-orange-800' : 
+                monster.cr <= 15 ? 'bg-red-100 text-red-800' : 
+                'bg-purple-100 text-purple-800'}
+              `}
+            >
+              FP {monster.cr}
+            </Badge>
           </div>
-        
-        <div className="mb-3">
-            <div className="font-semibold">Points de vie</div>
-          <div>{monster.hp || '10 (1d8+2)'}</div>
-          </div>
-        
-        <div>
-          <div className="font-semibold">Vitesse</div>
-          <div className="mb-3">{typeof monster.speed === 'string' ? monster.speed : 
-               Array.isArray(monster.speed) ? monster.speed.join(', ') : 
-               '9 m'}</div>
         </div>
-        
-        {(monster.abilities || monster.str) && (
-          <div className="grid grid-cols-6 gap-2 mb-3 border p-2 rounded">
-            <div className="text-center">
-              <div className="font-semibold">FOR</div>
-              <div>{monster.abilities?.str || monster.str || 10}</div>
-              <div className="text-xs">({getAbilityModifier(monster.abilities?.str || monster.str || 10)})</div>
-            </div>
-            <div className="text-center">
-              <div className="font-semibold">DEX</div>
-              <div>{monster.abilities?.dex || monster.dex || 10}</div>
-              <div className="text-xs">({getAbilityModifier(monster.abilities?.dex || monster.dex || 10)})</div>
-            </div>
-            <div className="text-center">
-              <div className="font-semibold">CON</div>
-              <div>{monster.abilities?.con || monster.con || 10}</div>
-              <div className="text-xs">({getAbilityModifier(monster.abilities?.con || monster.con || 10)})</div>
-            </div>
-            <div className="text-center">
-              <div className="font-semibold">INT</div>
-              <div>{monster.abilities?.int || monster.int || 10}</div>
-              <div className="text-xs">({getAbilityModifier(monster.abilities?.int || monster.int || 10)})</div>
-            </div>
-            <div className="text-center">
-              <div className="font-semibold">SAG</div>
-              <div>{monster.abilities?.wis || monster.wis || 10}</div>
-              <div className="text-xs">({getAbilityModifier(monster.abilities?.wis || monster.wis || 10)})</div>
-            </div>
-            <div className="text-center">
-              <div className="font-semibold">CHA</div>
-              <div>{monster.abilities?.cha || monster.cha || 10}</div>
-              <div className="text-xs">({getAbilityModifier(monster.abilities?.cha || monster.cha || 10)})</div>
+
+        {/* Statistiques de base */}
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          <div className="bg-gray-100 p-2 rounded text-center">
+            <div className="text-sm text-gray-600">Classe d'armure</div>
+            <div className="font-bold">{monster.ac}</div>
+          </div>
+          <div className="bg-gray-100 p-2 rounded text-center">
+            <div className="text-sm text-gray-600">Points de vie</div>
+            <div className="font-bold">{monster.hp}</div>
+          </div>
+          <div className="bg-gray-100 p-2 rounded text-center">
+            <div className="text-sm text-gray-600">Vitesse</div>
+            <div className="font-bold">{Array.isArray(monster.speed) ? monster.speed[0] : monster.speed}</div>
+          </div>
+        </div>
+
+        {/* Caractéristiques */}
+        <div className="grid grid-cols-6 gap-1 mb-4">
+          <div className="bg-gray-100 p-2 rounded text-center">
+            <div className="text-xs text-gray-600">FOR</div>
+            <div className="font-bold">{monster.str}</div>
+            <div className="text-xs">{getAbilityModifier(monster.str)}</div>
+          </div>
+          <div className="bg-gray-100 p-2 rounded text-center">
+            <div className="text-xs text-gray-600">DEX</div>
+            <div className="font-bold">{monster.dex}</div>
+            <div className="text-xs">{getAbilityModifier(monster.dex)}</div>
+          </div>
+          <div className="bg-gray-100 p-2 rounded text-center">
+            <div className="text-xs text-gray-600">CON</div>
+            <div className="font-bold">{monster.con}</div>
+            <div className="text-xs">{getAbilityModifier(monster.con)}</div>
+          </div>
+          <div className="bg-gray-100 p-2 rounded text-center">
+            <div className="text-xs text-gray-600">INT</div>
+            <div className="font-bold">{monster.int}</div>
+            <div className="text-xs">{getAbilityModifier(monster.int)}</div>
+          </div>
+          <div className="bg-gray-100 p-2 rounded text-center">
+            <div className="text-xs text-gray-600">SAG</div>
+            <div className="font-bold">{monster.wis}</div>
+            <div className="text-xs">{getAbilityModifier(monster.wis)}</div>
+          </div>
+          <div className="bg-gray-100 p-2 rounded text-center">
+            <div className="text-xs text-gray-600">CHA</div>
+            <div className="font-bold">{monster.cha}</div>
+            <div className="text-xs">{getAbilityModifier(monster.cha)}</div>
+          </div>
+        </div>
+
+        {/* Compétences et capacités */}
+        {monster.traits && monster.traits.length > 0 && (
+          <div className="mb-4">
+            <h4 className="font-bold text-sm uppercase text-gray-600 border-b border-gray-300 pb-1 mb-2">Traits</h4>
+            <div className="space-y-2">
+              {monster.traits.map((trait: any, index: number) => (
+                <div key={index} className="text-sm">
+                  <span className="font-bold">{trait.name}.</span> {trait.description}
+                </div>
+              ))}
             </div>
           </div>
         )}
-        
-        <div className="text-center mt-4">
-          <a 
-            href={`https://www.aidedd.org/dnd/monstres.php?vf=${getAideDDMonsterSlug(monster.name)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline"
-          >
-            Voir la fiche complète sur AideDD
-          </a>
+
+        {/* Actions */}
+        {monster.actions && monster.actions.length > 0 && (
+          <div className="mb-4">
+            <h4 className="font-bold text-sm uppercase text-gray-600 border-b border-gray-300 pb-1 mb-2">Actions</h4>
+            <div className="space-y-2">
+              {monster.actions.map((action: any, index: number) => (
+                <div key={index} className="text-sm">
+                  <span className="font-bold">{action.name}.</span> {action.description}
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Actions légendaires */}
+        {monster.legendaryActions && monster.legendaryActions.length > 0 && (
+          <div className="mb-4">
+            <h4 className="font-bold text-sm uppercase text-gray-600 border-b border-gray-300 pb-1 mb-2">Actions légendaires</h4>
+            <div className="space-y-2">
+              {monster.legendaryActions.map((action: any, index: number) => (
+                <div key={index} className="text-sm">
+                  <span className="font-bold">{action.name}.</span> {action.description}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   };
 
-  // useEffect pour charger automatiquement les détails du monstre actif quand il change
-  useEffect(() => {
-    const activeParticipant = encounter.participants[encounter.currentTurn];
-    if (activeParticipant && !activeParticipant.isPC) {
-      // Charger automatiquement les détails du monstre actif
-      loadMonsterOnDemand(activeParticipant.id);
-    }
-  }, [encounter.currentTurn]);
-
-  // useEffect pour initialiser automatiquement les données de combat au démarrage
-  useEffect(() => {
-    // Vérifier qu'il y a des participants et que la rencontre est active
-    if (encounter.participants.length > 0 && encounter.isActive) {
-      console.log("Initialisation automatique des données de combat au démarrage...");
-      // Délai court pour s'assurer que toutes les données sont chargées
-      const timer = setTimeout(() => {
-        initializeCombatData();
-      }, 1000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [encounter.isActive]); // Réagir quand la rencontre devient active
-  
-  // Ajouter cette fonction pour sauvegarder l'état actuel de la rencontre
-  const saveCurrentEncounterState = async () => {
-    if (!isAuthenticated) {
-      toast({
-        title: "Non connecté",
-        description: "Veuillez vous connecter pour sauvegarder la rencontre",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    try {
-      setIsSaving(true);
-      
-      // Récupérer les données du localStorage pour connaître l'ID de la rencontre
-      const storageKey = window.location.pathname.split('/').pop();
-      const savedEncounterData = localStorage.getItem(`encounter_${storageKey}`);
-      
-      if (!savedEncounterData) {
-        toast({
-          title: "Erreur",
-          description: "Impossible de récupérer les données de la rencontre",
-          variant: "destructive"
-        });
-        return;
-      }
-      
-      const savedEncounter = JSON.parse(savedEncounterData);
-      const encounterId = savedEncounter.id;
-      
-      if (!encounterId) {
-        toast({
-          title: "Erreur",
-          description: "ID de rencontre manquant",
-          variant: "destructive"
-        });
-        return;
-      }
-      
-      // Préparer les données à sauvegarder
-      const encounterDataToSave = {
-        name: encounter.name,
-        participants: encounter.participants,
-        isActive: encounter.isActive,
-        currentTurn: encounter.currentTurn as number, // Forcer le type à number
-        round: encounter.round as number, // Forcer le type à number
-        status: (encounter.isActive ? 'active' : 'draft') as 'active' | 'draft' | 'completed', // Spécifier le type correct
-        // Préserver les autres données importantes
-        partyId: savedEncounter.partyId,
-        party: savedEncounter.party,
-        monsters: savedEncounter.monsters,
-        environment: savedEncounter.environment,
-        difficulty: savedEncounter.difficulty,
-        totalXP: savedEncounter.totalXP,
-        adjustedXP: savedEncounter.adjustedXP
-      };
-      
-      // Sauvegarder dans Firestore
-      await updateFirestoreEncounter(encounterId, encounterDataToSave);
-      
-      // Mettre à jour le localStorage aussi pour synchroniser
-      localStorage.setItem(`encounter_${storageKey}`, JSON.stringify({
-        ...savedEncounter,
-        ...encounterDataToSave,
-        updatedAt: new Date().toISOString()
-      }));
-      
-      toast({
-        title: "Succès",
-        description: "Rencontre sauvegardée avec succès",
-        variant: "default"
-      });
-    } catch (error) {
-      console.error("Erreur lors de la sauvegarde de la rencontre:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de sauvegarder la rencontre",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  // Composant pour afficher le monstre dans une iframe directement depuis AideDD
-  const MonsterIframe = ({ monster }: { monster: any }) => {
-    const [iframeLoaded, setIframeLoaded] = useState(false);
-    const [iframeError, setIframeError] = useState(false);
-    
-    // Obtenir l'URL de la page AideDD du monstre
-    const getMonsterUrl = (monsterName: string) => {
-      const slug = getAideDDMonsterSlug(monsterName);
-      return `https://www.aidedd.org/dnd/monstres.php?vf=${slug}`;
-    };
-
-    // Utiliser le nom original s'il existe, sinon le nom standard
-    const monsterName = monster.originalName || monster.name;
-    const monsterUrl = getMonsterUrl(monsterName);
-    
-    // Gérer les erreurs de chargement
-    const handleIframeError = () => {
-      console.error("Erreur de chargement de l'iframe pour", monsterName);
-      setIframeError(true);
-    };
-    
-    // Si erreur, afficher une interface de secours
-    if (iframeError) {
-      return (
-        <div className="bg-white border border-gray-300 rounded-md p-4">
-          <div className="text-xl font-bold border-b pb-2 mb-2 flex justify-between items-center">
-            <span>{monster.name}</span>
-            <a 
-              href={monsterUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:underline text-sm"
+  return (
+    <div className="container mx-auto px-1 py-1">
+      <div className="flex justify-between items-center mb-2">
+        <div>
+          <h1 className="text-2xl font-bold">
+            {encounter.name}
+            {encounter.participants.length > 0 && (
+              <Badge className="ml-2 bg-blue-600">
+                Tour {encounter.round}, Initiative {encounter.currentTurn + 1}/{sortedParticipants.length}
+              </Badge>
+            )}
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            {encounter.participants.filter(p => p.isPC).length} personnages, {encounter.participants.filter(p => !p.isPC).length} monstres
+          </p>
+        </div>
+        
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={rollInitiativeForAll}
+          >
+            <Dice4 className="h-4 w-4 mr-1" />
+            Lancer l'initiative
+          </Button>
+          
+          {encounter.participants.length > 0 && (
+            <>
+          <Button 
+                variant="outline"
+            size="sm"
+                onClick={previousTurn}
+                disabled={encounter.participants.length === 0}
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                Tour précédent
+          </Button>
+          
+            <Button 
+                variant="default"
+              size="sm"
+                onClick={nextTurn}
+                disabled={encounter.participants.length === 0}
             >
-              Ouvrir dans AideDD
-            </a>
-          </div>
-          <div className="text-center p-4">
-            <p className="text-sm mb-4">Impossible de charger la fiche directement dans l'application.</p>
+                <ChevronRight className="h-4 w-4 mr-1" />
+              Tour suivant
+            </Button>
+            </>
+          )}
+          
+          {isAuthenticated && params.encounterId && (
             <Button 
               variant="outline" 
               size="sm"
-              onClick={() => window.open(monsterUrl, '_blank')}
+              onClick={saveCurrentEncounterState}
+              disabled={isSaving}
             >
-              Voir la fiche sur AideDD
+              <Save className="h-4 w-4 mr-1" />
+              {isSaving ? "Sauvegarde..." : "Sauvegarder"}
             </Button>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div className="bg-white border border-gray-300 rounded-md overflow-hidden">
-        <div className="p-2 bg-gray-100 border-b flex justify-between items-center">
-          <h3 className="font-bold text-lg">{monster.name}</h3>
-          <a 
-            href={monsterUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline text-sm"
+          )}
+          
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={resetEncounter}
           >
-            Ouvrir dans AideDD
-          </a>
+            <RotateCcw className="h-4 w-4 mr-1" />
+            Réinitialiser
+          </Button>
         </div>
-        
-        {/* Afficher un indicateur de chargement tant que l'iframe n'est pas chargée */}
-        {!iframeLoaded && (
-          <div className="w-full h-20 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-            <span className="ml-2">Chargement de la fiche...</span>
+      </div>
+      
+      {/* Résumé du tour actuel */}
+      {encounter.participants.length > 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-blue-800">
+                Tour de {sortedParticipants[encounter.currentTurn]?.name || "?"}
+              </h2>
+              <p className="text-sm text-blue-700">
+                {sortedParticipants[encounter.currentTurn]?.isPC ? "Personnage joueur" : "Monstre"} • 
+                Initiative: {sortedParticipants[encounter.currentTurn]?.initiative || "?"} • 
+                CA: {sortedParticipants[encounter.currentTurn]?.ac || "?"} • 
+                PV: {sortedParticipants[encounter.currentTurn]?.currentHp || 0}/{extractNumericHP(sortedParticipants[encounter.currentTurn]?.maxHp) || 0}
+              </p>
+            </div>
+            
+            <div className="flex flex-col items-end">
+              <div className="text-sm font-semibold text-blue-800">Actions disponibles</div>
+              <div className="flex gap-2 mt-1">
+                <Badge variant={sortedParticipants[encounter.currentTurn]?.hasUsedAction ? "outline" : "default"}>
+                  Action
+                </Badge>
+                <Badge variant={sortedParticipants[encounter.currentTurn]?.hasUsedBonusAction ? "outline" : "secondary"}>
+                  Bonus
+                </Badge>
+                <Badge variant={sortedParticipants[encounter.currentTurn]?.hasUsedReaction ? "outline" : "destructive"}>
+                  Réaction
+                </Badge>
+                <Badge variant="outline" className="bg-blue-100">
+                  Mouvement: {sortedParticipants[encounter.currentTurn]?.remainingMovement || 0}
+                </Badge>
+              </div>
+            </div>
           </div>
-        )}
-        
-        {/* Iframe avec la page AideDD */}
-        <div className="w-full h-[600px] overflow-auto">
-          <iframe
-            src={monsterUrl}
-            title={`Fiche de ${monster.name}`}
-            className={`w-full h-full border-0 ${iframeLoaded ? 'block' : 'hidden'}`}
-            onLoad={() => setIframeLoaded(true)}
-            onError={handleIframeError}
-            sandbox="allow-same-origin allow-scripts allow-forms"
-          />
+          
+          {sortedParticipants[encounter.currentTurn]?.conditions.length > 0 && (
+            <div className="mt-2 pt-2 border-t border-blue-200">
+              <div className="text-sm font-semibold text-blue-800">Conditions:</div>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {sortedParticipants[encounter.currentTurn]?.conditions.map(condition => {
+                  const conditionInfo = getConditionInfo(condition);
+                  const IconComponent = conditionInfo.icon;
+                  return (
+                    <Badge key={condition} variant="outline" className={`flex items-center gap-1 ${conditionInfo.color}`}>
+                      <IconComponent className="h-3 w-3" />
+                    {condition}
+                  </Badge>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
-      </div>
-    );
-  };
-  
-  // Ajouter cette fonction pour charger une rencontre depuis Firebase ou localStorage
-  const loadSavedEncounter = async () => {
-    try {
-      setIsLoadingEncounter(true);
+      )}
       
-      // Obtenir l'ID de la rencontre depuis les paramètres de l'URL ou la query string
-      const encounterId = params.encounterId || new URLSearchParams(location.search).get('encounterId');
-      
-      if (!encounterId) {
-        console.log("Aucun ID de rencontre trouvé dans l'URL");
-        setIsLoadingEncounter(false);
-        return;
-      }
-      
-      console.log(`Chargement de la rencontre avec l'ID: ${encounterId}`);
-      
-      // D'abord, essayer de charger depuis le localStorage
-      const savedData = localStorage.getItem(`encounter_${encounterId}`);
-      
-      if (savedData) {
-        const encounterData = JSON.parse(savedData) as EncounterType;
-        console.log("Rencontre chargée depuis le localStorage:", encounterData);
-        
-        // Initialiser les participants à partir des données de la rencontre
-        initializeEncounterFromSaved(encounterData);
-      } else if (isAuthenticated && user) {
-        // Si pas en localStorage, essayer de charger depuis Firebase
-        const userRef = doc(db, 'users', user.uid);
-        const encounterRef = doc(userRef, 'encounters', encounterId);
-        
-        const encounterDoc = await getDoc(encounterRef);
-        if (encounterDoc.exists()) {
-          const data = encounterDoc.data();
-          const encounterData = {
-            ...data,
-            id: encounterId,
-            createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : new Date().toISOString(),
-            updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate().toISOString() : new Date().toISOString()
-          } as EncounterType;
-          
-          console.log("Rencontre chargée depuis Firebase:", encounterData);
-          
-          // Stocker dans le localStorage pour utilisation future
-          localStorage.setItem(`encounter_${encounterId}`, JSON.stringify(encounterData));
-          
-          // Initialiser les participants à partir des données de la rencontre
-          initializeEncounterFromSaved(encounterData);
-        } else {
-          toast({
-            title: "Rencontre non trouvée",
-            description: "Impossible de trouver la rencontre demandée",
-            variant: "destructive"
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Erreur lors du chargement de la rencontre:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger la rencontre",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoadingEncounter(false);
-    }
-  };
-  
-  // Fonction pour initialiser les participants de la rencontre à partir des données sauvegardées
-  const initializeEncounterFromSaved = (encounterData: EncounterType) => {
-    try {
-      // Mettre à jour le nom de la rencontre
-      setEncounter(currentEncounter => ({
-        ...currentEncounter,
-        name: encounterData.name || "Nouvelle rencontre"
-      }));
-      
-      // Si la rencontre a déjà des participants, les utiliser
-      if (encounterData.participants && encounterData.participants.length > 0) {
-        console.log("Utilisation des participants existants:", encounterData.participants);
-        setEncounter(currentEncounter => ({
-          ...currentEncounter,
-          participants: encounterData.participants,
-          isActive: encounterData.isActive || false,
-          currentTurn: encounterData.currentTurn as number || 0,
-          round: encounterData.round as number || 1
-        }));
-      } else {
-        // Sinon, initialiser à partir des monstres et du groupe
-        console.log("Initialisation des participants à partir des monstres et du groupe");
-        
-        // Initialiser les participants (joueurs)
-        const playerParticipants: EncounterParticipant[] = 
-          (encounterData.party?.players || []).map(player => ({
-            id: player.id || uuid(),
-            name: player.name,
-            initiative: 0, // Sera roulé plus tard
-            ac: player.ac || 10,
-            currentHp: player.currentHp || player.maxHp || 10,
-            maxHp: player.maxHp || 10,
-            isPC: true,
-            conditions: [],
-            notes: ''
-          }));
-        
-        // Initialiser les participants (monstres)
-        const monsterParticipants: EncounterParticipant[] = [];
-        
-        // Pour chaque type de monstre, créer le nombre approprié d'instances
-        (encounterData.monsters as EncounterMonster[]).forEach(({ monster, quantity }) => {
-          for (let i = 0; i < quantity; i++) {
-            monsterParticipants.push({
-              id: uuid(),
-              name: monster.name,
-              initiative: 0, // Sera roulé plus tard
-              ac: monster.ac || 10,
-              currentHp: monster.hp || 10,
-              maxHp: monster.hp || 10,
-              isPC: false,
-              conditions: [],
-              notes: '',
-              cr: monster.cr,
-              type: monster.type,
-              size: monster.size,
-              alignment: monster.alignment,
-              str: monster.str,
-              dex: monster.dex,
-              con: monster.con,
-              int: monster.int,
-              wis: monster.wis,
-              cha: monster.cha
-            });
-          }
-        });
-        
-        // Combiner tous les participants
-        const allParticipants = [...playerParticipants, ...monsterParticipants];
-        
-        // Mettre à jour l'état
-        setEncounter(currentEncounter => ({
-          ...currentEncounter,
-          participants: allParticipants
-        }));
-        
-        // Rouler l'initiative pour tous
-        setTimeout(() => {
-          rollInitiativeForAll();
-        }, 500);
-      }
-      
-      toast({
-        title: "Rencontre chargée",
-        description: `"${encounterData.name}" a été chargée avec succès`,
-        variant: "default"
-      });
-    } catch (error) {
-      console.error("Erreur lors de l'initialisation de la rencontre:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible d'initialiser la rencontre",
-        variant: "destructive"
-      });
-    }
-  };
-  
-  // Ajouter un useEffect pour charger la rencontre au démarrage
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const encodedEncounter = searchParams.get('encounter');
-    
-    if (encodedEncounter) {
-      // Si on a un encodedEncounter, c'est l'ancien format
-      try {
-        const decodedData = JSON.parse(decodeURIComponent(encodedEncounter));
-        console.log("Données de rencontre encodées:", decodedData);
-        
-        // Mettre à jour le nom de la rencontre
-        setEncounter(currentEncounter => ({
-          ...currentEncounter,
-          name: decodedData.name || "Nouvelle rencontre"
-        }));
-        
-        // Initialiser les participants (joueurs)
-        const playerParticipants: EncounterParticipant[] = 
-          (decodedData.party?.players || []).map(player => ({
-            id: player.id || uuid(),
-            name: player.name,
-            initiative: 0, // Sera roulé plus tard
-            ac: player.ac || 10,
-            currentHp: player.currentHp || player.maxHp || 10,
-            maxHp: player.maxHp || 10,
-            isPC: true,
-            conditions: [],
-            notes: ''
-          }));
-        
-        // Initialiser les participants (monstres)
-        const monsterParticipants: EncounterParticipant[] = [];
-        
-        // Pour chaque type de monstre, créer le nombre approprié d'instances
-        (decodedData.monsters || []).forEach(({ monster, quantity }) => {
-          for (let i = 0; i < quantity; i++) {
-            monsterParticipants.push({
-              id: uuid(),
-              name: monster.name,
-              initiative: 0, // Sera roulé plus tard
-              ac: monster.ac || 10,
-              currentHp: monster.hp || 10,
-              maxHp: monster.hp || 10,
-              isPC: false,
-              conditions: [],
-              notes: '',
-              cr: monster.cr,
-              type: monster.type,
-              size: monster.size,
-              alignment: monster.alignment
-            });
-          }
-        });
-        
-        // Combiner tous les participants
-        const allParticipants = [...playerParticipants, ...monsterParticipants];
-        
-        // Mettre à jour l'état
-        setEncounter(currentEncounter => ({
-          ...currentEncounter,
-          participants: allParticipants
-        }));
-        
-        // Rouler l'initiative pour tous
-        setTimeout(() => {
-          rollInitiativeForAll();
-        }, 500);
-      } catch (error) {
-        console.error("Erreur lors du décodage des données de rencontre:", error);
-      }
-    } else if (params.encounterId || searchParams.get('encounterId')) {
-      // Nouveau format : charger depuis Firebase/localStorage
-      loadSavedEncounter();
-    }
-  }, [location, params, isAuthenticated]);
-
-  // Si la rencontre est en cours de chargement, afficher un indicateur
-  if (isLoadingEncounter) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-lg">Chargement de la rencontre...</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">
-        {encounter.name}
-        {encounter.isActive && (
-          <Badge className="ml-2 bg-green-600">
-            Tour {encounter.round}, Initiative {encounter.currentTurn + 1}/{sortedParticipants.length}
-          </Badge>
-        )}
-      </h1>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-10 gap-2 mb-2">
+        <div className="lg:col-span-7">
           <Card>
         <CardHeader>
               <CardTitle className="flex justify-between items-center">
@@ -1598,25 +1868,43 @@ const EncounterTracker: React.FC = () => {
                     onClick={rollInitiativeForAll}
                   >
                     <Dice4 className="h-4 w-4 mr-1" />
-                    Initiative
+                Lancer
               </Button>
+              
               <Button 
-                variant={encounter.isActive ? "destructive" : "default"}
+                variant={quickInitiativeMode ? "default" : "outline"}
                 size="sm"
-                onClick={toggleEncounterState}
+                className="mr-2"
+                onClick={() => setQuickInitiativeMode(!quickInitiativeMode)}
               >
-                {encounter.isActive ? (
-                  <>
-                        <Pause className="h-4 w-4 mr-1" />
-                        Pause
-                  </>
-                ) : (
-                  <>
-                        <Play className="h-4 w-4 mr-1" />
-                    Démarrer
+                <Pencil className="h-4 w-4 mr-1" />
+                Éditer
+              </Button>
+              
+              {encounter.participants.length > 0 && (
+                <>
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    className="mr-2"
+                    onClick={previousTurn}
+                    disabled={encounter.participants.length === 0}
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    Précédent
+                  </Button>
+                  
+                  <Button 
+                    variant="default"
+                    size="sm"
+                    onClick={nextTurn}
+                    disabled={encounter.participants.length === 0}
+                  >
+                    <ChevronRight className="h-4 w-4 mr-1" />
+                    Suivant
+                  </Button>
                   </>
                 )}
-              </Button>
             </div>
               </CardTitle>
               <CardDescription>
@@ -1630,17 +1918,17 @@ const EncounterTracker: React.FC = () => {
                   Aucun participant dans cette rencontre. Ajoutez des personnages ou des monstres pour commencer.
           </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <Table>
+                <div className="w-full">
+                  <Table className="table-fixed w-full">
                     <TableHeader>
                       <TableRow>
                         <TableHead className="w-[50px]">Tour</TableHead>
-                        <TableHead>Nom</TableHead>
-                        <TableHead className="w-[80px]">Init</TableHead>
-                        <TableHead className="w-[80px]">CA</TableHead>
-                        <TableHead className="w-[120px]">PV</TableHead>
-                        <TableHead className="w-[180px]">État</TableHead>
-                        <TableHead className="w-[150px]">Actions</TableHead>
+                        <TableHead className="min-w-[120px]">Nom</TableHead>
+                        <TableHead className="w-[70px]">Init</TableHead>
+                        <TableHead className="w-[50px]">CA</TableHead>
+                        <TableHead className="w-[100px]">PV</TableHead>
+                        <TableHead className="min-w-[180px]">État</TableHead>
+                        <TableHead className="w-[120px]">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -1648,122 +1936,228 @@ const EncounterTracker: React.FC = () => {
                         <TableRow 
                 key={participant.id} 
                           className={
-                            encounter.isActive && sortedParticipants[encounter.currentTurn]?.id === participant.id 
-                              ? 'bg-amber-100' 
+                            sortedParticipants[encounter.currentTurn]?.id === participant.id 
+                              ? 'bg-blue-100' 
                               : ''
                           }
                         >
                           <TableCell>
-                            {encounter.isActive && sortedParticipants[encounter.currentTurn]?.id === participant.id && (
+                            {sortedParticipants[encounter.currentTurn]?.id === participant.id && (
                               <div className="flex justify-center">
-                                <Sword className="h-5 w-5 text-amber-600" />
+                                <Sword className="h-7 w-7 text-blue-600" />
                       </div>
                     )}
                           </TableCell>
                           <TableCell>
-                            <div className="font-medium">
+                                                        <div className="font-medium text-sm">
+                              <div className="truncate" title={participant.name}>
                               {participant.name}
+                              </div>
                               {participant.isPC && (
-                                <Badge variant="outline" className="ml-2">PC</Badge>
+                                <Badge variant="outline" className="text-xs">PC</Badge>
                               )}
                       </div>
                             {participant.notes && (
                               <div className="text-xs text-gray-500">{participant.notes}</div>
                             )}
-                          </TableCell>
-                          <TableCell>{participant.initiative}</TableCell>
-                          <TableCell>{participant.ac}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center space-x-1">
-                              <div 
-                                className="cursor-pointer" 
-                                onClick={() => updateHp(participant.id, -1)}
-                              >
-                                <Minus className="h-4 w-4 text-red-500" />
-                              </div>
-                              <div 
-                                className="font-medium"
-                                onClick={() => openHpEditor(participant)}
-                              >
-                              {participant.currentHp}/{participant.maxHp}
-                        </div>
-                              <div 
-                                className="cursor-pointer"
-                                onClick={() => updateHp(participant.id, 1)}
-                              >
-                                <Plus className="h-4 w-4 text-green-500" />
-                      </div>
-                    </div>
-                        <Progress
-                          value={(participant.currentHp / participant.maxHp) * 100}
-                              className="h-2 mt-1" 
-                              indicatorClassName={participant.currentHp <= 0 ? 'bg-gray-500' : participant.currentHp < participant.maxHp / 2 ? 'bg-red-500' : 'bg-green-500'}
-                            />
+                            {/* ActionTracker supprimé */}
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center space-x-1">
-                              {getStatusBadge(participant)}
-                    {participant.conditions.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {participant.conditions.map(condition => (
-                                    <Badge 
-                                      key={condition} 
-                                      variant="outline" 
-                                      className="cursor-pointer text-xs"
-                                      onClick={() => toggleCondition(participant.id, condition)}
-                                    >
-                                      {condition}
-                                    </Badge>
-                        ))}
-                      </div>
-                    )}
-                              {participant.conditions.length === 0 && (
+                              {quickInitiativeMode ? (
+                                <Input
+                                  type="number"
+                                  value={participant.initiative}
+                                  onChange={(e) => {
+                                    const newInitiative = parseInt(e.target.value) || 0;
+                                    setEncounter(prev => ({
+                                      ...prev,
+                                      participants: prev.participants.map(p =>
+                                        p.id === participant.id 
+                                          ? { ...p, initiative: newInitiative }
+                                          : p
+                                      )
+                                    }));
+                                  }}
+                                  className="w-16 h-8 text-center"
+                                />
+                              ) : (
+                              <span 
+                                  className="cursor-pointer hover:underline min-w-[30px] text-center"
+                                onClick={() => openInitiativeEditor(participant)}
+                              >
+                                {participant.initiative}
+                              </span>
+                              )}
+                              <div className="flex flex-col">
                                 <Button 
                                   variant="ghost" 
-                                  size="sm"
-                                  className="h-6 text-xs"
+                                  size="icon" 
+                                  className="h-5 w-5 p-0" 
+                                  onClick={() => moveParticipant(participant.id, 'up')}
+                                >
+                                  <span className="text-[10px]">▲</span>
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="h-5 w-5 p-0" 
+                                  onClick={() => moveParticipant(participant.id, 'down')}
+                                >
+                                  <span className="text-[10px]">▼</span>
+                                </Button>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>{participant.ac}</TableCell>
+                          <TableCell>
+                            <div className="flex flex-col gap-1">
+                              {/* Affichage principal des PV */}
+                            <div className="flex items-center space-x-1">
+                              <div 
+                                  className="font-medium text-xs cursor-pointer"
                                   onClick={() => {
-                                    // Ouvrir un dialogue pour choisir des conditions
-                                    const condition = prompt('Ajouter une condition:\n' + possibleConditions.join(', '));
-                                    if (condition) {
-                                      toggleCondition(participant.id, condition);
+                                    if (showHpModifier === participant.id) {
+                                      setShowHpModifier(null);
+                                    } else {
+                                      setShowHpModifier(participant.id);
+                                      setHpModifierValue(1);
                                     }
                                   }}
+                                  title={`${participant.currentHp}/${extractNumericHP(participant.maxHp)} PV - Cliquer pour modifier`}
                                 >
-                                  Ajouter
-                                </Button>
+                                  {participant.currentHp}/{extractNumericHP(participant.maxHp)}
+                              </div>
+                        </div>
+                              
+                              {/* Interface de modification rapide */}
+                              {showHpModifier === participant.id && (
+                                <div className="flex items-center space-x-1 p-1 bg-gray-50 rounded border">
+                                  <input
+                                    type="number"
+                                    value={hpModifierValue}
+                                    onChange={(e) => setHpModifierValue(parseInt(e.target.value) || 1)}
+                                    className="w-12 h-6 text-xs border rounded px-1"
+                                    min="1"
+                                    max="100"
+                                  />
+                                  <button
+                                    onClick={() => {
+                                      updateHp(participant.id, hpModifierValue);
+                                      setShowHpModifier(null);
+                                    }}
+                                    className="flex items-center justify-center w-6 h-6 bg-green-500 hover:bg-green-600 text-white rounded"
+                                    title={`Soigner ${hpModifierValue} PV`}
+                                  >
+                                    <Plus className="h-3 w-3" />
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      updateHp(participant.id, -hpModifierValue);
+                                      setShowHpModifier(null);
+                                    }}
+                                    className="flex items-center justify-center w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded"
+                                    title={`Infliger ${hpModifierValue} dégâts`}
+                                  >
+                                    <Minus className="h-3 w-3" />
+                                  </button>
+                      </div>
                               )}
+                              
+                              {/* Barre de progression */}
+                        <Progress
+                                value={(participant.currentHp / extractNumericHP(participant.maxHp)) * 100}
+                                className="h-1" 
+                                indicatorClassName={participant.currentHp <= 0 ? 'bg-gray-500' : participant.currentHp < extractNumericHP(participant.maxHp) / 2 ? 'bg-red-500' : 'bg-green-500'}
+                              />
                             </div>
                           </TableCell>
                           <TableCell>
-                            <div className="flex items-center space-x-1">
+                            <div className="flex flex-col gap-1 min-w-[180px]">
+                              {/* Badge de statut */}
+                              <div className="flex justify-start">
+                              {getStatusBadge(participant)}
+                              </div>
+                              
+                              {/* Affichage des conditions existantes avec icônes */}
+                    {participant.conditions.length > 0 && (
+                                <div className="flex flex-wrap gap-1">
+                                  {participant.conditions.map(condition => {
+                                    const conditionInfo = getConditionInfo(condition);
+                                    const IconComponent = conditionInfo.icon;
+                                    return (
+                                    <Badge 
+                                      key={condition} 
+                                      variant="outline" 
+                                        className={`cursor-pointer text-xs flex items-center gap-1 ${conditionInfo.color} hover:opacity-75`}
+                                      onClick={() => toggleCondition(participant.id, condition)}
+                                        title={`Cliquer pour retirer la condition "${condition}"`}
+                                    >
+                                        <IconComponent className="h-3 w-3" />
+                                      {condition}
+                                    </Badge>
+                                    );
+                                  })}
+                      </div>
+                    )}
+                              
+                              {/* Menu déroulant pour ajouter de nouvelles conditions */}
+                              <div className="w-full">
+                                <select 
+                                  className="w-full h-6 text-xs border rounded px-1 bg-white"
+                                  onChange={(e) => {
+                                    if (e.target.value) {
+                                      toggleCondition(participant.id, e.target.value);
+                                      e.target.value = '';
+                                    }
+                                  }}
+                                  value=""
+                                >
+                                  <option value="">+ Ajouter condition</option>
+                                  {CONDITIONS.filter(condition => !participant.conditions.includes(condition)).map(condition => {
+                                    return (
+                                    <option key={condition} value={condition}>
+                                      {condition}
+                                    </option>
+                                    );
+                                  })}
+                                </select>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center space-x-0.5">
                               {!participant.isPC && (
+                                <>
                         <Button 
                                   variant="ghost" 
-                                  size="icon"
-                                  onClick={() => loadMonsterOnDemand(participant.id)}
-                                >
-                                  <Pencil className="h-4 w-4" />
+                                    size="sm"
+                                    className="h-6 w-6 p-0"
+                                    onClick={() => openCreatureFrame(participant.id)}
+                                    title="Voir la page AideDD"
+                                  >
+                                    <Link className="h-3 w-3" />
                         </Button>
+                                  {/* Bouton "Charger les détails" supprimé - la fonction est appelée automatiquement */}
+                                </>
                               )}
                               <Button 
                                 variant="ghost" 
-                                size="icon"
-                                onClick={() => {
-                                  const notes = prompt('Notes pour ' + participant.name, participant.notes);
-                                  if (notes !== null) {
-                                    updateNotes(participant.id, notes);
-                                  }
-                                }}
+                                size="sm"
+                                className="h-6 w-6 p-0"
+                                onClick={() => openNotesEditor(participant)}
+                                title="Modifier les notes"
                               >
-                                <Square className="h-4 w-4" />
+                                <Square className="h-3 w-3" />
                               </Button>
                         <Button 
                                 variant="ghost" 
-                                size="icon"
+                                size="sm"
+                                className="h-6 w-6 p-0"
                                 onClick={() => removeParticipant(participant.id)}
+                                title="Supprimer"
                               >
-                                <Skull className="h-4 w-4 text-red-500" />
+                                <Skull className="h-3 w-3 text-red-500" />
                         </Button>
                       </div>
                           </TableCell>
@@ -1776,45 +2170,102 @@ const EncounterTracker: React.FC = () => {
                         
               <div className="mt-4 flex justify-between">
                           <div>
-                  <Button 
-                    variant="outline"
-                    onClick={() => {
-                      const dialogOpen = true;
-                      setNewPC({
-                        name: '',
-                        initiative: 10,
-                        ac: 15,
-                        hp: 30
-                      });
-                      // Ouvrir un dialogue pour ajouter un personnage
-                      const name = prompt('Nom du personnage:');
-                      if (name) {
-                        setNewPC(prev => ({ ...prev, name }));
-                        const initiative = parseInt(prompt('Initiative:', '10') || '10', 10);
-                        setNewPC(prev => ({ ...prev, initiative }));
-                        const ac = parseInt(prompt('Classe d\'armure:', '15') || '15', 10);
-                        setNewPC(prev => ({ ...prev, ac }));
-                        const hp = parseInt(prompt('Points de vie:', '30') || '30', 10);
-                        setNewPC(prev => ({ ...prev, hp }));
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline">
+                        <User className="h-4 w-4 mr-1" />
+                        Ajouter un personnage
+                      </Button>
+                    </DialogTrigger>
+                    
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Ajouter un personnage</DialogTitle>
+                        <DialogDescription>
+                          Ajoutez un nouveau personnage joueur à la rencontre
+                        </DialogDescription>
+                      </DialogHeader>
+                      
+                      <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="pc-name" className="text-right">
+                            Nom
+                          </Label>
+                          <Input
+                            id="pc-name"
+                            value={newPC.name}
+                            onChange={(e) => setNewPC(prev => ({ ...prev, name: e.target.value }))}
+                            className="col-span-3"
+                            placeholder="Nom du personnage"
+                          />
+                        </div>
                         
-                        // Appeler la fonction avec les nouvelles valeurs
-                        addPlayerCharacter();
-                      }
-                    }}
-                  >
-                    <User className="h-4 w-4 mr-1" />
-                    Ajouter un personnage
-                  </Button>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="pc-initiative" className="text-right">
+                            Initiative
+                          </Label>
+                          <Input
+                            id="pc-initiative"
+                            type="number"
+                            value={newPC.initiative}
+                            onChange={(e) => setNewPC(prev => ({ ...prev, initiative: parseInt(e.target.value) || 10 }))}
+                            className="col-span-3"
+                          />
+                        </div>
+                        
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="pc-ac" className="text-right">
+                            CA
+                          </Label>
+                          <Input
+                            id="pc-ac"
+                            type="number"
+                            value={newPC.ac}
+                            onChange={(e) => setNewPC(prev => ({ ...prev, ac: parseInt(e.target.value) || 15 }))}
+                            className="col-span-3"
+                          />
+                        </div>
+                        
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="pc-hp" className="text-right">
+                            Points de vie
+                          </Label>
+                          <Input
+                            id="pc-hp"
+                            type="number"
+                            value={newPC.hp}
+                            onChange={(e) => setNewPC(prev => ({ ...prev, hp: parseInt(e.target.value) || 30 }))}
+                            className="col-span-3"
+                          />
+                        </div>
+                      </div>
+                      
+                      <DialogFooter>
+                        <Button onClick={addPlayerCharacter}>Ajouter</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                                   </div>
                 <div>
-                  {encounter.isActive && (
+                  {/* Boutons de navigation toujours visibles */}
+                  {encounter.participants.length > 0 && (
+                    <>
+                      <Button 
+                        onClick={previousTurn}
+                        className="mr-2"
+                        variant="outline"
+                      >
+                        <ChevronLeft className="h-4 w-4 mr-1" />
+                        Tour précédent
+                      </Button>
                                       <Button 
                       onClick={nextTurn}
                       className="mr-2"
                     >
-                      <SkipForward className="h-4 w-4 mr-1" />
+                        <ChevronRight className="h-4 w-4 mr-1" />
                       Tour suivant
                                       </Button>
+                    </>
                   )}
                                       <Button 
                                         variant="outline" 
@@ -1829,24 +2280,39 @@ const EncounterTracker: React.FC = () => {
           </Card>
                   </div>
         
-        <div>
-          <Card>
+        <div className="lg:col-span-3">
+          {/* Iframe pour les créatures - hauteur complète */}
+          <Card className="h-full">
             <CardHeader>
-              <CardTitle>Détails du monstre</CardTitle>
+              <CardTitle className="flex items-center justify-between">
+                Créature AideDD
+                {showCreatureFrame && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setShowCreatureFrame(false)}
+                  >
+                    Fermer
+                  </Button>
+                )}
+              </CardTitle>
               <CardDescription>
-                Informations sur le monstre sélectionné
+                Page détaillée de la créature depuis AideDD.org
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              {loadingDetails ? (
-                <div className="flex justify-center py-8">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <CardContent className="h-full pb-4">
+              {showCreatureFrame && selectedCreatureUrl ? (
+                <div className="w-full h-[calc(100vh-300px)] border rounded">
+                  <iframe
+                    src={selectedCreatureUrl}
+                    className="w-full h-full rounded"
+                    title="Détails de la créature"
+                    sandbox="allow-scripts allow-same-origin"
+                  />
                 </div>
-              ) : currentMonsterDetails ? (
-                <SimpleMonsterCard monster={currentMonsterDetails} />
               ) : (
                 <div className="text-center py-8 text-gray-500">
-                  Cliquez sur le bouton d'édition à côté d'un monstre pour voir ses détails
+                  L'iframe s'affichera automatiquement au tour de la créature active
             </div>
           )}
         </CardContent>
@@ -1891,6 +2357,100 @@ const EncounterTracker: React.FC = () => {
           </div>
           <DialogFooter>
             <Button onClick={saveHpChanges}>Sauvegarder</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Dialogue d'édition de l'initiative */}
+      <Dialog open={initiativeDialogOpen} onOpenChange={setInitiativeDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Modifier l'initiative</DialogTitle>
+            <DialogDescription>
+              Modifiez l'initiative de {editingInitiative.name}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="initiative" className="text-right">
+                Initiative
+              </Label>
+              <Input
+                id="initiative"
+                type="number"
+                value={editingInitiative.initiative}
+                onChange={(e) => setEditingInitiative(prev => ({
+                  ...prev,
+                  initiative: parseInt(e.target.value) || 0
+                }))}
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="modifier" className="text-right">
+                Modificateur
+              </Label>
+              <Input
+                id="modifier"
+                type="number"
+                value={editingInitiative.modifier}
+                onChange={(e) => setEditingInitiative(prev => ({
+                  ...prev,
+                  modifier: parseInt(e.target.value) || 0
+                }))}
+                className="col-span-3"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setInitiativeDialogOpen(false)}>
+              Annuler
+            </Button>
+            <Button onClick={saveInitiativeChanges}>
+              Sauvegarder
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialogue d'édition des notes */}
+      <Dialog open={notesDialogOpen} onOpenChange={setNotesDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Modifier les notes</DialogTitle>
+            <DialogDescription>
+              Modifiez les notes de {editingNotes.name}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="notes" className="text-right">
+                Notes
+              </Label>
+              <textarea
+                id="notes"
+                value={editingNotes.notes}
+                onChange={(e) => setEditingNotes(prev => ({
+                  ...prev,
+                  notes: e.target.value
+                }))}
+                className="col-span-3 min-h-[100px] p-2 border rounded-md"
+                placeholder="Ajoutez des notes sur ce participant..."
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setNotesDialogOpen(false)}>
+              Annuler
+            </Button>
+            <Button onClick={saveNotesChanges}>
+              Sauvegarder
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -30,6 +30,23 @@ const CHARACTER_CLASSES = [
   'Magicien', 'Moine', 'Occultiste', 'Paladin', 'Rôdeur', 'Roublard'
 ];
 
+// Correspondance entre les classes D&D Beyond (anglais) et françaises
+const CLASS_MAPPING: Record<string, string> = {
+  'Artificer': 'Artificier',
+  'Barbarian': 'Barbare',
+  'Bard': 'Barde',
+  'Cleric': 'Clerc',
+  'Druid': 'Druide',
+  'Fighter': 'Guerrier',
+  'Monk': 'Moine',
+  'Paladin': 'Paladin',
+  'Ranger': 'Rôdeur',
+  'Rogue': 'Roublard',
+  'Sorcerer': 'Ensorceleur',
+  'Warlock': 'Occultiste',
+  'Wizard': 'Magicien'
+};
+
 const PartyEditor: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const [parties, setParties] = useState<Party[]>([]);
@@ -49,12 +66,351 @@ const PartyEditor: React.FC = () => {
     name: '',
     level: 1,
     characterClass: 'Guerrier',
+    race: '',
     ac: 10,
     maxHp: 10,
     currentHp: 10
   });
   const [isEditingPlayer, setIsEditingPlayer] = useState(false);
   const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
+  
+  // État pour l'import D&D Beyond
+  const [dndBeyondUrl, setDndBeyondUrl] = useState('');
+  const [isImporting, setIsImporting] = useState(false);
+
+  // Fonction de fallback pour extraire les données depuis le HTML de la page
+  const tryHtmlScraping = async (url: string) => {
+    const proxyServices = [
+      `https://corsproxy.io/?${encodeURIComponent(url)}`,
+      `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+    ];
+    
+    for (const proxyUrl of proxyServices) {
+      try {
+        console.log('Tentative de scraping HTML depuis:', proxyUrl);
+        
+        const response = await fetch(proxyUrl);
+        if (!response.ok) continue;
+        
+        const html = await response.text();
+        
+        // Chercher les données JSON dans le HTML (D&D Beyond stocke souvent les données dans des scripts)
+        const jsonMatch = html.match(/window\.characterData\s*=\s*({.*?});/s) || 
+                         html.match(/data-character\s*=\s*"([^"]*)"/) ||
+                         html.match(/"character":\s*({.*?})/s);
+        
+        if (jsonMatch) {
+          let jsonStr = jsonMatch[1];
+          if (jsonMatch[0].includes('data-character')) {
+            jsonStr = jsonMatch[1].replace(/&quot;/g, '"');
+          }
+          
+          const characterData = JSON.parse(jsonStr);
+          console.log('Données extraites du HTML:', characterData);
+          return characterData;
+        }
+        
+        // Fallback: extraire des informations basiques depuis le HTML
+        const nameMatch = html.match(/<h1[^>]*class="[^"]*character-name[^"]*"[^>]*>([^<]+)</i) ||
+                         html.match(/<title>([^-]+)\s*-\s*D&D Beyond</i);
+        
+        if (nameMatch) {
+          return {
+            data: {
+              name: nameMatch[1].trim(),
+              // Données par défaut quand on ne peut extraire que le nom
+              classes: [{ level: 1, definition: { name: 'Fighter' } }],
+              race: { fullName: '' },
+              armorClass: 10,
+              baseHitPoints: 10
+            }
+          };
+        }
+        
+      } catch (error) {
+        console.warn(`Échec du scraping avec ${proxyUrl}:`, error);
+        continue;
+      }
+    }
+    
+    throw new Error('Impossible d\'extraire les données depuis le HTML');
+  };
+
+  // Fonction pour extraire les données depuis D&D Beyond
+  const importFromDndBeyond = async (url: string) => {
+    try {
+      setIsImporting(true);
+      
+      // Vérifier que l'URL est valide
+      if (!url.includes('dndbeyond.com/characters/')) {
+        throw new Error('URL D&D Beyond invalide. Utilisez une URL du type: https://www.dndbeyond.com/characters/[ID]');
+      }
+      
+      // Extraire l'ID du personnage depuis l'URL
+      const characterIdMatch = url.match(/\/characters\/(\d+)/);
+      if (!characterIdMatch) {
+        throw new Error('Impossible d\'extraire l\'ID du personnage depuis l\'URL');
+      }
+      
+      const characterId = characterIdMatch[1];
+      console.log('ID du personnage D&D Beyond:', characterId);
+      
+      // Utiliser l'API JSON de D&D Beyond
+      const apiUrl = `https://character-service.dndbeyond.com/character/v5/character/${characterId}`;
+      
+      // Liste de services proxy à essayer
+      const proxyServices = [
+        `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`,
+        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(apiUrl)}`,
+        `https://cors-anywhere.herokuapp.com/${apiUrl}`,
+        `https://thingproxy.freeboard.io/fetch/${apiUrl}`
+      ];
+      
+      let characterData = null;
+      let lastError = null;
+      
+      // Essayer chaque service proxy
+      for (const proxyUrl of proxyServices) {
+        try {
+          console.log('Tentative de récupération depuis:', proxyUrl);
+          
+          const response = await fetch(proxyUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+          }
+          
+          const responseText = await response.text();
+          console.log('Réponse brute:', responseText.substring(0, 200) + '...');
+          
+          // Essayer de parser la réponse JSON
+          try {
+            characterData = JSON.parse(responseText);
+          } catch (parseError) {
+            // Si c'est un proxy qui retourne un objet avec contents
+            try {
+              const proxyData = JSON.parse(responseText);
+              if (proxyData.contents) {
+                characterData = JSON.parse(proxyData.contents);
+              } else {
+                characterData = proxyData;
+              }
+            } catch (nestedParseError) {
+              throw new Error('Impossible de parser les données JSON');
+            }
+          }
+          
+          // Si on arrive ici, on a réussi à récupérer les données
+          console.log('Données récupérées avec succès depuis:', proxyUrl);
+          break;
+          
+        } catch (error) {
+          console.warn(`Échec avec ${proxyUrl}:`, error);
+          lastError = error;
+          continue;
+        }
+      }
+      
+      // Si aucun proxy n'a fonctionné, essayer le scraping HTML
+      if (!characterData) {
+        console.log('Tous les proxies API ont échoué, tentative de scraping HTML...');
+        
+        try {
+          characterData = await tryHtmlScraping(url);
+        } catch (scrapingError) {
+          console.warn('Échec du scraping HTML:', scrapingError);
+        }
+      }
+      
+      // Si vraiment rien n'a fonctionné
+      if (!characterData) {
+        console.log('Toutes les méthodes ont échoué');
+        
+        // Proposer une saisie manuelle avec des données pré-remplies basées sur l'URL
+        toast({
+          title: "Import automatique impossible",
+          description: "Impossible d'accéder aux données D&D Beyond. Vérifiez que le personnage est public et réessayez plus tard.",
+          variant: "destructive"
+        });
+        
+        // Pré-remplir quelques champs basiques si possible
+        const characterIdStr = characterId;
+        setNewPlayer({
+          name: `Personnage-${characterIdStr}`,
+          level: 1,
+          characterClass: 'Guerrier',
+          race: '',
+          ac: 10,
+          maxHp: 10,
+          currentHp: 10
+        });
+        
+        return;
+      }
+      
+      console.log('Données du personnage D&D Beyond:', characterData);
+      
+      // Extraire les informations pertinentes
+      const character = characterData.data || characterData;
+      
+      // Log détaillé de la structure pour déboguer
+      console.log('Structure du personnage:', {
+        keys: Object.keys(character),
+        armorClass: character.armorClass,
+        stats: character.stats,
+        decorations: character.decorations,
+        modifiers: character.modifiers,
+        bonuses: character.bonuses
+      });
+      
+      if (!character) {
+        throw new Error('Données du personnage non trouvées dans la réponse');
+      }
+      
+      // Extraire le nom
+      const name = character.name || 'Personnage';
+      
+      // Extraire la race
+      const race = character.race?.fullName || character.race?.baseName || '';
+      
+      // Extraire la classe et le niveau
+      let characterClass = 'Guerrier';
+      let level = 1;
+      
+      if (character.classes && character.classes.length > 0) {
+        const primaryClass = character.classes[0];
+        const englishClassName = primaryClass.definition?.name || 'Fighter';
+        characterClass = CLASS_MAPPING[englishClassName] || 'Guerrier';
+        level = primaryClass.level || 1;
+      }
+      
+      // Extraire la CA (essayer plusieurs champs possibles)
+      let ac = 10;
+      if (character.armorClass !== undefined) {
+        ac = character.armorClass;
+      } else if (character.stats && character.stats.armorClass !== undefined) {
+        ac = character.stats.armorClass;
+      } else if (character.decorations && character.decorations.armorClass !== undefined) {
+        ac = character.decorations.armorClass;
+      } else if (character.totalAC !== undefined) {
+        ac = character.totalAC;
+      } else if (character.ac !== undefined) {
+        ac = character.ac;
+      } else if (character.modifiers && character.modifiers.armorClass !== undefined) {
+        ac = character.modifiers.armorClass;
+      } else if (character.bonuses && character.bonuses.armorClass !== undefined) {
+        ac = character.bonuses.armorClass;
+      } else if (character.calculatedStats && character.calculatedStats.armorClass !== undefined) {
+        ac = character.calculatedStats.armorClass;
+      } else if (character.finalStats && character.finalStats.armorClass !== undefined) {
+        ac = character.finalStats.armorClass;
+      }
+      
+      // Fallback: chercher dans les objets imbriqués
+      if (ac === 10) {
+        // Parcourir tous les objets pour trouver une propriété AC
+        const searchForAC = (obj: any, path = ''): number | null => {
+          if (!obj || typeof obj !== 'object') return null;
+          
+          for (const [key, value] of Object.entries(obj)) {
+            const currentPath = path ? `${path}.${key}` : key;
+            
+            // Chercher des clés qui pourraient contenir l'AC
+            if ((key.toLowerCase().includes('armor') || key.toLowerCase().includes('ac')) && 
+                typeof value === 'number' && value > 10 && value < 30) {
+              console.log(`AC trouvée dans ${currentPath}:`, value);
+              return value;
+            }
+            
+            // Recherche récursive
+            if (typeof value === 'object' && value !== null) {
+              const found = searchForAC(value, currentPath);
+              if (found !== null) return found;
+            }
+          }
+          return null;
+        };
+        
+        const foundAC = searchForAC(character);
+        if (foundAC !== null) {
+          ac = foundAC;
+        }
+      }
+      
+      console.log('AC extraite:', ac, 'depuis character:', {
+        armorClass: character.armorClass,
+        'stats.armorClass': character.stats?.armorClass,
+        'decorations.armorClass': character.decorations?.armorClass,
+        totalAC: character.totalAC,
+        ac: character.ac
+      });
+      
+      // Extraire les PV (essayer plusieurs champs possibles)
+      let maxHp = 10;
+      let currentHp = 10;
+      
+      if (character.baseHitPoints !== undefined) {
+        maxHp = character.baseHitPoints + (character.bonusHitPoints || 0);
+        currentHp = maxHp - (character.removedHitPoints || 0);
+      } else if (character.hitPoints !== undefined) {
+        maxHp = character.hitPoints;
+        currentHp = character.currentHitPoints || maxHp;
+      } else if (character.stats && character.stats.hitPoints !== undefined) {
+        maxHp = character.stats.hitPoints;
+        currentHp = character.stats.currentHitPoints || maxHp;
+      } else if (character.hp !== undefined) {
+        maxHp = character.hp;
+        currentHp = character.currentHp || maxHp;
+      }
+      
+      console.log('PV extraits:', { maxHp, currentHp }, 'depuis character:', {
+        baseHitPoints: character.baseHitPoints,
+        bonusHitPoints: character.bonusHitPoints,
+        removedHitPoints: character.removedHitPoints,
+        hitPoints: character.hitPoints,
+        currentHitPoints: character.currentHitPoints,
+        'stats.hitPoints': character.stats?.hitPoints,
+        hp: character.hp,
+        currentHp: character.currentHp
+      });
+      
+      // Mettre à jour le formulaire avec les données extraites
+      setNewPlayer({
+        name: name,
+        level: level,
+        characterClass: characterClass,
+        race: race,
+        ac: ac,
+        maxHp: maxHp,
+        currentHp: currentHp
+      });
+      
+      toast({
+        title: "Import réussi !",
+        description: `Les données de ${name} ont été importées depuis D&D Beyond. AC: ${ac}, PV: ${maxHp}/${currentHp}`,
+        variant: "default"
+      });
+      
+      // Effacer l'URL après l'import
+      setDndBeyondUrl('');
+      
+    } catch (error) {
+      console.error('Erreur lors de l\'import D&D Beyond:', error);
+      toast({
+        title: "Erreur d'import",
+        description: error instanceof Error ? error.message : "Impossible d'importer les données depuis D&D Beyond. Vérifiez que le personnage est public.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsImporting(false);
+    }
+  };
 
   // Chargement initial des données
   useEffect(() => {
@@ -557,6 +913,7 @@ const PartyEditor: React.FC = () => {
                                   name: '',
                                   level: 1,
                                   characterClass: 'Guerrier',
+                                  race: '',
                                   ac: 10,
                                   maxHp: 10,
                                   currentHp: 10
@@ -579,6 +936,57 @@ const PartyEditor: React.FC = () => {
                               </DialogDescription>
                             </DialogHeader>
                             <div className="space-y-4 py-4">
+                              {/* Section D&D Beyond Import */}
+                              {!isEditingPlayer && (
+                                <div className="space-y-2 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                  <Label htmlFor="dndBeyondUrl" className="text-blue-800 font-semibold">
+                                    Import depuis D&D Beyond (optionnel)
+                                  </Label>
+                                  <div className="flex gap-2">
+                                    <Input
+                                      id="dndBeyondUrl"
+                                      placeholder="https://www.dndbeyond.com/characters/92791713"
+                                      value={dndBeyondUrl}
+                                      onChange={(e) => setDndBeyondUrl(e.target.value)}
+                                      className="flex-1"
+                                    />
+                                    <Button
+                                      type="button"
+                                      onClick={() => importFromDndBeyond(dndBeyondUrl)}
+                                      disabled={!dndBeyondUrl || isImporting}
+                                      className="bg-blue-600 hover:bg-blue-700"
+                                    >
+                                      {isImporting ? (
+                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                      ) : (
+                                        'Importer'
+                                      )}
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      onClick={() => {
+                                        if (dndBeyondUrl) {
+                                          window.open(dndBeyondUrl, '_blank');
+                                          toast({
+                                            title: "Page ouverte",
+                                            description: "Copiez manuellement les informations depuis D&D Beyond dans les champs ci-dessous.",
+                                            variant: "default"
+                                          });
+                                        }
+                                      }}
+                                      disabled={!dndBeyondUrl}
+                                      className="border-blue-300 text-blue-600 hover:bg-blue-50"
+                                    >
+                                      Ouvrir
+                                    </Button>
+                                  </div>
+                                  <p className="text-xs text-blue-600">
+                                    Collez l'URL de votre personnage D&D Beyond pour remplir automatiquement les champs
+                                  </p>
+                                </div>
+                              )}
+                              
                               <div className="space-y-2">
                                 <Label htmlFor="playerName">Nom du personnage</Label>
                                 <Input
@@ -586,6 +994,16 @@ const PartyEditor: React.FC = () => {
                                   placeholder="Bruenor Battlehammer"
                                   value={newPlayer.name}
                                   onChange={(e) => setNewPlayer({...newPlayer, name: e.target.value})}
+                                />
+                              </div>
+                              
+                              <div className="space-y-2">
+                                <Label htmlFor="playerRace">Race</Label>
+                                <Input
+                                  id="playerRace"
+                                  placeholder="Nain des montagnes"
+                                  value={newPlayer.race || ''}
+                                  onChange={(e) => setNewPlayer({...newPlayer, race: e.target.value})}
                                 />
                               </div>
                               <div className="grid grid-cols-2 gap-4">
@@ -685,12 +1103,14 @@ const PartyEditor: React.FC = () => {
                                     name: '',
                                     level: 1,
                                     characterClass: 'Guerrier',
+                                    race: '',
                                     ac: 10,
                                     maxHp: 10,
                                     currentHp: 10
                                   });
                                   setIsEditingPlayer(false);
                                   setEditingPlayerId(null);
+                                  setDndBeyondUrl('');
                                 }}
                               >
                                 Annuler
@@ -723,6 +1143,7 @@ const PartyEditor: React.FC = () => {
                                 name: '',
                                 level: 1,
                                 characterClass: 'Guerrier',
+                                race: '',
                                 ac: 10,
                                 maxHp: 10,
                                 currentHp: 10
@@ -739,6 +1160,7 @@ const PartyEditor: React.FC = () => {
                           <TableHeader>
                             <TableRow>
                               <TableHead>Nom</TableHead>
+                              <TableHead>Race</TableHead>
                               <TableHead>Classe</TableHead>
                               <TableHead>Niveau</TableHead>
                               <TableHead>CA</TableHead>
@@ -750,6 +1172,7 @@ const PartyEditor: React.FC = () => {
                             {selectedParty.players.map(player => (
                               <TableRow key={player.id}>
                                 <TableCell className="font-medium">{player.name}</TableCell>
+                                <TableCell>{player.race || '-'}</TableCell>
                                 <TableCell>{player.characterClass}</TableCell>
                                 <TableCell>{player.level}</TableCell>
                                 <TableCell>{player.ac || '-'}</TableCell>

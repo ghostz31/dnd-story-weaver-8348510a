@@ -147,12 +147,21 @@ export const getParties = async (): Promise<Party[]> => {
     const parties: Party[] = [];
     querySnapshot.forEach(doc => {
       const data = doc.data();
+      
+      // Fonction helper pour gérer les dates
+      const formatDate = (dateField: any): string => {
+        if (!dateField) return new Date().toISOString();
+        if (typeof dateField.toDate === 'function') return dateField.toDate().toISOString();
+        if (typeof dateField === 'string') return dateField;
+        return new Date().toISOString();
+      };
+      
       parties.push({
         id: doc.id,
         name: data.name,
         players: data.players || [],
-        createdAt: data.createdAt?.toDate().toISOString() || new Date().toISOString(),
-        updatedAt: data.updatedAt?.toDate().toISOString() || new Date().toISOString()
+        createdAt: formatDate(data.createdAt),
+        updatedAt: formatDate(data.updatedAt)
       });
     });
     
@@ -175,12 +184,21 @@ export const subscribeToParties = (callback: (parties: Party[]) => void): (() =>
       const parties: Party[] = [];
       snapshot.forEach(doc => {
         const data = doc.data();
+        
+        // Fonction helper pour gérer les dates
+        const formatDate = (dateField: any): string => {
+          if (!dateField) return new Date().toISOString();
+          if (typeof dateField.toDate === 'function') return dateField.toDate().toISOString();
+          if (typeof dateField === 'string') return dateField;
+          return new Date().toISOString();
+        };
+        
         parties.push({
           id: doc.id,
           name: data.name,
           players: data.players || [],
-          createdAt: data.createdAt?.toDate().toISOString() || new Date().toISOString(),
-          updatedAt: data.updatedAt?.toDate().toISOString() || new Date().toISOString()
+          createdAt: formatDate(data.createdAt),
+          updatedAt: formatDate(data.updatedAt)
         });
       });
       
@@ -282,11 +300,19 @@ export const updateParty = async (partyId: string, updates: Partial<Omit<Party, 
     const updatedDoc = await getDoc(partyRef);
     const data = updatedDoc.data();
     
+    // Fonction helper pour gérer les dates
+    const formatDate = (dateField: any): string => {
+      if (!dateField) return new Date().toISOString();
+      if (typeof dateField.toDate === 'function') return dateField.toDate().toISOString();
+      if (typeof dateField === 'string') return dateField;
+      return new Date().toISOString();
+    };
+    
     return {
       id: partyId,
       name: data?.name,
       players: data?.players || [],
-      createdAt: data?.createdAt.toDate().toISOString(),
+      createdAt: formatDate(data?.createdAt),
       updatedAt: new Date().toISOString()
     };
   } catch (error) {
@@ -426,17 +452,32 @@ export const getEncounters = async (): Promise<Encounter[]> => {
     const encounters: Encounter[] = [];
     querySnapshot.forEach(doc => {
       const data = doc.data();
+      
+      // Fonction helper pour gérer les dates
+      const formatDate = (dateField: any): string => {
+        if (!dateField) return new Date().toISOString();
+        if (typeof dateField.toDate === 'function') return dateField.toDate().toISOString();
+        if (typeof dateField === 'string') return dateField;
+        return new Date().toISOString();
+      };
+      
       encounters.push({
         id: doc.id,
         name: data.name,
         description: data.description || '',
         environment: data.environment || '',
         monsters: data.monsters || [],
+        party: data.party || null,
+        participants: data.participants || [],
         difficulty: data.difficulty || 'medium',
         totalXP: data.totalXP || 0,
         adjustedXP: data.adjustedXP || 0,
-        createdAt: data.createdAt?.toDate().toISOString() || new Date().toISOString(),
-        updatedAt: data.updatedAt?.toDate().toISOString() || new Date().toISOString()
+        status: data.status || 'draft',
+        round: data.round || 1,
+        currentTurn: data.currentTurn || 0,
+        isActive: data.isActive || false,
+        createdAt: formatDate(data.createdAt),
+        updatedAt: formatDate(data.updatedAt)
       });
     });
     
@@ -452,34 +493,61 @@ export const getEncounters = async (): Promise<Encounter[]> => {
 export const subscribeToEncounters = (callback: (encounters: Encounter[]) => void): (() => void) => {
   try {
     const user = getCurrentUser();
+    console.log("subscribeToEncounters - Utilisateur:", user.uid);
     const encountersRef = collection(db, 'users', user.uid, 'encounters');
+    console.log("subscribeToEncounters - Référence collection:", encountersRef.path);
     
     // Créer un écouteur qui se déclenche à chaque changement dans la collection
     const unsubscribe = onSnapshot(encountersRef, (snapshot) => {
+      console.log("subscribeToEncounters - Snapshot reçu, taille:", snapshot.size);
+      console.log("subscribeToEncounters - Snapshot vide?", snapshot.empty);
+      
       const encounters: Encounter[] = [];
       snapshot.forEach(doc => {
+        console.log("subscribeToEncounters - Document:", doc.id, doc.data());
         const data = doc.data();
+        
+        // Fonction helper pour gérer les dates
+        const formatDate = (dateField: any): string => {
+          if (!dateField) return new Date().toISOString();
+          if (typeof dateField.toDate === 'function') return dateField.toDate().toISOString();
+          if (typeof dateField === 'string') return dateField;
+          return new Date().toISOString();
+        };
+        
         encounters.push({
           id: doc.id,
           name: data.name,
           description: data.description || '',
           environment: data.environment || '',
           monsters: data.monsters || [],
+          party: data.party || null,
+          participants: data.participants || [],
           difficulty: data.difficulty || 'medium',
           totalXP: data.totalXP || 0,
           adjustedXP: data.adjustedXP || 0,
-          createdAt: data.createdAt?.toDate().toISOString() || new Date().toISOString(),
-          updatedAt: data.updatedAt?.toDate().toISOString() || new Date().toISOString()
+          status: data.status || 'draft',
+          round: data.round || 1,
+          currentTurn: data.currentTurn || 0,
+          isActive: data.isActive || false,
+          createdAt: formatDate(data.createdAt),
+          updatedAt: formatDate(data.updatedAt)
         });
       });
+      
+      console.log("subscribeToEncounters - Rencontres extraites:", encounters.length);
       
       // Trier par date de mise à jour (le plus récent d'abord)
       const sortedEncounters = encounters.sort((a, b) => 
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
       );
       
+      console.log("subscribeToEncounters - Rencontres triées:", sortedEncounters.length);
+      
       // Appeler le callback avec les données mises à jour
       callback(sortedEncounters);
+    }, (error) => {
+      console.error("subscribeToEncounters - Erreur dans onSnapshot:", error);
     });
     
     // Retourner la fonction pour se désabonner quand nécessaire
@@ -569,14 +637,31 @@ export const saveEncounter = async (encounterData: Omit<Encounter, 'id' | 'creat
     } : null;
     
     const now = serverTimestamp();
-    const data = {
+    
+    // Nettoyer toutes les valeurs undefined
+    const cleanData = (obj: any): any => {
+      if (obj === null || obj === undefined) return null;
+      if (Array.isArray(obj)) return obj.map(cleanData);
+      if (typeof obj === 'object') {
+        const cleaned: any = {};
+        for (const [key, value] of Object.entries(obj)) {
+          if (value !== undefined) {
+            cleaned[key] = cleanData(value);
+          }
+        }
+        return cleaned;
+      }
+      return obj;
+    };
+    
+    const data = cleanData({
       ...restData,
       monsters: cleanMonsters,
       participants: cleanParticipants,
       party: cleanParty,
       createdAt: now,
       updatedAt: now
-    };
+    });
     
     const docRef = await addDoc(encountersRef, data);
     
@@ -695,6 +780,23 @@ export const updateFirestoreEncounter = async (
     } : undefined;
     
     const now = serverTimestamp();
+    
+    // Nettoyer toutes les valeurs undefined (utiliser la même fonction que dans saveEncounter)
+    const cleanData = (obj: any): any => {
+      if (obj === null || obj === undefined) return null;
+      if (Array.isArray(obj)) return obj.map(cleanData);
+      if (typeof obj === 'object') {
+        const cleaned: any = {};
+        for (const [key, value] of Object.entries(obj)) {
+          if (value !== undefined) {
+            cleaned[key] = cleanData(value);
+          }
+        }
+        return cleaned;
+      }
+      return obj;
+    };
+    
     const updateData: any = {
       ...restUpdates,
       updatedAt: now
@@ -705,13 +807,16 @@ export const updateFirestoreEncounter = async (
     if (cleanMonsters) updateData.monsters = cleanMonsters;
     if (cleanParty) updateData.party = cleanParty;
     
+    // Nettoyer les données avant l'envoi
+    const cleanedUpdateData = cleanData(updateData);
+    
     if (encounterDoc.exists()) {
       // Mise à jour d'une rencontre existante
-      await updateDoc(encounterRef, updateData);
+      await updateDoc(encounterRef, cleanedUpdateData);
     } else {
       // Création d'une nouvelle rencontre
-      updateData.createdAt = now;
-      await setDoc(encounterRef, updateData);
+      cleanedUpdateData.createdAt = now;
+      await setDoc(encounterRef, cleanedUpdateData);
       
       // Mettre à jour les statistiques de l'utilisateur
       const userRef = doc(db, 'users', user.uid);

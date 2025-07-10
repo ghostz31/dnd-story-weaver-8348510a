@@ -44,7 +44,7 @@ function App() {
     <div className="min-h-screen bg-gray-100">
       <Header />
       
-      <main className="container mx-auto p-4">
+      <main className="container mx-auto px-1 py-1">
         <Routes>
           {/* Routes publiques */}
           <Route path="/" element={<Index />} />

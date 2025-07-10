@@ -15,6 +15,7 @@ export interface Player {
   name: string;
   level: number;
   characterClass: string;
+  race?: string;
   ac?: number;
   currentHp?: number;
   maxHp?: number;

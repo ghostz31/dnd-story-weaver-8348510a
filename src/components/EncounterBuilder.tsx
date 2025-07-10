@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getParties as getLocalParties, createEncounter, getEncounters as getLocalEncounters, updateEncounter, deleteEncounter as deleteLocalEncounter } from '../lib/api';
-import { subscribeToParties, getUserStats, subscribeToEncounters, deleteEncounter as deleteFirestoreEncounter, updateFirestoreEncounter } from '../lib/firebaseApi'; 
+import { subscribeToParties, getUserStats, subscribeToEncounters, deleteEncounter as deleteFirestoreEncounter, updateFirestoreEncounter, getEncounters } from '../lib/firebaseApi'; 
 import { Monster, Party, Encounter, EncounterMonster, environments, UserStats } from '../lib/types';
 import MonsterBrowser from './MonsterBrowser';
 import { FaPlus, FaMinus, FaTrash, FaSave, FaEdit, FaDragon } from 'react-icons/fa';
@@ -52,22 +52,67 @@ const EncounterBuilder: React.FC = () => {
     if (isAuthenticated) {
       try {
         const stats = await getUserStats();
+        console.log("Statistiques utilisateur chargées:", stats);
         setUserStats(stats);
+        
+        // Test direct des rencontres Firestore
+        try {
+          const directEncounters = await getEncounters(); // Firestore getEncounters
+          console.log("Test direct getEncounters() Firestore:", directEncounters.length, directEncounters);
+        } catch (error) {
+          console.error("Erreur test direct getEncounters:", error);
+        }
       } catch (error) {
         console.error("Erreur lors du chargement des statistiques:", error);
       }
     }
   };
 
+  // Fonction utilitaire pour transformer les rencontres localStorage en format complet
+  const transformLocalEncounters = (localEncounters: Encounter[], localParties: Party[]): LocalEncounter[] => {
+    return localEncounters.map(encounter => {
+      // Trouver le groupe correspondant
+      const party = localParties.find(p => p.id === encounter.partyId);
+      
+      if (!party) {
+        console.warn(`Groupe non trouvé pour la rencontre ${encounter.name} (partyId: ${encounter.partyId})`);
+        // Créer un groupe par défaut pour éviter les erreurs
+        const defaultParty: Party = {
+          id: encounter.partyId || 'unknown',
+          name: 'Groupe inconnu',
+          players: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        
+        return {
+          ...encounter,
+          party: defaultParty
+        } as LocalEncounter;
+      }
+      
+      return {
+        ...encounter,
+        party
+      } as LocalEncounter;
+    });
+  };
+
   // Charger les données au démarrage
   useEffect(() => {
     // Fonction pour charger les rencontres
     const loadEncounters = () => {
+      console.log("=== DÉBUT CHARGEMENT RENCONTRES ===");
+      console.log("isAuthenticated:", isAuthenticated);
+      
       if (isAuthenticated) {
         // Si l'utilisateur est authentifié, utiliser Firestore avec abonnement
         try {
+          console.log("Tentative d'abonnement aux rencontres Firestore...");
           const unsubscribeEncounters = subscribeToEncounters((fetchedEncounters) => {
-            console.log("Rencontres chargées depuis Firestore:", fetchedEncounters);
+            console.log("=== RENCONTRES REÇUES DE FIRESTORE ===");
+            console.log("Nombre de rencontres:", fetchedEncounters.length);
+            console.log("Rencontres détaillées:", fetchedEncounters);
             setEncounters(fetchedEncounters);
           });
           
@@ -76,13 +121,25 @@ const EncounterBuilder: React.FC = () => {
           console.error("Erreur lors de l'abonnement aux rencontres:", error);
           // Fallback à localStorage en cas d'erreur
           const localEncounters = getLocalEncounters();
-          setEncounters(localEncounters);
+          const localParties = getLocalParties();
+          console.log("Fallback localStorage - rencontres brutes:", localEncounters);
+          console.log("Fallback localStorage - parties:", localParties);
+          const transformedEncounters = transformLocalEncounters(localEncounters, localParties);
+          console.log("Fallback localStorage - rencontres transformées:", transformedEncounters);
+          setEncounters(transformedEncounters);
         }
       } else {
         // Sinon utiliser localStorage
+        console.log("Mode non-connecté, chargement depuis localStorage...");
         const localEncounters = getLocalEncounters();
-        setEncounters(localEncounters);
+        const localParties = getLocalParties();
+        console.log("localStorage - rencontres brutes:", localEncounters);
+        console.log("localStorage - parties:", localParties);
+        const transformedEncounters = transformLocalEncounters(localEncounters, localParties);
+        console.log("localStorage - rencontres transformées:", transformedEncounters);
+        setEncounters(transformedEncounters);
       }
+      console.log("=== FIN CHARGEMENT RENCONTRES ===");
     };
 
     // Fonction pour charger les groupes
@@ -533,9 +590,9 @@ const EncounterBuilder: React.FC = () => {
           difficulty: difficultyString,
           totalXP: xpTotal,
           adjustedXP: xpAdjusted,
-          environment: selectedEnvironment !== 'all' ? selectedEnvironment : undefined,
+          environment: selectedEnvironment !== 'all' ? selectedEnvironment : '',
           status: 'draft' as const,
-          partyId: selectedParty?.id,
+          partyId: selectedParty?.id || '',
           party: selectedParty
         };
         
@@ -614,33 +671,39 @@ const EncounterBuilder: React.FC = () => {
         // Ajouter des participants initialisés
         participants: [
           // Participants pour les joueurs
-          ...(selectedParty.players || []).map(player => ({
-            id: `pc-${player.id}`,
-            name: player.name,
-            initiative: Math.floor(Math.random() * 20) + 1,
-            ac: player.ac || 10,
-            currentHp: player.currentHp || player.maxHp || 10,
-            maxHp: player.maxHp || 10,
-            isPC: true,
-            conditions: [],
-            notes: `${player.characterClass} niveau ${player.level}`
-          })),
+          ...(selectedParty.players || []).map(player => {
+            const maxHp = player.maxHp || 10;
+            return {
+              id: `pc-${player.id}`,
+              name: player.name,
+              initiative: Math.floor(Math.random() * 20) + 1,
+              ac: player.ac || 10,
+              currentHp: player.currentHp || maxHp,
+              maxHp: maxHp,
+              isPC: true,
+              conditions: [],
+              notes: `${player.characterClass} niveau ${player.level}`
+            };
+          }),
           // Participants pour les monstres
           ...selectedMonsters.flatMap(({ monster, quantity }) => 
-            Array.from({ length: quantity }, (_, index) => ({
-              id: `monster-${monster.id}-${index}`,
-              name: monster.name,
-              initiative: Math.floor(Math.random() * 20) + 1,
-              ac: monster.ac || 10,
-              currentHp: monster.hp || 10,
-              maxHp: monster.hp || 10,
-              isPC: false,
-              conditions: [],
-              notes: "",
-              cr: monster.cr,
-              type: monster.type,
-              size: monster.size
-            }))
+            Array.from({ length: quantity }, (_, index) => {
+              const maxHp = monster.hp || 10;
+              return {
+                id: `monster-${monster.id}-${index}`,
+                name: monster.name,
+                initiative: Math.floor(Math.random() * 20) + 1,
+                ac: monster.ac || 10,
+                currentHp: maxHp,
+                maxHp: maxHp,
+                isPC: false,
+                conditions: [],
+                notes: "",
+                cr: monster.cr,
+                type: monster.type,
+                size: monster.size
+              };
+            })
           )
         ],
         round: 1,
@@ -653,9 +716,16 @@ const EncounterBuilder: React.FC = () => {
       console.log("Données de rencontre stockées dans sessionStorage");
       
       // Rediriger vers la page d'affrontement avec un identifiant simple
-      // Utilisons window.location.href pour une navigation directe au lieu de react-router
       console.log("Tentative de navigation vers /encounter-tracker?source=session");
-      window.location.href = '/encounter-tracker?source=session';
+      
+      // Essayer d'abord avec React Router
+      try {
+        navigate('/encounter-tracker?source=session');
+        console.log("Navigation avec React Router réussie");
+      } catch (error) {
+        console.error("Erreur avec React Router, utilisation de window.location:", error);
+        window.location.href = '/encounter-tracker?source=session';
+      }
       
       toast({
         title: "Rencontre lancée",
@@ -721,9 +791,9 @@ const EncounterBuilder: React.FC = () => {
         difficulty: difficultyString,
         totalXP: xpTotal,
         adjustedXP: xpAdjusted,
-        environment: selectedEnvironment !== 'all' ? selectedEnvironment : undefined,
+        environment: selectedEnvironment !== 'all' ? selectedEnvironment : '',
         status: 'draft' as const,
-        partyId: selectedParty?.id,
+        partyId: selectedParty?.id || '',
         party: selectedParty
       };
 
@@ -742,25 +812,40 @@ const EncounterBuilder: React.FC = () => {
       } else {
         // Sauvegarde locale pour les utilisateurs non connectés
         const newEncounterId = selectedEncounter?.id || uuidv4();
-        savedEncounter = {
+        
+        // Créer la rencontre au format localStorage (avec partyId)
+        const localEncounterData = {
           ...encounterData,
           id: newEncounterId,
+          partyId: selectedParty.id,
           createdAt: selectedEncounter?.createdAt || new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };
         
-        // Mettre à jour la liste des rencontres
-        const updatedEncounters = selectedEncounter 
-          ? encounters.map(e => e.id === newEncounterId ? savedEncounter : e)
-          : [savedEncounter, ...encounters];
-        
-        setEncounters(updatedEncounters);
+        // Supprimer party pour le localStorage (on garde partyId)
+        const { party, ...localEncounterForStorage } = localEncounterData;
         
         // Sauvegarder dans le localStorage
-        localStorage.setItem(`encounter_${newEncounterId}`, JSON.stringify(savedEncounter));
+        const currentLocalEncounters = getLocalEncounters();
+        const updatedLocalEncounters = selectedEncounter 
+          ? currentLocalEncounters.map(e => e.id === newEncounterId ? localEncounterForStorage : e)
+          : [localEncounterForStorage, ...currentLocalEncounters];
+        
+        localStorage.setItem('dnd_encounters', JSON.stringify(updatedLocalEncounters));
+        
+        // Transformer pour l'affichage
+        const localParties = getLocalParties();
+        const transformedEncounters = transformLocalEncounters(updatedLocalEncounters, localParties);
+        setEncounters(transformedEncounters);
+        
+        // Préparer savedEncounter avec party pour l'interface
+        savedEncounter = {
+          ...localEncounterData,
+          party: selectedParty
+        };
         
         // Mettre à jour la sélection
-        setSelectedEncounter(savedEncounter);
+        setSelectedEncounter(savedEncounter as LocalEncounter);
         
         console.log("Rencontre sauvegardée localement:", savedEncounter);
       }
@@ -810,7 +895,10 @@ const EncounterBuilder: React.FC = () => {
         </div>
         
         {encounters.length === 0 ? (
-          <p className="text-gray-500">Aucune rencontre créée. Créez votre première rencontre !</p>
+          <div>
+            <p className="text-gray-500">Aucune rencontre créée. Créez votre première rencontre !</p>
+            <p className="text-xs text-red-500 mt-2">Debug: encounters.length = {encounters.length}</p>
+          </div>
         ) : (
           <ul className="divide-y divide-gray-200">
             {encounters.map(encounter => (
