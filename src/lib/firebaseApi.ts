@@ -1,3 +1,23 @@
+/*
+RÈGLES DE SÉCURITÉ FIRESTORE À CONFIGURER:
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Permet à un utilisateur authentifié d'accéder à ses propres données
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Règle pour la collection monsters globale
+    match /monsters/{monsterId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+  }
+}
+*/
+
 import { 
   collection, 
   doc, 
@@ -11,17 +31,19 @@ import {
   where, 
   arrayUnion, 
   arrayRemove,
-  increment
+  increment,
+  onSnapshot,
+  setDoc
 } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
 import { db, auth } from '../firebase/firebase';
-import { Party, Player, UserStats, Monster, Encounter } from './types';
+import { Party, Player, UserStats, Monster, Encounter, EncounterMonster } from './types';
 import { User } from 'firebase/auth';
 
-// Constantes pour les limites du plan gratuit
+// Constants pour les limites des plans
 const FREE_PLAN_LIMITS = {
-  MAX_PARTIES: 1,
-  MAX_ENCOUNTERS: 3
+  MAX_PARTIES: 3,
+  MAX_ENCOUNTERS: 10
 };
 
 // ====== Utilitaires ======
@@ -139,6 +161,43 @@ export const getParties = async (): Promise<Party[]> => {
   } catch (error) {
     console.error("Erreur lors de la récupération des parties:", error);
     throw error;
+  }
+};
+
+// Écouter les changements des parties en temps réel
+export const subscribeToParties = (callback: (parties: Party[]) => void): (() => void) => {
+  try {
+    const user = getCurrentUser();
+    const partiesRef = collection(db, 'users', user.uid, 'parties');
+    
+    // Créer un écouteur qui se déclenche à chaque changement dans la collection
+    const unsubscribe = onSnapshot(partiesRef, (snapshot) => {
+      const parties: Party[] = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        parties.push({
+          id: doc.id,
+          name: data.name,
+          players: data.players || [],
+          createdAt: data.createdAt?.toDate().toISOString() || new Date().toISOString(),
+          updatedAt: data.updatedAt?.toDate().toISOString() || new Date().toISOString()
+        });
+      });
+      
+      // Trier par date de mise à jour (le plus récent d'abord)
+      const sortedParties = parties.sort((a, b) => 
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
+      
+      // Appeler le callback avec les données mises à jour
+      callback(sortedParties);
+    });
+    
+    // Retourner la fonction pour se désabonner quand nécessaire
+    return unsubscribe;
+  } catch (error) {
+    console.error("Erreur lors de l'abonnement aux parties:", error);
+    return () => {}; // Retourner une fonction vide en cas d'erreur
   }
 };
 
@@ -370,20 +429,64 @@ export const getEncounters = async (): Promise<Encounter[]> => {
       encounters.push({
         id: doc.id,
         name: data.name,
+        description: data.description || '',
+        environment: data.environment || '',
         monsters: data.monsters || [],
-        difficulty: data.difficulty,
-        partyId: data.partyId,
-        partyLevel: data.partyLevel,
+        difficulty: data.difficulty || 'medium',
+        totalXP: data.totalXP || 0,
+        adjustedXP: data.adjustedXP || 0,
         createdAt: data.createdAt?.toDate().toISOString() || new Date().toISOString(),
         updatedAt: data.updatedAt?.toDate().toISOString() || new Date().toISOString()
       });
     });
     
-    // Trier par date de création (le plus récent d'abord)
-    return encounters.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    // Trier par date de mise à jour (le plus récent d'abord)
+    return encounters.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
   } catch (error) {
     console.error("Erreur lors de la récupération des rencontres:", error);
     throw error;
+  }
+};
+
+// Écouter les changements des rencontres en temps réel
+export const subscribeToEncounters = (callback: (encounters: Encounter[]) => void): (() => void) => {
+  try {
+    const user = getCurrentUser();
+    const encountersRef = collection(db, 'users', user.uid, 'encounters');
+    
+    // Créer un écouteur qui se déclenche à chaque changement dans la collection
+    const unsubscribe = onSnapshot(encountersRef, (snapshot) => {
+      const encounters: Encounter[] = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        encounters.push({
+          id: doc.id,
+          name: data.name,
+          description: data.description || '',
+          environment: data.environment || '',
+          monsters: data.monsters || [],
+          difficulty: data.difficulty || 'medium',
+          totalXP: data.totalXP || 0,
+          adjustedXP: data.adjustedXP || 0,
+          createdAt: data.createdAt?.toDate().toISOString() || new Date().toISOString(),
+          updatedAt: data.updatedAt?.toDate().toISOString() || new Date().toISOString()
+        });
+      });
+      
+      // Trier par date de mise à jour (le plus récent d'abord)
+      const sortedEncounters = encounters.sort((a, b) => 
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
+      
+      // Appeler le callback avec les données mises à jour
+      callback(sortedEncounters);
+    });
+    
+    // Retourner la fonction pour se désabonner quand nécessaire
+    return unsubscribe;
+  } catch (error) {
+    console.error("Erreur lors de l'abonnement aux rencontres:", error);
+    return () => {}; // Retourner une fonction vide en cas d'erreur
   }
 };
 
@@ -401,9 +504,76 @@ export const saveEncounter = async (encounterData: Omit<Encounter, 'id' | 'creat
     const userRef = doc(db, 'users', user.uid);
     const encountersRef = collection(userRef, 'encounters');
     
+    // Préparer les données à sauvegarder
+    const { party, participants, monsters, ...restData } = encounterData;
+    
+    // Vérifier si les participants contiennent des données cycliques et les nettoyer
+    const cleanParticipants = participants ? participants.map(participant => {
+      // Créer une copie sans propriétés problématiques pour Firestore
+      const { actions, traits, ...cleanParticipant } = participant;
+      
+      // Convertir les actions et traits en format sérialisable si nécessaires
+      return {
+        ...cleanParticipant,
+        actions: actions ? actions.map(a => ({
+          name: a.name || '',
+          description: a.description || a.desc || ''
+        })) : [],
+        traits: traits ? traits.map(t => ({
+          name: t.name || '',
+          description: t.description || t.desc || ''
+        })) : []
+      };
+    }) : [];
+    
+    // Nettoyer et préparer les monstres
+    const cleanMonsters = monsters ? monsters.map(({ monster, quantity }) => {
+      // Extraire les propriétés nécessaires du monstre
+      const { id, name, originalName, cr, xp, type, size, ac, hp, str, dex, con, int, wis, cha } = monster;
+      
+      return {
+        monster: {
+          id,
+          name,
+          originalName,
+          cr,
+          xp,
+          type,
+          size,
+          ac,
+          hp,
+          str,
+          dex,
+          con, 
+          int,
+          wis,
+          cha
+        },
+        quantity
+      };
+    }) : [];
+    
+    // Préparer les données du groupe
+    const cleanParty = party ? {
+      id: party.id,
+      name: party.name,
+      players: party.players.map(p => ({
+        id: p.id,
+        name: p.name,
+        level: p.level,
+        characterClass: p.characterClass,
+        ac: p.ac || 10,
+        currentHp: p.currentHp || 10,
+        maxHp: p.maxHp || 10
+      }))
+    } : null;
+    
     const now = serverTimestamp();
     const data = {
-      ...encounterData,
+      ...restData,
+      monsters: cleanMonsters,
+      participants: cleanParticipants,
+      party: cleanParty,
       createdAt: now,
       updatedAt: now
     };
@@ -444,6 +614,154 @@ export const deleteEncounter = async (encounterId: string): Promise<boolean> => 
     return true;
   } catch (error) {
     console.error("Erreur lors de la suppression de la rencontre:", error);
+    throw error;
+  }
+};
+
+// Mettre à jour une rencontre existante dans Firestore
+export const updateFirestoreEncounter = async (
+  encounterId: string,
+  updates: Partial<Omit<Encounter, 'id' | 'createdAt' | 'updatedAt'>>
+): Promise<Encounter | null> => {
+  try {
+    const user = getCurrentUser();
+    const encounterRef = doc(db, 'users', user.uid, 'encounters', encounterId);
+    
+    // Vérifier si la rencontre existe déjà
+    const encounterDoc = await getDoc(encounterRef);
+    
+    // Préparer les données à mettre à jour
+    const { party, participants, monsters, ...restUpdates } = updates;
+    
+    // Vérifier si les participants contiennent des données cycliques et les nettoyer
+    const cleanParticipants = participants ? participants.map(participant => {
+      // Créer une copie sans propriétés problématiques pour Firestore
+      const { actions, traits, ...cleanParticipant } = participant;
+      
+      // Convertir les actions et traits en format sérialisable si nécessaires
+      return {
+        ...cleanParticipant,
+        actions: actions ? actions.map(a => ({
+          name: a.name || '',
+          description: a.description || a.desc || ''
+        })) : [],
+        traits: traits ? traits.map(t => ({
+          name: t.name || '',
+          description: t.description || t.desc || ''
+        })) : []
+      };
+    }) : undefined;
+    
+    // Nettoyer et préparer les monstres
+    const cleanMonsters = monsters ? monsters.map(({ monster, quantity }) => {
+      // Extraire les propriétés nécessaires du monstre
+      const { id, name, originalName, cr, xp, type, size, ac, hp, str, dex, con, int, wis, cha } = monster;
+      
+      return {
+        monster: {
+          id,
+          name,
+          originalName,
+          cr,
+          xp,
+          type,
+          size,
+          ac,
+          hp,
+          str,
+          dex,
+          con, 
+          int,
+          wis,
+          cha
+        },
+        quantity
+      };
+    }) : undefined;
+    
+    // Préparer les données du groupe
+    const cleanParty = party ? {
+      id: party.id,
+      name: party.name,
+      players: party.players.map(p => ({
+        id: p.id,
+        name: p.name,
+        level: p.level,
+        characterClass: p.characterClass,
+        ac: p.ac || 10,
+        currentHp: p.currentHp || 10,
+        maxHp: p.maxHp || 10
+      }))
+    } : undefined;
+    
+    const now = serverTimestamp();
+    const updateData: any = {
+      ...restUpdates,
+      updatedAt: now
+    };
+    
+    // N'ajouter les champs que s'ils sont définis
+    if (cleanParticipants) updateData.participants = cleanParticipants;
+    if (cleanMonsters) updateData.monsters = cleanMonsters;
+    if (cleanParty) updateData.party = cleanParty;
+    
+    if (encounterDoc.exists()) {
+      // Mise à jour d'une rencontre existante
+      await updateDoc(encounterRef, updateData);
+    } else {
+      // Création d'une nouvelle rencontre
+      updateData.createdAt = now;
+      await setDoc(encounterRef, updateData);
+      
+      // Mettre à jour les statistiques de l'utilisateur
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
+        'stats.encounters': increment(1)
+      });
+    }
+    
+    // Récupérer les données mises à jour
+    const updatedDoc = await getDoc(encounterRef);
+    if (!updatedDoc.exists()) {
+      throw new Error("Erreur: Impossible de récupérer la rencontre après mise à jour");
+    }
+    
+    const data = updatedDoc.data();
+    
+    return {
+      id: encounterId,
+      name: data.name,
+      description: data.description || '',
+      environment: data.environment || '',
+      monsters: data.monsters || [],
+      participants: data.participants || [],
+      party: data.party || null,
+      difficulty: data.difficulty || 'medium',
+      totalXP: data.totalXP || 0,
+      adjustedXP: data.adjustedXP || 0,
+      partyId: data.partyId,
+      status: data.status || 'draft',
+      round: data.round || 0,
+      currentTurn: data.currentTurn || 0,
+      isActive: data.isActive || false,
+      createdAt: data.createdAt?.toDate?.() ? data.createdAt.toDate().toISOString() : new Date().toISOString(),
+      updatedAt: data.updatedAt?.toDate?.() ? data.updatedAt.toDate().toISOString() : new Date().toISOString()
+    };
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour de la rencontre dans Firestore:", error);
+    throw error;
+  }
+};
+
+// Maintenir la fonction originale pour la compatibilité
+export const updateEncounter = async (
+  encounterId: string,
+  updates: Partial<Omit<Encounter, 'id' | 'createdAt' | 'updatedAt'>>
+): Promise<Encounter | null> => {
+  try {
+    return await updateFirestoreEncounter(encounterId, updates);
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour de la rencontre:", error);
     throw error;
   }
 };
@@ -577,4 +895,175 @@ export const getUserStats = async (): Promise<UserStats> => {
     console.error("Erreur lors de la récupération des statistiques:", error);
     throw error;
   }
+};
+
+// Fonction pour initialiser des monstres de test
+export const initializeTestMonsters = async (): Promise<void> => {
+  try {
+    const user = getCurrentUser();
+    const monstersCollection = collection(db, 'monsters'); // Collection globale
+    
+    // Quelques monstres de base pour tester
+    const testMonsters = [
+      {
+        name: 'Gobelin',
+        cr: 0.25,
+        xp: 50,
+        type: 'humanoïde',
+        size: 'P',
+        source: 'Manuel des Monstres',
+        environment: ['forêt', 'montagne', 'souterrain'],
+        legendary: false,
+        alignment: 'neutre mauvais',
+        ac: 15,
+        hp: 7,
+        createdBy: user.uid
+      },
+      {
+        name: 'Troll',
+        cr: 5,
+        xp: 1800,
+        type: 'géant',
+        size: 'G',
+        source: 'Manuel des Monstres',
+        environment: ['forêt', 'montagne', 'marais'],
+        legendary: false,
+        alignment: 'chaotique mauvais',
+        ac: 15,
+        hp: 84,
+        createdBy: user.uid
+      },
+      {
+        name: 'Dragon rouge adulte',
+        cr: 17,
+        xp: 18000,
+        type: 'dragon',
+        size: 'TG',
+        source: 'Manuel des Monstres',
+        environment: ['montagne', 'volcan'],
+        legendary: true,
+        alignment: 'chaotique mauvais',
+        ac: 19,
+        hp: 256,
+        createdBy: user.uid
+      }
+    ];
+    
+    // Ajouter chaque monstre à la collection globale
+    for (const monster of testMonsters) {
+      await addDoc(monstersCollection, {
+        ...monster,
+        createdAt: serverTimestamp()
+      });
+    }
+    
+    console.log('Monstres de test ajoutés avec succès');
+    return;
+  } catch (error) {
+    console.error('Erreur lors de l\'initialisation des monstres de test:', error);
+    throw error;
+  }
+};
+
+// Modifier la fonction subscribeToMonsters pour utiliser la collection globale
+export const subscribeToMonsters = (
+  callback: (monsters: Monster[]) => void,
+  errorCallback?: (error: any) => void
+): (() => void) => {
+  try {
+    const user = getCurrentUser();
+    // Utiliser la collection globale de monstres au lieu d'une sous-collection utilisateur
+    const monstersRef = collection(db, 'monsters');
+    
+    // Créer un écouteur qui se déclenche à chaque changement dans la collection
+    const unsubscribe = onSnapshot(
+      monstersRef, 
+      (snapshot) => {
+        const monsters: Monster[] = [];
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          monsters.push({
+            id: doc.id,
+            name: data.name,
+            cr: data.cr || 0,
+            xp: data.xp || calculateXPFromCR(data.cr || 0),
+            type: data.type || 'unknown',
+            size: data.size || 'M',
+            source: data.source || 'custom',
+            environment: data.environment || [],
+            legendary: data.legendary || false,
+            alignment: data.alignment || 'non-aligné',
+            ac: data.ac || 10,
+            hp: data.hp || 10,
+            custom: data.custom || true
+          });
+        });
+        
+        // Appeler le callback avec les données mises à jour
+        callback(monsters);
+      },
+      (error) => {
+        console.error("Erreur lors de l'abonnement aux monstres:", error);
+        // Appeler le callback d'erreur si fourni
+        if (errorCallback) {
+          errorCallback(error);
+        }
+      }
+    );
+    
+    // Retourner la fonction pour se désabonner quand nécessaire
+    return unsubscribe;
+  } catch (error) {
+    console.error("Erreur lors de l'abonnement aux monstres:", error);
+    // Appeler le callback d'erreur si fourni
+    if (errorCallback) {
+      errorCallback(error);
+    }
+    return () => {}; // Retourner une fonction vide en cas d'erreur
+  }
+};
+
+// Fonction pour calculer l'XP en fonction du CR
+export const calculateXPFromCR = (cr: number): number => {
+  const crToXP: Record<number | string, number> = {
+    0: 10,
+    '1/8': 25,
+    0.125: 25,
+    '1/4': 50,
+    0.25: 50,
+    '1/2': 100,
+    0.5: 100,
+    1: 200,
+    2: 450,
+    3: 700,
+    4: 1100,
+    5: 1800,
+    6: 2300,
+    7: 2900,
+    8: 3900,
+    9: 5000,
+    10: 5900,
+    11: 7200,
+    12: 8400,
+    13: 10000,
+    14: 11500,
+    15: 13000,
+    16: 15000,
+    17: 18000,
+    18: 20000,
+    19: 22000,
+    20: 25000,
+    21: 33000,
+    22: 41000,
+    23: 50000,
+    24: 62000,
+    25: 75000,
+    26: 90000,
+    27: 105000,
+    28: 120000,
+    29: 135000,
+    30: 155000
+  };
+
+  return crToXP[cr] || 0;
 }; 

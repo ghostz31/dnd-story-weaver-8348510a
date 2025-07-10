@@ -17,7 +17,8 @@ import {
   addPlayerToParty, 
   updatePlayer, 
   removePlayerFromParty,
-  canCreateParty
+  canCreateParty,
+  subscribeToParties
 } from '../lib/firebaseApi';
 import { Party, Player } from '../lib/types';
 import UsageStats from './UsageStats';
@@ -47,7 +48,10 @@ const PartyEditor: React.FC = () => {
   const [newPlayer, setNewPlayer] = useState<Omit<Player, 'id'>>({
     name: '',
     level: 1,
-    characterClass: 'Guerrier'
+    characterClass: 'Guerrier',
+    ac: 10,
+    maxHp: 10,
+    currentHp: 10
   });
   const [isEditingPlayer, setIsEditingPlayer] = useState(false);
   const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
@@ -59,21 +63,27 @@ const PartyEditor: React.FC = () => {
     const loadParties = async () => {
       try {
         setIsLoading(true);
-        const fetchedParties = await getParties();
-        setParties(fetchedParties);
         
         // Vérifier si l'utilisateur peut créer un nouveau groupe
         const canCreateNewParty = await canCreateParty();
         setCanCreate(canCreateNewParty);
         
-        // Sélectionner le premier groupe par défaut s'il y en a
-        if (fetchedParties.length > 0 && !selectedParty) {
-          setSelectedParty(fetchedParties[0]);
-        }
+        // Utiliser l'abonnement aux parties au lieu de getParties
+        const unsubscribe = subscribeToParties((fetchedParties) => {
+          setParties(fetchedParties);
+          setIsLoading(false);
+          
+          // Sélectionner le premier groupe par défaut s'il y en a
+          if (fetchedParties.length > 0 && !selectedParty) {
+            setSelectedParty(fetchedParties[0]);
+          }
+        });
+        
+        // Nettoyer l'abonnement quand le composant est démonté
+        return () => unsubscribe();
       } catch (err) {
         console.error('Erreur lors du chargement des groupes:', err);
         setError('Impossible de charger vos groupes d\'aventuriers');
-      } finally {
         setIsLoading(false);
       }
     };
@@ -229,7 +239,10 @@ const PartyEditor: React.FC = () => {
       setNewPlayer({
         name: '',
         level: 1,
-        characterClass: 'Guerrier'
+        characterClass: 'Guerrier',
+        ac: 10,
+        maxHp: 10,
+        currentHp: 10
       });
       setIsPlayerDialogOpen(false);
     }
@@ -281,7 +294,10 @@ const PartyEditor: React.FC = () => {
       setNewPlayer({
         name: '',
         level: 1,
-        characterClass: 'Guerrier'
+        characterClass: 'Guerrier',
+        ac: 10,
+        maxHp: 10,
+        currentHp: 10
       });
       setIsEditingPlayer(false);
       setEditingPlayerId(null);
@@ -330,7 +346,10 @@ const PartyEditor: React.FC = () => {
     setNewPlayer({
       name: player.name,
       level: player.level,
-      characterClass: player.characterClass
+      characterClass: player.characterClass,
+      ac: player.ac,
+      maxHp: player.maxHp,
+      currentHp: player.currentHp
     });
     setEditingPlayerId(player.id);
     setIsEditingPlayer(true);
@@ -537,7 +556,10 @@ const PartyEditor: React.FC = () => {
                                 setNewPlayer({
                                   name: '',
                                   level: 1,
-                                  characterClass: 'Guerrier'
+                                  characterClass: 'Guerrier',
+                                  ac: 10,
+                                  maxHp: 10,
+                                  currentHp: 10
                                 });
                               }}
                             >
@@ -604,6 +626,55 @@ const PartyEditor: React.FC = () => {
                                   </Select>
                                 </div>
                               </div>
+                              
+                              <div className="grid grid-cols-3 gap-4">
+                                <div className="space-y-2">
+                                  <Label htmlFor="playerAC">Classe d'Armure (CA)</Label>
+                                  <Input
+                                    id="playerAC"
+                                    type="number"
+                                    min="0"
+                                    placeholder="10"
+                                    value={newPlayer.ac || 10}
+                                    onChange={(e) => setNewPlayer({...newPlayer, ac: parseInt(e.target.value) || 10})}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor="playerMaxHP">PV Maximum</Label>
+                                  <Input
+                                    id="playerMaxHP"
+                                    type="number"
+                                    min="1"
+                                    placeholder="10"
+                                    value={newPlayer.maxHp || 10}
+                                    onChange={(e) => {
+                                      const maxHp = parseInt(e.target.value) || 10;
+                                      // Ajuster le PV actuel si nécessaire
+                                      const currentHp = newPlayer.currentHp && newPlayer.currentHp > maxHp 
+                                        ? maxHp 
+                                        : newPlayer.currentHp || maxHp;
+                                      setNewPlayer({...newPlayer, maxHp, currentHp});
+                                    }}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor="playerCurrentHP">PV Actuels</Label>
+                                  <Input
+                                    id="playerCurrentHP"
+                                    type="number"
+                                    min="0"
+                                    max={newPlayer.maxHp || 10}
+                                    placeholder="10"
+                                    value={newPlayer.currentHp || 10}
+                                    onChange={(e) => {
+                                      const currentHp = parseInt(e.target.value) || 0;
+                                      // S'assurer que le PV actuel ne dépasse pas le maximum
+                                      const validCurrentHp = Math.min(currentHp, newPlayer.maxHp || 10);
+                                      setNewPlayer({...newPlayer, currentHp: validCurrentHp});
+                                    }}
+                                  />
+                                </div>
+                              </div>
                             </div>
                             <DialogFooter>
                               <Button 
@@ -613,7 +684,10 @@ const PartyEditor: React.FC = () => {
                                   setNewPlayer({
                                     name: '',
                                     level: 1,
-                                    characterClass: 'Guerrier'
+                                    characterClass: 'Guerrier',
+                                    ac: 10,
+                                    maxHp: 10,
+                                    currentHp: 10
                                   });
                                   setIsEditingPlayer(false);
                                   setEditingPlayerId(null);
@@ -648,7 +722,10 @@ const PartyEditor: React.FC = () => {
                               setNewPlayer({
                                 name: '',
                                 level: 1,
-                                characterClass: 'Guerrier'
+                                characterClass: 'Guerrier',
+                                ac: 10,
+                                maxHp: 10,
+                                currentHp: 10
                               });
                               setIsPlayerDialogOpen(true);
                             }}
@@ -664,6 +741,8 @@ const PartyEditor: React.FC = () => {
                               <TableHead>Nom</TableHead>
                               <TableHead>Classe</TableHead>
                               <TableHead>Niveau</TableHead>
+                              <TableHead>CA</TableHead>
+                              <TableHead>PV</TableHead>
                               <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                           </TableHeader>
@@ -673,6 +752,12 @@ const PartyEditor: React.FC = () => {
                                 <TableCell className="font-medium">{player.name}</TableCell>
                                 <TableCell>{player.characterClass}</TableCell>
                                 <TableCell>{player.level}</TableCell>
+                                <TableCell>{player.ac || '-'}</TableCell>
+                                <TableCell>
+                                  {player.currentHp !== undefined && player.maxHp !== undefined 
+                                    ? `${player.currentHp}/${player.maxHp}`
+                                    : '-'}
+                                </TableCell>
                                 <TableCell className="text-right">
                                   <div className="flex justify-end space-x-1">
                                     <Button 

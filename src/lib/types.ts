@@ -15,6 +15,9 @@ export interface Player {
   name: string;
   level: number;
   characterClass: string;
+  ac?: number;
+  currentHp?: number;
+  maxHp?: number;
 }
 
 export interface Party {
@@ -35,6 +38,7 @@ export interface UserStats {
 export interface Monster {
   id: string;
   name: string;
+  originalName?: string;
   cr?: number;
   challengeRating?: number;
   xp: number;
@@ -42,6 +46,7 @@ export interface Monster {
   size: string;
   source: string;
   custom?: boolean;
+  image?: string;
   alignment?: string;
   environment?: string[];
   legendary?: boolean;
@@ -69,10 +74,20 @@ export interface EncounterMonster {
 export interface Encounter {
   id: string;
   name: string;
-  monsters: Monster[];
-  difficulty: 'easy' | 'medium' | 'hard' | 'deadly';
-  partyId?: string; 
+  description?: string;
+  environment?: string;
+  monsters: EncounterMonster[];
+  participants?: EncounterParticipant[];
+  party?: Party;
+  partyId?: string;
   partyLevel?: number;
+  difficulty: 'easy' | 'medium' | 'hard' | 'deadly';
+  totalXP?: number;
+  adjustedXP?: number;
+  status?: 'draft' | 'active' | 'completed';
+  round?: number;
+  currentTurn?: number;
+  isActive?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -175,4 +190,30 @@ export const monsterSizes = [
   { value: 'G', label: 'G' },
   { value: 'TG', label: 'TG' },
   { value: 'Gig', label: 'Gig' }
-]; 
+];
+
+export interface EncounterParticipant {
+  id: string;
+  name: string;
+  originalName?: string;
+  initiative: number;
+  ac: number;
+  currentHp: number;
+  maxHp: number;
+  isPC: boolean;
+  conditions: string[];
+  notes: string;
+  cr?: string | number;
+  type?: string;
+  size?: string;
+  speed?: string[];
+  alignment?: string;
+  str?: number;
+  dex?: number;
+  con?: number;
+  int?: number;
+  wis?: number;
+  cha?: number;
+  actions?: any[];
+  traits?: any[];
+} 

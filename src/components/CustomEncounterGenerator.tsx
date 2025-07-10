@@ -17,11 +17,21 @@ import { Plus, Trash2, Save, Search, AlertCircle, Check, FileText, Skull } from 
 import { v4 as uuidv4 } from 'uuid';
 import UsageStats from './UsageStats';
 import { useAuth } from '../auth/AuthContext';
-import { getParties, canCreateEncounter, saveEncounter, getEncounters, deleteEncounter } from '../lib/firebaseApi';
+import { getParties, canCreateEncounter, saveEncounter, getEncounters, deleteEncounter, subscribeToEncounters } from '../lib/firebaseApi';
 import { Party, Monster, Encounter } from '../lib/types';
 
 // Difficultés d'une rencontre
 const ENCOUNTER_DIFFICULTIES = ['easy', 'medium', 'hard', 'deadly'] as const;
+
+// Fonction utilitaire pour générer des slugs AideDD corrects
+const getAideDDMonsterSlug = (name: string): string => {
+  // Convertir le nom en slug
+  return name.toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Enlever les accents
+    .replace(/ /g, '-')              // Remplacer les espaces par des tirets
+    .replace(/[^a-z0-9-]/g, '');     // Supprimer les caractères non alphanumériques
+};
 
 const CustomEncounterGenerator: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -56,13 +66,12 @@ const CustomEncounterGenerator: React.FC = () => {
           setSelectedPartyId(fetchedParties[0].id);
         }
         
-        // Charger les rencontres
-        const fetchedEncounters = await getEncounters();
-        setEncounters(fetchedEncounters);
-        
         // Vérifier si l'utilisateur peut créer une nouvelle rencontre
         const canCreateNew = await canCreateEncounter();
         setCanCreate(canCreateNew);
+        
+        // Utiliser l'abonnement aux rencontres pour obtenir les mises à jour en temps réel
+        // Les données chargées initialement et également lors des modifications
       } catch (err) {
         console.error('Erreur lors du chargement des données:', err);
         setError('Impossible de charger vos données');
@@ -72,6 +81,14 @@ const CustomEncounterGenerator: React.FC = () => {
     };
     
     loadData();
+    
+    // S'abonner aux changements dans les rencontres
+    const unsubscribe = subscribeToEncounters((fetchedEncounters) => {
+      setEncounters(fetchedEncounters);
+    });
+    
+    // Nettoyer l'abonnement lors du démontage du composant
+    return () => unsubscribe();
   }, [isAuthenticated]);
   
   // Rechercher des monstres
@@ -88,6 +105,7 @@ const CustomEncounterGenerator: React.FC = () => {
             id: uuidv4(),
             name: 'Gobelin',
             challengeRating: 0.25,
+            xp: 50,
             type: 'humanoïde',
             size: 'petit',
             source: 'Manuel des Monstres'
@@ -96,6 +114,7 @@ const CustomEncounterGenerator: React.FC = () => {
             id: uuidv4(),
             name: 'Troll',
             challengeRating: 5,
+            xp: 1800,
             type: 'géant',
             size: 'grand',
             source: 'Manuel des Monstres'
@@ -104,6 +123,7 @@ const CustomEncounterGenerator: React.FC = () => {
             id: uuidv4(),
             name: 'Dragon rouge',
             challengeRating: 17,
+            xp: 18000,
             type: 'dragon',
             size: 'gigantesque',
             source: 'Manuel des Monstres'
@@ -401,7 +421,17 @@ const CustomEncounterGenerator: React.FC = () => {
                               onClick={() => setSelectedMonster(monster)}
                             >
                               <div>
-                                <div className="font-medium">{monster.name}</div>
+                                <div className="font-medium">
+                                  <a 
+                                    href={`https://www.aidedd.org/dnd/monstres.php?vf=${getAideDDMonsterSlug(monster.name)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:text-blue-800 hover:underline"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    {monster.name}
+                                  </a>
+                                </div>
                                 <div className="text-sm text-muted-foreground">
                                   FD {formatCR(monster.challengeRating)} • {monster.size} {monster.type}
                                 </div>
@@ -447,7 +477,16 @@ const CustomEncounterGenerator: React.FC = () => {
                         <TableBody>
                           {monsterList.map(monster => (
                             <TableRow key={monster.id}>
-                              <TableCell className="font-medium">{monster.name}</TableCell>
+                              <TableCell className="font-medium">
+                                <a 
+                                  href={`https://www.aidedd.org/dnd/monstres.php?vf=${getAideDDMonsterSlug(monster.name)}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:text-blue-800 hover:underline"
+                                >
+                                  {monster.name}
+                                </a>
+                              </TableCell>
                               <TableCell>{monster.type}</TableCell>
                               <TableCell>{monster.size}</TableCell>
                               <TableCell>{formatCR(monster.challengeRating)}</TableCell>
@@ -573,7 +612,15 @@ const CustomEncounterGenerator: React.FC = () => {
                         <div className="mt-2 flex flex-wrap gap-1">
                           {encounter.monsters.map(monster => (
                             <Badge key={monster.id} variant="outline" className="text-xs">
-                              {monster.name} (FD {formatCR(monster.challengeRating)})
+                              <a 
+                                href={`https://www.aidedd.org/dnd/monstres.php?vf=${getAideDDMonsterSlug(monster.name)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:underline"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                {monster.name}
+                              </a> (FD {formatCR(monster.challengeRating)})
                             </Badge>
                           ))}
                         </div>

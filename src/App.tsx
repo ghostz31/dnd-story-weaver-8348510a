@@ -16,10 +16,10 @@ import './App.css';
 
 // Composant de protection des routes authentifiées
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
-  if (loading) {
+  if (isLoading) {
     // Affichage d'un chargement pendant la vérification de l'authentification
     return (
       <div className="flex justify-center items-center h-screen">
@@ -40,17 +40,9 @@ function App() {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
 
-  // Vérifier si nous sommes sur la page du tracker
-  const isTrackerPage = location.pathname === '/encounter-tracker';
-
-  // Si nous sommes sur la page du tracker, afficher uniquement le composant de suivi
-  if (isTrackerPage) {
-    return <EncounterTracker />;
-  }
-
   return (
     <div className="min-h-screen bg-gray-100">
-      {!isTrackerPage && <Header />}
+      <Header />
       
       <main className="container mx-auto p-4">
         <Routes>
@@ -59,6 +51,8 @@ function App() {
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/login" element={<Navigate to="/auth" replace />} />
           <Route path="/monsters" element={<MonsterBrowser />} />
+          <Route path="/encounter-tracker" element={<EncounterTracker />} />
+          <Route path="/encounter-tracker/:encounterId" element={<EncounterTracker />} />
           
           {/* Routes protégées (utilisateur connecté) */}
           <Route path="/profile" element={

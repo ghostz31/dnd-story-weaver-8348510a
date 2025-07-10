@@ -10,7 +10,7 @@ import { useAuth } from '@/auth/AuthContext';
 
 const SubscriptionPage: React.FC = () => {
   const navigate = useNavigate();
-  const { userData } = useAuth();
+  const { user } = useAuth();
   
   const [paymentStep, setPaymentStep] = useState<'details' | 'processing' | 'success' | 'error'>('details');
   const [cardDetails, setCardDetails] = useState({

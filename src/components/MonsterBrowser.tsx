@@ -1,12 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { getMonsters, searchMonsters, fetchMonstersFromAPI } from '../lib/api';
+import { getMonsters, searchMonsters, fetchMonstersFromAPI, fetchMonsterFromAideDD, adaptAideDDData, loadMonstersIndex } from '../lib/api';
+import { subscribeToMonsters, initializeTestMonsters } from '../lib/firebaseApi';
 import { Monster, environments, monsterCategories, monsterTypes, monsterSizes } from '../lib/types';
-import { FaSync, FaSearch, FaFilter, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaSync, FaSearch, FaFilter, FaChevronDown, FaChevronUp, FaPlus, FaInfoCircle } from 'react-icons/fa';
+import { useAuth } from '../auth/AuthContext';
+import { toast } from '../hooks/use-toast';
+import { enrichMonster, mergeAideDDData } from '@/lib/monsterEnricher';
+import MonsterCard from './MonsterCard';
+import { Button } from './ui/button';
+import { Image as ImageIcon } from 'lucide-react';
 
 interface MonsterBrowserProps {
   onSelectMonster?: (monster: Monster) => void;
   isSelectable?: boolean;
 }
+
+// Fonction utilitaire pour générer des identifiants uniques
+const generateUniqueId = () => {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+};
+
+// Fonction utilitaire pour générer des slugs AideDD corrects
+const getAideDDMonsterSlug = (name: string): string => {
+  // Convertir le nom en slug
+  return name.toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Enlever les accents
+    .replace(/ /g, '-')              // Remplacer les espaces par des tirets
+    .replace(/[^a-z0-9-]/g, '');     // Supprimer les caractères non alphanumériques
+};
 
 const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSelectable = false }) => {
   const [monsters, setMonsters] = useState<Monster[]>([]);
@@ -14,6 +36,10 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
   const [loading, setLoading] = useState(false);
   const [selectedMonster, setSelectedMonster] = useState<Monster | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [enrichedMonster, setEnrichedMonster] = useState<any>(null);
+  const [loadingDetails, setLoadingDetails] = useState(false);
+  const [currentMonsterName, setCurrentMonsterName] = useState<string | null>(null);
+  const [filteredMonsters, setFilteredMonsters] = useState<Monster[]>([]);
 
   // Filtres
   const [crMin, setCrMin] = useState<number | undefined>(undefined);
@@ -23,74 +49,444 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
   const [selectedSize, setSelectedSize] = useState('all');
   const [selectedEnvironment, setSelectedEnvironment] = useState('all');
   
+  const { isAuthenticated } = useAuth();
+  
   // Charger les monstres au démarrage
   useEffect(() => {
+    if (!isAuthenticated) {
+      // Si l'utilisateur n'est pas authentifié, utiliser les données locales
     const loadMonsters = async () => {
+      // Éviter de charger si les monstres sont déjà chargés
+      if (monsters.length > 0) {
+        console.log("Les monstres sont déjà chargés, chargement ignoré");
+        return;
+      }
+      
       setLoading(true);
       try {
-        let monsters = getMonsters();
-        
-        // Si aucun monstre n'est stocké, tenter de récupérer depuis l'API
-        if (monsters.length === 0) {
-          monsters = await fetchMonstersFromAPI();
-        }
+          console.log("Chargement des monstres depuis l'index des fichiers individuels...");
+          
+          // Charger l'index des monstres individuels
+          const monstersIndex = await loadMonstersIndex();
+          
+          if (monstersIndex && monstersIndex.length > 0) {
+            console.log(`${monstersIndex.length} monstres chargés depuis l'index`);
+            
+            // Transformer l'index au format Monster pour l'application
+            const formattedMonsters = monstersIndex.map((monster: any) => ({
+              id: monster.id,
+              name: monster.name,
+              originalName: monster.originalName,
+              cr: parseFloat(monster.cr) || 0,
+              xp: calculateXPFromCR(parseFloat(monster.cr) || 0),
+              type: monster.type || 'Inconnu',
+              size: monster.size || 'M',
+              source: 'AideDD',
+              environment: [],
+              legendary: false,
+              alignment: 'non-aligné',
+              ac: 10,
+              hp: 10,
+              image: monster.image
+            }));
+            
+            setMonsters(formattedMonsters);
+          } else {
+            console.warn("Index des monstres vide, essai de chargement depuis le JSON complet");
+            
+            // Fallback au JSON complet
+            const response = await fetch('/data/aidedd-monsters-all.json');
+            if (response.ok) {
+              const monstersData = await response.json();
+              // Transformer les données au format attendu par l'application
+              const monsters = monstersData.map((monster: any) => ({
+                id: monster.id || generateUniqueId(),
+                name: monster.name,
+                cr: monster.cr,
+                xp: monster.xp || calculateXPFromCR(monster.cr),
+                type: monster.type,
+                size: monster.size,
+                source: monster.source || 'MM',
+                environment: monster.environment || [],
+                legendary: monster.legendary || false,
+                alignment: monster.alignment || 'non-aligné',
+                ac: monster.ac || 10,
+                hp: monster.hp || 10
+              }));
         
         setMonsters(monsters);
+              // Sauvegarder dans localStorage pour accélérer les prochains chargements
+              localStorage.setItem('dnd_monsters', JSON.stringify(monsters));
+            } else {
+              throw new Error("Impossible de charger le fichier JSON");
+            }
+          }
       } catch (error) {
         console.error("Erreur lors du chargement des monstres:", error);
+          
+          // Dernier recours: utiliser les monstres stockés en localStorage
+          const localMonsters = getMonsters();
+          setMonsters(localMonsters);
       } finally {
         setLoading(false);
       }
     };
 
     loadMonsters();
-  }, []);
-
-  // Gérer la recherche et les filtres
-  useEffect(() => {
-    const applyFilters = async () => {
+    } else {
+      // Si l'utilisateur est authentifié, utiliser Firestore avec des mises à jour en temps réel
+      if (monsters.length > 0) {
+        console.log("Les monstres sont déjà chargés, chargement Firestore ignoré");
+        return;
+      }
+      
       setLoading(true);
+      
       try {
-        const filteredMonsters = searchMonsters(searchQuery, {
-          crMin,
-          crMax,
-          type: selectedType !== 'all' ? selectedType : undefined,
-          size: selectedSize !== 'all' ? selectedSize : undefined,
-          category: selectedCategory !== 'all' ? selectedCategory : undefined,
-          environment: selectedEnvironment !== 'all' ? selectedEnvironment : undefined
+        const unsubscribe = subscribeToMonsters(async (fetchedMonsters) => {
+          setLoading(false);
+          
+          // Si nous avons réussi à récupérer des monstres depuis Firestore
+          if (fetchedMonsters && fetchedMonsters.length > 0) {
+            setMonsters(fetchedMonsters);
+          } else {
+            // Solution de secours: essayer d'abord l'index des fichiers individuels
+            console.log("Aucun monstre trouvé dans Firestore, essai avec l'index des fichiers individuels");
+            
+            try {
+              const monstersIndex = await loadMonstersIndex();
+              
+              if (monstersIndex && monstersIndex.length > 0) {
+                console.log(`${monstersIndex.length} monstres chargés depuis l'index`);
+                
+                // Transformer l'index au format Monster pour l'application
+                const formattedMonsters = monstersIndex.map((monster: any) => ({
+                  id: monster.id,
+                  name: monster.name,
+                  originalName: monster.originalName,
+                  cr: parseFloat(monster.cr) || 0,
+                  xp: calculateXPFromCR(parseFloat(monster.cr) || 0),
+                  type: monster.type || 'Inconnu',
+                  size: monster.size || 'M',
+                  source: 'AideDD',
+                  environment: [],
+                  legendary: false,
+                  alignment: 'non-aligné',
+                  ac: 10,
+                  hp: 10,
+                  image: monster.image
+                }));
+                
+                setMonsters(formattedMonsters);
+                // Sauvegarder dans localStorage pour accélérer les prochains chargements
+                localStorage.setItem('dnd_monsters', JSON.stringify(formattedMonsters));
+              } else {
+                // Si l'index est vide, essayer avec le JSON complet
+                console.warn("Index des monstres vide, essai avec le JSON complet");
+                
+                // Essayer de charger depuis le fichier JSON complet
+                const response = await fetch('/data/aidedd-monsters-all.json');
+                if (response.ok) {
+                  const monstersData = await response.json();
+                  // Transformer les données au format attendu
+                  const monsters = monstersData.map((monster: any) => ({
+                    id: monster.id || generateUniqueId(),
+                    name: monster.name,
+                    cr: monster.cr,
+                    xp: monster.xp || calculateXPFromCR(monster.cr),
+                    type: monster.type,
+                    size: monster.size,
+                    source: monster.source || 'MM',
+                    environment: monster.environment || [],
+                    legendary: monster.legendary || false,
+                    alignment: monster.alignment || 'non-aligné',
+                    ac: monster.ac || 10,
+                    hp: monster.hp || 10
+                  }));
+                  
+                  setMonsters(monsters);
+                  // Sauvegarder dans localStorage pour accélérer les prochains chargements
+                  localStorage.setItem('dnd_monsters', JSON.stringify(monsters));
+                } else {
+                  throw new Error("Impossible de charger les monstres depuis le JSON");
+                }
+              }
+            } catch (error) {
+              console.error("Erreur lors du chargement des monstres:", error);
+              // Dernier recours: utiliser les monstres stockés en localStorage
+              const localMonsters = getMonsters();
+              setMonsters(localMonsters);
+            }
+          }
         });
         
-        setMonsters(filteredMonsters);
+        return () => {
+          if (unsubscribe) unsubscribe();
+        };
       } catch (error) {
-        console.error("Erreur lors du filtrage des monstres:", error);
-      } finally {
-        setLoading(false);
+        console.error("Erreur lors de l'abonnement aux monstres Firestore:", error);
+              setLoading(false);
+        
+        // En cas d'erreur avec Firestore, utiliser les données locales
+              const localMonsters = getMonsters();
+              setMonsters(localMonsters);
       }
-    };
-    
-    applyFilters();
-  }, [searchQuery, crMin, crMax, selectedType, selectedSize, selectedCategory, selectedEnvironment]);
+    }
+  }, [isAuthenticated]);
+
+  // Fonction pour calculer l'XP à partir du CR
+  const calculateXPFromCR = (cr: number): number => {
+    if (cr <= 0) return 10;
+    if (cr <= 0.25) return 50;
+    if (cr <= 0.5) return 100;
+    if (cr <= 1) return 200;
+    if (cr <= 2) return 450;
+    if (cr <= 3) return 700;
+    if (cr <= 4) return 1100;
+    if (cr <= 5) return 1800;
+    if (cr <= 6) return 2300;
+    if (cr <= 7) return 2900;
+    if (cr <= 8) return 3900;
+    if (cr <= 9) return 5000;
+    if (cr <= 10) return 5900;
+    if (cr <= 11) return 7200;
+    if (cr <= 12) return 8400;
+    if (cr <= 13) return 10000;
+    if (cr <= 14) return 11500;
+    if (cr <= 15) return 13000;
+    if (cr <= 16) return 15000;
+    if (cr <= 17) return 18000;
+    if (cr <= 18) return 20000;
+    if (cr <= 19) return 22000;
+    if (cr <= 20) return 25000;
+    if (cr <= 21) return 33000;
+    if (cr <= 22) return 41000;
+    if (cr <= 23) return 50000;
+    if (cr <= 24) return 62000;
+    if (cr <= 25) return 75000;
+    if (cr <= 26) return 90000;
+    if (cr <= 27) return 105000;
+    if (cr <= 28) return 120000;
+    if (cr <= 29) return 135000;
+    return 155000;
+  };
+
+  // Fonction pour appliquer les filtres à un tableau de monstres
+  const applyFiltersToMonsters = (monstersToFilter: Monster[]): Monster[] => {
+    return monstersToFilter.filter(monster => {
+      // Filtre par nom (recherche)
+      if (searchQuery && !monster.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+        return false;
+      }
+      
+      // Filtre par CR
+      if (crMin !== undefined && monster.cr < crMin) {
+        return false;
+      }
+      
+      if (crMax !== undefined && monster.cr > crMax) {
+        return false;
+      }
+      
+      // Filtre par type
+      if (selectedType !== 'all' && monster.type !== selectedType) {
+        return false;
+      }
+      
+      // Filtre par taille
+      if (selectedSize !== 'all' && monster.size !== selectedSize) {
+        return false;
+      }
+      
+      // Filtre par environnement
+      if (selectedEnvironment !== 'all' && 
+          (!monster.environment || !monster.environment.includes(selectedEnvironment))) {
+        return false;
+      }
+      
+      // Filtre par catégorie (à adapter selon votre modèle de données)
+      if (selectedCategory !== 'all') {
+        if (selectedCategory === 'monstre' && monster.type !== 'humanoid' && monster.type !== 'monstrosity') {
+          return false;
+        } else if (selectedCategory === 'animal' && monster.type !== 'beast') {
+          return false;
+        } else if (selectedCategory === 'pnj' && monster.type !== 'humanoid') {
+          return false;
+        }
+      }
+      
+      return true;
+    });
+  };
+
+  // Filtrer les monstres en fonction des critères
+  useEffect(() => {
+    const filteredMonsters = applyFiltersToMonsters(monsters);
+    setFilteredMonsters(filteredMonsters);
+  }, [searchQuery, crMin, crMax, selectedType, selectedSize, selectedCategory, selectedEnvironment, monsters]);
 
   // Rafraîchir les monstres depuis l'API
   const handleRefreshMonsters = async () => {
-    if (window.confirm("Êtes-vous sûr de vouloir réinitialiser les monstres depuis l'API? Cela remplacera les monstres personnalisés.")) {
       setLoading(true);
-      try {
-        const monsters = await fetchMonstersFromAPI();
-        setMonsters(monsters);
+    
+    try {
+      // Charger l'index des monstres individuels
+      const monstersIndex = await loadMonstersIndex();
+      
+      if (monstersIndex && monstersIndex.length > 0) {
+        console.log(`${monstersIndex.length} monstres chargés depuis l'index`);
+        
+        // Transformer l'index au format Monster pour l'application
+        const formattedMonsters = monstersIndex.map((monster: any) => ({
+          id: monster.id,
+          name: monster.name,
+          originalName: monster.originalName,
+          cr: parseFloat(monster.cr) || 0,
+          xp: calculateXPFromCR(parseFloat(monster.cr) || 0),
+          type: monster.type || 'Inconnu',
+          size: monster.size || 'M',
+          source: 'AideDD',
+          environment: [],
+          legendary: false,
+          alignment: 'non-aligné',
+          ac: 10,
+          hp: 10,
+          image: monster.image
+        }));
+        
+        setMonsters(formattedMonsters);
+        localStorage.setItem('dnd_monsters', JSON.stringify(formattedMonsters));
+        
+        toast({
+          title: "Succès",
+          description: `${formattedMonsters.length} monstres chargés avec succès`,
+          variant: "default"
+        });
+      } else {
+        // Fallback au JSON complet
+      const response = await fetch('/data/aidedd-monsters-all.json');
+      if (response.ok) {
+        const monstersData = await response.json();
+        // Transformer les données au format attendu par l'application
+          const monsters = monstersData.map((monster: any) => ({
+            id: monster.id || generateUniqueId(),
+          name: monster.name,
+          cr: monster.cr,
+            xp: monster.xp || calculateXPFromCR(monster.cr),
+          type: monster.type,
+          size: monster.size,
+          source: monster.source || 'MM',
+          environment: monster.environment || [],
+          legendary: monster.legendary || false,
+          alignment: monster.alignment || 'non-aligné',
+          ac: monster.ac || 10,
+          hp: monster.hp || 10
+        }));
+        
+          setMonsters(monsters);
+          localStorage.setItem('dnd_monsters', JSON.stringify(monsters));
+        
+        toast({
+          title: "Succès",
+            description: `${monsters.length} monstres chargés depuis le JSON`,
+          variant: "default"
+        });
+      } else {
+          throw new Error("Impossible de charger le fichier JSON");
+        }
+      }
       } catch (error) {
-        console.error("Erreur lors de la récupération des monstres:", error);
+      console.error("Erreur lors de l'actualisation des monstres:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de recharger les monstres",
+        variant: "destructive"
+      });
       } finally {
         setLoading(false);
-      }
     }
   };
 
-  // Sélectionner un monstre
+  // Nouvelle fonction pour récupérer les détails d'un monstre depuis AideDD
+  const fetchMonsterDetails = async (monster: Monster) => {
+    // Réinitialiser complètement les états pour éviter les problèmes de rendu
+    setEnrichedMonster(null);
+    setSelectedMonster(null);
+    
+    // Ensuite seulement mettre à jour l'état de chargement et le nom
+    setLoadingDetails(true);
+    setCurrentMonsterName(monster.name);
+    
+    // AJOUTER DES LOGS POUR LE DÉBOGAGE
+    console.log("==================== DÉBUT DEBUG ====================");
+    console.log("Monster sélectionné:", monster);
+    
+    try {
+      // Essayer d'abord de récupérer depuis AideDD
+      console.log("Tentative de récupération depuis AideDD pour:", monster.name);
+      const aideddData = await fetchMonsterFromAideDD(monster.name);
+      console.log("Données reçues d'AideDD:", aideddData);
+      
+      if (aideddData) {
+        // Si on a des données de AideDD, les adapter à notre format
+        console.log("Adaptation des données AideDD");
+        const adaptedData = adaptAideDDData(aideddData);
+        console.log("Données adaptées:", adaptedData);
+        
+        // Utiliser la fonction de fusion pour combiner les données
+        console.log("Fusion des données avec mergeAideDDData");
+        const enriched = mergeAideDDData(adaptedData, monster);
+        console.log("Données finales après fusion:", enriched);
+        
+        // Mettre à jour l'état
+        setEnrichedMonster(enriched);
+        setSelectedMonster(monster);
+        
+        toast({
+          title: "Succès",
+          description: "Données du monstre récupérées depuis AideDD",
+          variant: "default"
+        });
+      } else {
+        // Si AideDD échoue, utiliser directement notre service d'enrichissement
+        console.log("Aucune donnée reçue d'AideDD, utilisation de enrichMonster");
+        const enriched = enrichMonster(monster);
+        console.log("Données enrichies:", enriched);
+        setEnrichedMonster(enriched);
+        setSelectedMonster(monster);
+        
+        toast({
+          title: "Information",
+          description: "Utilisation des données générées (AideDD non disponible)",
+          variant: "default"
+        });
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération des détails du monstre:", error);
+      // En cas d'erreur, utiliser notre service d'enrichissement
+      console.log("Utilisation de enrichMonster suite à une erreur");
+      const enriched = enrichMonster(monster);
+      console.log("Données enrichies après erreur:", enriched);
+      setEnrichedMonster(enriched);
+      setSelectedMonster(monster);
+      
+      toast({
+        title: "Erreur",
+        description: "Impossible de récupérer les détails complets du monstre. Affichage des données générées.",
+        variant: "destructive"
+      });
+    } finally {
+      console.log("==================== FIN DEBUG ====================");
+      setLoadingDetails(false);
+    }
+  };
+
+  // Remplacer la fonction handleSelectMonster existante
   const handleSelectMonster = (monster: Monster) => {
-    setSelectedMonster(monster);
-    if (onSelectMonster) {
+    if (isSelectable && onSelectMonster) {
       onSelectMonster(monster);
+    } else {
+      fetchMonsterDetails(monster);
     }
   };
 
@@ -106,6 +502,15 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
     
     // Recharger la liste complète des monstres
     setLoading(true);
+    
+    if (isAuthenticated) {
+      // Si l'utilisateur est authentifié, réabonner à tous les monstres sans filtre
+      subscribeToMonsters((allMonsters) => {
+        setMonsters(allMonsters);
+        setLoading(false);
+      });
+    } else {
+      // Sinon utiliser les données locales
     try {
       const allMonsters = getMonsters();
       setMonsters(allMonsters);
@@ -113,6 +518,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
       console.error("Erreur lors du rechargement des monstres:", error);
     } finally {
       setLoading(false);
+      }
     }
   };
 
@@ -120,205 +526,294 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
   const crValues = [...new Set(getMonsters().map(monster => monster.cr))].sort((a, b) => a - b);
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="px-2 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 flex items-center mr-2"
-          >
-            <FaFilter className="mr-1" />
-            Filtres {showFilters ? <FaChevronUp className="ml-1" /> : <FaChevronDown className="ml-1" />}
-          </button>
-          
-          <div className="relative flex-grow">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FaSearch className="text-gray-400" />
-            </div>
+    <div className="w-full">
+      {/* Barre de recherche et filtres */}
+      <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-2">
+        <div className="relative w-full sm:w-1/2">
             <input
               type="text"
-              placeholder="Rechercher un monstre..."
               value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Rechercher un monstre..."
+            className="pl-10 pr-4 py-2 border rounded-md w-full"
             />
-          </div>
+          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
         </div>
         
+        <div className="flex gap-2 items-center">
         <button
-          onClick={handleRefreshMonsters}
-          className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center ml-2"
-          disabled={loading}
-        >
-          <FaSync className={`mr-1 ${loading ? 'animate-spin' : ''}`} />
-          Actualiser
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center gap-1 px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+          >
+            <FaFilter className="text-gray-700" />
+            {showFilters ? "Masquer" : "Filtres"}
+            {showFilters ? <FaChevronUp className="text-gray-700" /> : <FaChevronDown className="text-gray-700" />}
         </button>
-      </div>
 
-      {/* Filtres avancés (collapsible) */}
-      {showFilters && (
-        <div className="mb-4 border border-gray-200 rounded-md p-3 bg-gray-50">
-          <div className="flex justify-between items-center mb-3">
-            <h3 className="text-sm font-medium text-gray-700">Filtres avancés</h3>
             <button
-              onClick={resetFilters}
-              className="px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+            onClick={handleRefreshMonsters}
+            className={`flex items-center gap-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={loading}
             >
-              Réinitialiser tous les filtres
+            <FaSync className={`${loading ? 'animate-spin' : ''}`} />
+            Actualiser
             </button>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
-              <select
-                value={selectedCategory}
-                onChange={e => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500"
-              >
-                {monsterCategories.map(category => (
-                  <option key={category.value} value={category.value}>
-                    {category.label}
-                  </option>
-                ))}
-              </select>
             </div>
 
+      {/* Filtres */}
+      {showFilters && (
+        <div className="mb-4 p-4 bg-gray-50 rounded-md">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
               <select
                 value={selectedType}
-                onChange={e => setSelectedType(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500"
+                onChange={(e) => setSelectedType(e.target.value)}
+                className="w-full p-2 border rounded-md"
               >
                 {monsterTypes.map(type => (
-                  <option key={type.value} value={type.value}>
-                    {type.label}
-                  </option>
+                  <option key={type.value} value={type.value}>{type.label}</option>
                 ))}
               </select>
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Taille</label>
               <select
                 value={selectedSize}
-                onChange={e => setSelectedSize(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500"
+                onChange={(e) => setSelectedSize(e.target.value)}
+                className="w-full p-2 border rounded-md"
               >
                 {monsterSizes.map(size => (
-                  <option key={size.value} value={size.value}>
-                    {size.label}
-                  </option>
+                  <option key={size.value} value={size.value}>{size.label}</option>
                 ))}
               </select>
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">FP Min</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
               <select
-                value={crMin === undefined ? '' : crMin.toString()}
-                onChange={e => setCrMin(e.target.value ? parseFloat(e.target.value) : undefined)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full p-2 border rounded-md"
               >
-                <option value="">Tous</option>
-                {crValues.map(cr => (
-                  <option key={`min-${cr}`} value={cr}>
-                    {cr}
-                  </option>
+                {monsterCategories.map(category => (
+                  <option key={category.value} value={category.value}>{category.label}</option>
                 ))}
               </select>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">FP Max</label>
-              <select
-                value={crMax === undefined ? '' : crMax.toString()}
-                onChange={e => setCrMax(e.target.value ? parseFloat(e.target.value) : undefined)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500"
-              >
-                <option value="">Tous</option>
-                {crValues.map(cr => (
-                  <option key={`max-${cr}`} value={cr}>
-                    {cr}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Environnement</label>
               <select
                 value={selectedEnvironment}
-                onChange={e => setSelectedEnvironment(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500"
+                onChange={(e) => setSelectedEnvironment(e.target.value)}
+                className="w-full p-2 border rounded-md"
               >
                 {environments.map(env => (
-                  <option key={env.value} value={env.value}>
-                    {env.label}
-                  </option>
+                  <option key={env.value} value={env.value}>{env.label}</option>
                 ))}
               </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">FP Min</label>
+              <input
+                type="number"
+                min="0"
+                max="30"
+                step="0.125"
+                value={crMin !== undefined ? crMin : ''}
+                onChange={(e) => setCrMin(e.target.value !== '' ? parseFloat(e.target.value) : undefined)}
+                className="w-full p-2 border rounded-md"
+              />
+          </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">FP Max</label>
+              <input
+                type="number"
+                min="0"
+                max="30"
+                step="0.125"
+                value={crMax !== undefined ? crMax : ''}
+                onChange={(e) => setCrMax(e.target.value !== '' ? parseFloat(e.target.value) : undefined)}
+                className="w-full p-2 border rounded-md"
+              />
+        </div>
+            <div className="flex items-end">
+          <button
+            onClick={resetFilters}
+                className="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300 w-full"
+          >
+                Réinitialiser
+          </button>
             </div>
           </div>
         </div>
       )}
-
+      
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700 mb-2"></div>
-          <p className="text-gray-500">Chargement du bestiaire...</p>
-        </div>
-      ) : monsters.length === 0 ? (
-        <div className="text-center text-gray-500 py-8">
-          <p className="mb-2">Aucun monstre ne correspond à vos critères.</p>
-          <button
-            onClick={resetFilters}
-            className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Réinitialiser les filtres
-          </button>
+        <div className="flex justify-center items-center py-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+        <>
+          {/* Ajout du bouton pour ajouter tous les monstres filtrés */}
+          {isSelectable && filteredMonsters.length > 0 && (
+            <div className="mb-4">
+              <Button 
+                onClick={() => {
+                  if (onSelectMonster) {
+                    // Ajouter le premier monstre pour déclencher l'événement
+                    // L'interface utilisateur montrera ensuite que l'ajout a été effectué
+                    const firstMonster = filteredMonsters[0];
+                    onSelectMonster(firstMonster);
+                    toast({
+                      title: "Monstres ajoutés",
+                      description: `${filteredMonsters.length} monstres ont été ajoutés à la rencontre.`,
+                      variant: "default"
+                    });
+                  }
+                }}
+                className="w-full bg-green-600 hover:bg-green-700 text-white"
+              >
+                Ajouter tous les monstres filtrés ({filteredMonsters.length})
+              </Button>
+            </div>
+          )}
+          
+          {/* Affichage en mode liste au lieu de grille */}
+          <div className="overflow-y-auto pb-4">
+            {filteredMonsters.length > 0 ? (
+              <div className="bg-white rounded-lg shadow overflow-hidden">
+                <table className="min-w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Taille</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">XP</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Taille</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">FP</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">XP</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {monsters.map(monster => (
-                <tr 
-                  key={monster.id} 
-                  className={`hover:bg-gray-50 ${isSelectable ? 'cursor-pointer' : ''} ${selectedMonster?.id === monster.id ? 'bg-blue-50' : ''}`}
-                  onClick={isSelectable ? () => handleSelectMonster(monster) : undefined}
-                >
-                  <td className="px-3 py-2 whitespace-nowrap">
-                    <a 
-                      href={`https://www.aidedd.org/dnd/monstres.php?vf=${encodeURIComponent(monster.name.toLowerCase())}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 hover:underline"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {monster.name}
-                    </a>
+                  <tbody className="divide-y divide-gray-200">
+                    {filteredMonsters.map((monster) => (
+                      <tr key={monster.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => handleSelectMonster(monster)}>
+                        <td className="px-4 py-2">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-8 w-8 bg-gray-200 rounded-full overflow-hidden">
+                              {monster.image ? (
+                                <img 
+                                  src={`/data/aidedd-complete/img/${monster.image}`} 
+                                  alt={monster.name}
+                                  className="h-8 w-8 object-cover"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.onerror = null;
+                                    target.src = '/images/monsters/unknown.jpg';
+                                  }}
+                                />
+                              ) : (
+                                <div className="h-8 w-8 flex items-center justify-center text-gray-500">
+                                  <ImageIcon size={16} />
+                                </div>
+                              )}
+                            </div>
+                            <div className="ml-3">
+                              <div className="text-sm font-medium text-gray-900">{monster.name}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-2">
+                          <span className="text-sm text-gray-700">{monster.type || "Inconnu"}</span>
+                        </td>
+                        <td className="px-4 py-2">
+                          <span className="text-sm text-gray-700">{monster.size || "M"}</span>
+                        </td>
+                        <td className="px-4 py-2">
+                          <span className="text-sm text-gray-700">{monster.cr}</span>
+                        </td>
+                        <td className="px-4 py-2">
+                          <span className="text-sm text-gray-700">{monster.xp}</span>
+                        </td>
+                        <td className="px-4 py-2 text-sm text-right space-x-2">
+                          {isSelectable && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onSelectMonster && onSelectMonster(monster);
+                              }}
+                              className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            >
+                              <FaPlus className="mr-1" size={12} /> Ajouter
+                            </button>
+                          )}
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              fetchMonsterDetails(monster);
+                            }}
+                            className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                          >
+                            <FaInfoCircle className="mr-1" size={12} /> Détails
+                          </button>
                   </td>
-                  <td className="px-3 py-2 whitespace-nowrap">{monster.type}</td>
-                  <td className="px-3 py-2 whitespace-nowrap">{monster.size}</td>
-                  <td className="px-3 py-2 whitespace-nowrap">{monster.xp}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                Aucun monstre trouvé. Essayez de modifier vos critères de recherche.
+        </div>
       )}
+      </div>
+        </>
+      )}
+
+      {/* Modal de détails du monstre */}
+      {selectedMonster && enrichedMonster && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h2 className="text-xl font-bold">{enrichedMonster.name}</h2>
+              <button 
+                onClick={() => setSelectedMonster(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-4">
+        {loadingDetails ? (
+                <div className="flex justify-center items-center py-8">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+          </div>
+              ) : (
+                <div className="monster-details prose max-w-none" dangerouslySetInnerHTML={{ __html: enrichedMonster.htmlDescription }} />
+              )}
+            </div>
+            <div className="p-4 border-t flex justify-end">
+              {isSelectable && (
+              <Button 
+                  onClick={() => {
+                    onSelectMonster && onSelectMonster(selectedMonster);
+                    setSelectedMonster(null);
+                  }}
+                  className="mr-2 bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  Ajouter à la rencontre
+              </Button>
+              )}
+              <button 
+                onClick={() => setSelectedMonster(null)}
+                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+          </div>
+        )}
     </div>
   );
 };

@@ -1,0 +1,234 @@
+[
+  {
+    "id": "gobelin",
+    "name": "Gobelin",
+    "originalName": "Goblin",
+    "cr": "0.25",
+    "type": "Humanoïde",
+    "size": "P"
+  },
+  {
+    "id": "dragon-de-cuivre-adulte",
+    "name": "Dragon de cuivre, adulte",
+    "originalName": "Adult Copper Dragon",
+    "cr": "14",
+    "type": "Dragon",
+    "size": "TG"
+  },
+  {
+    "id": "squelette",
+    "name": "Squelette",
+    "originalName": "Skeleton",
+    "cr": "0.25",
+    "type": "Mort-vivant",
+    "size": "M"
+  },
+  {
+    "id": "troll",
+    "name": "Troll",
+    "originalName": "Troll",
+    "cr": "5",
+    "type": "Géant",
+    "size": "G"
+  },
+  {
+    "id": "zombie",
+    "name": "Zombie",
+    "originalName": "Zombie",
+    "cr": "0.25",
+    "type": "Mort-vivant",
+    "size": "M"
+  },
+  {
+    "id": "dragon-rouge-adulte",
+    "name": "Dragon rouge, adulte",
+    "originalName": "Adult Red Dragon",
+    "cr": "17",
+    "type": "Dragon",
+    "size": "TG"
+  },
+  {
+    "id": "loup",
+    "name": "Loup",
+    "originalName": "Wolf",
+    "cr": "0.25",
+    "type": "Bête",
+    "size": "M"
+  },
+  {
+    "id": "orc",
+    "name": "Orc",
+    "originalName": "Orc",
+    "cr": "0.5",
+    "type": "Humanoïde",
+    "size": "M"
+  },
+  {
+    "id": "ogre",
+    "name": "Ogre",
+    "originalName": "Ogre",
+    "cr": "2",
+    "type": "Géant",
+    "size": "G"
+  },
+  {
+    "id": "dragon-noir-adulte",
+    "name": "Dragon noir, adulte",
+    "originalName": "Adult Black Dragon",
+    "cr": "14",
+    "type": "Dragon",
+    "size": "TG"
+  },
+  {
+    "id": "kobold",
+    "name": "Kobold",
+    "originalName": "Kobold",
+    "cr": "0.125",
+    "type": "Humanoïde",
+    "size": "P"
+  },
+  {
+    "id": "bandit",
+    "name": "Bandit",
+    "originalName": "Bandit",
+    "cr": "0.125",
+    "type": "Humanoïde",
+    "size": "M"
+  },
+  {
+    "id": "gobelin-chef",
+    "name": "Gobelin, chef",
+    "originalName": "Goblin Boss",
+    "cr": "1",
+    "type": "Humanoïde",
+    "size": "P"
+  },
+  {
+    "id": "rat-geant",
+    "name": "Rat, géant",
+    "originalName": "Giant Rat",
+    "cr": "0.125",
+    "type": "Bête",
+    "size": "P"
+  },
+  {
+    "id": "araignee-geante",
+    "name": "Araignée, géante",
+    "originalName": "Giant Spider",
+    "cr": "1",
+    "type": "Bête",
+    "size": "G"
+  },
+  {
+    "id": "ours-noir",
+    "name": "Ours noir",
+    "originalName": "Black Bear",
+    "cr": "0.5",
+    "type": "Bête",
+    "size": "M"
+  },
+  {
+    "id": "ours-hibou",
+    "name": "Ours-hibou",
+    "originalName": "Owlbear",
+    "cr": "3",
+    "type": "Créature monstrueuse",
+    "size": "G"
+  },
+  {
+    "id": "chef-bandit",
+    "name": "Chef bandit",
+    "originalName": "Bandit Captain",
+    "cr": "2",
+    "type": "Humanoïde",
+    "size": "M"
+  },
+  {
+    "id": "cultiste",
+    "name": "Cultiste",
+    "originalName": "Cultist",
+    "cr": "0.125",
+    "type": "Humanoïde",
+    "size": "M"
+  },
+  {
+    "id": "garde",
+    "name": "Garde",
+    "originalName": "Guard",
+    "cr": "0.125",
+    "type": "Humanoïde",
+    "size": "M"
+  },
+  {
+    "id": "squelette-de-minotaure",
+    "name": "Squelette de minotaure",
+    "originalName": "Minotaur Skeleton",
+    "cr": "2",
+    "type": "Mort-vivant",
+    "size": "G"
+  },
+  {
+    "id": "zombie-ogre",
+    "name": "Zombie ogre",
+    "originalName": "Ogre Zombie",
+    "cr": "2",
+    "type": "Mort-vivant",
+    "size": "G"
+  },
+  {
+    "id": "gobelours",
+    "name": "Gobelours",
+    "originalName": "Bugbear",
+    "cr": "1",
+    "type": "Humanoïde",
+    "size": "M"
+  },
+  {
+    "id": "elementaire-du-feu",
+    "name": "Élémentaire du feu",
+    "originalName": "Fire Elemental",
+    "cr": "5",
+    "type": "Élémentaire",
+    "size": "G"
+  },
+  {
+    "id": "elementaire-de-l-eau",
+    "name": "Élémentaire de l'eau",
+    "originalName": "Water Elemental",
+    "cr": "5",
+    "type": "Élémentaire",
+    "size": "G"
+  },
+  {
+    "id": "elementaire-de-l-air",
+    "name": "Élémentaire de l'air",
+    "originalName": "Air Elemental",
+    "cr": "5",
+    "type": "Élémentaire",
+    "size": "G"
+  },
+  {
+    "id": "elementaire-de-la-terre",
+    "name": "Élémentaire de la terre",
+    "originalName": "Earth Elemental",
+    "cr": "5",
+    "type": "Élémentaire",
+    "size": "G"
+  },
+  {
+    "id": "doppelganger",
+    "name": "Doppelganger",
+    "originalName": "Doppelganger",
+    "cr": "3",
+    "type": "Monstruosité",
+    "size": "M"
+  },
+  {
+    "id": "basilic",
+    "name": "Basilic",
+    "originalName": "Basilisk",
+    "cr": "3",
+    "type": "Monstruosité",
+    "size": "M"
+  }
+]
