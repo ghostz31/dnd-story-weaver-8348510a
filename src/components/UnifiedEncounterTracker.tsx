@@ -16,6 +16,7 @@ import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useScreenSize } from '@/components/ui/responsive-layout';
 import { 
   Play, 
   Pause, 
@@ -31,8 +32,11 @@ import {
   Coins,
   Settings,
   RefreshCw,
-  Crown
+  Crown,
+  Menu,
+  X
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface UnifiedEncounterTrackerProps {
   isTestVersion?: boolean;
@@ -41,6 +45,9 @@ interface UnifiedEncounterTrackerProps {
 const UnifiedEncounterTracker: React.FC<UnifiedEncounterTrackerProps> = ({ 
   isTestVersion = false 
 }) => {
+  const screenSize = useScreenSize();
+  const isMobile = screenSize === 'mobile';
+  const isTablet = screenSize === 'tablet';
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
@@ -379,139 +386,151 @@ const UnifiedEncounterTracker: React.FC<UnifiedEncounterTrackerProps> = ({
   };
   
   return (
-    <div className="container mx-auto px-4 py-6 space-y-6">
-      {/* Bannière de test */}
-      {isTestVersion && (
-        <TestBanner
-          title="Tracker de Rencontre - Version Test"
-          description="Interface redesignée avec gestion d'état optimisée"
-          features={[
-            "État centralisé avec useReducer",
-            "Service layer pour la logique métier",
-            "Composant unifié et réutilisable",
-            "Performance optimisée"
-          ]}
-        />
-      )}
-      
-      {/* En-tête avec contrôles */}
-      <Card>
-        <CardHeader className="pb-3">
+    <div className={cn("min-h-screen bg-gray-100", isMobile && "pb-safe")}>
+      {/* Header mobile sticky */}
+      {isMobile && (
+        <div className="sticky top-0 z-40 bg-white border-b border-gray-200 px-4 py-3 shadow-sm">
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Dice4 className="h-5 w-5" />
-              {state.encounter.name}
-              <Badge variant="outline">
+            <div className="flex items-center space-x-3">
+              <h1 className="text-lg font-semibold text-gray-900 truncate">
+                {state.encounter.name}
+              </h1>
+              <Badge variant="outline" className="text-xs">
                 Tour {state.encounter.round}
               </Badge>
-            </CardTitle>
-            
-            <div className="flex items-center gap-2">
-              {/* Contrôles de vue */}
-              <div className="flex border rounded-md">
-                <Button
-                  variant={state.ui.currentView === 'grid' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => actions.setView('grid')}
-                  className="rounded-r-none"
-                >
-                  <Grid3X3 className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={state.ui.currentView === 'list' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => actions.setView('list')}
-                  className="rounded-none"
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={state.ui.currentView === 'compact' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => actions.setView('compact')}
-                  className="rounded-l-none"
-                >
-                  <Minimize2 className="h-4 w-4" />
-                </Button>
-              </div>
-              
-              {/* Actions rapides */}
-              <Button variant="outline" size="sm" onClick={handleRollInitiativeForAll}>
-                <RefreshCw className="h-4 w-4 mr-1" />
-                Initiative
-              </Button>
-              
-              <Button variant="outline" size="sm" onClick={handleOpenMaxHpEditor}>
-                <Heart className="h-4 w-4 mr-1" />
-                PV Max
-              </Button>
-              
-              <Button variant="outline" size="sm" onClick={handleOpenTreasureModal}>
-                <Coins className="h-4 w-4 mr-1" />
-                Trésor
-              </Button>
             </div>
-          </div>
-        </CardHeader>
-        
-        <CardContent className="pt-0">
-          {/* Contrôles de combat */}
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <Button variant="outline" onClick={handlePreviousTurn}>
-              <SkipBack className="h-4 w-4" />
-            </Button>
-            
-            <div className="text-center">
-              {selectors.currentParticipant && (
-                <div>
-                  <div className="font-semibold">{selectors.currentParticipant.name}</div>
-                  <div className="text-sm text-muted-foreground">
-                    Initiative: {selectors.currentParticipant.initiative}
-                  </div>
+            <div className="flex items-center space-x-2">
+              {state.encounter.participants.length > 0 && (
+                <div className="flex space-x-1">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => actions.previousTurn()}
+                    className="h-8 w-8 p-0"
+                  >
+                    <SkipBack className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="default" 
+                    size="sm"
+                    onClick={() => actions.nextTurn()}
+                    className="h-8 w-8 p-0"
+                  >
+                    <SkipForward className="h-4 w-4" />
+                  </Button>
                 </div>
               )}
-            </div>
-            
-            <Button onClick={handleNextTurn}>
-              <SkipForward className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          {/* Statistiques */}
-          <div className="grid grid-cols-4 gap-4 text-center text-sm">
-            <div>
-              <div className="font-semibold">{selectors.encounterStats.totalParticipants}</div>
-              <div className="text-muted-foreground">Total</div>
-            </div>
-            <div>
-              <div className="font-semibold">{selectors.encounterStats.playersCount}</div>
-              <div className="text-muted-foreground">Joueurs</div>
-            </div>
-            <div>
-              <div className="font-semibold">{selectors.encounterStats.monstersCount}</div>
-              <div className="text-muted-foreground">Monstres</div>
-            </div>
-            <div>
-              <div className="font-semibold">{selectors.encounterStats.aliveParticipants}</div>
-              <div className="text-muted-foreground">Conscients</div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {/* Ouvrir menu mobile */}}
+                className="h-8 w-8 p-0"
+              >
+                <Menu className="h-4 w-4" />
+              </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
-      
-      {/* Liste des participants */}
-      <Card>
-        <CardContent className="p-4">
-          {state.encounter.participants.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <Dice4 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Aucun participant dans cette rencontre</p>
-            </div>
-          ) : (
-            renderParticipants()
+        </div>
+      )}
+
+      {/* Interface desktop */}
+      {!isMobile && (
+        <>
+          {/* Bannière de test */}
+          {isTestVersion && (
+            <TestBanner
+              title="Tracker de Rencontre - Version Test"
+              description="Interface redesignée avec gestion d'état optimisée"
+              features={[
+                "État centralisé avec useReducer",
+                "Service layer pour la logique métier",
+                "Composant unifié et réutilisable",
+                "Performance optimisée"
+              ]}
+            />
           )}
-        </CardContent>
-      </Card>
+          
+          {/* En-tête avec contrôles */}
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Dice4 className="h-5 w-5" />
+                  {state.encounter.name}
+                  <Badge variant="outline">
+                    Tour {state.encounter.round}
+                  </Badge>
+                </CardTitle>
+                
+                <div className="flex items-center gap-2">
+                  {/* Contrôles de vue */}
+                  <div className="flex border rounded-md">
+                    <Button
+                      variant={state.ui.currentView === 'grid' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => actions.setView('grid')}
+                      className="rounded-r-none"
+                    >
+                      <Grid3X3 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant={state.ui.currentView === 'list' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => actions.setView('list')}
+                      className="rounded-none"
+                    >
+                      <List className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant={state.ui.currentView === 'compact' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => actions.setView('compact')}
+                      className="rounded-l-none"
+                    >
+                      <Minimize2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  {/* Actions rapides */}
+                  <Button variant="outline" size="sm" onClick={handleRollInitiativeForAll}>
+                    <RefreshCw className="h-4 w-4 mr-1" />
+                    Initiative
+                  </Button>
+                  
+                  <Button variant="outline" size="sm" onClick={handleOpenMaxHpEditor}>
+                    <Heart className="h-4 w-4 mr-1" />
+                    PV Max
+                  </Button>
+                  
+                  <Button variant="outline" size="sm" onClick={handleOpenTreasureModal}>
+                    <Coins className="h-4 w-4 mr-1" />
+                    Trésor
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+        </>
+      )}
+      
+      {/* Contenu principal responsive */}
+      <div className={cn(
+        "mx-auto",
+        isMobile ? "px-4 py-2" : "container px-4 py-6"
+      )}>
+        <div className={cn(
+          isMobile ? "space-y-4" : "space-y-6"
+        )}>
+          {/* Participants */}
+          <Card>
+            <CardContent className={cn(
+              isMobile ? "p-3" : "pt-0"
+            )}>
+              {renderParticipants()}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
       
       {/* Modals */}
       <HpEditorModal

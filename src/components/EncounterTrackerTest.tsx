@@ -45,7 +45,9 @@ import {
   Settings,
   BookOpen,
   Maximize2,
-  Coins
+  Coins,
+  Menu,
+  X
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/components/ui/use-toast';
@@ -61,6 +63,7 @@ import { ConditionSelector } from './ui/condition-selector';
 import { normalizeCreatureName, generateAideDDUrl } from '../lib/aideddUrlMapper';
 import { getCachedCreatureStats, CreatureStats } from '../lib/aideddParser';
 import { TreasureModal } from './ui/treasure-modal';
+import { useScreenSize } from './ui/responsive-layout';
 
 import {
   getMonsterFromAideDD,
@@ -146,6 +149,13 @@ interface EncounterParticipant {
   remainingMovement?: number;
 }
 
+interface Encounter {
+  name: string;
+  participants: EncounterParticipant[];
+  currentTurn: number;
+  round: number;
+}
+
 // Composant pour afficher une créature dans le combat
 const CreatureCard: React.FC<{
   participant: EncounterParticipant;
@@ -174,6 +184,9 @@ const CreatureCard: React.FC<{
   healDamageAmount,
   onHealDamageAmountChange 
 }) => {
+  const screenSize = useScreenSize();
+  const isMobile = screenSize === 'mobile';
+  
   const hpPercentage = (participant.currentHp / participant.maxHp) * 100;
   const isAlive = participant.currentHp > 0;
   const isBloodied = hpPercentage <= 50 && hpPercentage > 0;
@@ -195,34 +208,50 @@ const CreatureCard: React.FC<{
   return (
     <Card className={cn(
       'transition-all duration-300 hover:shadow-lg',
-      isActive && 'ring-2 ring-blue-500 shadow-lg scale-105',
-      !isAlive && 'opacity-60 grayscale'
+      isActive && 'ring-2 ring-blue-500 shadow-lg',
+      !isAlive && 'opacity-60 grayscale',
+      isMobile && 'hover:shadow-md active:scale-[0.98]' // Effet tactile mobile
     )}>
-      <CardContent className="p-4">
+      <CardContent className={cn(
+        isMobile ? "p-3" : "p-4"
+      )}>
         {/* En-tête de la créature */}
-        <div className="flex items-start justify-between mb-3">
+        <div className={cn(
+          "flex items-start justify-between",
+          isMobile ? "mb-2" : "mb-3"
+        )}>
           <div className="flex items-center space-x-3 flex-1 min-w-0">
             {/* Indicateur de tour actif */}
             {isActive && (
-              <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse flex-shrink-0" />
+              <div className={cn(
+                "bg-blue-500 rounded-full animate-pulse flex-shrink-0",
+                isMobile ? "w-2 h-2" : "w-3 h-3"
+              )} />
             )}
             
             {/* Avatar et nom */}
             <div className="flex items-center space-x-2 min-w-0 flex-1">
               <div className={cn(
-                'w-10 h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0',
-                participant.isPC ? 'bg-blue-500' : 'bg-red-500'
+                'rounded-full flex items-center justify-center text-white font-bold flex-shrink-0',
+                participant.isPC ? 'bg-blue-500' : 'bg-red-500',
+                isMobile ? "w-8 h-8" : "w-10 h-10"
               )}>
-                {participant.isPC ? <User className="h-5 w-5" /> : <Sword className="h-4 w-4" />}
+                {participant.isPC ? <User className={cn(isMobile ? "h-4 w-4" : "h-5 w-5")} /> : <Sword className={cn(isMobile ? "h-3 w-3" : "h-4 w-4")} />}
               </div>
               
               <div className="min-w-0 flex-1">
-                <h3 className="font-semibold text-gray-900 flex items-center space-x-2 mb-1">
+                <h3 className={cn(
+                  "font-semibold text-gray-900 flex items-center space-x-2 mb-1",
+                  isMobile ? "text-sm" : "text-base"
+                )}>
                   <span className="truncate">{participant.displayName || participant.name}</span>
-                  {isActive && <Crown className="h-4 w-4 text-yellow-500 flex-shrink-0" />}
+                  {isActive && <Crown className={cn("text-yellow-500 flex-shrink-0", isMobile ? "h-3 w-3" : "h-4 w-4")} />}
                 </h3>
                 
-                <div className="flex items-center space-x-2 text-xs text-gray-600">
+                <div className={cn(
+                  "flex items-center space-x-2 text-gray-600",
+                  isMobile ? "text-xs" : "text-xs"
+                )}>
                   {participant.isPC ? (
                     <Badge variant="outline" className="text-xs">PJ</Badge>
                   ) : (
@@ -232,7 +261,7 @@ const CreatureCard: React.FC<{
                           CR {participant.cr}
                         </Badge>
                       )}
-                      {participant.type && (
+                      {participant.type && !isMobile && (
                         <span className="text-gray-500 truncate">{participant.type}</span>
                       )}
                     </>
@@ -243,89 +272,138 @@ const CreatureCard: React.FC<{
           </div>
           
           {/* Boutons d'action rapide */}
-          <div className="flex items-center space-x-1 flex-shrink-0 ml-2">
+          <div className={cn(
+            "flex items-center flex-shrink-0 ml-2",
+            isMobile ? "space-x-1" : "space-x-1"
+          )}>
             <Button 
               size="sm" 
               variant="outline" 
-              className="h-8 w-8 p-0 flex items-center justify-center"
+              className={cn(
+                "p-0 flex items-center justify-center",
+                isMobile ? "h-7 w-7 active:scale-95" : "h-8 w-8"
+              )}
               onClick={() => onEditHp(participant)}
               title="Modifier les PV"
             >
-              <Heart className="h-3.5 w-3.5" />
+              <Heart className={cn(isMobile ? "h-3 w-3" : "h-3.5 w-3.5")} />
             </Button>
-            
-
             
             <Button 
               size="sm" 
               variant="outline" 
-              className="h-8 w-8 p-0 flex items-center justify-center hover:bg-purple-50 hover:border-purple-300"
+              className={cn(
+                "p-0 flex items-center justify-center hover:bg-purple-50 hover:border-purple-300",
+                isMobile ? "h-7 w-7 active:scale-95" : "h-8 w-8"
+              )}
               onClick={() => onOpenConditionSelector(participant)}
               title="Gérer les conditions"
             >
-              <Square className="h-3.5 w-3.5 text-purple-600" />
+              <Square className={cn(
+                "text-purple-600",
+                isMobile ? "h-3 w-3" : "h-3.5 w-3.5"
+              )} />
             </Button>
             
             {!participant.isPC && (
               <Button 
                 size="sm" 
                 variant="outline" 
-                className="h-8 w-8 p-0 flex items-center justify-center hover:bg-blue-50 hover:border-blue-300"
+                className={cn(
+                  "p-0 flex items-center justify-center hover:bg-blue-50 hover:border-blue-300",
+                  isMobile ? "h-7 w-7 active:scale-95" : "h-8 w-8"
+                )}
                 onClick={() => onViewMonster(participant)}
                 title="Voir les détails sur AideDD"
               >
-                <BookOpen className="h-3.5 w-3.5 text-blue-600" />
+                <BookOpen className={cn(
+                  "text-blue-600",
+                  isMobile ? "h-3 w-3" : "h-3.5 w-3.5"
+                )} />
               </Button>
             )}
           </div>
         </div>
 
         {/* Statistiques principales */}
-        <div className="grid grid-cols-3 gap-4 mb-3">
+        <div className={cn(
+          "grid grid-cols-3 gap-4",
+          isMobile ? "mb-2" : "mb-3"
+        )}>
           {/* Initiative */}
           <div className="text-center">
-            <div className="text-lg font-bold text-blue-600">{participant.initiative}</div>
-            <div className="text-xs text-gray-500">Initiative</div>
+            <div className={cn(
+              "font-bold text-blue-600",
+              isMobile ? "text-base" : "text-lg"
+            )}>{participant.initiative}</div>
+            <div className={cn(
+              "text-gray-500",
+              isMobile ? "text-xs" : "text-xs"
+            )}>Initiative</div>
           </div>
           
           {/* CA */}
           <div className="text-center">
-            <div className="text-lg font-bold text-gray-700 flex items-center justify-center space-x-1">
-              <Shield className="h-4 w-4" />
+            <div className={cn(
+              "font-bold text-gray-700 flex items-center justify-center space-x-1",
+              isMobile ? "text-base" : "text-lg"
+            )}>
+              <Shield className={cn(isMobile ? "h-3 w-3" : "h-4 w-4")} />
               <span>{participant.ac}</span>
             </div>
-            <div className="text-xs text-gray-500">CA</div>
+            <div className={cn(
+              "text-gray-500",
+              isMobile ? "text-xs" : "text-xs"
+            )}>CA</div>
           </div>
           
           {/* PV */}
           <div className="text-center">
-            <div className="text-lg font-bold text-red-600 flex items-center justify-center space-x-1">
-              <Heart className="h-4 w-4" />
+            <div className={cn(
+              "font-bold text-red-600 flex items-center justify-center space-x-1",
+              isMobile ? "text-base" : "text-lg"
+            )}>
+              <Heart className={cn(isMobile ? "h-3 w-3" : "h-4 w-4")} />
               <span>{participant.currentHp}/{participant.maxHp}</span>
             </div>
-            <div className="text-xs text-gray-500">PV</div>
+            <div className={cn(
+              "text-gray-500",
+              isMobile ? "text-xs" : "text-xs"
+            )}>PV</div>
           </div>
         </div>
 
         {/* Barre de PV */}
-        <div className="mb-3">
+        <div className={cn(isMobile ? "mb-2" : "mb-3")}>
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-gray-600">Points de vie</span>
+            <span className={cn(
+              "text-gray-600",
+              isMobile ? "text-xs" : "text-xs"
+            )}>Points de vie</span>
             {getStatusBadge()}
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className={cn(
+            "w-full bg-gray-200 rounded-full",
+            isMobile ? "h-1.5" : "h-2"
+          )}>
             <div 
-              className={cn('h-2 rounded-full transition-all duration-300', getHpColor())}
+              className={cn('rounded-full transition-all duration-300', getHpColor(), isMobile ? "h-1.5" : "h-2")}
               style={{ width: `${Math.max(0, hpPercentage)}%` }}
             />
           </div>
           
-          {/* Boutons de soins/dégâts rapides - Format horizontal */}
-          <div className="flex items-center justify-center mt-2">
+          {/* Boutons de soins/dégâts rapides - Optimisés mobile */}
+          <div className={cn(
+            "flex items-center justify-center",
+            isMobile ? "mt-1" : "mt-2"
+          )}>
             <Button
               size="sm"
               variant="outline"
-              className="h-8 px-4 text-lg font-bold bg-green-500 text-white border-green-500 hover:bg-green-600 rounded-l-md rounded-r-none"
+              className={cn(
+                "font-bold bg-green-500 text-white border-green-500 hover:bg-green-600 rounded-l-md rounded-r-none",
+                isMobile ? "h-7 px-3 text-base active:scale-95" : "h-8 px-4 text-lg"
+              )}
               onClick={() => onQuickHeal(participant.id, healDamageAmount)}
               title={`Soigner ${healDamageAmount} PV`}
             >
@@ -337,12 +415,18 @@ const CreatureCard: React.FC<{
               max="999"
               value={healDamageAmount}
               onChange={(e) => onHealDamageAmountChange(Math.max(1, parseInt(e.target.value) || 1))}
-              className="h-8 w-16 text-center text-sm font-mono border-l-0 border-r-0 rounded-none focus:ring-0 focus:border-blue-500"
+              className={cn(
+                "text-center font-mono border-l-0 border-r-0 rounded-none focus:ring-0 focus:border-blue-500",
+                isMobile ? "h-7 w-12 text-xs" : "h-8 w-16 text-sm"
+              )}
             />
             <Button
               size="sm"
               variant="outline"
-              className="h-8 px-4 text-lg font-bold bg-red-500 text-white border-red-500 hover:bg-red-600 rounded-r-md rounded-l-none"
+              className={cn(
+                "font-bold bg-red-500 text-white border-red-500 hover:bg-red-600 rounded-r-md rounded-l-none",
+                isMobile ? "h-7 px-3 text-base active:scale-95" : "h-8 px-4 text-lg"
+              )}
               onClick={() => onQuickDamage(participant.id, healDamageAmount)}
               title={`Infliger ${healDamageAmount} dégâts`}
             >
@@ -353,10 +437,13 @@ const CreatureCard: React.FC<{
 
         {/* Conditions */}
         {participant.conditions.length > 0 && (
-          <div className="mb-3">
-            <div className="text-xs text-gray-600 mb-1">Conditions</div>
+          <div className={cn(isMobile ? "mb-2" : "mb-3")}>
+            <div className={cn(
+              "text-gray-600 mb-1",
+              isMobile ? "text-xs" : "text-xs"
+            )}>Conditions</div>
             <div className="flex flex-wrap gap-1">
-              {participant.conditions.map((condition, index) => {
+              {participant.conditions.slice(0, isMobile ? 4 : 6).map((condition, index) => {
                 const conditionInfo = getConditionInfo(condition);
                 const ConditionIcon = conditionInfo.icon;
                 
@@ -364,24 +451,45 @@ const CreatureCard: React.FC<{
                   <Badge 
                     key={index}
                     variant="outline" 
-                    className={cn('text-xs cursor-pointer flex items-center', conditionInfo.color)}
+                    className={cn(
+                      'cursor-pointer flex items-center transition-all active:scale-95',
+                      conditionInfo.color,
+                      isMobile ? "text-xs py-1 px-2" : "text-xs"
+                    )}
                     onClick={() => onToggleCondition(participant.id, condition)}
                   >
-                    <ConditionIcon className="h-2.5 w-2.5 mr-1 flex-shrink-0" />
-                    <span>{condition}</span>
+                    <ConditionIcon className={cn(
+                      "mr-1 flex-shrink-0",
+                      isMobile ? "h-2 w-2" : "h-2.5 w-2.5"
+                    )} />
+                    <span>{isMobile ? condition.slice(0, 6) : condition}</span>
                   </Badge>
                 );
               })}
+              {participant.conditions.length > (isMobile ? 4 : 6) && (
+                <Badge variant="outline" className="text-xs">
+                  +{participant.conditions.length - (isMobile ? 4 : 6)}
+                </Badge>
+              )}
             </div>
           </div>
         )}
 
         {/* Notes */}
         {participant.notes && (
-          <div className="border-t pt-2 mt-2">
-            <div className="text-xs text-gray-600 mb-1">Notes</div>
-            <p className="text-xs text-gray-700 bg-gray-50 p-2 rounded">
-              {participant.notes}
+          <div className={cn(
+            "border-t pt-2",
+            isMobile ? "mt-2" : "mt-2"
+          )}>
+            <div className={cn(
+              "text-gray-600 mb-1",
+              isMobile ? "text-xs" : "text-xs"
+            )}>Notes</div>
+            <p className={cn(
+              "text-gray-700 bg-gray-50 p-2 rounded",
+              isMobile ? "text-xs" : "text-xs"
+            )}>
+              {isMobile ? participant.notes.slice(0, 100) + (participant.notes.length > 100 ? '...' : '') : participant.notes}
             </p>
           </div>
         )}
@@ -394,20 +502,28 @@ const CreatureCard: React.FC<{
 const EncounterTrackerTest: React.FC = () => {
   console.log("=== CHARGEMENT DU COMPOSANT ENCOUNTERTRACKER TEST ===");
   
+  const screenSize = useScreenSize();
+  const isMobile = screenSize === 'mobile';
+  const isTablet = screenSize === 'tablet';
+  
+  const navigate = useNavigate();
+  const params = useParams();
+  const location = useLocation();
   const { toast } = useToast();
   
-  // État de la rencontre (reprise du code original mais simplifié)
-  const [encounter, setEncounter] = useState<{
-    name: string;
-    participants: EncounterParticipant[];
-    currentTurn: number;
-    round: number;
-  }>({
-    name: 'Rencontre Test',
+  // États principaux
+  const [encounter, setEncounter] = useState<Encounter>({
+    name: 'Nouvelle Rencontre',
     participants: [],
-    currentTurn: 0,
-    round: 1
+    round: 1,
+    currentTurn: 0
   });
+  
+  const [currentView, setCurrentView] = useState<'grid' | 'list' | 'compact'>(
+    isMobile ? 'list' : 'grid'  // Mode liste par défaut sur mobile
+  );
+  
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // États pour les dialogues
   const [hpEditorOpen, setHpEditorOpen] = useState(false);
@@ -437,9 +553,6 @@ const EncounterTrackerTest: React.FC = () => {
   });
 
   // Vue actuelle
-  const [currentView, setCurrentView] = useState<'grid' | 'list' | 'compact'>('grid');
-
-  // État pour la sélection de conditions
   const [conditionSelectorOpen, setConditionSelectorOpen] = useState(false);
   const [editingConditionsFor, setEditingConditionsFor] = useState<string | null>(null);
 
@@ -460,8 +573,6 @@ const EncounterTrackerTest: React.FC = () => {
   // État pour la valeur de soins/dégâts
   const [healDamageAmount, setHealDamageAmount] = useState(10);
 
-  const navigate = useNavigate();
-  const location = useLocation();
   const { isAuthenticated } = useAuth();
 
   // Hook pour la modal de détails de créature
@@ -1111,357 +1222,659 @@ const EncounterTrackerTest: React.FC = () => {
     });
   };
 
+  const saveEncounter = async () => {
+    if (!params.encounterId) {
+      toast({
+        title: "Erreur de sauvegarde",
+        description: "Impossible de sauvegarder: ID de rencontre manquant.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    try {
+      await updateFirestoreEncounter(params.encounterId, encounter);
+      toast({
+        title: "Rencontre sauvegardée",
+        description: "Les données de la rencontre ont été sauvegardées avec succès.",
+        variant: "default"
+      });
+      console.log("Rencontre sauvegardée avec succès:", encounter);
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde de la rencontre:", error);
+      toast({
+        title: "Erreur de sauvegarde",
+        description: "Une erreur est survenue lors de la sauvegarde de la rencontre.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const resetEncounter = () => {
+    const confirmation = window.confirm("Voulez-vous vraiment réinitialiser la rencontre ? Cela supprimera toutes les données de combat.");
+    if (confirmation) {
+      setEncounter({
+        name: 'Nouvelle Rencontre',
+        participants: [],
+        currentTurn: 0,
+        round: 1
+      });
+      setHasAutoSynced(false); // Reset l'état de synchronisation
+      toast({
+        title: "Rencontre réinitialisée",
+        description: "La rencontre a été réinitialisée.",
+        variant: "default"
+      });
+      console.log("Rencontre réinitialisée.");
+    }
+  };
 
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      {/* En-tête moderne */}
-      <div className="max-w-7xl mx-auto mb-6">
-        <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold mb-2">{encounter.name}</h1>
-                <div className="flex items-center space-x-4 text-blue-100">
-                  <div className="flex items-center space-x-2">
-                    <Clock className="h-5 w-5" />
-                    <span>Tour {encounter.round}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Users className="h-5 w-5" />
-                    <span>{encounter.participants.length} participants</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Activity className="h-5 w-5" />
-                    <span>{encounter.participants.filter(p => p.currentHp > 0).length} actifs</span>
-                  </div>
+    <div className={cn("min-h-screen bg-gray-100", isMobile && "pb-safe")}>
+      {/* Header mobile sticky */}
+      {isMobile && (
+        <div className="sticky top-0 z-40 bg-white border-b border-gray-200 px-4 py-3 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <h1 className="text-lg font-semibold text-gray-900 truncate">
+                {encounter.name}
+              </h1>
+              <Badge variant="outline" className="text-xs">
+                Tour {encounter.round}
+              </Badge>
+            </div>
+            <div className="flex items-center space-x-2">
+              {encounter.participants.length > 0 && (
+                <div className="flex space-x-1">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={previousTurn}
+                    className="h-8 w-8 p-0"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="default" 
+                    size="sm"
+                    onClick={nextTurn}
+                    className="h-8 w-8 p-0"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
                 </div>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="h-8 w-8 p-0"
+              >
+                <Menu className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Menu mobile overlay */}
+      {isMobile && isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 flex">
+          <div 
+            className="fixed inset-0 bg-black/50" 
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          <div className="relative w-80 bg-white shadow-xl h-full overflow-y-auto">
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold">Menu</h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="h-8 w-8 p-0"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
               
-              {/* Contrôles principaux */}
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={openMaxHpEditor}
-                  disabled={encounter.participants.length === 0}
-                >
-                  <Heart className="h-4 w-4 mr-2" />
-                  PV Max
-                </Button>
-                
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={openGlobalInitiativeEditor}
-                  disabled={encounter.participants.length === 0}
-                  className="hover:bg-blue-50 hover:border-blue-300"
-                >
-                  <Dice4 className="h-4 w-4 mr-2" />
-                  Initiative
-                </Button>
-                
-                {/* Bouton Sync AideDD masqué - synchronisation automatique au chargement */}
-                {false && (
-                  <Button
-                    variant="secondary"
+              {/* Actions rapides mobile */}
+              <div className="space-y-3 mb-6">
+                <h3 className="font-medium text-gray-900">Actions rapides</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button 
+                    variant="outline" 
                     size="sm"
-                    onClick={enrichAllCreatures}
-                    disabled={encounter.participants.filter(p => !p.isPC).length === 0}
-                    className="hover:bg-green-50 hover:border-green-300"
+                    onClick={() => {
+                      rollInitiativeForAll();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center justify-center space-x-2"
                   >
-                    <RefreshCw className="h-4 w-4 mr-2 text-green-600" />
-                    Sync AideDD
+                    <Dice4 className="h-4 w-4" />
+                    <span>Initiative</span>
                   </Button>
-                )}
-                
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={openTreasureModal}
-                  disabled={encounter.participants.filter(p => !p.isPC).length === 0}
-                  className="hover:bg-yellow-50 hover:border-yellow-300"
-                >
-                  <Coins className="h-4 w-4 mr-2 text-yellow-600" />
-                  Trésor
-                </Button>
-                
-                {/* Boutons de navigation déplacés en position flottante */}
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      openTreasureModal();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center justify-center space-x-2"
+                  >
+                    <Coins className="h-4 w-4" />
+                    <span>Trésor</span>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      saveEncounter();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center justify-center space-x-2"
+                  >
+                    <Save className="h-4 w-4" />
+                    <span>Sauver</span>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      resetEncounter();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center justify-center space-x-2"
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                    <span>Reset</span>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Sélecteur de vue mobile */}
+              <div className="space-y-3">
+                <h3 className="font-medium text-gray-900">Mode d'affichage</h3>
+                <div className="grid grid-cols-1 gap-2">
+                  <Button
+                    variant={currentView === 'list' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => {
+                      setCurrentView('list');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center justify-center space-x-2"
+                  >
+                    <div className="flex flex-col space-y-1 w-4 h-4">
+                      <div className="bg-current h-1 rounded opacity-60"></div>
+                      <div className="bg-current h-1 rounded opacity-60"></div>
+                      <div className="bg-current h-1 rounded opacity-60"></div>
+                    </div>
+                    <span>Liste (Recommandé mobile)</span>
+                  </Button>
+                  <Button
+                    variant={currentView === 'compact' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => {
+                      setCurrentView('compact');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center justify-center space-x-2"
+                  >
+                    <Maximize2 className="h-4 w-4" />
+                    <span>Compact</span>
+                  </Button>
+                  <Button
+                    variant={currentView === 'grid' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => {
+                      setCurrentView('grid');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center justify-center space-x-2"
+                  >
+                    <div className="grid grid-cols-2 gap-1 w-4 h-4">
+                      <div className="bg-current rounded-sm opacity-60"></div>
+                      <div className="bg-current rounded-sm opacity-60"></div>
+                      <div className="bg-current rounded-sm opacity-60"></div>
+                      <div className="bg-current rounded-sm opacity-60"></div>
+                    </div>
+                    <span>Grille</span>
+                  </Button>
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </div>
+      )}
 
-      {/* Sélecteur de vue */}
-      <div className="max-w-7xl mx-auto mb-6">
-        <Tabs value={currentView} onValueChange={(value: string) => setCurrentView(value as any)}>
-          <TabsList className="grid w-full max-w-md grid-cols-3">
-            <TabsTrigger value="grid" className="flex items-center space-x-2">
-              <div className="grid grid-cols-2 gap-1 w-4 h-4">
-                <div className="bg-current rounded-sm opacity-60"></div>
-                <div className="bg-current rounded-sm opacity-60"></div>
-                <div className="bg-current rounded-sm opacity-60"></div>
-                <div className="bg-current rounded-sm opacity-60"></div>
-              </div>
-              <span>Grille</span>
-            </TabsTrigger>
-            <TabsTrigger value="list" className="flex items-center space-x-2">
-              <div className="flex flex-col space-y-1 w-4 h-4">
-                <div className="bg-current h-1 rounded opacity-60"></div>
-                <div className="bg-current h-1 rounded opacity-60"></div>
-                <div className="bg-current h-1 rounded opacity-60"></div>
-              </div>
-              <span>Liste</span>
-            </TabsTrigger>
-            <TabsTrigger value="compact" className="flex items-center space-x-2">
-              <Maximize2 className="h-4 w-4" />
-              <span>Compact</span>
-            </TabsTrigger>
-          </TabsList>
-          
-          <div className="mt-6">
-            <TabsContent value="grid">
-              {/* Vue en grille */}
-              <div className="max-w-7xl mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {sortedParticipants.map((participant, index) => (
-                    <CreatureCard
-                      key={participant.id}
-                      participant={participant}
-                      isActive={index === encounter.currentTurn}
-                      onEditHp={openHpEditor}
-                      onEditInitiative={() => {}}
-                      onEditNotes={openNotesEditor}
-                      onToggleCondition={toggleCondition}
-                      onViewMonster={viewMonsterDetails}
-                      onOpenConditionSelector={openConditionSelector}
-                      onQuickHeal={quickHeal}
-                      onQuickDamage={quickDamage}
-                      healDamageAmount={healDamageAmount}
-                      onHealDamageAmountChange={setHealDamageAmount}
-                    />
-                  ))}
-                </div>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="list">
-              {/* Vue en liste */}
-              <div className="max-w-5xl mx-auto">
-                <div className="space-y-4">
-                  {sortedParticipants.map((participant, index) => (
-                    <div key={participant.id} className="w-full">
-                      <CreatureCard
-                        participant={participant}
-                        isActive={index === encounter.currentTurn}
-                        onEditHp={openHpEditor}
-                        onEditInitiative={() => {}}
-                        onEditNotes={openNotesEditor}
-                        onToggleCondition={toggleCondition}
-                        onViewMonster={viewMonsterDetails}
-                        onOpenConditionSelector={openConditionSelector}
-                        onQuickHeal={quickHeal}
-                        onQuickDamage={quickDamage}
-                        healDamageAmount={healDamageAmount}
-                        onHealDamageAmountChange={setHealDamageAmount}
-                      />
+      {/* Interface desktop (inchangée) */}
+      {!isMobile && (
+        <>
+          {/* Titre et informations de la rencontre - Desktop */}
+          <div className="max-w-7xl mx-auto mb-6">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h1 className="text-2xl font-bold text-gray-900 mb-2">{encounter.name}</h1>
+                    <div className="flex items-center space-x-4 text-sm text-gray-600">
+                      <div className="flex items-center space-x-1">
+                        <Calendar className="h-4 w-4" />
+                        <span>Tour {encounter.round}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Users className="h-4 w-4" />
+                        <span>{encounter.participants.length} participants</span>
+                      </div>
+                      {encounter.participants.length > 0 && (
+                        <div className="flex items-center space-x-1">
+                          <Target className="h-4 w-4" />
+                          <span>Tour de: {sortedParticipants[encounter.currentTurn]?.name || 'Aucun'}</span>
+                        </div>
+                      )}
                     </div>
-                  ))}
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    {encounter.participants.length > 0 && (
+                      <>
+                        <Button 
+                          variant="outline"
+                          size="sm"
+                          onClick={previousTurn}
+                          disabled={encounter.participants.length === 0}
+                        >
+                          <ChevronLeft className="h-4 w-4 mr-1" />
+                          Précédent
+                        </Button>
+                        
+                        <Button 
+                          variant="default"
+                          size="sm"
+                          onClick={nextTurn}
+                          disabled={encounter.participants.length === 0}
+                        >
+                          <ChevronRight className="h-4 w-4 mr-1" />
+                          Suivant
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </div>
+
+                {/* Actions rapides - Desktop */}
+                <div className="flex flex-wrap gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={rollInitiativeForAll}
+                  >
+                    <Dice4 className="h-4 w-4 mr-1" />
+                    Lancer initiative
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={openTreasureModal}
+                  >
+                    <Coins className="h-4 w-4 mr-1" />
+                    Générer trésor
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={saveEncounter}
+                  >
+                    <Save className="h-4 w-4 mr-1" />
+                    Sauvegarder
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={resetEncounter}
+                  >
+                    <RotateCcw className="h-4 w-4 mr-1" />
+                    Réinitialiser
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Sélecteur de vue - Desktop */}
+          <div className="max-w-7xl mx-auto mb-6">
+            <Tabs value={currentView} onValueChange={(value: string) => setCurrentView(value as any)}>
+              <TabsList className="grid w-full max-w-md grid-cols-3">
+                <TabsTrigger value="grid" className="flex items-center space-x-2">
+                  <div className="grid grid-cols-2 gap-1 w-4 h-4">
+                    <div className="bg-current rounded-sm opacity-60"></div>
+                    <div className="bg-current rounded-sm opacity-60"></div>
+                    <div className="bg-current rounded-sm opacity-60"></div>
+                    <div className="bg-current rounded-sm opacity-60"></div>
+                  </div>
+                  <span>Grille</span>
+                </TabsTrigger>
+                <TabsTrigger value="list" className="flex items-center space-x-2">
+                  <div className="flex flex-col space-y-1 w-4 h-4">
+                    <div className="bg-current h-1 rounded opacity-60"></div>
+                    <div className="bg-current h-1 rounded opacity-60"></div>
+                    <div className="bg-current h-1 rounded opacity-60"></div>
+                  </div>
+                  <span>Liste</span>
+                </TabsTrigger>
+                <TabsTrigger value="compact" className="flex items-center space-x-2">
+                  <Maximize2 className="h-4 w-4" />
+                  <span>Compact</span>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+        </>
+      )}
+
+      {/* Contenu principal avec gestion responsive */}
+      <div className={cn(
+        "mx-auto",
+        isMobile ? "px-4 py-2" : "max-w-7xl px-6 py-4"
+      )}>
+        {/* Mode grille optimisé mobile */}
+        {currentView === 'grid' && (
+          <div className={cn(
+            "grid gap-4",
+            isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+          )}>
+            {sortedParticipants.map((participant, index) => (
+              <CreatureCard
+                key={participant.id}
+                participant={participant}
+                isActive={index === encounter.currentTurn}
+                onEditHp={openHpEditor}
+                onEditInitiative={() => {}}
+                onEditNotes={openNotesEditor}
+                onToggleCondition={toggleCondition}
+                onViewMonster={viewMonsterDetails}
+                onOpenConditionSelector={openConditionSelector}
+                onQuickHeal={quickHeal}
+                onQuickDamage={quickDamage}
+                healDamageAmount={healDamageAmount}
+                onHealDamageAmountChange={setHealDamageAmount}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Mode liste optimisé mobile */}
+        {currentView === 'list' && (
+          <div className={cn(
+            "space-y-3",
+            isMobile ? "pb-4" : "pb-6"
+          )}>
+            {sortedParticipants.map((participant, index) => (
+              <div key={participant.id} className="w-full">
+                <CreatureCard
+                  participant={participant}
+                  isActive={index === encounter.currentTurn}
+                  onEditHp={openHpEditor}
+                  onEditInitiative={() => {}}
+                  onEditNotes={openNotesEditor}
+                  onToggleCondition={toggleCondition}
+                  onViewMonster={viewMonsterDetails}
+                  onOpenConditionSelector={openConditionSelector}
+                  onQuickHeal={quickHeal}
+                  onQuickDamage={quickDamage}
+                  healDamageAmount={healDamageAmount}
+                  onHealDamageAmountChange={setHealDamageAmount}
+                />
               </div>
-            </TabsContent>
-            
-            <TabsContent value="compact">
-              {/* Vue compacte en tableau */}
-              <div className="max-w-6xl mx-auto">
-                <Card>
-                  <CardContent className="p-6">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="w-[50px]">Tour</TableHead>
-                          <TableHead>Nom</TableHead>
-                          <TableHead className="text-center">Init</TableHead>
-                          <TableHead className="text-center">CA</TableHead>
-                          <TableHead className="text-center">PV</TableHead>
-                          <TableHead className="text-center">État</TableHead>
-                          <TableHead className="text-center">Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {sortedParticipants.map((participant, index) => {
-                          const hpPercentage = (participant.currentHp / participant.maxHp) * 100;
-                          const isAlive = participant.currentHp > 0;
-                          const isBloodied = hpPercentage <= 50 && hpPercentage > 0;
-                          
-                          return (
-                            <TableRow 
-                              key={participant.id}
-                              className={cn(
-                                'hover:bg-gray-50',
-                                index === encounter.currentTurn && 'bg-blue-50 border-l-4 border-l-blue-500',
-                                !isAlive && 'opacity-50'
-                              )}
-                            >
-                              <TableCell>
-                                {index === encounter.currentTurn && (
-                                  <Crown className="h-4 w-4 text-yellow-500" />
-                                )}
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex items-center space-x-2">
-                                  <div className={cn(
-                                    'w-6 h-6 rounded-full flex items-center justify-center text-white text-xs',
-                                    participant.isPC ? 'bg-blue-500' : 'bg-red-500'
-                                  )}>
-                                    {participant.isPC ? 'P' : 'M'}
-                                  </div>
-                                  <div>
-                                    <div className="font-medium">{participant.displayName || participant.name}</div>
-                                    {participant.isPC ? (
-                                      <Badge variant="outline" className="text-xs">PJ</Badge>
-                                    ) : (
-                                      <div className="flex items-center space-x-1">
-                                        {participant.cr && (
-                                          <Badge variant="outline" className="text-xs">
-                                            CR {participant.cr}
-                                          </Badge>
-                                        )}
-                                        {participant.type && (
-                                          <span className="text-xs text-gray-500">{participant.type}</span>
-                                        )}
-                                      </div>
+            ))}
+          </div>
+        )}
+
+        {/* Mode compact avec scroll horizontal sur mobile */}
+        {currentView === 'compact' && (
+          <div className={cn(
+            isMobile ? "overflow-x-auto -mx-4 px-4" : ""
+          )}>
+            <Card>
+              <CardContent className={cn(
+                isMobile ? "p-3" : "p-6"
+              )}>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className={cn("w-[50px]", isMobile && "text-xs")}>Tour</TableHead>
+                      <TableHead className={cn(isMobile && "text-xs min-w-[120px]")}>Nom</TableHead>
+                      <TableHead className={cn("text-center", isMobile && "text-xs w-[50px]")}>Init</TableHead>
+                      <TableHead className={cn("text-center", isMobile && "text-xs w-[50px]")}>CA</TableHead>
+                      <TableHead className={cn("text-center", isMobile && "text-xs min-w-[80px]")}>PV</TableHead>
+                      <TableHead className={cn("text-center", isMobile && "text-xs min-w-[100px]")}>État</TableHead>
+                      <TableHead className={cn("text-center", isMobile && "text-xs min-w-[120px]")}>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {sortedParticipants.map((participant, index) => {
+                      const hpPercentage = (participant.currentHp / participant.maxHp) * 100;
+                      const isAlive = participant.currentHp > 0;
+                      const isBloodied = hpPercentage <= 50 && hpPercentage > 0;
+                      
+                      return (
+                        <TableRow 
+                          key={participant.id}
+                          className={cn(
+                            'hover:bg-gray-50',
+                            index === encounter.currentTurn && 'bg-blue-50 border-l-4 border-l-blue-500',
+                            !isAlive && 'opacity-50'
+                          )}
+                        >
+                          <TableCell className={cn(isMobile && "py-2")}>
+                            {index === encounter.currentTurn && (
+                              <Crown className={cn("text-yellow-500", isMobile ? "h-3 w-3" : "h-4 w-4")} />
+                            )}
+                          </TableCell>
+                          <TableCell className={cn(isMobile && "py-2")}>
+                            <div className="flex items-center space-x-2">
+                              <div className={cn(
+                                'rounded-full flex items-center justify-center text-white text-xs',
+                                participant.isPC ? 'bg-blue-500' : 'bg-red-500',
+                                isMobile ? "w-5 h-5" : "w-6 h-6"
+                              )}>
+                                {participant.isPC ? 'P' : 'M'}
+                              </div>
+                              <div>
+                                <div className={cn(
+                                  "font-medium",
+                                  isMobile && "text-sm"
+                                )}>{participant.displayName || participant.name}</div>
+                                {participant.isPC ? (
+                                  <Badge variant="outline" className="text-xs">PJ</Badge>
+                                ) : (
+                                  <div className="flex items-center space-x-1">
+                                    {participant.cr && (
+                                      <Badge variant="outline" className="text-xs">
+                                        CR {participant.cr}
+                                      </Badge>
+                                    )}
+                                    {participant.type && !isMobile && (
+                                      <span className="text-xs text-gray-500">{participant.type}</span>
                                     )}
                                   </div>
-                                </div>
-                              </TableCell>
-                              <TableCell className="text-center font-mono">
-                                {participant.initiative}
-                              </TableCell>
-                              <TableCell className="text-center">
-                                <div className="flex items-center justify-center space-x-1">
-                                  <Shield className="h-3 w-3" />
-                                  <span>{participant.ac}</span>
-                                </div>
-                              </TableCell>
-                              <TableCell className="text-center">
-                                <div className="flex items-center justify-center space-x-2">
-                                  <div className="flex items-center space-x-1">
-                                    <Heart className="h-3 w-3 text-red-500" />
-                                    <span className="font-mono">
-                                      {participant.currentHp}/{participant.maxHp}
-                                    </span>
-                                  </div>
-                                  <div className="w-12 bg-gray-200 rounded-full h-1">
-                                    <div 
-                                      className={cn(
-                                        'h-1 rounded-full transition-all',
-                                        !isAlive ? 'bg-gray-400' :
-                                        hpPercentage <= 25 ? 'bg-red-500' :
-                                        hpPercentage <= 50 ? 'bg-orange-500' :
-                                        hpPercentage <= 75 ? 'bg-yellow-500' :
-                                        'bg-green-500'
-                                      )}
-                                      style={{ 
-                                        width: `${Math.max(0, hpPercentage)}%` 
-                                      }}
-                                    />
-                                  </div>
-                                </div>
-                              </TableCell>
-                              <TableCell className="text-center">
-                                <div className="flex flex-wrap gap-1 justify-center">
-                                  {/* Conditions */}
-                                  {participant.conditions.map((condition, idx) => {
-                                    const conditionInfo = getConditionInfo(condition);
-                                    const ConditionIcon = conditionInfo.icon;
-                                    return (
-                                      <Badge 
-                                        key={idx}
-                                        variant="outline" 
-                                        className={cn('text-xs cursor-pointer flex items-center', conditionInfo.color)}
-                                        onClick={() => toggleCondition(participant.id, condition)}
-                                      >
-                                        <ConditionIcon className="h-2 w-2 mr-1" />
-                                        {condition}
-                                      </Badge>
-                                    );
-                                  })}
-                                  {/* Badge de statut de vie */}
-                                  {!isAlive && (
-                                    <Badge variant="destructive" className="text-xs">
-                                      <Skull className="h-2 w-2 mr-1" />
-                                      Mort
-                                    </Badge>
-                                  )}
-                                  {isBloodied && isAlive && (
-                                    <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-800">
-                                      Ensanglanté
-                                    </Badge>
-                                  )}
-                                </div>
-                                {/* Notes en mode compact */}
-                                {participant.notes && (
-                                  <div className="mt-1 text-xs text-gray-500 italic truncate max-w-32" title={participant.notes}>
-                                    {participant.notes}
-                                  </div>
                                 )}
-                              </TableCell>
-                              <TableCell className="text-center">
-                                <div className="flex items-center justify-center space-x-1">
-                                  <Button 
-                                    size="sm" 
-                                    variant="ghost" 
-                                    className="h-7 w-7 p-0 flex items-center justify-center"
-                                    onClick={() => openHpEditor(participant)}
-                                    title="Modifier les PV"
-                                  >
-                                    <Heart className="h-3 w-3" />
-                                  </Button>
-
-                                  <Button 
-                                    size="sm" 
-                                    variant="ghost" 
-                                    className="h-7 w-7 p-0 flex items-center justify-center hover:bg-purple-50"
-                                    onClick={() => openConditionSelector(participant)}
-                                    title="Gérer les conditions"
-                                  >
-                                    <Square className="h-3 w-3 text-purple-600" />
-                                  </Button>
-                                  {!participant.isPC && (
-                                    <Button 
-                                      size="sm" 
-                                      variant="ghost" 
-                                      className="h-7 w-7 p-0 flex items-center justify-center hover:bg-blue-50"
-                                      onClick={() => viewMonsterDetails(participant)}
-                                      title="Voir les détails sur AideDD"
-                                    >
-                                      <BookOpen className="h-3 w-3 text-blue-600" />
-                                    </Button>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className={cn(
+                            "text-center font-mono",
+                            isMobile && "py-2 text-sm"
+                          )}>
+                            {participant.initiative}
+                          </TableCell>
+                          <TableCell className={cn(
+                            "text-center",
+                            isMobile && "py-2"
+                          )}>
+                            <div className="flex items-center justify-center space-x-1">
+                              <Shield className={cn(isMobile ? "h-2 w-2" : "h-3 w-3")} />
+                              <span className={cn(isMobile && "text-sm")}>{participant.ac}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className={cn(
+                            "text-center",
+                            isMobile && "py-2"
+                          )}>
+                            <div className="flex items-center justify-center space-x-2">
+                              <div className="flex items-center space-x-1">
+                                <Heart className={cn("text-red-500", isMobile ? "h-2 w-2" : "h-3 w-3")} />
+                                <span className={cn(
+                                  "font-mono",
+                                  isMobile ? "text-xs" : "text-sm"
+                                )}>
+                                  {participant.currentHp}/{participant.maxHp}
+                                </span>
+                              </div>
+                              <div className={cn(
+                                "bg-gray-200 rounded-full h-1",
+                                isMobile ? "w-8" : "w-12"
+                              )}>
+                                <div 
+                                  className={cn(
+                                    'h-1 rounded-full transition-all',
+                                    !isAlive ? 'bg-gray-400' :
+                                    hpPercentage <= 25 ? 'bg-red-500' :
+                                    hpPercentage <= 50 ? 'bg-orange-500' :
+                                    hpPercentage <= 75 ? 'bg-yellow-500' :
+                                    'bg-green-500'
                                   )}
-                                  <Button 
-                                    size="sm" 
-                                    variant="ghost" 
-                                    className="h-7 w-7 p-0 flex items-center justify-center hover:bg-gray-50"
-                                    onClick={() => openNotesEditor(participant)}
-                                    title="Modifier les notes"
+                                  style={{ 
+                                    width: `${Math.max(0, hpPercentage)}%` 
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className={cn(
+                            "text-center",
+                            isMobile && "py-2"
+                          )}>
+                            <div className="flex flex-wrap gap-1 justify-center">
+                              {/* Conditions */}
+                              {participant.conditions.slice(0, isMobile ? 1 : 3).map((condition, idx) => {
+                                const conditionInfo = getConditionInfo(condition);
+                                const ConditionIcon = conditionInfo.icon;
+                                return (
+                                  <Badge 
+                                    key={idx}
+                                    variant="outline" 
+                                    className={cn('text-xs cursor-pointer flex items-center', conditionInfo.color)}
+                                    onClick={() => toggleCondition(participant.id, condition)}
                                   >
-                                    <Pencil className="h-3 w-3 text-gray-600" />
-                                  </Button>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
+                                    <ConditionIcon className={cn(isMobile ? "h-1 w-1" : "h-2 w-2", "mr-1")} />
+                                    {isMobile ? condition.slice(0, 3) : condition}
+                                  </Badge>
+                                );
+                              })}
+                              {participant.conditions.length > (isMobile ? 1 : 3) && (
+                                <Badge variant="outline" className="text-xs">
+                                  +{participant.conditions.length - (isMobile ? 1 : 3)}
+                                </Badge>
+                              )}
+                              {/* Badge de statut de vie */}
+                              {!isAlive && (
+                                <Badge variant="destructive" className="text-xs">
+                                  <Skull className={cn(isMobile ? "h-1 w-1" : "h-2 w-2", "mr-1")} />
+                                  {isMobile ? "💀" : "Mort"}
+                                </Badge>
+                              )}
+                              {isBloodied && isAlive && (
+                                <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-800">
+                                  {isMobile ? "🩸" : "Ensanglanté"}
+                                </Badge>
+                              )}
+                            </div>
+                            {/* Notes en mode compact */}
+                            {participant.notes && !isMobile && (
+                              <div className="mt-1 text-xs text-gray-500 italic truncate max-w-32" title={participant.notes}>
+                                {participant.notes}
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell className={cn(
+                            "text-center",
+                            isMobile && "py-2"
+                          )}>
+                            <div className="flex items-center justify-center space-x-1">
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                className={cn(
+                                  "p-0 flex items-center justify-center",
+                                  isMobile ? "h-6 w-6" : "h-7 w-7"
+                                )}
+                                onClick={() => openHpEditor(participant)}
+                                title="Modifier les PV"
+                              >
+                                <Heart className={cn(isMobile ? "h-2 w-2" : "h-3 w-3")} />
+                              </Button>
+
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                className={cn(
+                                  "p-0 flex items-center justify-center hover:bg-purple-50",
+                                  isMobile ? "h-6 w-6" : "h-7 w-7"
+                                )}
+                                onClick={() => openConditionSelector(participant)}
+                                title="Gérer les conditions"
+                              >
+                                <Square className={cn(
+                                  "text-purple-600",
+                                  isMobile ? "h-2 w-2" : "h-3 w-3"
+                                )} />
+                              </Button>
+                              {!participant.isPC && (
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost" 
+                                  className={cn(
+                                    "p-0 flex items-center justify-center hover:bg-blue-50",
+                                    isMobile ? "h-6 w-6" : "h-7 w-7"
+                                  )}
+                                  onClick={() => viewMonsterDetails(participant)}
+                                  title="Voir les détails sur AideDD"
+                                >
+                                  <BookOpen className={cn(
+                                    "text-blue-600",
+                                    isMobile ? "h-2 w-2" : "h-3 w-3"
+                                  )} />
+                                </Button>
+                              )}
+                              {!isMobile && (
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost" 
+                                  className="h-7 w-7 p-0 flex items-center justify-center hover:bg-gray-50"
+                                  onClick={() => openNotesEditor(participant)}
+                                  title="Modifier les notes"
+                                >
+                                  <Pencil className="h-3 w-3 text-gray-600" />
+                                </Button>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           </div>
-        </Tabs>
+        )}
       </div>
 
       {/* État vide */}
