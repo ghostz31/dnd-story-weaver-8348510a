@@ -16,9 +16,26 @@ export interface Player {
   level: number;
   characterClass: string;
   race?: string;
+  background?: string;
   ac?: number;
   currentHp?: number;
   maxHp?: number;
+  speed?: number;
+  proficiencyBonus?: number;
+  stats?: {
+    strength: number;
+    dexterity: number;
+    constitution: number;
+    intelligence: number;
+    wisdom: number;
+    charisma: number;
+  };
+  savingThrows?: Record<string, number>;
+  skills?: Record<string, number>;
+  spellcastingAbility?: string;
+  spellSlots?: Record<string, number>;
+  features?: string[];
+  equipment?: string[];
 }
 
 export interface Party {
@@ -217,4 +234,15 @@ export interface EncounterParticipant {
   cha?: number;
   actions?: any[];
   traits?: any[];
+  
+  // Nouvelles propriétés pour la gestion des actions
+  hasUsedAction?: boolean;
+  hasUsedBonusAction?: boolean;
+  hasUsedReaction?: boolean;
+  remainingMovement?: number;
+  
+  // Propriétés pour les joueurs
+  level?: number;
+  characterClass?: string;
+  race?: string;
 } 

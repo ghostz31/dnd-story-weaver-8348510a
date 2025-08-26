@@ -1,0 +1,982 @@
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Alert, AlertDescription } from '../components/ui/alert';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
+import { toast } from '../hooks/use-toast';
+import { Users, UserPlus, Trash2, Edit, Plus, Sword, AlertCircle, Save } from 'lucide-react';
+import PlayerImportModal from './PlayerImportModal';
+import { 
+  getParties, 
+  createParty, 
+  updateParty, 
+  deleteParty, 
+  addPlayerToParty, 
+  updatePlayer, 
+  removePlayerFromParty,
+  canCreateParty,
+  subscribeToParties
+} from '../lib/firebaseApi';
+import { Party, Player } from '../lib/types';
+import UsageStats from './UsageStats';
+import { useAuth } from '../auth/AuthContext';
+
+// Classes de personnages D&D
+const CHARACTER_CLASSES = [
+  'Barbare', 'Barde', 'Clerc', 'Druide', 'Ensorceleur', 'Guerrier', 
+  'Magicien', 'Moine', 'Occultiste', 'Paladin', 'Rôdeur', 'Roublard'
+];
+
+// Correspondance entre les classes D&D Beyond (anglais) et françaises
+const CLASS_MAPPING: Record<string, string> = {
+  'Artificer': 'Artificier',
+  'Barbarian': 'Barbare',
+  'Bard': 'Barde',
+  'Cleric': 'Clerc',
+  'Druid': 'Druide',
+  'Fighter': 'Guerrier',
+  'Monk': 'Moine',
+  'Paladin': 'Paladin',
+  'Ranger': 'Rôdeur',
+  'Rogue': 'Roublard',
+  'Sorcerer': 'Ensorceleur',
+  'Warlock': 'Occultiste',
+  'Wizard': 'Magicien'
+};
+
+const PartyEditor: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+  const [parties, setParties] = useState<Party[]>([]);
+  const [selectedParty, setSelectedParty] = useState<Party | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [canCreate, setCanCreate] = useState(true);
+  
+  // État pour le dialogue de création/édition de groupe
+  const [isPartyDialogOpen, setIsPartyDialogOpen] = useState(false);
+  const [newPartyName, setNewPartyName] = useState('');
+  const [isEditingParty, setIsEditingParty] = useState(false);
+  
+  // État pour la modal d'import de joueur
+  const [isPlayerImportModalOpen, setIsPlayerImportModalOpen] = useState(false);
+  const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
+  
+  // État pour l'import D&D Beyond - maintenant géré par PlayerImportModal
+
+  // Fonction de fallback pour extraire les données depuis le HTML de la page
+  const tryHtmlScraping = async (url: string) => {
+    const proxyServices = [
+      `https://corsproxy.io/?${encodeURIComponent(url)}`,
+      `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+    ];
+    
+    for (const proxyUrl of proxyServices) {
+      try {
+        console.log('Tentative de scraping HTML depuis:', proxyUrl);
+        
+        const response = await fetch(proxyUrl);
+        if (!response.ok) continue;
+        
+        const html = await response.text();
+        
+        // Chercher les données JSON dans le HTML (D&D Beyond stocke souvent les données dans des scripts)
+        const jsonMatch = html.match(/window\.characterData\s*=\s*({.*?});/s) || 
+                         html.match(/data-character\s*=\s*"([^"]*)"/) ||
+                         html.match(/"character":\s*({.*?})/s);
+        
+        if (jsonMatch) {
+          let jsonStr = jsonMatch[1];
+          if (jsonMatch[0].includes('data-character')) {
+            jsonStr = jsonMatch[1].replace(/&quot;/g, '"');
+          }
+          
+          const characterData = JSON.parse(jsonStr);
+          console.log('Données extraites du HTML:', characterData);
+          return characterData;
+        }
+        
+        // Fallback: extraire des informations basiques depuis le HTML
+        const nameMatch = html.match(/<h1[^>]*class="[^"]*character-name[^"]*"[^>]*>([^<]+)</i) ||
+                         html.match(/<title>([^-]+)\s*-\s*D&D Beyond</i);
+        
+        if (nameMatch) {
+          return {
+            data: {
+              name: nameMatch[1].trim(),
+              // Données par défaut quand on ne peut extraire que le nom
+              classes: [{ level: 1, definition: { name: 'Fighter' } }],
+              race: { fullName: '' },
+              armorClass: 10,
+              baseHitPoints: 10
+            }
+          };
+        }
+        
+      } catch (error) {
+        console.warn(`Échec du scraping avec ${proxyUrl}:`, error);
+        continue;
+      }
+    }
+    
+    throw new Error('Impossible d\'extraire les données depuis le HTML');
+  };
+
+  // Fonction pour extraire les données depuis D&D Beyond
+  const importFromDndBeyond = async (url: string) => {
+    try {
+      setIsImporting(true);
+      
+      // Vérifier que l'URL est valide
+      if (!url.includes('dndbeyond.com/characters/')) {
+        throw new Error('URL D&D Beyond invalide. Utilisez une URL du type: https://www.dndbeyond.com/characters/[ID]');
+      }
+      
+      // Extraire l'ID du personnage depuis l'URL
+      const characterIdMatch = url.match(/\/characters\/(\d+)/);
+      if (!characterIdMatch) {
+        throw new Error('Impossible d\'extraire l\'ID du personnage depuis l\'URL');
+      }
+      
+      const characterId = characterIdMatch[1];
+      console.log('ID du personnage D&D Beyond:', characterId);
+      
+      // Utiliser l'API JSON de D&D Beyond
+      const apiUrl = `https://character-service.dndbeyond.com/character/v5/character/${characterId}`;
+      
+      // Liste de services proxy à essayer
+      const proxyServices = [
+        `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`,
+        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(apiUrl)}`,
+        `https://cors-anywhere.herokuapp.com/${apiUrl}`,
+        `https://thingproxy.freeboard.io/fetch/${apiUrl}`
+      ];
+      
+      let characterData = null;
+      let lastError = null;
+      
+      // Essayer chaque service proxy
+      for (const proxyUrl of proxyServices) {
+        try {
+          console.log('Tentative de récupération depuis:', proxyUrl);
+          
+          const response = await fetch(proxyUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+          }
+          
+          const responseText = await response.text();
+          console.log('Réponse brute:', responseText.substring(0, 200) + '...');
+          
+          // Essayer de parser la réponse JSON
+          try {
+            characterData = JSON.parse(responseText);
+          } catch (parseError) {
+            // Si c'est un proxy qui retourne un objet avec contents
+            try {
+              const proxyData = JSON.parse(responseText);
+              if (proxyData.contents) {
+                characterData = JSON.parse(proxyData.contents);
+              } else {
+                characterData = proxyData;
+              }
+            } catch (nestedParseError) {
+              throw new Error('Impossible de parser les données JSON');
+            }
+          }
+          
+          // Si on arrive ici, on a réussi à récupérer les données
+          console.log('Données récupérées avec succès depuis:', proxyUrl);
+          break;
+          
+        } catch (error) {
+          console.warn(`Échec avec ${proxyUrl}:`, error);
+          lastError = error;
+          continue;
+        }
+      }
+      
+      // Si aucun proxy n'a fonctionné, essayer le scraping HTML
+      if (!characterData) {
+        console.log('Tous les proxies API ont échoué, tentative de scraping HTML...');
+        
+        try {
+          characterData = await tryHtmlScraping(url);
+        } catch (scrapingError) {
+          console.warn('Échec du scraping HTML:', scrapingError);
+        }
+      }
+      
+      // Si vraiment rien n'a fonctionné
+      if (!characterData) {
+        console.log('Toutes les méthodes ont échoué');
+        
+        // Proposer une saisie manuelle avec des données pré-remplies basées sur l'URL
+        toast({
+          title: "Import automatique impossible",
+          description: "Impossible d'accéder aux données D&D Beyond. Vérifiez que le personnage est public et réessayez plus tard.",
+          variant: "destructive"
+        });
+        
+        // Pré-remplir quelques champs basiques si possible
+        const characterIdStr = characterId;
+        setNewPlayer({
+          name: `Personnage-${characterIdStr}`,
+          level: 1,
+          characterClass: 'Guerrier',
+          race: '',
+          ac: 10,
+          maxHp: 10,
+          currentHp: 10
+        });
+        
+        return;
+      }
+      
+      console.log('Données du personnage D&D Beyond:', characterData);
+      
+      // Extraire les informations pertinentes
+      const character = characterData.data || characterData;
+      
+      // Log détaillé de la structure pour déboguer
+      console.log('Structure du personnage:', {
+        keys: Object.keys(character),
+        armorClass: character.armorClass,
+        stats: character.stats,
+        decorations: character.decorations,
+        modifiers: character.modifiers,
+        bonuses: character.bonuses
+      });
+      
+      if (!character) {
+        throw new Error('Données du personnage non trouvées dans la réponse');
+      }
+      
+      // Extraire le nom
+      const name = character.name || 'Personnage';
+      
+      // Extraire la race
+      const race = character.race?.fullName || character.race?.baseName || '';
+      
+      // Extraire la classe et le niveau
+      let characterClass = 'Guerrier';
+      let level = 1;
+      
+      if (character.classes && character.classes.length > 0) {
+        const primaryClass = character.classes[0];
+        const englishClassName = primaryClass.definition?.name || 'Fighter';
+        characterClass = CLASS_MAPPING[englishClassName] || 'Guerrier';
+        level = primaryClass.level || 1;
+      }
+      
+      // Extraire la CA (essayer plusieurs champs possibles)
+      let ac = 10;
+      if (character.armorClass !== undefined) {
+        ac = character.armorClass;
+      } else if (character.stats && character.stats.armorClass !== undefined) {
+        ac = character.stats.armorClass;
+      } else if (character.decorations && character.decorations.armorClass !== undefined) {
+        ac = character.decorations.armorClass;
+      } else if (character.totalAC !== undefined) {
+        ac = character.totalAC;
+      } else if (character.ac !== undefined) {
+        ac = character.ac;
+      } else if (character.modifiers && character.modifiers.armorClass !== undefined) {
+        ac = character.modifiers.armorClass;
+      } else if (character.bonuses && character.bonuses.armorClass !== undefined) {
+        ac = character.bonuses.armorClass;
+      } else if (character.calculatedStats && character.calculatedStats.armorClass !== undefined) {
+        ac = character.calculatedStats.armorClass;
+      } else if (character.finalStats && character.finalStats.armorClass !== undefined) {
+        ac = character.finalStats.armorClass;
+      }
+      
+      // Fallback: chercher dans les objets imbriqués
+      if (ac === 10) {
+        // Parcourir tous les objets pour trouver une propriété AC
+        const searchForAC = (obj: any, path = ''): number | null => {
+          if (!obj || typeof obj !== 'object') return null;
+          
+          for (const [key, value] of Object.entries(obj)) {
+            const currentPath = path ? `${path}.${key}` : key;
+            
+            // Chercher des clés qui pourraient contenir l'AC
+            if ((key.toLowerCase().includes('armor') || key.toLowerCase().includes('ac')) && 
+                typeof value === 'number' && value > 10 && value < 30) {
+              console.log(`AC trouvée dans ${currentPath}:`, value);
+              return value;
+            }
+            
+            // Recherche récursive
+            if (typeof value === 'object' && value !== null) {
+              const found = searchForAC(value, currentPath);
+              if (found !== null) return found;
+            }
+          }
+          return null;
+        };
+        
+        const foundAC = searchForAC(character);
+        if (foundAC !== null) {
+          ac = foundAC;
+        }
+      }
+      
+      console.log('AC extraite:', ac, 'depuis character:', {
+        armorClass: character.armorClass,
+        'stats.armorClass': character.stats?.armorClass,
+        'decorations.armorClass': character.decorations?.armorClass,
+        totalAC: character.totalAC,
+        ac: character.ac
+      });
+      
+      // Extraire les PV (essayer plusieurs champs possibles)
+      let maxHp = 10;
+      let currentHp = 10;
+      
+      if (character.baseHitPoints !== undefined) {
+        maxHp = character.baseHitPoints + (character.bonusHitPoints || 0);
+        currentHp = maxHp - (character.removedHitPoints || 0);
+      } else if (character.hitPoints !== undefined) {
+        maxHp = character.hitPoints;
+        currentHp = character.currentHitPoints || maxHp;
+      } else if (character.stats && character.stats.hitPoints !== undefined) {
+        maxHp = character.stats.hitPoints;
+        currentHp = character.stats.currentHitPoints || maxHp;
+      } else if (character.hp !== undefined) {
+        maxHp = character.hp;
+        currentHp = character.currentHp || maxHp;
+      }
+      
+      console.log('PV extraits:', { maxHp, currentHp }, 'depuis character:', {
+        baseHitPoints: character.baseHitPoints,
+        bonusHitPoints: character.bonusHitPoints,
+        removedHitPoints: character.removedHitPoints,
+        hitPoints: character.hitPoints,
+        currentHitPoints: character.currentHitPoints,
+        'stats.hitPoints': character.stats?.hitPoints,
+        hp: character.hp,
+        currentHp: character.currentHp
+      });
+      
+      // Mettre à jour le formulaire avec les données extraites
+      setNewPlayer({
+        name: name,
+        level: level,
+        characterClass: characterClass,
+        race: race,
+        ac: ac,
+        maxHp: maxHp,
+        currentHp: currentHp
+      });
+      
+      toast({
+        title: "Import réussi !",
+        description: `Les données de ${name} ont été importées depuis D&D Beyond. AC: ${ac}, PV: ${maxHp}/${currentHp}`,
+        variant: "default"
+      });
+      
+      // Effacer l'URL après l'import
+      setDndBeyondUrl('');
+      
+    } catch (error) {
+      console.error('Erreur lors de l\'import D&D Beyond:', error);
+      toast({
+        title: "Erreur d'import",
+        description: error instanceof Error ? error.message : "Impossible d'importer les données depuis D&D Beyond. Vérifiez que le personnage est public.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  // Chargement initial des données
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    
+    const loadParties = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Vérifier si l'utilisateur peut créer un nouveau groupe
+        const canCreateNewParty = await canCreateParty();
+        setCanCreate(canCreateNewParty);
+        
+        // Utiliser l'abonnement aux parties au lieu de getParties
+        const unsubscribe = subscribeToParties((fetchedParties) => {
+          setParties(fetchedParties);
+          setIsLoading(false);
+          
+          // Sélectionner le premier groupe par défaut s'il y en a
+          if (fetchedParties.length > 0 && !selectedParty) {
+            setSelectedParty(fetchedParties[0]);
+          }
+        });
+        
+        // Nettoyer l'abonnement quand le composant est démonté
+        return () => unsubscribe();
+      } catch (err) {
+        console.error('Erreur lors du chargement des groupes:', err);
+        setError('Impossible de charger vos groupes d\'aventuriers');
+        setIsLoading(false);
+      }
+    };
+
+    loadParties();
+  }, [isAuthenticated]);
+
+  // Gestion de la création d'un groupe
+  const handleCreateParty = async () => {
+    if (!newPartyName.trim()) {
+      toast({
+        title: "Erreur",
+        description: "Le nom du groupe ne peut pas être vide",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const newParty = await createParty(newPartyName);
+      if (newParty) {
+        setParties([...parties, newParty]);
+        setSelectedParty(newParty);
+        toast({
+          title: "Succès",
+          description: `Le groupe "${newPartyName}" a été créé`
+        });
+        
+        // Mettre à jour l'état de capacité de création
+        setCanCreate(await canCreateParty());
+      }
+    } catch (err: any) {
+      toast({
+        title: "Erreur",
+        description: err.message || "Impossible de créer le groupe",
+        variant: "destructive"
+      });
+    } finally {
+      setNewPartyName('');
+      setIsPartyDialogOpen(false);
+    }
+  };
+
+  // Gestion de la mise à jour d'un groupe
+  const handleUpdateParty = async () => {
+    if (!selectedParty || !newPartyName.trim()) {
+      toast({
+        title: "Erreur",
+        description: "Le nom du groupe ne peut pas être vide",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const updatedParty = await updateParty(selectedParty.id, { name: newPartyName });
+      if (updatedParty) {
+        setParties(parties.map(party => 
+          party.id === updatedParty.id ? updatedParty : party
+        ));
+        setSelectedParty(updatedParty);
+        toast({
+          title: "Succès",
+          description: `Le groupe a été renommé en "${newPartyName}"`
+        });
+      }
+    } catch (err) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de mettre à jour le groupe",
+        variant: "destructive"
+      });
+    } finally {
+      setNewPartyName('');
+      setIsEditingParty(false);
+      setIsPartyDialogOpen(false);
+    }
+  };
+
+  // Gestion de la suppression d'un groupe
+  const handleDeleteParty = async (partyId: string) => {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce groupe?')) {
+      return;
+    }
+
+    try {
+      const success = await deleteParty(partyId);
+      if (success) {
+        const updatedParties = parties.filter(party => party.id !== partyId);
+        setParties(updatedParties);
+        
+        // Si le groupe supprimé était sélectionné, sélectionner le premier groupe restant
+        if (selectedParty && selectedParty.id === partyId) {
+          setSelectedParty(updatedParties.length > 0 ? updatedParties[0] : null);
+        }
+        
+        // Mettre à jour l'état de capacité de création
+        setCanCreate(await canCreateParty());
+        
+        toast({
+          title: "Succès",
+          description: "Le groupe a été supprimé"
+        });
+      }
+    } catch (err) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer le groupe",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Gestion de l'ajout/modification d'un joueur via la modal
+  const handlePlayerImport = async (player: Player) => {
+    if (!selectedParty) return;
+
+    try {
+      let updatedParty;
+      
+      if (editingPlayer) {
+        // Modification d'un joueur existant
+        const updatedPlayer = await updatePlayer(selectedParty.id, player.id, player);
+        if (updatedPlayer) {
+          updatedParty = {
+            ...selectedParty,
+            players: selectedParty.players.map(p => 
+              p.id === player.id ? updatedPlayer : p
+            )
+          };
+          
+          toast({
+            title: "Succès",
+            description: `${player.name} a été modifié`
+          });
+        }
+      } else {
+        // Ajout d'un nouveau joueur
+        const addedPlayer = await addPlayerToParty(selectedParty.id, player);
+        if (addedPlayer) {
+          updatedParty = {
+            ...selectedParty,
+            players: [...selectedParty.players, addedPlayer]
+          };
+          
+          toast({
+            title: "Succès",
+            description: `${player.name} a été ajouté au groupe`
+          });
+        }
+      }
+      
+      if (updatedParty) {
+        setSelectedParty(updatedParty);
+        setParties(parties.map(party => 
+          party.id === updatedParty.id ? updatedParty : party
+        ));
+      }
+    } catch (err) {
+      toast({
+        title: "Erreur",
+        description: editingPlayer ? "Impossible de modifier le personnage" : "Impossible d'ajouter le personnage",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Ouvrir la modal d'ajout de joueur
+  const handleAddPlayerClick = () => {
+    setEditingPlayer(null);
+    setIsPlayerImportModalOpen(true);
+  };
+  
+  // Ouvrir la modal d'édition de joueur
+  const handleEditPlayerClick = (player: Player) => {
+    setEditingPlayer(player);
+    setIsPlayerImportModalOpen(true);
+  };
+
+  // Gestion de la suppression d'un joueur
+  const handleRemovePlayer = async (playerId: string) => {
+    if (!selectedParty) return;
+    
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce personnage?')) {
+      return;
+    }
+
+    try {
+      const success = await removePlayerFromParty(selectedParty.id, playerId);
+      if (success) {
+        // Mettre à jour le groupe sélectionné sans le joueur supprimé
+        const updatedParty = {
+          ...selectedParty,
+          players: selectedParty.players.filter(player => player.id !== playerId)
+        };
+        
+        setSelectedParty(updatedParty);
+        setParties(parties.map(party => 
+          party.id === updatedParty.id ? updatedParty : party
+        ));
+        
+        toast({
+          title: "Succès",
+          description: "Le personnage a été supprimé du groupe"
+        });
+      }
+    } catch (err) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer le personnage",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Ces fonctions ont été remplacées par handleAddPlayerClick et handleEditPlayerClick
+
+  // Ouvrir le dialogue d'édition de groupe
+  const openEditPartyDialog = () => {
+    if (selectedParty) {
+      setNewPartyName(selectedParty.name);
+      setIsEditingParty(true);
+      setIsPartyDialogOpen(true);
+    }
+  };
+
+  // Calculer le niveau moyen du groupe
+  const calculateAverageLevel = (party: Party) => {
+    if (party.players.length === 0) return 0;
+    const sum = party.players.reduce((acc, player) => acc + player.level, 0);
+    return Math.round((sum / party.players.length) * 10) / 10;
+  };
+
+  // Si l'utilisateur n'est pas authentifié
+  if (!isAuthenticated) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Users className="mr-2 h-6 w-6" />
+            Groupes d'aventuriers
+          </CardTitle>
+          <CardDescription>
+            Connectez-vous pour gérer vos groupes d'aventuriers
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center py-10">
+          <Users className="h-16 w-16 text-gray-300 mb-4" />
+          <p className="text-center text-gray-500 mb-4">
+            Vous devez être connecté pour accéder à cette fonctionnalité
+          </p>
+          <Button variant="default" asChild>
+            <a href="/auth">Se connecter</a>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <UsageStats />
+      
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Users className="mr-2 h-6 w-6" />
+            Groupes d'aventuriers
+          </CardTitle>
+          <CardDescription>
+            Gérez vos groupes de personnages joueurs
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertCircle className="h-4 w-4 mr-2" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          
+          {isLoading ? (
+            <div className="flex justify-center py-10">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+            </div>
+          ) : (
+            <>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {parties.map(party => (
+                  <Button
+                    key={party.id}
+                    variant={selectedParty?.id === party.id ? "default" : "outline"}
+                    className="flex items-center"
+                    onClick={() => setSelectedParty(party)}
+                  >
+                    <Users className="mr-2 h-4 w-4" />
+                    {party.name}
+                    <span className="ml-2 text-xs bg-primary/10 px-1.5 py-0.5 rounded-full">
+                      {party.players.length}
+                    </span>
+                  </Button>
+                ))}
+                
+                <Dialog open={isPartyDialogOpen} onOpenChange={setIsPartyDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      className="border-dashed" 
+                      disabled={!canCreate}
+                      onClick={() => {
+                        if (canCreate) {
+                          setIsEditingParty(false);
+                          setNewPartyName('');
+                          setIsPartyDialogOpen(true);
+                        } else {
+                          toast({
+                            title: "Limite atteinte",
+                            description: "Vous avez atteint la limite de groupes pour votre plan actuel",
+                            variant: "destructive"
+                          });
+                        }
+                      }}
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Nouveau groupe
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        {isEditingParty ? "Modifier le groupe" : "Créer un nouveau groupe"}
+                      </DialogTitle>
+                      <DialogDescription>
+                        {isEditingParty 
+                          ? "Modifiez le nom de votre groupe d'aventuriers" 
+                          : "Donnez un nom à votre nouveau groupe d'aventuriers"}
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="partyName">Nom du groupe</Label>
+                        <Input
+                          id="partyName"
+                          placeholder="Les Aventuriers de la Côte des Épées"
+                          value={newPartyName}
+                          onChange={(e) => setNewPartyName(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => {
+                          setIsPartyDialogOpen(false);
+                          setNewPartyName('');
+                          setIsEditingParty(false);
+                        }}
+                      >
+                        Annuler
+                      </Button>
+                      <Button 
+                        onClick={isEditingParty ? handleUpdateParty : handleCreateParty}
+                      >
+                        {isEditingParty ? "Enregistrer" : "Créer"}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+              
+              {selectedParty ? (
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="text-lg font-semibold flex items-center">
+                        {selectedParty.name}
+                        <span className="ml-2 text-sm font-normal text-gray-500">
+                          (Niveau moyen: {calculateAverageLevel(selectedParty)})
+                        </span>
+                      </h3>
+                    </div>
+                    <div className="flex space-x-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={openEditPartyDialog}
+                      >
+                        <Edit className="h-4 w-4 mr-1" />
+                        Renommer
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        className="text-red-500 hover:text-red-700"
+                        onClick={() => handleDeleteParty(selectedParty.id)}
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        Supprimer
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <Card>
+                    <CardHeader className="p-4 pb-2">
+                      <div className="flex justify-between items-center">
+                        <CardTitle className="text-base">Personnages</CardTitle>
+                        
+                        <Button 
+                          size="sm"
+                          onClick={handleAddPlayerClick}
+                        >
+                          <UserPlus className="h-4 w-4 mr-1" />
+                          Ajouter
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                      {selectedParty.players.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-8 text-center px-4">
+                          <UserPlus className="h-10 w-10 text-gray-300 mb-2" />
+                          <p className="text-gray-500 mb-2">Aucun personnage dans ce groupe</p>
+                          <p className="text-gray-400 text-sm mb-4">
+                            Ajoutez des personnages pour pouvoir créer des rencontres équilibrées
+                          </p>
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              setIsEditingPlayer(false);
+                              setEditingPlayerId(null);
+                              setNewPlayer({
+                                name: '',
+                                level: 1,
+                                characterClass: 'Guerrier',
+                                race: '',
+                                ac: 10,
+                                maxHp: 10,
+                                currentHp: 10
+                              });
+                              setIsPlayerDialogOpen(true);
+                            }}
+                          >
+                            <UserPlus className="h-4 w-4 mr-1" />
+                            Ajouter un personnage
+                          </Button>
+                        </div>
+                      ) : (
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Nom</TableHead>
+                              <TableHead>Race</TableHead>
+                              <TableHead>Classe</TableHead>
+                              <TableHead>Niveau</TableHead>
+                              <TableHead>CA</TableHead>
+                              <TableHead>PV</TableHead>
+                              <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {selectedParty.players.map(player => (
+                              <TableRow key={player.id}>
+                                <TableCell className="font-medium">{player.name}</TableCell>
+                                <TableCell>{player.race || '-'}</TableCell>
+                                <TableCell>{player.characterClass}</TableCell>
+                                <TableCell>{player.level}</TableCell>
+                                <TableCell>{player.ac || '-'}</TableCell>
+                                <TableCell>
+                                  {player.currentHp !== undefined && player.maxHp !== undefined 
+                                    ? `${player.currentHp}/${player.maxHp}`
+                                    : '-'}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  <div className="flex justify-end space-x-1">
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm"
+                                      onClick={() => handleEditPlayerClick(player)}
+                                    >
+                                      <Edit className="h-4 w-4" />
+                                    </Button>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm"
+                                      className="text-red-500 hover:text-red-700"
+                                      onClick={() => handleRemovePlayer(player.id)}
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+              ) : parties.length > 0 ? (
+                <div className="flex justify-center py-8 text-center">
+                  <div className="max-w-md">
+                    <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500 mb-2">Sélectionnez un groupe pour le modifier</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-10 text-center">
+                  <Users className="h-16 w-16 text-gray-300 mb-4" />
+                  <p className="text-gray-500 mb-4">Vous n'avez pas encore de groupe d'aventuriers</p>
+                  <Button 
+                    variant="default"
+                    onClick={() => {
+                      if (canCreate) {
+                        setIsEditingParty(false);
+                        setNewPartyName('');
+                        setIsPartyDialogOpen(true);
+                      } else {
+                        toast({
+                          title: "Limite atteinte",
+                          description: "Vous avez atteint la limite de groupes pour votre plan actuel",
+                          variant: "destructive"
+                        });
+                      }
+                    }}
+                    disabled={!canCreate}
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Créer votre premier groupe
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+                </CardContent>
+      </Card>
+      
+      {/* Modal d'import de personnage */}
+      <PlayerImportModal
+        isOpen={isPlayerImportModalOpen}
+        onClose={() => {
+          setIsPlayerImportModalOpen(false);
+          setEditingPlayer(null);
+        }}
+        onImport={handlePlayerImport}
+        editingPlayer={editingPlayer || undefined}
+      />
+    </div>
+  );
+};
+
+export default PartyEditor; 

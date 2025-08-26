@@ -1,0 +1,169 @@
+{
+  "budgets": [
+    {
+      "resourceSizes": [
+        {
+          "resourceType": "bundle",
+          "maximumWarn": 400,
+          "maximumError": 500
+        },
+        {
+          "resourceType": "initial",
+          "maximumWarn": 300,
+          "maximumError": 400
+        },
+        {
+          "resourceType": "anyComponentStyle",
+          "maximumWarn": 50,
+          "maximumError": 100
+        },
+        {
+          "resourceType": "anyScript",
+          "maximumWarn": 200,
+          "maximumError": 300
+        },
+        {
+          "resourceType": "any",
+          "maximumWarn": 800,
+          "maximumError": 1200
+        }
+      ],
+      "resourceCounts": [
+        {
+          "resourceType": "script",
+          "maximumWarn": 10,
+          "maximumError": 15
+        },
+        {
+          "resourceType": "stylesheet",
+          "maximumWarn": 5,
+          "maximumError": 10
+        }
+      ]
+    }
+  ],
+  "performance": {
+    "FCP": {
+      "budget": 1800,
+      "warning": 1500,
+      "description": "First Contentful Paint - Temps avant le premier élément de contenu"
+    },
+    "LCP": {
+      "budget": 2500,
+      "warning": 2000,
+      "description": "Largest Contentful Paint - Temps de chargement du plus gros élément"
+    },
+    "FID": {
+      "budget": 100,
+      "warning": 50,
+      "description": "First Input Delay - Délai avant la première interaction"
+    },
+    "CLS": {
+      "budget": 0.1,
+      "warning": 0.05,
+      "description": "Cumulative Layout Shift - Stabilité visuelle de la page"
+    },
+    "TTFB": {
+      "budget": 800,
+      "warning": 600,
+      "description": "Time to First Byte - Temps de réponse du serveur"
+    },
+    "TTI": {
+      "budget": 3800,
+      "warning": 3000,
+      "description": "Time to Interactive - Temps avant interactivité complète"
+    },
+    "TBT": {
+      "budget": 300,
+      "warning": 200,
+      "description": "Total Blocking Time - Temps total de blocage"
+    },
+    "SI": {
+      "budget": 3000,
+      "warning": 2500,
+      "description": "Speed Index - Vitesse de chargement visuel"
+    }
+  },
+  "memory": {
+    "heap-used": {
+      "budget": 50,
+      "warning": 30,
+      "description": "Mémoire JavaScript utilisée (MB)"
+    },
+    "heap-total": {
+      "budget": 100,
+      "warning": 70,
+      "description": "Mémoire JavaScript totale (MB)"
+    },
+    "dom-nodes": {
+      "budget": 1500,
+      "warning": 1000,
+      "description": "Nombre de nœuds DOM"
+    }
+  },
+  "api": {
+    "response-time": {
+      "budget": 2000,
+      "warning": 1000,
+      "description": "Temps de réponse API moyen (ms)"
+    },
+    "error-rate": {
+      "budget": 5,
+      "warning": 2,
+      "description": "Taux d'erreur API (%)"
+    }
+  },
+  "thresholds": {
+    "performance": {
+      "good": 90,
+      "needs-improvement": 50,
+      "poor": 0
+    },
+    "accessibility": {
+      "good": 90,
+      "needs-improvement": 50,
+      "poor": 0
+    },
+    "best-practices": {
+      "good": 90,
+      "needs-improvement": 50,
+      "poor": 0
+    },
+    "seo": {
+      "good": 90,
+      "needs-improvement": 50,
+      "poor": 0
+    },
+    "pwa": {
+      "good": 90,
+      "needs-improvement": 50,
+      "poor": 0
+    }
+  },
+  "alerts": {
+    "email": {
+      "enabled": false,
+      "recipients": ["admin@dnd-story-weaver.com"]
+    },
+    "webhook": {
+      "enabled": false,
+      "url": "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"
+    },
+    "console": {
+      "enabled": true,
+      "level": "warn"
+    }
+  },
+  "monitoring": {
+    "interval": 30000,
+    "retention": {
+      "metrics": 86400000,
+      "errors": 604800000
+    },
+    "sampling": {
+      "performance": 1.0,
+      "errors": 1.0,
+      "user-interactions": 0.1
+    }
+  }
+} 

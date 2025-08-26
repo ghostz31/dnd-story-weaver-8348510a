@@ -1,53 +1,169 @@
-// Cette API sert de proxy pour contourner les problèmes CORS
-// lors de la récupération des données depuis des sources externes comme AideDD
+// Proxy API pour contourner les restrictions CORS
+// Ce fichier doit être utilisé avec un serveur backend ou un service serverless
 
-import express from 'express';
-import fetch from 'node-fetch';
-import cors from 'cors';
+export interface ProxyRequest {
+  url: string;
+  method?: string;
+  headers?: Record<string, string>;
+}
 
-const router = express.Router();
+export interface ProxyResponse {
+  data: string;
+  status: number;
+  headers: Record<string, string>;
+}
 
-// Middleware pour les CORS
-router.use(cors());
+// Configuration pour différents services de proxy
+const PROXY_SERVICES = {
+  // Service proxy local (développement)
+  local: {
+    baseUrl: '/api/proxy',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  },
+  
+  // Service proxy via CORS Anywhere (développement uniquement)
+  corsAnywhere: {
+    baseUrl: 'https://cors-anywhere.herokuapp.com/',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  },
+  
+  // Service proxy via AllOrigins (gratuit mais limité)
+  allOrigins: {
+    baseUrl: 'https://api.allorigins.win/get?url=',
+    headers: {}
+  }
+};
 
-// Route de proxy pour contourner les problèmes CORS
-router.get('/', async (req, res) => {
+// Fonction principale pour faire des requêtes via proxy
+export const proxyFetch = async (
+  url: string, 
+  options: RequestInit = {}
+): Promise<Response> => {
+  // Essayer d'abord le proxy local
   try {
-    const url = req.query.url as string;
-    
-    if (!url) {
-      return res.status(400).json({ error: 'URL manquante' });
-    }
-    
-    // Vérifier que l'URL est autorisée (sécurité)
-    const allowedDomains = ['www.aidedd.org', 'aidedd.org'];
-    const targetUrl = new URL(url);
-    
-    if (!allowedDomains.includes(targetUrl.hostname)) {
-      return res.status(403).json({ error: 'Domaine non autorisé' });
-    }
-    
-    // Faire la requête vers l'URL cible
-    const response = await fetch(url, {
+    const proxyUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
+    const response = await fetch(proxyUrl, {
+      ...options,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml',
-        'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
-      },
+        'Content-Type': 'application/json',
+        ...options.headers
+      }
     });
     
-    // Lire la réponse
-    const text = await response.text();
-    
-    // Définir les headers appropriés
-    res.set('Content-Type', 'text/html; charset=utf-8');
-    
-    // Envoyer la réponse
-    res.send(text);
+    if (response.ok) {
+      return response;
+    }
   } catch (error) {
-    console.error('Erreur du proxy:', error);
-    res.status(500).json({ error: 'Erreur lors de la récupération des données' });
+    console.warn('Proxy local non disponible, essai avec AllOrigins:', error);
   }
-});
+  
+  // Fallback vers AllOrigins
+  try {
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+    const response = await fetch(proxyUrl);
+    
+    if (response.ok) {
+      const data = await response.json();
+      
+      // Créer une réponse simulée avec le contenu
+      return new Response(data.contents, {
+        status: 200,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'text/html'
+        }
+      });
+    }
+  } catch (error) {
+    console.warn('AllOrigins non disponible:', error);
+  }
+  
+  throw new Error('Aucun service proxy disponible');
+};
 
-export default router; 
+// Fonction spécialisée pour D&D Beyond
+export const fetchDnDBeyondPage = async (characterUrl: string): Promise<string> => {
+  try {
+    const response = await proxyFetch(characterUrl, {
+      method: 'GET',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'DNT': '1',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    return await response.text();
+  } catch (error) {
+    console.error('Erreur lors de la récupération de la page D&D Beyond:', error);
+    throw new Error('Impossible de récupérer la page D&D Beyond');
+  }
+};
+
+// Fonction pour tester la connectivité des services proxy
+export const testProxyServices = async (): Promise<{
+  local: boolean;
+  allOrigins: boolean;
+  corsAnywhere: boolean;
+}> => {
+  const results = {
+    local: false,
+    allOrigins: false,
+    corsAnywhere: false
+  };
+  
+  // Test proxy local
+  try {
+    const response = await fetch('/api/proxy?url=https://httpbin.org/status/200', {
+      method: 'HEAD'
+    });
+    results.local = response.ok;
+  } catch {
+    // Service non disponible
+  }
+  
+  // Test AllOrigins
+  try {
+    const response = await fetch('https://api.allorigins.win/get?url=https://httpbin.org/status/200');
+    results.allOrigins = response.ok;
+  } catch {
+    // Service non disponible
+  }
+  
+  // Test CORS Anywhere
+  try {
+    const response = await fetch('https://cors-anywhere.herokuapp.com/https://httpbin.org/status/200', {
+      method: 'HEAD'
+    });
+    results.corsAnywhere = response.ok;
+  } catch {
+    // Service non disponible
+  }
+  
+  return results;
+};
+
+// Configuration pour le développement local
+export const setupLocalProxy = () => {
+  // Cette fonction peut être utilisée pour configurer un proxy local
+  // dans un environnement de développement
+  
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    console.log('Mode développement détecté - proxy local disponible');
+    return true;
+  }
+  
+  return false;
+}; 

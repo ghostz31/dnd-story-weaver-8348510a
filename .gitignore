@@ -12,6 +12,18 @@ dist
 dist-ssr
 *.local
 
+# Test coverage
+coverage/
+*.lcov
+.nyc_output
+
+# Jest
+jest.config.js.bak
+
+# Lighthouse CI
+lighthouse-ci-results/
+.lighthouseci/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

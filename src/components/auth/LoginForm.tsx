@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from '../../components/ui/alert';
 import { useAuth } from '../../auth/AuthContext';
 import { Loader2 } from 'lucide-react';
+import { validateLogin } from '../../lib/schemas';
 
 interface LoginFormProps {
   onRegisterClick?: () => void;
@@ -19,6 +20,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
   
   const { login } = useAuth();
@@ -26,9 +28,19 @@ const LoginForm: React.FC<LoginFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setFieldErrors({});
     
-    if (!email || !password) {
-      setError('Veuillez remplir tous les champs');
+    // Validation avec Zod
+    const validationResult = validateLogin({ email, password });
+    
+    if (!validationResult.success) {
+      const errors: { [key: string]: string } = {};
+      validationResult.errors?.forEach((error) => {
+        if (error.path && error.path.length > 0) {
+          errors[error.path[0] as string] = error.message;
+        }
+      });
+      setFieldErrors(errors);
       return;
     }
 
@@ -50,93 +62,110 @@ const LoginForm: React.FC<LoginFormProps> = ({
       case 'auth/user-disabled':
         return 'Ce compte a été désactivé';
       case 'auth/user-not-found':
-        return 'Aucun compte trouvé avec cette adresse email';
+        return 'Aucun compte associé à cette adresse email';
       case 'auth/wrong-password':
         return 'Mot de passe incorrect';
       case 'auth/too-many-requests':
         return 'Trop de tentatives de connexion. Veuillez réessayer plus tard';
+      case 'auth/network-request-failed':
+        return 'Erreur de connexion réseau';
+      case 'auth/invalid-credential':
+        return 'Identifiants invalides';
       default:
-        return '';
+        return 'Une erreur est survenue lors de la connexion';
     }
   };
 
   return (
     <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle>Connexion</CardTitle>
-        <CardDescription>
-          Connectez-vous à votre compte Trame
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-2xl font-bold text-center">Connexion</CardTitle>
+        <CardDescription className="text-center">
+          Connectez-vous à votre compte pour accéder à vos rencontres
         </CardDescription>
       </CardHeader>
       
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit}>
+        <CardContent className="space-y-4">
           {error && (
             <Alert variant="destructive">
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          
+
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input 
+            <Input
               id="email"
-              type="email" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)}
+              type="email"
               placeholder="votre@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
+              className={fieldErrors.email ? "border-red-500 focus:border-red-500" : ""}
             />
+            {fieldErrors.email && (
+              <p className="text-sm text-red-600">{fieldErrors.email}</p>
+            )}
           </div>
-          
+
           <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <Label htmlFor="password">Mot de passe</Label>
-              {onForgotPasswordClick && (
-                <Button 
-                  variant="link" 
-                  className="p-0 h-auto text-xs" 
-                  onClick={onForgotPasswordClick}
-                  type="button"
-                  disabled={isLoading}
-                >
-                  Mot de passe oublié?
-                </Button>
-              )}
-            </div>
-            <Input 
+            <Label htmlFor="password">Mot de passe</Label>
+            <Input
               id="password"
-              type="password" 
-              value={password} 
+              type="password"
+              placeholder="••••••••"
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
+              className={fieldErrors.password ? "border-red-500 focus:border-red-500" : ""}
             />
+            {fieldErrors.password && (
+              <p className="text-sm text-red-600">{fieldErrors.password}</p>
+            )}
           </div>
-          
-          <Button type="submit" className="w-full" disabled={isLoading}>
+
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={onForgotPasswordClick}
+              className="text-sm text-blue-600 hover:text-blue-500 hover:underline"
+              disabled={isLoading}
+            >
+              Mot de passe oublié ?
+            </button>
+          </div>
+        </CardContent>
+
+        <CardFooter className="flex flex-col space-y-4">
+          <Button 
+            type="submit" 
+            className="w-full" 
+            disabled={isLoading}
+          >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
-                Connexion en cours...
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Connexion...
               </>
             ) : (
               'Se connecter'
             )}
           </Button>
-        </form>
-      </CardContent>
-      
-      <CardFooter className="flex justify-center">
-        {onRegisterClick && (
-          <Button 
-            variant="link" 
-            onClick={onRegisterClick}
-            disabled={isLoading}
-          >
-            Pas encore de compte? S'inscrire
-          </Button>
-        )}
-      </CardFooter>
+
+          <div className="text-center text-sm">
+            <span className="text-gray-600">Pas encore de compte ? </span>
+            <button
+              type="button"
+              onClick={onRegisterClick}
+              className="text-blue-600 hover:text-blue-500 hover:underline font-medium"
+              disabled={isLoading}
+            >
+              Créer un compte
+            </button>
+          </div>
+        </CardFooter>
+      </form>
     </Card>
   );
 };

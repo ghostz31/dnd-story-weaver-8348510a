@@ -219,6 +219,20 @@ const EncounterTracker: React.FC = () => {
     name: '',
     notes: ''
   });
+
+  // État pour le dialogue d'édition des PV max
+  const [maxHpDialogOpen, setMaxHpDialogOpen] = useState(false);
+  const [editingMaxHp, setEditingMaxHp] = useState<{
+    participants: Array<{
+      id: string;
+      name: string;
+      currentMaxHp: number;
+      newMaxHp: number;
+      isPC: boolean;
+    }>;
+  }>({
+    participants: []
+  });
   
   // État pour stocker le dictionnaire de correspondance des noms
   const [monsterNameMap, setMonsterNameMap] = useState<MonsterNameMapping>({});
@@ -562,6 +576,76 @@ const EncounterTracker: React.FC = () => {
       title: "Points de vie modifiés",
       description: "Les points de vie ont été mis à jour."
     });
+  };
+
+  // Ouvrir le dialogue d'édition des PV max
+  const openMaxHpEditor = () => {
+    const participantsData = encounter.participants.map(p => ({
+      id: p.id,
+      name: p.name,
+      currentMaxHp: p.maxHp,
+      newMaxHp: p.maxHp,
+      isPC: p.isPC
+    }));
+    
+    setEditingMaxHp({ participants: participantsData });
+    setMaxHpDialogOpen(true);
+  };
+
+  // Mettre à jour un PV max spécifique
+  const updateMaxHp = (participantId: string, newMaxHp: number) => {
+    setEditingMaxHp(prev => ({
+      participants: prev.participants.map(p => 
+        p.id === participantId ? { ...p, newMaxHp } : p
+      )
+    }));
+  };
+
+  // Sauvegarder tous les changements de PV max
+  const saveMaxHpChanges = () => {
+    setEncounter(prev => ({
+      ...prev,
+      participants: prev.participants.map(p => {
+        const editedParticipant = editingMaxHp.participants.find(ep => ep.id === p.id);
+        if (editedParticipant && editedParticipant.newMaxHp !== editedParticipant.currentMaxHp) {
+          // Si les PV max changent, ajuster les PV actuels si nécessaire
+          const newCurrentHp = Math.min(p.currentHp, editedParticipant.newMaxHp);
+          return {
+            ...p,
+            maxHp: editedParticipant.newMaxHp,
+            currentHp: newCurrentHp
+          };
+        }
+        return p;
+      })
+    }));
+    
+    // Afficher un toast de confirmation
+    const changedCount = editingMaxHp.participants.filter(p => 
+      p.newMaxHp !== p.currentMaxHp
+    ).length;
+    
+    if (changedCount > 0) {
+      toast({
+        title: "PV max modifiés",
+        description: `${changedCount} créature${changedCount > 1 ? 's' : ''} mise${changedCount > 1 ? 's' : ''} à jour`,
+        variant: "default"
+      });
+    }
+    
+    setMaxHpDialogOpen(false);
+  };
+
+  // Appliquer un modificateur global aux PV max
+  const applyGlobalMaxHpModifier = (multiplier: number, onlyMonsters: boolean = false) => {
+    setEditingMaxHp(prev => ({
+      participants: prev.participants.map(p => {
+        if (onlyMonsters && p.isPC) return p;
+        
+        const newMaxHp = Math.max(1, Math.round(p.currentMaxHp * multiplier));
+        return { ...p, newMaxHp };
+      })
+    }));
   };
 
   // Fonction pour sauvegarder les modifications d'initiative
@@ -1752,6 +1836,16 @@ const EncounterTracker: React.FC = () => {
             Lancer l'initiative
           </Button>
           
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={openMaxHpEditor}
+            disabled={encounter.participants.length === 0}
+          >
+            <Heart className="h-4 w-4 mr-1" />
+            Modifier PV max
+          </Button>
+          
           {encounter.participants.length > 0 && (
             <>
           <Button 
@@ -2450,6 +2544,108 @@ const EncounterTracker: React.FC = () => {
             </Button>
             <Button onClick={saveNotesChanges}>
               Sauvegarder
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialogue d'édition des PV max */}
+      <Dialog open={maxHpDialogOpen} onOpenChange={setMaxHpDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Modifier les PV maximum</DialogTitle>
+            <DialogDescription>
+              Ajustez les points de vie maximum de toutes les créatures. Les PV actuels seront ajustés si ils dépassent les nouveaux maximums.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            {/* Boutons de modification rapide */}
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+              <Label className="text-sm font-medium mb-2 block">Modifications rapides :</Label>
+              <div className="flex flex-wrap gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => applyGlobalMaxHpModifier(0.5, true)}
+                >
+                  Monstres ÷2
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => applyGlobalMaxHpModifier(0.75, true)}
+                >
+                  Monstres -25%
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => applyGlobalMaxHpModifier(1.25, true)}
+                >
+                  Monstres +25%
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => applyGlobalMaxHpModifier(1.5, true)}
+                >
+                  Monstres +50%
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => applyGlobalMaxHpModifier(2, true)}
+                >
+                  Monstres ×2
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => applyGlobalMaxHpModifier(3, true)}
+                >
+                  Monstres ×3
+                </Button>
+              </div>
+            </div>
+
+            {/* Liste des participants */}
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {editingMaxHp.participants.map((participant) => (
+                <div key={participant.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-3 h-3 rounded-full ${participant.isPC ? 'bg-blue-500' : 'bg-red-500'}`} />
+                    <div>
+                      <div className="font-medium">{participant.name}</div>
+                      <div className="text-sm text-gray-500">
+                        {participant.isPC ? 'Personnage joueur' : 'Monstre'}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="text-sm text-gray-600">
+                      {participant.currentMaxHp} → {participant.newMaxHp}
+                    </div>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={participant.newMaxHp}
+                      onChange={(e) => updateMaxHp(participant.id, parseInt(e.target.value) || 1)}
+                      className="w-20"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setMaxHpDialogOpen(false)}>
+              Annuler
+            </Button>
+            <Button onClick={saveMaxHpChanges}>
+              <Heart className="h-4 w-4 mr-2" />
+              Appliquer les modifications
             </Button>
           </DialogFooter>
         </DialogContent>

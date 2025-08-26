@@ -712,7 +712,7 @@ const EncounterBuilder: React.FC = () => {
       };
       
       // Stocker les données complètes en sessionStorage
-      sessionStorage.setItem('current_encounter', JSON.stringify(completeEncounterData));
+      sessionStorage.setItem('currentEncounter', JSON.stringify(completeEncounterData));
       console.log("Données de rencontre stockées dans sessionStorage");
       
       // Rediriger vers la page d'affrontement avec un identifiant simple
@@ -734,6 +734,123 @@ const EncounterBuilder: React.FC = () => {
       });
     } catch (error) {
       console.error("Erreur lors du lancement de la rencontre:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de lancer la rencontre: " + (error instanceof Error ? error.message : "Erreur inconnue"),
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Fonction pour lancer la rencontre avec la nouvelle UI
+  const launchEncounterNewUI = async () => {
+    try {
+      console.log("Lancement de la rencontre avec nouvelle UI...");
+      
+      // Vérifications
+      if (!selectedParty) {
+        toast({
+          title: "Erreur",
+          description: "Veuillez sélectionner un groupe de joueurs.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      if (!encounterName) {
+        toast({
+          title: "Erreur",
+          description: "Veuillez donner un nom à votre rencontre.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      if (selectedMonsters.length === 0) {
+        toast({
+          title: "Erreur",
+          description: "Veuillez ajouter au moins un monstre à la rencontre.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Créer les données de rencontre pour la nouvelle UI
+      const playerParticipants = selectedParty.players.map(player => {
+        const maxHp = player.maxHp || 10;
+        return {
+          id: `pc-${player.id}`,
+          name: player.name,
+          type: 'player' as const,
+          ac: player.ac || 10,
+          maxHp: maxHp,
+          currentHp: player.currentHp || maxHp,
+          initiative: 0,
+          initiativeModifier: Math.floor(((player.stats?.dexterity || 10) - 10) / 2), // Modificateur de Dex
+          conditions: [],
+          notes: `${player.characterClass || 'Aventurier'} niveau ${player.level || 1}`,
+          cr: 0,
+          size: "M"
+        };
+      });
+
+      const monsterParticipants = selectedMonsters.flatMap(({ monster, quantity }) => 
+        Array.from({ length: quantity }, (_, index) => {
+          const maxHp = monster.hp || 10;
+          return {
+            id: `monster-${monster.id}-${index}`,
+            name: quantity > 1 ? `${monster.name} ${index + 1}` : monster.name,
+            type: 'monster' as const,
+            ac: monster.ac || 10,
+            maxHp: maxHp,
+            currentHp: maxHp,
+            initiative: 0,
+            initiativeModifier: Math.floor(((monster.dex || 10) - 10) / 2), // Modificateur de Dex
+            conditions: [],
+            notes: "",
+            cr: monster.cr || 0,
+            size: monster.size || "M"
+          };
+        })
+      );
+
+      const completeEncounterData = {
+        id: uuidv4(),
+        name: encounterName,
+        description: `Rencontre créée depuis l'EncounterBuilder`,
+        environment: selectedEnvironment || 'any',
+        difficulty: getDifficulty()?.level || 'medium',
+        participants: [
+          ...playerParticipants,
+          ...monsterParticipants
+        ],
+        round: 1,
+        currentTurn: 0,
+        isActive: false
+      };
+      
+      // Stocker les données complètes en sessionStorage
+      sessionStorage.setItem('currentEncounter', JSON.stringify(completeEncounterData));
+      console.log("Données de rencontre stockées dans sessionStorage pour nouvelle UI");
+      
+      // Rediriger vers la page d'affrontement test
+      console.log("Tentative de navigation vers /encounter-tracker-test?source=session");
+      
+      try {
+        navigate('/encounter-tracker-unified?source=session');
+        console.log("Navigation avec React Router vers nouvelle UI réussie");
+      } catch (error) {
+        console.error("Erreur avec React Router, utilisation de window.location:", error);
+        window.location.href = '/encounter-tracker-test?source=session';
+      }
+      
+      toast({
+        title: "Rencontre lancée (Nouvelle UI)",
+        description: "Découvrez la nouvelle interface de combat !",
+        variant: "default"
+      });
+    } catch (error) {
+      console.error("Erreur lors du lancement de la rencontre (nouvelle UI):", error);
       toast({
         title: "Erreur",
         description: "Impossible de lancer la rencontre: " + (error instanceof Error ? error.message : "Erreur inconnue"),
@@ -1186,6 +1303,16 @@ const EncounterBuilder: React.FC = () => {
             >
               <FaDragon className="mr-2" />
             Lancer la rencontre
+            </button>
+            
+            {/* Bouton pour lancer la rencontre avec le système unifié */}
+            <button
+              onClick={launchEncounterNewUI}
+              className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 flex items-center"
+              disabled={!selectedMonsters.length || isSaving}
+            >
+              <Play className="mr-2" />
+              Combat (Système Unifié)
             </button>
         </div>
 

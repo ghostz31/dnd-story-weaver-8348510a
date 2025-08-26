@@ -8,19 +8,13 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: true,
     port: 8080,
-    proxy: {
-      // Configuration du proxy pour AideDD
-      '/api/proxy': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/proxy/, '/api/proxy'),
-        configure: (proxy, _options) => {
-          proxy.on('error', (err, _req, _res) => {
-            console.log('Erreur de proxy:', err);
-          });
-        },
-      },
-    },
+    // Proxy désactivé - l'import D&D Beyond utilise des services externes
+    // proxy: {
+    //   '/api/proxy': {
+    //     target: 'http://localhost:3001',
+    //     changeOrigin: true,
+    //   },
+    // },
   },
   plugins: [
     react(),

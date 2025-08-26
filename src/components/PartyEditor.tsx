@@ -3,12 +3,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { toast } from '../hooks/use-toast';
-import { Users, UserPlus, Trash2, Edit, Plus, Sword, AlertCircle, Save } from 'lucide-react';
+import { Users, UserPlus, Trash2, Edit, Plus, AlertCircle, Save } from 'lucide-react';
+import PlayerImportModal from './PlayerImportModal';
 import { 
   getParties, 
   createParty, 
@@ -24,29 +24,6 @@ import { Party, Player } from '../lib/types';
 import UsageStats from './UsageStats';
 import { useAuth } from '../auth/AuthContext';
 
-// Classes de personnages D&D
-const CHARACTER_CLASSES = [
-  'Barbare', 'Barde', 'Clerc', 'Druide', 'Ensorceleur', 'Guerrier', 
-  'Magicien', 'Moine', 'Occultiste', 'Paladin', 'Rôdeur', 'Roublard'
-];
-
-// Correspondance entre les classes D&D Beyond (anglais) et françaises
-const CLASS_MAPPING: Record<string, string> = {
-  'Artificer': 'Artificier',
-  'Barbarian': 'Barbare',
-  'Bard': 'Barde',
-  'Cleric': 'Clerc',
-  'Druid': 'Druide',
-  'Fighter': 'Guerrier',
-  'Monk': 'Moine',
-  'Paladin': 'Paladin',
-  'Ranger': 'Rôdeur',
-  'Rogue': 'Roublard',
-  'Sorcerer': 'Ensorceleur',
-  'Warlock': 'Occultiste',
-  'Wizard': 'Magicien'
-};
-
 const PartyEditor: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const [parties, setParties] = useState<Party[]>([]);
@@ -60,488 +37,130 @@ const PartyEditor: React.FC = () => {
   const [newPartyName, setNewPartyName] = useState('');
   const [isEditingParty, setIsEditingParty] = useState(false);
   
-  // État pour le dialogue de création/édition de joueur
-  const [isPlayerDialogOpen, setIsPlayerDialogOpen] = useState(false);
-  const [newPlayer, setNewPlayer] = useState<Omit<Player, 'id'>>({
-    name: '',
-    level: 1,
-    characterClass: 'Guerrier',
-    race: '',
-    ac: 10,
-    maxHp: 10,
-    currentHp: 10
-  });
-  const [isEditingPlayer, setIsEditingPlayer] = useState(false);
-  const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
-  
-  // État pour l'import D&D Beyond
-  const [dndBeyondUrl, setDndBeyondUrl] = useState('');
-  const [isImporting, setIsImporting] = useState(false);
+  // État pour la modal d'import de joueur
+  const [isPlayerImportModalOpen, setIsPlayerImportModalOpen] = useState(false);
+  const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
 
-  // Fonction de fallback pour extraire les données depuis le HTML de la page
-  const tryHtmlScraping = async (url: string) => {
-    const proxyServices = [
-      `https://corsproxy.io/?${encodeURIComponent(url)}`,
-      `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
-    ];
-    
-    for (const proxyUrl of proxyServices) {
-      try {
-        console.log('Tentative de scraping HTML depuis:', proxyUrl);
-        
-        const response = await fetch(proxyUrl);
-        if (!response.ok) continue;
-        
-        const html = await response.text();
-        
-        // Chercher les données JSON dans le HTML (D&D Beyond stocke souvent les données dans des scripts)
-        const jsonMatch = html.match(/window\.characterData\s*=\s*({.*?});/s) || 
-                         html.match(/data-character\s*=\s*"([^"]*)"/) ||
-                         html.match(/"character":\s*({.*?})/s);
-        
-        if (jsonMatch) {
-          let jsonStr = jsonMatch[1];
-          if (jsonMatch[0].includes('data-character')) {
-            jsonStr = jsonMatch[1].replace(/&quot;/g, '"');
-          }
-          
-          const characterData = JSON.parse(jsonStr);
-          console.log('Données extraites du HTML:', characterData);
-          return characterData;
-        }
-        
-        // Fallback: extraire des informations basiques depuis le HTML
-        const nameMatch = html.match(/<h1[^>]*class="[^"]*character-name[^"]*"[^>]*>([^<]+)</i) ||
-                         html.match(/<title>([^-]+)\s*-\s*D&D Beyond</i);
-        
-        if (nameMatch) {
-          return {
-            data: {
-              name: nameMatch[1].trim(),
-              // Données par défaut quand on ne peut extraire que le nom
-              classes: [{ level: 1, definition: { name: 'Fighter' } }],
-              race: { fullName: '' },
-              armorClass: 10,
-              baseHitPoints: 10
-            }
-          };
-        }
-        
-      } catch (error) {
-        console.warn(`Échec du scraping avec ${proxyUrl}:`, error);
-        continue;
-      }
-    }
-    
-    throw new Error('Impossible d\'extraire les données depuis le HTML');
-  };
-
-  // Fonction pour extraire les données depuis D&D Beyond
-  const importFromDndBeyond = async (url: string) => {
-    try {
-      setIsImporting(true);
-      
-      // Vérifier que l'URL est valide
-      if (!url.includes('dndbeyond.com/characters/')) {
-        throw new Error('URL D&D Beyond invalide. Utilisez une URL du type: https://www.dndbeyond.com/characters/[ID]');
-      }
-      
-      // Extraire l'ID du personnage depuis l'URL
-      const characterIdMatch = url.match(/\/characters\/(\d+)/);
-      if (!characterIdMatch) {
-        throw new Error('Impossible d\'extraire l\'ID du personnage depuis l\'URL');
-      }
-      
-      const characterId = characterIdMatch[1];
-      console.log('ID du personnage D&D Beyond:', characterId);
-      
-      // Utiliser l'API JSON de D&D Beyond
-      const apiUrl = `https://character-service.dndbeyond.com/character/v5/character/${characterId}`;
-      
-      // Liste de services proxy à essayer
-      const proxyServices = [
-        `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`,
-        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(apiUrl)}`,
-        `https://cors-anywhere.herokuapp.com/${apiUrl}`,
-        `https://thingproxy.freeboard.io/fetch/${apiUrl}`
-      ];
-      
-      let characterData = null;
-      let lastError = null;
-      
-      // Essayer chaque service proxy
-      for (const proxyUrl of proxyServices) {
+  // Charger les données au démarrage
+  useEffect(() => {
+    const loadData = async () => {
+      if (isAuthenticated) {
         try {
-          console.log('Tentative de récupération depuis:', proxyUrl);
-          
-          const response = await fetch(proxyUrl, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-            },
+          // S'abonner aux changements de groupes
+          const unsubscribe = subscribeToParties((fetchedParties) => {
+            setParties(fetchedParties);
+            setIsLoading(false);
           });
           
-          if (!response.ok) {
-            throw new Error(`Erreur ${response.status}: ${response.statusText}`);
-          }
+          // Vérifier les limites
+          const canCreateNew = await canCreateParty();
+          setCanCreate(canCreateNew);
           
-          const responseText = await response.text();
-          console.log('Réponse brute:', responseText.substring(0, 200) + '...');
-          
-          // Essayer de parser la réponse JSON
-          try {
-            characterData = JSON.parse(responseText);
-          } catch (parseError) {
-            // Si c'est un proxy qui retourne un objet avec contents
-            try {
-              const proxyData = JSON.parse(responseText);
-              if (proxyData.contents) {
-                characterData = JSON.parse(proxyData.contents);
-              } else {
-                characterData = proxyData;
-              }
-            } catch (nestedParseError) {
-              throw new Error('Impossible de parser les données JSON');
-            }
-          }
-          
-          // Si on arrive ici, on a réussi à récupérer les données
-          console.log('Données récupérées avec succès depuis:', proxyUrl);
-          break;
-          
-        } catch (error) {
-          console.warn(`Échec avec ${proxyUrl}:`, error);
-          lastError = error;
-          continue;
-        }
-      }
-      
-      // Si aucun proxy n'a fonctionné, essayer le scraping HTML
-      if (!characterData) {
-        console.log('Tous les proxies API ont échoué, tentative de scraping HTML...');
-        
-        try {
-          characterData = await tryHtmlScraping(url);
-        } catch (scrapingError) {
-          console.warn('Échec du scraping HTML:', scrapingError);
-        }
-      }
-      
-      // Si vraiment rien n'a fonctionné
-      if (!characterData) {
-        console.log('Toutes les méthodes ont échoué');
-        
-        // Proposer une saisie manuelle avec des données pré-remplies basées sur l'URL
-        toast({
-          title: "Import automatique impossible",
-          description: "Impossible d'accéder aux données D&D Beyond. Vérifiez que le personnage est public et réessayez plus tard.",
-          variant: "destructive"
-        });
-        
-        // Pré-remplir quelques champs basiques si possible
-        const characterIdStr = characterId;
-        setNewPlayer({
-          name: `Personnage-${characterIdStr}`,
-          level: 1,
-          characterClass: 'Guerrier',
-          race: '',
-          ac: 10,
-          maxHp: 10,
-          currentHp: 10
-        });
-        
-        return;
-      }
-      
-      console.log('Données du personnage D&D Beyond:', characterData);
-      
-      // Extraire les informations pertinentes
-      const character = characterData.data || characterData;
-      
-      // Log détaillé de la structure pour déboguer
-      console.log('Structure du personnage:', {
-        keys: Object.keys(character),
-        armorClass: character.armorClass,
-        stats: character.stats,
-        decorations: character.decorations,
-        modifiers: character.modifiers,
-        bonuses: character.bonuses
-      });
-      
-      if (!character) {
-        throw new Error('Données du personnage non trouvées dans la réponse');
-      }
-      
-      // Extraire le nom
-      const name = character.name || 'Personnage';
-      
-      // Extraire la race
-      const race = character.race?.fullName || character.race?.baseName || '';
-      
-      // Extraire la classe et le niveau
-      let characterClass = 'Guerrier';
-      let level = 1;
-      
-      if (character.classes && character.classes.length > 0) {
-        const primaryClass = character.classes[0];
-        const englishClassName = primaryClass.definition?.name || 'Fighter';
-        characterClass = CLASS_MAPPING[englishClassName] || 'Guerrier';
-        level = primaryClass.level || 1;
-      }
-      
-      // Extraire la CA (essayer plusieurs champs possibles)
-      let ac = 10;
-      if (character.armorClass !== undefined) {
-        ac = character.armorClass;
-      } else if (character.stats && character.stats.armorClass !== undefined) {
-        ac = character.stats.armorClass;
-      } else if (character.decorations && character.decorations.armorClass !== undefined) {
-        ac = character.decorations.armorClass;
-      } else if (character.totalAC !== undefined) {
-        ac = character.totalAC;
-      } else if (character.ac !== undefined) {
-        ac = character.ac;
-      } else if (character.modifiers && character.modifiers.armorClass !== undefined) {
-        ac = character.modifiers.armorClass;
-      } else if (character.bonuses && character.bonuses.armorClass !== undefined) {
-        ac = character.bonuses.armorClass;
-      } else if (character.calculatedStats && character.calculatedStats.armorClass !== undefined) {
-        ac = character.calculatedStats.armorClass;
-      } else if (character.finalStats && character.finalStats.armorClass !== undefined) {
-        ac = character.finalStats.armorClass;
-      }
-      
-      // Fallback: chercher dans les objets imbriqués
-      if (ac === 10) {
-        // Parcourir tous les objets pour trouver une propriété AC
-        const searchForAC = (obj: any, path = ''): number | null => {
-          if (!obj || typeof obj !== 'object') return null;
-          
-          for (const [key, value] of Object.entries(obj)) {
-            const currentPath = path ? `${path}.${key}` : key;
-            
-            // Chercher des clés qui pourraient contenir l'AC
-            if ((key.toLowerCase().includes('armor') || key.toLowerCase().includes('ac')) && 
-                typeof value === 'number' && value > 10 && value < 30) {
-              console.log(`AC trouvée dans ${currentPath}:`, value);
-              return value;
-            }
-            
-            // Recherche récursive
-            if (typeof value === 'object' && value !== null) {
-              const found = searchForAC(value, currentPath);
-              if (found !== null) return found;
-            }
-          }
-          return null;
-        };
-        
-        const foundAC = searchForAC(character);
-        if (foundAC !== null) {
-          ac = foundAC;
-        }
-      }
-      
-      console.log('AC extraite:', ac, 'depuis character:', {
-        armorClass: character.armorClass,
-        'stats.armorClass': character.stats?.armorClass,
-        'decorations.armorClass': character.decorations?.armorClass,
-        totalAC: character.totalAC,
-        ac: character.ac
-      });
-      
-      // Extraire les PV (essayer plusieurs champs possibles)
-      let maxHp = 10;
-      let currentHp = 10;
-      
-      if (character.baseHitPoints !== undefined) {
-        maxHp = character.baseHitPoints + (character.bonusHitPoints || 0);
-        currentHp = maxHp - (character.removedHitPoints || 0);
-      } else if (character.hitPoints !== undefined) {
-        maxHp = character.hitPoints;
-        currentHp = character.currentHitPoints || maxHp;
-      } else if (character.stats && character.stats.hitPoints !== undefined) {
-        maxHp = character.stats.hitPoints;
-        currentHp = character.stats.currentHitPoints || maxHp;
-      } else if (character.hp !== undefined) {
-        maxHp = character.hp;
-        currentHp = character.currentHp || maxHp;
-      }
-      
-      console.log('PV extraits:', { maxHp, currentHp }, 'depuis character:', {
-        baseHitPoints: character.baseHitPoints,
-        bonusHitPoints: character.bonusHitPoints,
-        removedHitPoints: character.removedHitPoints,
-        hitPoints: character.hitPoints,
-        currentHitPoints: character.currentHitPoints,
-        'stats.hitPoints': character.stats?.hitPoints,
-        hp: character.hp,
-        currentHp: character.currentHp
-      });
-      
-      // Mettre à jour le formulaire avec les données extraites
-      setNewPlayer({
-        name: name,
-        level: level,
-        characterClass: characterClass,
-        race: race,
-        ac: ac,
-        maxHp: maxHp,
-        currentHp: currentHp
-      });
-      
-      toast({
-        title: "Import réussi !",
-        description: `Les données de ${name} ont été importées depuis D&D Beyond. AC: ${ac}, PV: ${maxHp}/${currentHp}`,
-        variant: "default"
-      });
-      
-      // Effacer l'URL après l'import
-      setDndBeyondUrl('');
-      
-    } catch (error) {
-      console.error('Erreur lors de l\'import D&D Beyond:', error);
-      toast({
-        title: "Erreur d'import",
-        description: error instanceof Error ? error.message : "Impossible d'importer les données depuis D&D Beyond. Vérifiez que le personnage est public.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsImporting(false);
-    }
-  };
-
-  // Chargement initial des données
-  useEffect(() => {
-    if (!isAuthenticated) return;
-    
-    const loadParties = async () => {
-      try {
-        setIsLoading(true);
-        
-        // Vérifier si l'utilisateur peut créer un nouveau groupe
-        const canCreateNewParty = await canCreateParty();
-        setCanCreate(canCreateNewParty);
-        
-        // Utiliser l'abonnement aux parties au lieu de getParties
-        const unsubscribe = subscribeToParties((fetchedParties) => {
-          setParties(fetchedParties);
+          return unsubscribe;
+        } catch (err) {
+          console.error('Erreur lors du chargement des données:', err);
+          setError('Impossible de charger les données');
           setIsLoading(false);
-          
-          // Sélectionner le premier groupe par défaut s'il y en a
-          if (fetchedParties.length > 0 && !selectedParty) {
-            setSelectedParty(fetchedParties[0]);
-          }
-        });
-        
-        // Nettoyer l'abonnement quand le composant est démonté
-        return () => unsubscribe();
-      } catch (err) {
-        console.error('Erreur lors du chargement des groupes:', err);
-        setError('Impossible de charger vos groupes d\'aventuriers');
-        setIsLoading(false);
+        }
+      } else {
+                 // Mode local
+         try {
+           const localParties = await getParties();
+           setParties(localParties);
+           setIsLoading(false);
+         } catch (err) {
+          console.error('Erreur lors du chargement des données locales:', err);
+          setError('Impossible de charger les données');
+          setIsLoading(false);
+        }
       }
     };
 
-    loadParties();
+              loadData();
   }, [isAuthenticated]);
 
   // Gestion de la création d'un groupe
   const handleCreateParty = async () => {
     if (!newPartyName.trim()) {
       toast({
-        title: "Erreur",
-        description: "Le nom du groupe ne peut pas être vide",
+        title: "Nom requis",
+        description: "Veuillez donner un nom au groupe",
         variant: "destructive"
       });
       return;
     }
 
     try {
-      const newParty = await createParty(newPartyName);
+             const newParty = await createParty(newPartyName.trim());
       if (newParty) {
-        setParties([...parties, newParty]);
+        setParties([newParty, ...parties]);
         setSelectedParty(newParty);
+        
         toast({
-          title: "Succès",
-          description: `Le groupe "${newPartyName}" a été créé`
+          title: "Groupe créé",
+          description: `Le groupe "${newPartyName}" a été créé avec succès`
         });
         
-        // Mettre à jour l'état de capacité de création
-        setCanCreate(await canCreateParty());
-      }
-    } catch (err: any) {
-      toast({
-        title: "Erreur",
-        description: err.message || "Impossible de créer le groupe",
-        variant: "destructive"
-      });
-    } finally {
-      setNewPartyName('');
-      setIsPartyDialogOpen(false);
-    }
-  };
-
-  // Gestion de la mise à jour d'un groupe
-  const handleUpdateParty = async () => {
-    if (!selectedParty || !newPartyName.trim()) {
-      toast({
-        title: "Erreur",
-        description: "Le nom du groupe ne peut pas être vide",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    try {
-      const updatedParty = await updateParty(selectedParty.id, { name: newPartyName });
-      if (updatedParty) {
-        setParties(parties.map(party => 
-          party.id === updatedParty.id ? updatedParty : party
-        ));
-        setSelectedParty(updatedParty);
-        toast({
-          title: "Succès",
-          description: `Le groupe a été renommé en "${newPartyName}"`
-        });
+        setNewPartyName('');
+        setIsPartyDialogOpen(false);
       }
     } catch (err) {
       toast({
         title: "Erreur",
-        description: "Impossible de mettre à jour le groupe",
+        description: "Impossible de créer le groupe",
         variant: "destructive"
       });
-    } finally {
-      setNewPartyName('');
-      setIsEditingParty(false);
-      setIsPartyDialogOpen(false);
+    }
+  };
+
+  // Gestion de la modification d'un groupe
+  const handleUpdateParty = async () => {
+    if (!selectedParty || !newPartyName.trim()) return;
+
+    try {
+      const updatedParty = await updateParty(selectedParty.id, { name: newPartyName.trim() });
+      if (updatedParty) {
+        setParties(parties.map(party => 
+          party.id === selectedParty.id ? updatedParty : party
+        ));
+        setSelectedParty(updatedParty);
+        
+        toast({
+          title: "Groupe modifié",
+          description: `Le groupe a été renommé en "${newPartyName}"`
+        });
+        
+        setNewPartyName('');
+        setIsEditingParty(false);
+        setIsPartyDialogOpen(false);
+      }
+    } catch (err) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de modifier le groupe",
+        variant: "destructive"
+      });
     }
   };
 
   // Gestion de la suppression d'un groupe
   const handleDeleteParty = async (partyId: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce groupe?')) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce groupe et tous ses personnages ?')) {
       return;
     }
 
     try {
       const success = await deleteParty(partyId);
       if (success) {
-        const updatedParties = parties.filter(party => party.id !== partyId);
-        setParties(updatedParties);
+        setParties(parties.filter(party => party.id !== partyId));
         
-        // Si le groupe supprimé était sélectionné, sélectionner le premier groupe restant
-        if (selectedParty && selectedParty.id === partyId) {
-          setSelectedParty(updatedParties.length > 0 ? updatedParties[0] : null);
+        if (selectedParty?.id === partyId) {
+          setSelectedParty(null);
         }
         
-        // Mettre à jour l'état de capacité de création
-        setCanCreate(await canCreateParty());
-        
         toast({
-          title: "Succès",
-          description: "Le groupe a été supprimé"
+          title: "Groupe supprimé",
+          description: "Le groupe a été supprimé avec succès"
         });
       }
     } catch (err) {
@@ -553,112 +172,70 @@ const PartyEditor: React.FC = () => {
     }
   };
 
-  // Gestion de l'ajout d'un joueur
-  const handleAddPlayer = async () => {
+  // Gestion de l'ajout/modification d'un joueur via la modal
+  const handlePlayerImport = async (player: Player) => {
     if (!selectedParty) return;
-    
-    if (!newPlayer.name.trim()) {
-      toast({
-        title: "Erreur",
-        description: "Le nom du personnage ne peut pas être vide",
-        variant: "destructive"
-      });
-      return;
-    }
 
     try {
-      const addedPlayer = await addPlayerToParty(selectedParty.id, newPlayer);
-      if (addedPlayer) {
-        // Mettre à jour le groupe sélectionné avec le nouveau joueur
-        const updatedParty = {
-          ...selectedParty,
-          players: [...selectedParty.players, addedPlayer]
-        };
-        
+      let updatedParty;
+      
+      if (editingPlayer) {
+        // Modification d'un joueur existant
+        const updatedPlayer = await updatePlayer(selectedParty.id, player.id, player);
+        if (updatedPlayer) {
+          updatedParty = {
+            ...selectedParty,
+            players: selectedParty.players.map(p => 
+              p.id === player.id ? updatedPlayer : p
+            )
+          };
+          
+          toast({
+            title: "Succès",
+            description: `${player.name} a été modifié`
+          });
+        }
+      } else {
+        // Ajout d'un nouveau joueur
+        const addedPlayer = await addPlayerToParty(selectedParty.id, player);
+        if (addedPlayer) {
+          updatedParty = {
+            ...selectedParty,
+            players: [...selectedParty.players, addedPlayer]
+          };
+          
+          toast({
+            title: "Succès",
+            description: `${player.name} a été ajouté au groupe`
+          });
+        }
+      }
+      
+      if (updatedParty) {
         setSelectedParty(updatedParty);
         setParties(parties.map(party => 
           party.id === updatedParty.id ? updatedParty : party
         ));
-        
-        toast({
-          title: "Succès",
-          description: `${newPlayer.name} a été ajouté au groupe`
-        });
       }
     } catch (err) {
       toast({
         title: "Erreur",
-        description: "Impossible d'ajouter le personnage",
+        description: editingPlayer ? "Impossible de modifier le personnage" : "Impossible d'ajouter le personnage",
         variant: "destructive"
       });
-    } finally {
-      setNewPlayer({
-        name: '',
-        level: 1,
-        characterClass: 'Guerrier',
-        ac: 10,
-        maxHp: 10,
-        currentHp: 10
-      });
-      setIsPlayerDialogOpen(false);
     }
   };
 
-  // Gestion de la mise à jour d'un joueur
-  const handleUpdatePlayer = async () => {
-    if (!selectedParty || !editingPlayerId) return;
-    
-    if (!newPlayer.name.trim()) {
-      toast({
-        title: "Erreur",
-        description: "Le nom du personnage ne peut pas être vide",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    try {
-      const updatedPlayer = await updatePlayer(selectedParty.id, editingPlayerId, newPlayer);
-      if (updatedPlayer) {
-        // Mettre à jour le groupe sélectionné avec le joueur modifié
-        const updatedPlayers = selectedParty.players.map(player => 
-          player.id === editingPlayerId ? updatedPlayer : player
-        );
-        
-        const updatedParty = {
-          ...selectedParty,
-          players: updatedPlayers
-        };
-        
-        setSelectedParty(updatedParty);
-        setParties(parties.map(party => 
-          party.id === updatedParty.id ? updatedParty : party
-        ));
-        
-        toast({
-          title: "Succès",
-          description: `${updatedPlayer.name} a été mis à jour`
-        });
-      }
-    } catch (err) {
-      toast({
-        title: "Erreur",
-        description: "Impossible de mettre à jour le personnage",
-        variant: "destructive"
-      });
-    } finally {
-      setNewPlayer({
-        name: '',
-        level: 1,
-        characterClass: 'Guerrier',
-        ac: 10,
-        maxHp: 10,
-        currentHp: 10
-      });
-      setIsEditingPlayer(false);
-      setEditingPlayerId(null);
-      setIsPlayerDialogOpen(false);
-    }
+  // Ouvrir la modal d'ajout de joueur
+  const handleAddPlayerClick = () => {
+    setEditingPlayer(null);
+    setIsPlayerImportModalOpen(true);
+  };
+  
+  // Ouvrir la modal d'édition de joueur
+  const handleEditPlayerClick = (player: Player) => {
+    setEditingPlayer(player);
+    setIsPlayerImportModalOpen(true);
   };
 
   // Gestion de la suppression d'un joueur
@@ -697,21 +274,6 @@ const PartyEditor: React.FC = () => {
     }
   };
 
-  // Ouvrir le dialogue d'édition de joueur
-  const openEditPlayerDialog = (player: Player) => {
-    setNewPlayer({
-      name: player.name,
-      level: player.level,
-      characterClass: player.characterClass,
-      ac: player.ac,
-      maxHp: player.maxHp,
-      currentHp: player.currentHp
-    });
-    setEditingPlayerId(player.id);
-    setIsEditingPlayer(true);
-    setIsPlayerDialogOpen(true);
-  };
-
   // Ouvrir le dialogue d'édition de groupe
   const openEditPartyDialog = () => {
     if (selectedParty) {
@@ -721,530 +283,261 @@ const PartyEditor: React.FC = () => {
     }
   };
 
-  // Calculer le niveau moyen du groupe
-  const calculateAverageLevel = (party: Party) => {
-    if (party.players.length === 0) return 0;
-    const sum = party.players.reduce((acc, player) => acc + player.level, 0);
-    return Math.round((sum / party.players.length) * 10) / 10;
-  };
-
-  // Si l'utilisateur n'est pas authentifié
-  if (!isAuthenticated) {
+  if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Users className="mr-2 h-6 w-6" />
-            Groupes d'aventuriers
-          </CardTitle>
-          <CardDescription>
-            Connectez-vous pour gérer vos groupes d'aventuriers
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center py-10">
-          <Users className="h-16 w-16 text-gray-300 mb-4" />
-          <p className="text-center text-gray-500 mb-4">
-            Vous devez être connecté pour accéder à cette fonctionnalité
-          </p>
-          <Button variant="default" asChild>
-            <a href="/auth">Se connecter</a>
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <span className="ml-3 text-gray-600">Chargement des groupes...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
     );
   }
 
   return (
     <div className="space-y-6">
-      <UsageStats />
+      {/* Statistiques d'utilisation */}
+      {isAuthenticated && <UsageStats />}
       
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Users className="mr-2 h-6 w-6" />
-            Groupes d'aventuriers
-          </CardTitle>
-          <CardDescription>
-            Gérez vos groupes de personnages joueurs
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {error && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertCircle className="h-4 w-4 mr-2" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-          
-          {isLoading ? (
-            <div className="flex justify-center py-10">
-              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
-            </div>
-          ) : (
-            <>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {parties.map(party => (
-                  <Button
-                    key={party.id}
-                    variant={selectedParty?.id === party.id ? "default" : "outline"}
-                    className="flex items-center"
-                    onClick={() => setSelectedParty(party)}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Liste des groupes */}
+        <Card className="lg:col-span-1">
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <CardTitle className="flex items-center">
+                <Users className="mr-2 h-5 w-5" />
+                Mes Groupes
+              </CardTitle>
+              
+              <Dialog open={isPartyDialogOpen} onOpenChange={setIsPartyDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button 
+                    size="sm"
+                    disabled={!canCreate}
+                    onClick={() => {
+                      setIsEditingParty(false);
+                      setNewPartyName('');
+                    }}
                   >
-                    <Users className="mr-2 h-4 w-4" />
-                    {party.name}
-                    <span className="ml-2 text-xs bg-primary/10 px-1.5 py-0.5 rounded-full">
-                      {party.players.length}
-                    </span>
+                    <Plus className="h-4 w-4 mr-1" />
+                    Nouveau
                   </Button>
-                ))}
-                
-                <Dialog open={isPartyDialogOpen} onOpenChange={setIsPartyDialogOpen}>
-                  <DialogTrigger asChild>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>
+                      {isEditingParty ? "Modifier le groupe" : "Créer un nouveau groupe"}
+                    </DialogTitle>
+                    <DialogDescription>
+                      {isEditingParty 
+                        ? "Modifiez le nom de ce groupe d'aventuriers" 
+                        : "Créez un nouveau groupe d'aventuriers pour organiser vos personnages"}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="py-4">
+                    <Label htmlFor="partyName">Nom du groupe</Label>
+                    <Input
+                      id="partyName"
+                      placeholder="Les Héros de Waterdeep"
+                      value={newPartyName}
+                      onChange={(e) => setNewPartyName(e.target.value)}
+                      className="mt-2"
+                    />
+                  </div>
+                  <DialogFooter>
                     <Button 
                       variant="outline" 
-                      className="border-dashed" 
-                      disabled={!canCreate}
                       onClick={() => {
-                        if (canCreate) {
-                          setIsEditingParty(false);
-                          setNewPartyName('');
-                          setIsPartyDialogOpen(true);
-                        } else {
-                          toast({
-                            title: "Limite atteinte",
-                            description: "Vous avez atteint la limite de groupes pour votre plan actuel",
-                            variant: "destructive"
-                          });
-                        }
+                        setIsPartyDialogOpen(false);
+                        setNewPartyName('');
+                        setIsEditingParty(false);
                       }}
                     >
-                      <Plus className="mr-2 h-4 w-4" />
-                      Nouveau groupe
+                      Annuler
                     </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>
-                        {isEditingParty ? "Modifier le groupe" : "Créer un nouveau groupe"}
-                      </DialogTitle>
-                      <DialogDescription>
-                        {isEditingParty 
-                          ? "Modifiez le nom de votre groupe d'aventuriers" 
-                          : "Donnez un nom à votre nouveau groupe d'aventuriers"}
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="partyName">Nom du groupe</Label>
-                        <Input
-                          id="partyName"
-                          placeholder="Les Aventuriers de la Côte des Épées"
-                          value={newPartyName}
-                          onChange={(e) => setNewPartyName(e.target.value)}
-                        />
+                    <Button onClick={isEditingParty ? handleUpdateParty : handleCreateParty}>
+                      <Save className="h-4 w-4 mr-2" />
+                      {isEditingParty ? "Enregistrer" : "Créer"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            {parties.length === 0 ? (
+              <div className="p-6 text-center text-gray-500">
+                <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                <p className="text-sm">Aucun groupe créé</p>
+                <p className="text-xs mt-1">Créez votre premier groupe d'aventuriers !</p>
+              </div>
+            ) : (
+              <div className="divide-y">
+                {parties.map(party => (
+                  <div
+                    key={party.id}
+                    className={`p-4 cursor-pointer hover:bg-gray-50 transition-colors ${
+                      selectedParty?.id === party.id ? 'bg-blue-50 border-r-4 border-blue-500' : ''
+                    }`}
+                    onClick={() => setSelectedParty(party)}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h3 className="font-medium text-gray-900">{party.name}</h3>
+                        <p className="text-sm text-gray-500 mt-1">
+                          {party.players.length} personnage{party.players.length !== 1 ? 's' : ''}
+                        </p>
+                        {party.players.length > 0 && (
+                          <p className="text-xs text-gray-400 mt-1">
+                            Niv. moyen: {Math.round(party.players.reduce((sum, p) => sum + p.level, 0) / party.players.length)}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex space-x-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openEditPartyDialog();
+                          }}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-500 hover:text-red-700"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteParty(party.id);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
-                    <DialogFooter>
-                      <Button 
-                        variant="outline" 
-                        onClick={() => {
-                          setIsPartyDialogOpen(false);
-                          setNewPartyName('');
-                          setIsEditingParty(false);
-                        }}
-                      >
-                        Annuler
-                      </Button>
-                      <Button 
-                        onClick={isEditingParty ? handleUpdateParty : handleCreateParty}
-                      >
-                        {isEditingParty ? "Enregistrer" : "Créer"}
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Détails du groupe sélectionné */}
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle className="text-base">
+                  {selectedParty ? selectedParty.name : "Sélectionnez un groupe"}
+                </CardTitle>
+                {selectedParty && (
+                  <CardDescription>
+                    {selectedParty.players.length} personnage{selectedParty.players.length !== 1 ? 's' : ''}
+                  </CardDescription>
+                )}
               </div>
               
-              {selectedParty ? (
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="text-lg font-semibold flex items-center">
-                        {selectedParty.name}
-                        <span className="ml-2 text-sm font-normal text-gray-500">
-                          (Niveau moyen: {calculateAverageLevel(selectedParty)})
-                        </span>
-                      </h3>
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={openEditPartyDialog}
-                      >
-                        <Edit className="h-4 w-4 mr-1" />
-                        Renommer
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="text-red-500 hover:text-red-700"
-                        onClick={() => handleDeleteParty(selectedParty.id)}
-                      >
-                        <Trash2 className="h-4 w-4 mr-1" />
-                        Supprimer
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <Card>
-                    <CardHeader className="p-4 pb-2">
-                      <div className="flex justify-between items-center">
-                        <CardTitle className="text-base">Personnages</CardTitle>
-                        
-                        <Dialog open={isPlayerDialogOpen} onOpenChange={setIsPlayerDialogOpen}>
-                          <DialogTrigger asChild>
-                            <Button 
-                              size="sm"
-                              onClick={() => {
-                                setIsEditingPlayer(false);
-                                setEditingPlayerId(null);
-                                setNewPlayer({
-                                  name: '',
-                                  level: 1,
-                                  characterClass: 'Guerrier',
-                                  race: '',
-                                  ac: 10,
-                                  maxHp: 10,
-                                  currentHp: 10
-                                });
-                              }}
-                            >
-                              <UserPlus className="h-4 w-4 mr-1" />
-                              Ajouter
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>
-                                {isEditingPlayer ? "Modifier le personnage" : "Ajouter un personnage"}
-                              </DialogTitle>
-                              <DialogDescription>
-                                {isEditingPlayer 
-                                  ? "Modifiez les détails de ce personnage" 
-                                  : "Ajoutez un nouveau personnage à votre groupe"}
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="space-y-4 py-4">
-                              {/* Section D&D Beyond Import */}
-                              {!isEditingPlayer && (
-                                <div className="space-y-2 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                  <Label htmlFor="dndBeyondUrl" className="text-blue-800 font-semibold">
-                                    Import depuis D&D Beyond (optionnel)
-                                  </Label>
-                                  <div className="flex gap-2">
-                                    <Input
-                                      id="dndBeyondUrl"
-                                      placeholder="https://www.dndbeyond.com/characters/92791713"
-                                      value={dndBeyondUrl}
-                                      onChange={(e) => setDndBeyondUrl(e.target.value)}
-                                      className="flex-1"
-                                    />
-                                    <Button
-                                      type="button"
-                                      onClick={() => importFromDndBeyond(dndBeyondUrl)}
-                                      disabled={!dndBeyondUrl || isImporting}
-                                      className="bg-blue-600 hover:bg-blue-700"
-                                    >
-                                      {isImporting ? (
-                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                      ) : (
-                                        'Importer'
-                                      )}
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      onClick={() => {
-                                        if (dndBeyondUrl) {
-                                          window.open(dndBeyondUrl, '_blank');
-                                          toast({
-                                            title: "Page ouverte",
-                                            description: "Copiez manuellement les informations depuis D&D Beyond dans les champs ci-dessous.",
-                                            variant: "default"
-                                          });
-                                        }
-                                      }}
-                                      disabled={!dndBeyondUrl}
-                                      className="border-blue-300 text-blue-600 hover:bg-blue-50"
-                                    >
-                                      Ouvrir
-                                    </Button>
-                                  </div>
-                                  <p className="text-xs text-blue-600">
-                                    Collez l'URL de votre personnage D&D Beyond pour remplir automatiquement les champs
-                                  </p>
-                                </div>
-                              )}
-                              
-                              <div className="space-y-2">
-                                <Label htmlFor="playerName">Nom du personnage</Label>
-                                <Input
-                                  id="playerName"
-                                  placeholder="Bruenor Battlehammer"
-                                  value={newPlayer.name}
-                                  onChange={(e) => setNewPlayer({...newPlayer, name: e.target.value})}
-                                />
-                              </div>
-                              
-                              <div className="space-y-2">
-                                <Label htmlFor="playerRace">Race</Label>
-                                <Input
-                                  id="playerRace"
-                                  placeholder="Nain des montagnes"
-                                  value={newPlayer.race || ''}
-                                  onChange={(e) => setNewPlayer({...newPlayer, race: e.target.value})}
-                                />
-                              </div>
-                              <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                  <Label htmlFor="playerClass">Classe</Label>
-                                  <Select
-                                    value={newPlayer.characterClass}
-                                    onValueChange={(value) => setNewPlayer({...newPlayer, characterClass: value})}
-                                  >
-                                    <SelectTrigger id="playerClass">
-                                      <SelectValue placeholder="Choisir une classe" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {CHARACTER_CLASSES.map(characterClass => (
-                                        <SelectItem key={characterClass} value={characterClass}>
-                                          {characterClass}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                                <div className="space-y-2">
-                                  <Label htmlFor="playerLevel">Niveau</Label>
-                                  <Select
-                                    value={newPlayer.level.toString()}
-                                    onValueChange={(value) => setNewPlayer({...newPlayer, level: parseInt(value)})}
-                                  >
-                                    <SelectTrigger id="playerLevel">
-                                      <SelectValue placeholder="Niveau" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {Array.from({length: 20}, (_, i) => i + 1).map(level => (
-                                        <SelectItem key={level} value={level.toString()}>
-                                          {level}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                              </div>
-                              
-                              <div className="grid grid-cols-3 gap-4">
-                                <div className="space-y-2">
-                                  <Label htmlFor="playerAC">Classe d'Armure (CA)</Label>
-                                  <Input
-                                    id="playerAC"
-                                    type="number"
-                                    min="0"
-                                    placeholder="10"
-                                    value={newPlayer.ac || 10}
-                                    onChange={(e) => setNewPlayer({...newPlayer, ac: parseInt(e.target.value) || 10})}
-                                  />
-                                </div>
-                                <div className="space-y-2">
-                                  <Label htmlFor="playerMaxHP">PV Maximum</Label>
-                                  <Input
-                                    id="playerMaxHP"
-                                    type="number"
-                                    min="1"
-                                    placeholder="10"
-                                    value={newPlayer.maxHp || 10}
-                                    onChange={(e) => {
-                                      const maxHp = parseInt(e.target.value) || 10;
-                                      // Ajuster le PV actuel si nécessaire
-                                      const currentHp = newPlayer.currentHp && newPlayer.currentHp > maxHp 
-                                        ? maxHp 
-                                        : newPlayer.currentHp || maxHp;
-                                      setNewPlayer({...newPlayer, maxHp, currentHp});
-                                    }}
-                                  />
-                                </div>
-                                <div className="space-y-2">
-                                  <Label htmlFor="playerCurrentHP">PV Actuels</Label>
-                                  <Input
-                                    id="playerCurrentHP"
-                                    type="number"
-                                    min="0"
-                                    max={newPlayer.maxHp || 10}
-                                    placeholder="10"
-                                    value={newPlayer.currentHp || 10}
-                                    onChange={(e) => {
-                                      const currentHp = parseInt(e.target.value) || 0;
-                                      // S'assurer que le PV actuel ne dépasse pas le maximum
-                                      const validCurrentHp = Math.min(currentHp, newPlayer.maxHp || 10);
-                                      setNewPlayer({...newPlayer, currentHp: validCurrentHp});
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                            <DialogFooter>
-                              <Button 
-                                variant="outline" 
-                                onClick={() => {
-                                  setIsPlayerDialogOpen(false);
-                                  setNewPlayer({
-                                    name: '',
-                                    level: 1,
-                                    characterClass: 'Guerrier',
-                                    race: '',
-                                    ac: 10,
-                                    maxHp: 10,
-                                    currentHp: 10
-                                  });
-                                  setIsEditingPlayer(false);
-                                  setEditingPlayerId(null);
-                                  setDndBeyondUrl('');
-                                }}
-                              >
-                                Annuler
-                              </Button>
-                              <Button 
-                                onClick={isEditingPlayer ? handleUpdatePlayer : handleAddPlayer}
-                              >
-                                <Save className="h-4 w-4 mr-2" />
-                                {isEditingPlayer ? "Enregistrer" : "Ajouter"}
-                              </Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                      {selectedParty.players.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-8 text-center px-4">
-                          <UserPlus className="h-10 w-10 text-gray-300 mb-2" />
-                          <p className="text-gray-500 mb-2">Aucun personnage dans ce groupe</p>
-                          <p className="text-gray-400 text-sm mb-4">
-                            Ajoutez des personnages pour pouvoir créer des rencontres équilibrées
-                          </p>
-                          <Button
+              {selectedParty && (
+                <Button 
+                  size="sm"
+                  onClick={handleAddPlayerClick}
+                >
+                  <UserPlus className="h-4 w-4 mr-1" />
+                  Ajouter
+                </Button>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent>
+            {!selectedParty ? (
+              <div className="text-center py-12 text-gray-500">
+                <Users className="mx-auto h-16 w-16 text-gray-300 mb-4" />
+                <p className="text-lg font-medium mb-2">Aucun groupe sélectionné</p>
+                <p className="text-sm">Sélectionnez un groupe dans la liste pour voir ses personnages</p>
+              </div>
+            ) : selectedParty.players.length === 0 ? (
+              <div className="text-center py-12 text-gray-500">
+                <UserPlus className="mx-auto h-16 w-16 text-gray-300 mb-4" />
+                <p className="text-lg font-medium mb-2">Aucun personnage</p>
+                <p className="text-sm mb-4">Ce groupe n'a pas encore de personnages</p>
+                <Button onClick={handleAddPlayerClick}>
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Ajouter le premier personnage
+                </Button>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Personnage</TableHead>
+                    <TableHead>Classe</TableHead>
+                    <TableHead>Niveau</TableHead>
+                    <TableHead>Race</TableHead>
+                    <TableHead>CA</TableHead>
+                    <TableHead>PV</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {selectedParty.players.map(player => (
+                    <TableRow key={player.id}>
+                      <TableCell className="font-medium">{player.name}</TableCell>
+                      <TableCell>{player.characterClass}</TableCell>
+                      <TableCell>{player.level}</TableCell>
+                      <TableCell>{player.race || '-'}</TableCell>
+                      <TableCell>{player.ac || '-'}</TableCell>
+                      <TableCell>
+                        {player.currentHp !== undefined && player.maxHp !== undefined 
+                          ? `${player.currentHp}/${player.maxHp}`
+                          : '-'}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex space-x-1">
+                          <Button 
+                            variant="ghost" 
                             size="sm"
-                            onClick={() => {
-                              setIsEditingPlayer(false);
-                              setEditingPlayerId(null);
-                              setNewPlayer({
-                                name: '',
-                                level: 1,
-                                characterClass: 'Guerrier',
-                                race: '',
-                                ac: 10,
-                                maxHp: 10,
-                                currentHp: 10
-                              });
-                              setIsPlayerDialogOpen(true);
-                            }}
+                            onClick={() => handleEditPlayerClick(player)}
                           >
-                            <UserPlus className="h-4 w-4 mr-1" />
-                            Ajouter un personnage
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            className="text-red-500 hover:text-red-700"
+                            onClick={() => handleRemovePlayer(player.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
-                      ) : (
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Nom</TableHead>
-                              <TableHead>Race</TableHead>
-                              <TableHead>Classe</TableHead>
-                              <TableHead>Niveau</TableHead>
-                              <TableHead>CA</TableHead>
-                              <TableHead>PV</TableHead>
-                              <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {selectedParty.players.map(player => (
-                              <TableRow key={player.id}>
-                                <TableCell className="font-medium">{player.name}</TableCell>
-                                <TableCell>{player.race || '-'}</TableCell>
-                                <TableCell>{player.characterClass}</TableCell>
-                                <TableCell>{player.level}</TableCell>
-                                <TableCell>{player.ac || '-'}</TableCell>
-                                <TableCell>
-                                  {player.currentHp !== undefined && player.maxHp !== undefined 
-                                    ? `${player.currentHp}/${player.maxHp}`
-                                    : '-'}
-                                </TableCell>
-                                <TableCell className="text-right">
-                                  <div className="flex justify-end space-x-1">
-                                    <Button 
-                                      variant="ghost" 
-                                      size="sm"
-                                      onClick={() => openEditPlayerDialog(player)}
-                                    >
-                                      <Edit className="h-4 w-4" />
-                                    </Button>
-                                    <Button 
-                                      variant="ghost" 
-                                      size="sm"
-                                      className="text-red-500 hover:text-red-700"
-                                      onClick={() => handleRemovePlayer(player.id)}
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      )}
-                    </CardContent>
-                  </Card>
-                </div>
-              ) : parties.length > 0 ? (
-                <div className="flex justify-center py-8 text-center">
-                  <div className="max-w-md">
-                    <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500 mb-2">Sélectionnez un groupe pour le modifier</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-10 text-center">
-                  <Users className="h-16 w-16 text-gray-300 mb-4" />
-                  <p className="text-gray-500 mb-4">Vous n'avez pas encore de groupe d'aventuriers</p>
-                  <Button 
-                    variant="default"
-                    onClick={() => {
-                      if (canCreate) {
-                        setIsEditingParty(false);
-                        setNewPartyName('');
-                        setIsPartyDialogOpen(true);
-                      } else {
-                        toast({
-                          title: "Limite atteinte",
-                          description: "Vous avez atteint la limite de groupes pour votre plan actuel",
-                          variant: "destructive"
-                        });
-                      }
-                    }}
-                    disabled={!canCreate}
-                  >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Créer votre premier groupe
-                  </Button>
-                </div>
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+      
+      {/* Modal d'import de personnage */}
+      <PlayerImportModal
+        isOpen={isPlayerImportModalOpen}
+        onClose={() => {
+          setIsPlayerImportModalOpen(false);
+          setEditingPlayer(null);
+        }}
+        onImport={handlePlayerImport}
+        editingPlayer={editingPlayer || undefined}
+      />
     </div>
   );
 };

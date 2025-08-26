@@ -2,16 +2,21 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
-// Configuration Firebase avec les valeurs correctes
+// Configuration Firebase avec les variables d'environnement
 const firebaseConfig = {
-  apiKey: "AIzaSyDPr-C22FHhr-pI8JXE1OUdGfjXCR3V78E",
-  authDomain: "dnd-encount.firebaseapp.com",
-  projectId: "dnd-encount",
-  storageBucket: "dnd-encount.appspot.com",
-  messagingSenderId: "832140394776",
-  appId: "1:832140394776:web:f57225ac1dbe78cbe85e6d",
-  measurementId: "G-FGP4Q6CB5Y"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
+
+// Vérifier que les variables d'environnement sont définies
+if (!firebaseConfig.apiKey) {
+  throw new Error('Variables d\'environnement Firebase manquantes. Vérifiez votre fichier .env.local');
+}
 
 // N'oubliez pas d'activer l'authentification par email/mot de passe dans 
 // Firebase Console > Authentication > Sign-in method
