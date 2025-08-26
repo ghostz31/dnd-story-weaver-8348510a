@@ -30,7 +30,8 @@ import {
   Book,
   Coins,
   Settings,
-  RefreshCw
+  RefreshCw,
+  Crown
 } from 'lucide-react';
 
 interface UnifiedEncounterTrackerProps {
@@ -225,6 +226,138 @@ const UnifiedEncounterTracker: React.FC<UnifiedEncounterTrackerProps> = ({
               onOpenConditionSelector={() => actions.openConditionSelector(participant.id)}
             />
           ))}
+        </div>
+      );
+    }
+    
+    if (state.ui.currentView === 'compact') {
+      return (
+        <div className="max-w-6xl mx-auto">
+          <Card>
+            <CardContent className="p-6">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left p-2 w-[50px]">Tour</th>
+                    <th className="text-left p-2">Nom</th>
+                    <th className="text-center p-2">Init</th>
+                    <th className="text-center p-2">CA</th>
+                    <th className="text-center p-2">PV</th>
+                    <th className="text-center p-2">État</th>
+                    <th className="text-center p-2">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedParticipants.map((participant, index) => {
+                    const hpPercentage = (participant.currentHp / participant.maxHp) * 100;
+                    const isAlive = participant.currentHp > 0;
+                    const isBloodied = hpPercentage <= 50 && hpPercentage > 0;
+                    const isActive = currentParticipant?.id === participant.id;
+                    
+                    return (
+                      <tr 
+                        key={participant.id}
+                        className={`border-b hover:bg-gray-50 ${isActive ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''} ${!isAlive ? 'opacity-50' : ''}`}
+                      >
+                        <td className="p-2 text-center">
+                          {isActive && <Crown className="h-4 w-4 text-yellow-500 mx-auto" />}
+                        </td>
+                        <td className="p-2">
+                          <div className="flex items-center space-x-2">
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs ${participant.isPC ? 'bg-blue-500' : 'bg-red-500'}`}>
+                              {participant.isPC ? 'P' : 'M'}
+                            </div>
+                            <div>
+                              <div className="font-medium">{participant.name}</div>
+                              {participant.isPC ? (
+                                <Badge variant="outline" className="text-xs">PJ</Badge>
+                              ) : (
+                                <div className="flex items-center space-x-1">
+                                  {participant.cr && (
+                                    <Badge variant="outline" className="text-xs">CR {participant.cr}</Badge>
+                                  )}
+                                  {participant.type && (
+                                    <span className="text-xs text-gray-500">{participant.type}</span>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-2 text-center font-mono">{participant.initiative}</td>
+                        <td className="p-2 text-center">
+                          <div className="flex items-center justify-center space-x-1">
+                            <Shield className="h-3 w-3" />
+                            <span>{participant.ac}</span>
+                          </div>
+                        </td>
+                        <td className="p-2 text-center">
+                          <div className="flex items-center justify-center space-x-2">
+                            <div className="flex items-center space-x-1">
+                              <Heart className="h-3 w-3 text-red-500" />
+                              <span className="font-mono">{participant.currentHp}/{participant.maxHp}</span>
+                            </div>
+                            <div className="w-12 bg-gray-200 rounded-full h-1">
+                              <div 
+                                className={`h-1 rounded-full transition-all ${!isAlive ? 'bg-gray-400' : hpPercentage <= 25 ? 'bg-red-500' : hpPercentage <= 50 ? 'bg-orange-500' : hpPercentage <= 75 ? 'bg-yellow-500' : 'bg-green-500'}`}
+                                style={{ width: `${Math.max(0, hpPercentage)}%` }}
+                              />
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-2 text-center">
+                          <div className="flex flex-wrap gap-1 justify-center">
+                            {participant.conditions && participant.conditions.map((condition, idx) => (
+                              <Badge 
+                                key={idx}
+                                variant="outline" 
+                                className="text-xs cursor-pointer"
+                                onClick={() => handleToggleCondition(participant.id, condition)}
+                              >
+                                {condition}
+                              </Badge>
+                            ))}
+                            {!isAlive && <Badge variant="destructive" className="text-xs">Mort</Badge>}
+                            {isBloodied && isAlive && <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-800">Ensanglanté</Badge>}
+                          </div>
+                        </td>
+                        <td className="p-2 text-center">
+                          <div className="flex items-center justify-center space-x-1">
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              className="h-7 w-7 p-0"
+                              onClick={() => handleOpenHpEditor(participant)}
+                            >
+                              <Heart className="h-3 w-3" />
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              className="h-7 w-7 p-0"
+                              onClick={() => actions.openConditionSelector(participant.id)}
+                            >
+                              <Settings className="h-3 w-3" />
+                            </Button>
+                            {!participant.isPC && (
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                className="h-7 w-7 p-0"
+                                onClick={() => handleViewCreatureDetails(participant)}
+                              >
+                                <Book className="h-3 w-3" />
+                              </Button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </CardContent>
+          </Card>
         </div>
       );
     }
@@ -427,18 +560,63 @@ const UnifiedEncounterTracker: React.FC<UnifiedEncounterTrackerProps> = ({
 
 // Composants auxiliaires (à implémenter)
 const ParticipantCard: React.FC<any> = ({ participant, isActive, onEditHp, onToggleCondition, onViewDetails, onOpenConditionSelector }) => {
-  const healthPercentage = EncounterService.getHealthPercentage(participant);
-  const healthStatus = EncounterService.getHealthStatus(participant);
-  const canAct = EncounterService.canParticipantAct(participant);
+  const healthPercentage = (participant.currentHp / participant.maxHp) * 100;
+  const isAlive = participant.currentHp > 0;
+  const isBloodied = healthPercentage <= 50 && healthPercentage > 0;
   
+  const getHealthStatus = () => {
+    if (!isAlive) return 'dead';
+    if (healthPercentage <= 25) return 'critical';
+    if (healthPercentage <= 50) return 'injured';
+    return 'healthy';
+  };
+  
+  const healthStatus = getHealthStatus();
+  
+  const getHpColor = () => {
+    if (!isAlive) return 'bg-gray-400';
+    if (healthPercentage <= 25) return 'bg-red-500';
+    if (healthPercentage <= 50) return 'bg-orange-500';
+    if (healthPercentage <= 75) return 'bg-yellow-500';
+    return 'bg-green-500';
+  };
+
   return (
-    <Card className={`${isActive ? 'ring-2 ring-blue-500' : ''} ${!canAct ? 'opacity-60' : ''}`}>
+    <Card className={`transition-all duration-300 hover:shadow-lg ${isActive ? 'ring-2 ring-blue-500 shadow-lg' : ''} ${!isAlive ? 'opacity-60 grayscale' : ''}`}>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm truncate">{participant.name}</CardTitle>
-          <Badge variant={participant.isPC ? 'default' : 'secondary'} className="text-xs">
-            {participant.isPC ? 'PJ' : `CR ${participant.cr || '?'}`}
-          </Badge>
+          <div className="flex items-center gap-2">
+            {isActive && (
+              <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse flex-shrink-0" />
+            )}
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold ${participant.isPC ? 'bg-blue-500' : 'bg-red-500'}`}>
+              {participant.isPC ? 'P' : 'M'}
+            </div>
+            <div>
+                             <h3 className="font-semibold text-sm flex items-center gap-1">
+                 {participant.name}
+                 {isActive && <Crown className="h-3 w-3 text-yellow-500" />}
+               </h3>
+              <div className="flex items-center gap-1 text-xs text-gray-600">
+                {participant.isPC ? (
+                  <Badge variant="outline" className="text-xs">PJ</Badge>
+                ) : (
+                  <>
+                    {participant.cr && (
+                      <Badge variant="outline" className="text-xs">CR {participant.cr}</Badge>
+                    )}
+                    {participant.type && (
+                      <span className="text-gray-500 truncate">{participant.type}</span>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          {/* Badge de statut */}
+          {!isAlive && <Badge variant="destructive" className="text-xs">Mort</Badge>}
+          {isBloodied && isAlive && <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-800">Ensanglanté</Badge>}
         </div>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -448,13 +626,12 @@ const ParticipantCard: React.FC<any> = ({ participant, isActive, onEditHp, onTog
             <span>PV</span>
             <span>{participant.currentHp}/{participant.maxHp}</span>
           </div>
-          <Progress 
-            value={healthPercentage} 
-            className={`h-2 ${
-              healthStatus === 'critical' ? 'bg-red-100' : 
-              healthStatus === 'injured' ? 'bg-yellow-100' : 'bg-green-100'
-            }`}
-          />
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className={`h-2 rounded-full transition-all duration-300 ${getHpColor()}`}
+              style={{ width: `${Math.max(0, healthPercentage)}%` }}
+            />
+          </div>
         </div>
         
         {/* Stats */}
@@ -473,7 +650,12 @@ const ParticipantCard: React.FC<any> = ({ participant, isActive, onEditHp, onTog
         {participant.conditions && participant.conditions.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {participant.conditions.slice(0, 3).map((condition: string, index: number) => (
-              <Badge key={index} variant="outline" className="text-xs">
+              <Badge 
+                key={index} 
+                variant="outline" 
+                className="text-xs cursor-pointer"
+                onClick={() => onToggleCondition(condition)}
+              >
                 {condition}
               </Badge>
             ))}
@@ -485,17 +667,29 @@ const ParticipantCard: React.FC<any> = ({ participant, isActive, onEditHp, onTog
           </div>
         )}
         
+        {/* Notes */}
+        {participant.notes && (
+          <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
+            {participant.notes}
+          </div>
+        )}
+        
         {/* Actions */}
         <div className="flex justify-between pt-2">
-          <Button size="sm" variant="ghost" onClick={onEditHp} className="h-6 px-2">
-            <Heart className="h-3 w-3" />
+          <Button size="sm" variant="outline" onClick={onEditHp}>
+            <Heart className="h-3 w-3 mr-1" />
+            PV
           </Button>
-          <Button size="sm" variant="ghost" onClick={onOpenConditionSelector} className="h-6 px-2">
-            <Settings className="h-3 w-3" />
+          <Button size="sm" variant="outline" onClick={onOpenConditionSelector}>
+            <Settings className="h-3 w-3 mr-1" />
+            État
           </Button>
-          <Button size="sm" variant="ghost" onClick={onViewDetails} className="h-6 px-2">
-            <Book className="h-3 w-3" />
-          </Button>
+          {!participant.isPC && (
+            <Button size="sm" variant="outline" onClick={onViewDetails}>
+              <Book className="h-3 w-3 mr-1" />
+              Détails
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
@@ -504,60 +698,116 @@ const ParticipantCard: React.FC<any> = ({ participant, isActive, onEditHp, onTog
 
 const ParticipantRow: React.FC<any> = ({ participant, isActive, onEditHp, onToggleCondition, onViewDetails }) => {
   const healthPercentage = (participant.currentHp / participant.maxHp) * 100;
+  const isAlive = participant.currentHp > 0;
+  const isBloodied = healthPercentage <= 50 && healthPercentage > 0;
+  
+  const getHpColor = () => {
+    if (!isAlive) return 'bg-gray-400';
+    if (healthPercentage <= 25) return 'bg-red-500';
+    if (healthPercentage <= 50) return 'bg-orange-500';
+    if (healthPercentage <= 75) return 'bg-yellow-500';
+    return 'bg-green-500';
+  };
   
   return (
-    <Card className={`p-4 ${isActive ? 'ring-2 ring-blue-500' : ''}`}>
+    <Card className={`p-4 transition-all duration-300 hover:shadow-lg ${isActive ? 'ring-2 ring-blue-500 shadow-lg' : ''} ${!isAlive ? 'opacity-60 grayscale' : ''}`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            {isActive && (
+              <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse flex-shrink-0" />
+            )}
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold ${participant.isPC ? 'bg-blue-500' : 'bg-red-500'}`}>
+              {participant.isPC ? 'P' : 'M'}
+            </div>
+          </div>
           <div className="flex flex-col">
-            <h3 className="font-semibold">{participant.name}</h3>
-            {participant.conditions && participant.conditions.length > 0 && (
-              <div className="flex gap-1 mt-1">
-                {participant.conditions.map((condition, idx) => (
-                  <Badge key={idx} variant="secondary" className="text-xs">
-                    {condition}
-                  </Badge>
-                ))}
+                         <h3 className="font-semibold flex items-center gap-2">
+               {participant.name}
+               {isActive && <Crown className="h-4 w-4 text-yellow-500" />}
+             </h3>
+            <div className="flex items-center gap-2 text-xs text-gray-600">
+              {participant.isPC ? (
+                <Badge variant="outline" className="text-xs">PJ</Badge>
+              ) : (
+                <>
+                  {participant.cr && (
+                    <Badge variant="outline" className="text-xs">CR {participant.cr}</Badge>
+                  )}
+                  {participant.type && (
+                    <span className="text-gray-500">{participant.type}</span>
+                  )}
+                </>
+              )}
+            </div>
+            {/* Conditions et badges de statut */}
+            <div className="flex items-center gap-1 mt-1">
+              {participant.conditions && participant.conditions.length > 0 && (
+                <div className="flex gap-1">
+                  {participant.conditions.map((condition, idx) => (
+                    <Badge 
+                      key={idx} 
+                      variant="secondary" 
+                      className="text-xs cursor-pointer"
+                      onClick={() => onToggleCondition(condition)}
+                    >
+                      {condition}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+              {!isAlive && <Badge variant="destructive" className="text-xs">Mort</Badge>}
+              {isBloodied && isAlive && <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-800">Ensanglanté</Badge>}
+            </div>
+            {/* Notes */}
+            {participant.notes && (
+              <div className="text-xs text-gray-500 bg-gray-50 p-1 rounded mt-1 max-w-md">
+                {participant.notes}
               </div>
             )}
           </div>
         </div>
         
         <div className="flex items-center gap-4">
-          {/* Barre de vie */}
-          <div className="flex items-center gap-2">
-            <Heart className="h-4 w-4 text-red-500" />
-            <div className="flex flex-col items-center">
-              <span className="text-sm font-medium">
-                {participant.currentHp}/{participant.maxHp}
-              </span>
-              <Progress value={healthPercentage} className="w-20 h-2" />
+          {/* Stats */}
+          <div className="flex items-center gap-4 text-sm">
+            <div className="flex items-center gap-1">
+              <Dice4 className="h-4 w-4" />
+              <span>{participant.initiative}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Shield className="h-4 w-4" />
+              <span>{participant.ac}</span>
             </div>
           </div>
           
-          {/* CA */}
-          <div className="flex items-center gap-1">
-            <Shield className="h-4 w-4" />
-            <span className="text-sm">{participant.ac}</span>
-          </div>
-          
-          {/* Initiative */}
-          <div className="flex items-center gap-1">
-            <Dice4 className="h-4 w-4" />
-            <span className="text-sm">{participant.initiative}</span>
+          {/* Barre de vie */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <Heart className="h-4 w-4 text-red-500" />
+              <span className="font-mono text-sm">{participant.currentHp}/{participant.maxHp}</span>
+            </div>
+            <div className="w-16 bg-gray-200 rounded-full h-2">
+              <div 
+                className={`h-2 rounded-full transition-all duration-300 ${getHpColor()}`}
+                style={{ width: `${Math.max(0, healthPercentage)}%` }}
+              />
+            </div>
           </div>
           
           {/* Actions */}
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={onEditHp}>
+          <div className="flex items-center gap-1">
+            <Button size="sm" variant="outline" onClick={onEditHp} className="h-8">
               <Heart className="h-3 w-3" />
             </Button>
-            <Button size="sm" variant="outline" onClick={() => onToggleCondition('')}>
+            <Button size="sm" variant="outline" onClick={() => {}} className="h-8">
               <Settings className="h-3 w-3" />
             </Button>
-            <Button size="sm" variant="outline" onClick={onViewDetails}>
-              <Book className="h-3 w-3" />
-            </Button>
+            {!participant.isPC && (
+              <Button size="sm" variant="outline" onClick={onViewDetails} className="h-8">
+                <Book className="h-3 w-3" />
+              </Button>
+            )}
           </div>
         </div>
       </div>

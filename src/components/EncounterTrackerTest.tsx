@@ -55,7 +55,7 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { MonsterCard } from './MonsterCard';
 import { adaptMonsterDataFormat } from '@/lib/monsterAdapter';
 import { cn } from '@/lib/utils';
-import { TestBanner } from './ui/test-banner';
+
 import { useCreatureDetailModal } from './ui/creature-detail-modal';
 import { ConditionSelector } from './ui/condition-selector';
 import { normalizeCreatureName, generateAideDDUrl } from '../lib/aideddUrlMapper';
@@ -156,6 +156,10 @@ const CreatureCard: React.FC<{
   onToggleCondition: (participantId: string, condition: string) => void;
   onViewMonster: (participant: EncounterParticipant) => void;
   onOpenConditionSelector: (participant: EncounterParticipant) => void;
+  onQuickHeal: (participantId: string, amount: number) => void;
+  onQuickDamage: (participantId: string, amount: number) => void;
+  healDamageAmount: number;
+  onHealDamageAmountChange: (amount: number) => void;
 }> = ({ 
   participant, 
   isActive, 
@@ -164,7 +168,11 @@ const CreatureCard: React.FC<{
   onEditNotes, 
   onToggleCondition, 
   onViewMonster,
-  onOpenConditionSelector 
+  onOpenConditionSelector,
+  onQuickHeal,
+  onQuickDamage,
+  healDamageAmount,
+  onHealDamageAmountChange 
 }) => {
   const hpPercentage = (participant.currentHp / participant.maxHp) * 100;
   const isAlive = participant.currentHp > 0;
@@ -311,6 +319,36 @@ const CreatureCard: React.FC<{
               style={{ width: `${Math.max(0, hpPercentage)}%` }}
             />
           </div>
+          
+          {/* Boutons de soins/dégâts rapides - Format horizontal */}
+          <div className="flex items-center justify-center mt-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 px-4 text-lg font-bold bg-green-500 text-white border-green-500 hover:bg-green-600 rounded-l-md rounded-r-none"
+              onClick={() => onQuickHeal(participant.id, healDamageAmount)}
+              title={`Soigner ${healDamageAmount} PV`}
+            >
+              +
+            </Button>
+            <Input
+              type="number"
+              min="1"
+              max="999"
+              value={healDamageAmount}
+              onChange={(e) => onHealDamageAmountChange(Math.max(1, parseInt(e.target.value) || 1))}
+              className="h-8 w-16 text-center text-sm font-mono border-l-0 border-r-0 rounded-none focus:ring-0 focus:border-blue-500"
+            />
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 px-4 text-lg font-bold bg-red-500 text-white border-red-500 hover:bg-red-600 rounded-r-md rounded-l-none"
+              onClick={() => onQuickDamage(participant.id, healDamageAmount)}
+              title={`Infliger ${healDamageAmount} dégâts`}
+            >
+              -
+            </Button>
+          </div>
         </div>
 
         {/* Conditions */}
@@ -334,51 +372,6 @@ const CreatureCard: React.FC<{
                   </Badge>
                 );
               })}
-            </div>
-          </div>
-        )}
-
-        {/* Actions par tour (pour le combat) */}
-        {isActive && (
-          <div className="border-t pt-2 mt-2">
-            <div className="text-xs text-gray-600 mb-2">Actions ce tour</div>
-            <div className="flex flex-wrap gap-1">
-              <Badge 
-                variant={participant.hasUsedAction ? "secondary" : "outline"}
-                className="text-xs flex items-center"
-              >
-                <span className="mr-1">Action</span>
-                <span className={cn(
-                  'flex items-center justify-center w-3 h-3 rounded-full text-xs',
-                  participant.hasUsedAction ? 'bg-green-500 text-white' : 'bg-gray-300'
-                )}>
-                  {participant.hasUsedAction ? '✓' : '○'}
-                </span>
-              </Badge>
-              <Badge 
-                variant={participant.hasUsedBonusAction ? "secondary" : "outline"}
-                className="text-xs flex items-center"
-              >
-                <span className="mr-1">Bonus</span>
-                <span className={cn(
-                  'flex items-center justify-center w-3 h-3 rounded-full text-xs',
-                  participant.hasUsedBonusAction ? 'bg-green-500 text-white' : 'bg-gray-300'
-                )}>
-                  {participant.hasUsedBonusAction ? '✓' : '○'}
-                </span>
-              </Badge>
-              <Badge 
-                variant={participant.hasUsedReaction ? "secondary" : "outline"}
-                className="text-xs flex items-center"
-              >
-                <span className="mr-1">Réaction</span>
-                <span className={cn(
-                  'flex items-center justify-center w-3 h-3 rounded-full text-xs',
-                  participant.hasUsedReaction ? 'bg-green-500 text-white' : 'bg-gray-300'
-                )}>
-                  {participant.hasUsedReaction ? '✓' : '○'}
-                </span>
-              </Badge>
             </div>
           </div>
         )}
@@ -463,6 +456,9 @@ const EncounterTrackerTest: React.FC = () => {
   const [treasureModalOpen, setTreasureModalOpen] = useState(false);
   const [treasureMonsters, setTreasureMonsters] = useState<Array<{name: string, cr: number}>>([]);
   const [partyLevel, setPartyLevel] = useState(1);
+
+  // État pour la valeur de soins/dégâts
+  const [healDamageAmount, setHealDamageAmount] = useState(10);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -898,35 +894,106 @@ const EncounterTrackerTest: React.FC = () => {
     openCreatureModal(cleanName, participant.type, participant.cr);
   };
 
+  // Fonctions de soins et dégâts rapides
+  const quickHeal = (participantId: string, amount: number) => {
+    setEncounter(prev => ({
+      ...prev,
+      participants: prev.participants.map(p => {
+        if (p.id === participantId) {
+          const newHp = Math.min(p.maxHp, p.currentHp + amount);
+          return { ...p, currentHp: newHp };
+        }
+        return p;
+      })
+    }));
+    
+    toast({
+      title: "Soins appliqués",
+      description: `+${amount} PV`,
+      variant: "default"
+    });
+  };
+
+  const quickDamage = (participantId: string, amount: number) => {
+    setEncounter(prev => ({
+      ...prev,
+      participants: prev.participants.map(p => {
+        if (p.id === participantId) {
+          const newHp = Math.max(0, p.currentHp - amount);
+          return { ...p, currentHp: newHp };
+        }
+        return p;
+      })
+    }));
+    
+    toast({
+      title: "Dégâts infligés",
+      description: `-${amount} PV`,
+      variant: "destructive"
+    });
+  };
+
   // Enrichir les créatures avec les vraies statistiques d'AideDD
-  const enrichCreatureWithStats = async (participant: EncounterParticipant): Promise<void> => {
-    if (participant.type === 'player') return; // Pas pour les joueurs
+  const enrichCreatureWithStats = async (participant: EncounterParticipant, silent: boolean = false): Promise<void> => {
+    if (participant.type === 'player' || participant.isPC) {
+      console.log(`⏭️ ${participant.name} est un joueur, synchronisation ignorée`);
+      return; // Pas pour les joueurs
+    }
     
     try {
       const cleanName = normalizeCreatureName(participant.name);
       const aideddUrl = generateAideDDUrl(cleanName);
+      
+      console.log(`🌐 Récupération des stats pour ${cleanName} depuis ${aideddUrl}`);
       const stats = await getCachedCreatureStats(cleanName, aideddUrl);
       
+      console.log(`📊 Stats récupérées pour ${cleanName}:`, { 
+        ac: stats?.ac, 
+        hp: stats?.hp, 
+        found: !!stats 
+      });
+      
       if (stats && (stats.ac !== null || stats.hp !== null)) {
+        const oldAc = participant.ac;
+        const oldMaxHp = participant.maxHp;
+        const newAc = stats.ac || participant.ac;
+        const newMaxHp = stats.hp || participant.maxHp;
+        
         setEncounter(prev => ({
           ...prev,
           participants: prev.participants.map(p => 
             p.id === participant.id ? {
               ...p,
-              ac: stats.ac || p.ac,
-              maxHp: stats.hp || p.maxHp,
-              currentHp: p.currentHp === p.maxHp ? (stats.hp || p.currentHp) : p.currentHp // Ajuster les PV actuels si égaux aux max
+              ac: newAc,
+              maxHp: newMaxHp,
+              // Ajuster les PV actuels seulement si la créature était à pleine vie
+              currentHp: p.currentHp === p.maxHp ? newMaxHp : Math.min(p.currentHp, newMaxHp)
             } : p
           )
         }));
         
-        toast({
-          title: "Statistiques mises à jour",
-          description: `${cleanName}: CA ${stats.ac || 'inchangée'}, PV ${stats.hp || 'inchangés'}`
+        const changes = [];
+        if (stats.ac && stats.ac !== oldAc) changes.push(`CA: ${oldAc} → ${newAc}`);
+        if (stats.hp && stats.hp !== oldMaxHp) changes.push(`PV: ${oldMaxHp} → ${newMaxHp}`);
+        
+        if (!silent && changes.length > 0) {
+          toast({
+            title: "Statistiques mises à jour",
+            description: `${cleanName}: ${changes.join(', ')}`
+          });
+        }
+        
+        console.log(`✅ ${cleanName} enrichi:`, {
+          acChange: stats.ac ? `${oldAc} → ${newAc}` : 'inchangée',
+          hpChange: stats.hp ? `${oldMaxHp} → ${newMaxHp}` : 'inchangés'
         });
+      } else {
+        console.warn(`⚠️ Aucune statistique valide trouvée pour ${cleanName}`, stats);
+        throw new Error(`Pas de données pour ${cleanName}`);
       }
     } catch (error) {
-      console.error('Erreur lors de l\'enrichissement:', error);
+      console.error(`❌ Erreur lors de l'enrichissement de ${participant.name}:`, error);
+      throw error; // Propager l'erreur pour le comptage
     }
   };
 
@@ -936,22 +1003,60 @@ const EncounterTrackerTest: React.FC = () => {
     
     const monsters = encounterData.participants.filter((p: any) => !p.isPC && p.type !== 'player');
     
-    if (monsters.length === 0) return;
+    if (monsters.length === 0) {
+      console.log("📭 Aucun monstre à synchroniser");
+      return;
+    }
     
     console.log(`🔄 Synchronisation automatique AideDD pour ${monsters.length} créature(s)...`);
+    console.log("🎯 Créatures à synchroniser:", monsters.map(m => m.name));
     
     try {
       setHasAutoSynced(true);
       
+      let syncCount = 0;
+      let successCount = 0;
+      
       for (const monster of monsters) {
-        await enrichCreatureWithStats(monster);
+        try {
+          console.log(`🔍 Synchronisation de: ${monster.name} (${monster.id})`);
+          await enrichCreatureWithStats(monster, true); // Mode silencieux
+          successCount++;
+          syncCount++;
+          console.log(`✅ ${monster.name} synchronisé avec succès (${syncCount}/${monsters.length})`);
+        } catch (error) {
+          console.error(`❌ Erreur pour ${monster.name}:`, error);
+          syncCount++;
+        }
+        
         // Petit délai pour éviter de surcharger l'API
-        await new Promise(resolve => setTimeout(resolve, 300));
+        await new Promise(resolve => setTimeout(resolve, 400));
       }
       
-      console.log("✅ Synchronisation automatique AideDD terminée");
+      console.log(`🎉 Synchronisation automatique AideDD terminée: ${successCount}/${syncCount} créature(s) réussie(s)`);
+      
+      // Toast de confirmation avec détails
+      if (successCount > 0) {
+        toast({
+          title: "Synchronisation terminée",
+          description: `${successCount} créature(s) synchronisée(s) avec AideDD`,
+          variant: "default"
+        });
+      } else {
+        toast({
+          title: "Synchronisation échouée",
+          description: "Aucune créature n'a pu être synchronisée avec AideDD",
+          variant: "destructive"
+        });
+      }
+      
     } catch (error) {
-      console.error('❌ Erreur lors de la synchronisation automatique:', error);
+      console.error('❌ Erreur globale lors de la synchronisation automatique:', error);
+      toast({
+        title: "Erreur de synchronisation",
+        description: "Erreur technique lors de la synchronisation AideDD",
+        variant: "destructive"
+      });
     }
   };
 
@@ -978,20 +1083,31 @@ const EncounterTrackerTest: React.FC = () => {
   const enrichAllCreatures = async (): Promise<void> => {
     const monsters = encounter.participants.filter(p => !p.isPC);
     
+    if (monsters.length === 0) {
+      toast({
+        title: "Aucune créature",
+        description: "Aucun monstre à synchroniser",
+        variant: "default"
+      });
+      return;
+    }
+    
     toast({
       title: "Mise à jour en cours",
       description: `Récupération des statistiques pour ${monsters.length} créature(s)...`
     });
 
+    let updatedCount = 0;
     for (const monster of monsters) {
-      await enrichCreatureWithStats(monster);
+      await enrichCreatureWithStats(monster, true); // Mode silencieux
+      updatedCount++;
       // Petit délai pour éviter de surcharger l'API
       await new Promise(resolve => setTimeout(resolve, 500));
     }
 
     toast({
       title: "Mise à jour terminée",
-      description: "Toutes les créatures ont été enrichies avec leurs vraies statistiques"
+      description: `${updatedCount} créature(s) enrichie(s) avec les statistiques d'AideDD`
     });
   };
 
@@ -999,26 +1115,6 @@ const EncounterTrackerTest: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
-      {/* Banner de version test */}
-      <div className="max-w-7xl mx-auto">
-        <TestBanner
-          title="Interface de Combat Repensée"
-          description="Version test avec une interface moderne et intuitive. Toutes les fonctionnalités sont conservées avec une meilleure lisibilité."
-          originalPath="/encounter-tracker?source=session"
-          features={[
-            "3 vues (Grille, Liste, Compact)",
-            "Cards animées",
-            "Contrôles rapides",
-            "Popup AideDD intégrée",
-            "Numérotation automatique",
-            "Sélecteur de conditions",
-            "Statut visuel amélioré",
-            "Navigation fluide",
-            "Design responsive"
-          ]}
-        />
-      </div>
-
       {/* En-tête moderne */}
       <div className="max-w-7xl mx-auto mb-6">
         <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
@@ -1140,6 +1236,10 @@ const EncounterTrackerTest: React.FC = () => {
                       onToggleCondition={toggleCondition}
                       onViewMonster={viewMonsterDetails}
                       onOpenConditionSelector={openConditionSelector}
+                      onQuickHeal={quickHeal}
+                      onQuickDamage={quickDamage}
+                      healDamageAmount={healDamageAmount}
+                      onHealDamageAmountChange={setHealDamageAmount}
                     />
                   ))}
                 </div>
@@ -1161,6 +1261,10 @@ const EncounterTrackerTest: React.FC = () => {
                         onToggleCondition={toggleCondition}
                         onViewMonster={viewMonsterDetails}
                         onOpenConditionSelector={openConditionSelector}
+                        onQuickHeal={quickHeal}
+                        onQuickDamage={quickDamage}
+                        healDamageAmount={healDamageAmount}
+                        onHealDamageAmountChange={setHealDamageAmount}
                       />
                     </div>
                   ))}
@@ -1186,129 +1290,170 @@ const EncounterTrackerTest: React.FC = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {sortedParticipants.map((participant, index) => (
-                          <TableRow 
-                            key={participant.id}
-                            className={cn(
-                              'hover:bg-gray-50',
-                              index === encounter.currentTurn && 'bg-blue-50 border-l-4 border-l-blue-500',
-                              participant.currentHp <= 0 && 'opacity-50'
-                            )}
-                          >
-                            <TableCell>
-                              {index === encounter.currentTurn && (
-                                <Crown className="h-4 w-4 text-yellow-500" />
+                        {sortedParticipants.map((participant, index) => {
+                          const hpPercentage = (participant.currentHp / participant.maxHp) * 100;
+                          const isAlive = participant.currentHp > 0;
+                          const isBloodied = hpPercentage <= 50 && hpPercentage > 0;
+                          
+                          return (
+                            <TableRow 
+                              key={participant.id}
+                              className={cn(
+                                'hover:bg-gray-50',
+                                index === encounter.currentTurn && 'bg-blue-50 border-l-4 border-l-blue-500',
+                                !isAlive && 'opacity-50'
                               )}
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center space-x-2">
-                                <div className={cn(
-                                  'w-6 h-6 rounded-full flex items-center justify-center text-white text-xs',
-                                  participant.isPC ? 'bg-blue-500' : 'bg-red-500'
-                                )}>
-                                  {participant.isPC ? 'P' : 'M'}
+                            >
+                              <TableCell>
+                                {index === encounter.currentTurn && (
+                                  <Crown className="h-4 w-4 text-yellow-500" />
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex items-center space-x-2">
+                                  <div className={cn(
+                                    'w-6 h-6 rounded-full flex items-center justify-center text-white text-xs',
+                                    participant.isPC ? 'bg-blue-500' : 'bg-red-500'
+                                  )}>
+                                    {participant.isPC ? 'P' : 'M'}
+                                  </div>
+                                  <div>
+                                    <div className="font-medium">{participant.displayName || participant.name}</div>
+                                    {participant.isPC ? (
+                                      <Badge variant="outline" className="text-xs">PJ</Badge>
+                                    ) : (
+                                      <div className="flex items-center space-x-1">
+                                        {participant.cr && (
+                                          <Badge variant="outline" className="text-xs">
+                                            CR {participant.cr}
+                                          </Badge>
+                                        )}
+                                        {participant.type && (
+                                          <span className="text-xs text-gray-500">{participant.type}</span>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
-                                <div>
-                                  <div className="font-medium">{participant.displayName || participant.name}</div>
-                                  {participant.cr && (
-                                    <div className="text-xs text-gray-500">CR {participant.cr}</div>
+                              </TableCell>
+                              <TableCell className="text-center font-mono">
+                                {participant.initiative}
+                              </TableCell>
+                              <TableCell className="text-center">
+                                <div className="flex items-center justify-center space-x-1">
+                                  <Shield className="h-3 w-3" />
+                                  <span>{participant.ac}</span>
+                                </div>
+                              </TableCell>
+                              <TableCell className="text-center">
+                                <div className="flex items-center justify-center space-x-2">
+                                  <div className="flex items-center space-x-1">
+                                    <Heart className="h-3 w-3 text-red-500" />
+                                    <span className="font-mono">
+                                      {participant.currentHp}/{participant.maxHp}
+                                    </span>
+                                  </div>
+                                  <div className="w-12 bg-gray-200 rounded-full h-1">
+                                    <div 
+                                      className={cn(
+                                        'h-1 rounded-full transition-all',
+                                        !isAlive ? 'bg-gray-400' :
+                                        hpPercentage <= 25 ? 'bg-red-500' :
+                                        hpPercentage <= 50 ? 'bg-orange-500' :
+                                        hpPercentage <= 75 ? 'bg-yellow-500' :
+                                        'bg-green-500'
+                                      )}
+                                      style={{ 
+                                        width: `${Math.max(0, hpPercentage)}%` 
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell className="text-center">
+                                <div className="flex flex-wrap gap-1 justify-center">
+                                  {/* Conditions */}
+                                  {participant.conditions.map((condition, idx) => {
+                                    const conditionInfo = getConditionInfo(condition);
+                                    const ConditionIcon = conditionInfo.icon;
+                                    return (
+                                      <Badge 
+                                        key={idx}
+                                        variant="outline" 
+                                        className={cn('text-xs cursor-pointer flex items-center', conditionInfo.color)}
+                                        onClick={() => toggleCondition(participant.id, condition)}
+                                      >
+                                        <ConditionIcon className="h-2 w-2 mr-1" />
+                                        {condition}
+                                      </Badge>
+                                    );
+                                  })}
+                                  {/* Badge de statut de vie */}
+                                  {!isAlive && (
+                                    <Badge variant="destructive" className="text-xs">
+                                      <Skull className="h-2 w-2 mr-1" />
+                                      Mort
+                                    </Badge>
+                                  )}
+                                  {isBloodied && isAlive && (
+                                    <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-800">
+                                      Ensanglanté
+                                    </Badge>
                                   )}
                                 </div>
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-center font-mono">
-                              {participant.initiative}
-                            </TableCell>
-                            <TableCell className="text-center">
-                              <div className="flex items-center justify-center space-x-1">
-                                <Shield className="h-3 w-3" />
-                                <span>{participant.ac}</span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-center">
-                              <div className="flex items-center justify-center space-x-2">
-                                <div className="flex items-center space-x-1">
-                                  <Heart className="h-3 w-3 text-red-500" />
-                                  <span className="font-mono">
-                                    {participant.currentHp}/{participant.maxHp}
-                                  </span>
-                                </div>
-                                <div className="w-12 bg-gray-200 rounded-full h-1">
-                                  <div 
-                                    className={cn(
-                                      'h-1 rounded-full transition-all',
-                                      participant.currentHp <= 0 ? 'bg-gray-400' :
-                                      participant.currentHp <= participant.maxHp * 0.25 ? 'bg-red-500' :
-                                      participant.currentHp <= participant.maxHp * 0.5 ? 'bg-orange-500' :
-                                      'bg-green-500'
-                                    )}
-                                    style={{ 
-                                      width: `${Math.max(0, (participant.currentHp / participant.maxHp) * 100)}%` 
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-center">
-                              <div className="flex flex-wrap gap-1 justify-center">
-                                {participant.conditions.map((condition, idx) => {
-                                  const conditionInfo = getConditionInfo(condition);
-                                  const ConditionIcon = conditionInfo.icon;
-                                  return (
-                                    <Badge 
-                                      key={idx}
-                                      variant="outline" 
-                                      className={cn('text-xs', conditionInfo.color)}
-                                    >
-                                      <ConditionIcon className="h-2 w-2 mr-1" />
-                                      {condition}
-                                    </Badge>
-                                  );
-                                })}
-                                {participant.currentHp <= 0 && (
-                                  <Badge variant="destructive" className="text-xs">
-                                    <Skull className="h-2 w-2 mr-1" />
-                                    Mort
-                                  </Badge>
+                                {/* Notes en mode compact */}
+                                {participant.notes && (
+                                  <div className="mt-1 text-xs text-gray-500 italic truncate max-w-32" title={participant.notes}>
+                                    {participant.notes}
+                                  </div>
                                 )}
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-center">
-                              <div className="flex items-center justify-center space-x-1">
-                                <Button 
-                                  size="sm" 
-                                  variant="ghost" 
-                                  className="h-7 w-7 p-0 flex items-center justify-center"
-                                  onClick={() => openHpEditor(participant)}
-                                  title="Modifier les PV"
-                                >
-                                  <Heart className="h-3 w-3" />
-                                </Button>
-
-                                <Button 
-                                  size="sm" 
-                                  variant="ghost" 
-                                  className="h-7 w-7 p-0 flex items-center justify-center hover:bg-purple-50"
-                                  onClick={() => openConditionSelector(participant)}
-                                  title="Gérer les conditions"
-                                >
-                                  <Square className="h-3 w-3 text-purple-600" />
-                                </Button>
-                                {!participant.isPC && (
+                              </TableCell>
+                              <TableCell className="text-center">
+                                <div className="flex items-center justify-center space-x-1">
                                   <Button 
                                     size="sm" 
                                     variant="ghost" 
-                                    className="h-7 w-7 p-0 flex items-center justify-center hover:bg-blue-50"
-                                    onClick={() => viewMonsterDetails(participant)}
-                                    title="Voir les détails sur AideDD"
+                                    className="h-7 w-7 p-0 flex items-center justify-center"
+                                    onClick={() => openHpEditor(participant)}
+                                    title="Modifier les PV"
                                   >
-                                    <BookOpen className="h-3 w-3 text-blue-600" />
+                                    <Heart className="h-3 w-3" />
                                   </Button>
-                                )}
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+
+                                  <Button 
+                                    size="sm" 
+                                    variant="ghost" 
+                                    className="h-7 w-7 p-0 flex items-center justify-center hover:bg-purple-50"
+                                    onClick={() => openConditionSelector(participant)}
+                                    title="Gérer les conditions"
+                                  >
+                                    <Square className="h-3 w-3 text-purple-600" />
+                                  </Button>
+                                  {!participant.isPC && (
+                                    <Button 
+                                      size="sm" 
+                                      variant="ghost" 
+                                      className="h-7 w-7 p-0 flex items-center justify-center hover:bg-blue-50"
+                                      onClick={() => viewMonsterDetails(participant)}
+                                      title="Voir les détails sur AideDD"
+                                    >
+                                      <BookOpen className="h-3 w-3 text-blue-600" />
+                                    </Button>
+                                  )}
+                                  <Button 
+                                    size="sm" 
+                                    variant="ghost" 
+                                    className="h-7 w-7 p-0 flex items-center justify-center hover:bg-gray-50"
+                                    onClick={() => openNotesEditor(participant)}
+                                    title="Modifier les notes"
+                                  >
+                                    <Pencil className="h-3 w-3 text-gray-600" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                       </TableBody>
                     </Table>
                   </CardContent>
@@ -1488,16 +1633,7 @@ const EncounterTrackerTest: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Bouton de retour */}
-      <div className="fixed bottom-4 right-4">
-        <Button
-          size="icon"
-          className="rounded-full h-12 w-12 shadow-lg"
-          onClick={() => window.history.back()}
-        >
-          <Calendar className="h-6 w-6" />
-        </Button>
-      </div>
+
 
       {/* Modal de détails de créature */}
       <CreatureModal />
@@ -1615,35 +1751,34 @@ const EncounterTrackerTest: React.FC = () => {
       />
 
       {/* Boutons flottants de navigation des tours */}
-      <div className="fixed bottom-6 right-6 flex flex-col gap-2 z-50">
+      <div className="fixed bottom-6 right-6 flex items-center gap-1 z-50">
         {/* Bouton Tour Précédent */}
         <Button
           variant="secondary"
-          size="lg"
+          size="sm"
           onClick={previousTurn}
           disabled={encounter.participants.length === 0}
-          className="w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 bg-white border-2 border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+          className="w-10 h-10 rounded-full shadow-md hover:shadow-lg transition-all duration-200 bg-white border-2 border-gray-300 hover:border-blue-400 hover:bg-blue-50 p-0"
           title="Tour précédent"
         >
-          <ChevronLeft className="h-6 w-6 text-gray-600 hover:text-blue-600" />
+          <ChevronLeft className="h-4 w-4 text-gray-600 hover:text-blue-600" />
         </Button>
+        
+        {/* Compteur de tour */}
+        <div className="w-10 h-10 bg-white rounded-full shadow-md border-2 border-gray-200 flex items-center justify-center text-center">
+          <div className="text-sm font-bold text-blue-600">{encounter.round}</div>
+        </div>
         
         {/* Bouton Tour Suivant */}
         <Button
-          size="lg"
+          size="sm"
           onClick={nextTurn}
           disabled={encounter.participants.length === 0}
-          className="w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 bg-blue-600 hover:bg-blue-700 text-white border-2 border-blue-600 hover:border-blue-700"
+          className="w-10 h-10 rounded-full shadow-md hover:shadow-lg transition-all duration-200 bg-blue-600 hover:bg-blue-700 text-white border-2 border-blue-600 hover:border-blue-700 p-0"
           title="Tour suivant"
         >
-          <ChevronRight className="h-6 w-6" />
+          <ChevronRight className="h-4 w-4" />
         </Button>
-        
-        {/* Indicateur de tour actuel (optionnel) */}
-        <div className="bg-white rounded-full shadow-md border-2 border-gray-200 px-3 py-2 text-center">
-          <div className="text-xs font-medium text-gray-600">Tour</div>
-          <div className="text-lg font-bold text-blue-600">{encounter.round}</div>
-        </div>
       </div>
     </div>
   );

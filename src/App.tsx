@@ -1,6 +1,6 @@
 import React, { Suspense, lazy, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './auth/AuthContext';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './auth/AuthContext';
 import { SectionLoader } from './components/ui/loading-spinner';
 import Header from './components/layout/Header';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -21,7 +21,7 @@ const EncounterBuilder = lazy(() => import('./components/EncounterBuilder'));
 const CustomEncounterGenerator = lazy(() => import('./components/CustomEncounterGenerator'));
 const EncounterTracker = lazy(() => import('./components/EncounterTracker'));
 const EncounterTrackerTest = lazy(() => import('./components/EncounterTrackerTest'));
-const UnifiedEncounterTracker = lazy(() => import('./components/UnifiedEncounterTracker'));
+
 const EncounterHistory = lazy(() => import('./components/EncounterHistory'));
 const PartyEditor = lazy(() => import('./components/PartyEditor'));
 const UserProfile = lazy(() => import('./components/auth/UserProfile'));
@@ -93,7 +93,7 @@ const AppContent: React.FC = () => {
               <Route path="/encounter-tracker" element={<EncounterTrackerTest />} />
               <Route path="/encounter-tracker/:encounterId" element={<EncounterTrackerTest />} />
               <Route path="/encounter-tracker-test" element={<EncounterTrackerTest />} />
-              <Route path="/encounter-tracker-unified" element={<UnifiedEncounterTracker />} />
+  
               <Route path="/encounter-tracker-original" element={<EncounterTracker />} />
               
               {/* Routes protégées (utilisateur connecté) */}
@@ -156,11 +156,7 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <ErrorBoundary>
-      <AuthProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </AuthProvider>
+      <AppContent />
     </ErrorBoundary>
   );
 };
