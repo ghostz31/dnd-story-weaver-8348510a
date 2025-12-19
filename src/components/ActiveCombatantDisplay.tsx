@@ -9,9 +9,10 @@ interface ActiveCombatantDisplayProps {
     participant: EncounterParticipant;
     className?: string;
     onLinkDndBeyond?: (id: string, url: string) => void;
+    onUpdate?: (updates: Partial<EncounterParticipant>) => void;
 }
 
-const ActiveCombatantDisplay: React.FC<ActiveCombatantDisplayProps> = ({ participant, className, onLinkDndBeyond }) => {
+const ActiveCombatantDisplay: React.FC<ActiveCombatantDisplayProps> = ({ participant, className, onLinkDndBeyond, onUpdate }) => {
     // Déterminer si c'est un monstre ou un joueur
     const isMonster = !participant.isPC;
 
@@ -22,7 +23,7 @@ const ActiveCombatantDisplay: React.FC<ActiveCombatantDisplayProps> = ({ partici
     return (
         <div className={`flex flex-col h-full ${className}`}>
             {isMonster ? (
-                <MonsterDisplay participant={participant} />
+                <MonsterDisplay participant={participant} onUpdate={onUpdate} />
             ) : (
                 <PlayerDisplay participant={participant} onLinkDndBeyond={onLinkDndBeyond} />
             )}
@@ -30,46 +31,83 @@ const ActiveCombatantDisplay: React.FC<ActiveCombatantDisplayProps> = ({ partici
     );
 };
 
-const MonsterDisplay: React.FC<{ participant: EncounterParticipant }> = ({ participant }) => {
-    // Nettoyer le nom pour le slug (enlever les suffixes comme (A), (B), etc. qui pourraient être ajoutés pour les duplicates)
-    // Hypothèse: le nom original est stocké ou le nom actuel est proche. 
-    // Si 'originalName' existe sur le participant, l'utiliser, sinon utiliser 'name'.
-    // Note: EncounterParticipant dans types.ts a originalName?: string.
-
+const MonsterDisplay: React.FC<{ participant: EncounterParticipant; onUpdate?: (updates: Partial<EncounterParticipant>) => void }> = ({ participant, onUpdate }) => {
+    // Nettoyer le nom pour le slug
     const monsterName = participant.originalName || participant.name.replace(/\s\([A-Z0-9]+\)$/, '').trim();
     const slug = getAideDDMonsterSlug(monsterName);
     const iframeUrl = `https://www.aidedd.org/dnd/monstres.php?vf=${slug}`;
 
+    // Bloodied State Logic
+    const isBloodied = participant.currentHp <= (participant.maxHp / 2) && participant.currentHp > 0;
+
     return (
-        <Card className="w-full h-full flex flex-col overflow-hidden border-none shadow-none">
-            <CardHeader className="py-2 px-4 bg-red-50 border-b flex flex-row items-center justify-between">
+        <Card className={`w-full h-full flex flex-col overflow-hidden border-none shadow-none transition-all duration-500 ${isBloodied ? 'ring-2 ring-red-600 shadow-[0_0_15px_rgba(220,38,38,0.5)] animate-pulse-slow' : ''}`}>
+            <CardHeader className={`py-2 px-4 border-b flex flex-row items-center justify-between ${isBloodied ? 'bg-red-900/10' : 'bg-red-50'}`}>
                 <CardTitle className="text-lg font-bold text-red-900 flex items-center gap-2">
                     {participant.name}
                     <Badge variant="outline" className="text-xs font-normal bg-white text-red-700 border-red-200">
                         {participant.type || 'Monstre'}
                     </Badge>
                 </CardTitle>
-                <a
-                    href={iframeUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-red-600 hover:text-red-800 flex items-center gap-1"
-                >
-                    <ExternalLink size={12} />
-                    Ouvrir AideDD
-                </a>
+                <div className="flex items-center gap-2">
+                    {isBloodied && <Badge variant="destructive" className="animate-pulse">BLESSÉ</Badge>}
+                    <a href={iframeUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-red-600 flex items-center gap-1 hover:underline">
+                        AideDD <ExternalLink size={12} />
+                    </a>
+                </div>
             </CardHeader>
-            <div className="flex-1 w-full bg-white relative">
+            <CardContent className="flex-1 p-0 relative">
                 <iframe
                     src={iframeUrl}
-                    className="w-full h-full absolute inset-0 border-none"
-                    title={`Stats de ${monsterName}`}
+                    className="w-full h-full border-none"
+                    title={`Statistiques de ${participant.name}`}
                     sandbox="allow-scripts allow-same-origin"
                 />
-            </div>
+
+                {/* Legendary Actions Overlay */}
+                {participant.legendaryActions && (
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-sm p-2 rounded-full flex gap-2 border border-yellow-500/50 shadow-lg z-10">
+                        {Array.from({ length: participant.legendaryActions.max }).map((_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => {
+                                    if (!participant.legendaryActions || !onUpdate) return;
+                                    const current = participant.legendaryActions.current;
+                                    // Toggle logic: If clicking a filled slot (index < current), remove it.
+                                    // Simply: if we have N actions, and user clicks, we decrement? 
+                                    // Better UX: Click to toggle individual token state? 
+                                    // Let's implement: Click = Spend one action if available.
+                                    // Actually, standard UI is usually: Show available slots.
+                                    // Let's make it simple: specific token click not needed, just list of filled/empty icons.
+                                    // But to be interactive: Click the CONTAINER to spend one? Or individual tokens?
+                                    // Individual tokens: indexes 0..max-1. If index < current, it is "available".
+                                    // Click an available token -> spend it. Click a spent token -> recover it?
+
+                                    const isActive = i < participant.legendaryActions.current;
+                                    const newCount = isActive ? participant.legendaryActions.current - 1 : participant.legendaryActions.current + 1;
+
+                                    onUpdate({
+                                        legendaryActions: {
+                                            ...participant.legendaryActions,
+                                            current: Math.max(0, Math.min(participant.legendaryActions.max, newCount))
+                                        }
+                                    });
+                                }}
+                                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${i < participant.legendaryActions.current
+                                    ? 'bg-yellow-500 text-yellow-950 scale-100 shadow-[0_0_10px_rgba(234,179,8,0.8)]'
+                                    : 'bg-gray-800 text-gray-600 scale-90'
+                                    }`}
+                                title="Action Légendaire"
+                            >
+                                <Zap size={16} fill={i < participant.legendaryActions.current ? "currentColor" : "none"} />
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </CardContent>
         </Card>
     );
-}
+};
 
 const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyond?: (id: string, url: string) => void }> = ({ participant, onLinkDndBeyond }) => {
     const [isLinking, setIsLinking] = React.useState(false);

@@ -203,6 +203,19 @@ export const monsterSizes = [
   { value: 'Gig', label: 'Gig' }
 ];
 
+export interface MonsterAction {
+  name: string;
+  desc: string;
+  attack_bonus?: number;
+  damage_dice?: string;
+  damage_bonus?: number;
+}
+
+export interface MonsterTrait {
+  name: string;
+  desc: string;
+}
+
 export interface EncounterParticipant {
   id: string;
   name: string;
@@ -225,9 +238,16 @@ export interface EncounterParticipant {
   int?: number;
   wis?: number;
   cha?: number;
-  actions?: any[];
-  traits?: any[];
+  actions?: MonsterAction[];
+  traits?: MonsterTrait[];
+  legendaryActions?: { current: number; max: number };
   dndBeyondId?: string; // ID pour la synchro live
+  initiativeModifier?: number;
+  hasUsedAction?: boolean;
+  hasUsedBonusAction?: boolean;
+  hasUsedReaction?: boolean;
+  remainingMovement?: number;
+  image?: string; // Add image field explicitly if missed
 }
 
 export interface Spell {
@@ -242,4 +262,22 @@ export interface Spell {
   description: string;
   source?: string;
   ritual?: boolean;
-} 
+}
+
+export interface UrlMapping {
+  [key: string]: string;
+}
+
+export interface MonsterNameMapping {
+  [key: string]: string;
+}
+
+export interface MagicItem {
+  id: string;
+  name: string;
+  type: string;
+  rarity: string;
+  attunement?: boolean;
+  description?: string;
+  source?: string;
+}

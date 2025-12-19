@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { getMonsters, searchMonsters, fetchMonstersFromAPI, fetchMonsterFromAideDD, adaptAideDDData, loadMonstersIndex } from '../lib/api';
-import { subscribeToMonsters, initializeTestMonsters } from '../lib/firebaseApi';
+import React, { useState, useEffect, useMemo } from 'react';
+import { fetchMonsterFromAideDD, adaptAideDDData } from '../lib/api';
+// import { subscribeToMonsters, initializeTestMonsters } from '../lib/firebaseApi';
 import { Monster, environments, monsterCategories, monsterTypes, monsterSizes } from '../lib/types';
 import { FaSync, FaSearch, FaFilter, FaChevronDown, FaChevronUp, FaPlus, FaInfoCircle } from 'react-icons/fa';
 import { useAuth } from '../auth/AuthContext';
@@ -11,6 +11,7 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Image as ImageIcon, X } from 'lucide-react';
 import { getAideDDMonsterSlug, getMonsterImageUrl, generateUniqueId } from '../lib/monsterUtils';
+import { useMonsters } from '../hooks/useMonsters';
 
 interface MonsterBrowserProps {
   onSelectMonster?: (monster: Monster) => void;
@@ -19,14 +20,15 @@ interface MonsterBrowserProps {
 
 // Fonction utilitaire pour générer des identifiants uniques
 const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSelectable = false }) => {
-  const [monsters, setMonsters] = useState<Monster[]>([]);
+  const { monsters, loading, refresh } = useMonsters();
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false); // Géré par le hook
   const [selectedMonster, setSelectedMonster] = useState<Monster | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [enrichedMonster, setEnrichedMonster] = useState<any>(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [currentMonsterName, setCurrentMonsterName] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(50);
   const [filteredMonsters, setFilteredMonsters] = useState<Monster[]>([]);
 
   // Filtres
@@ -39,225 +41,10 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
 
   const { isAuthenticated } = useAuth();
 
-  // Charger les monstres au démarrage
-  useEffect(() => {
-    if (!isAuthenticated) {
-      // Si l'utilisateur n'est pas authentifié, utiliser les données locales
-      const loadMonsters = async () => {
-        // Éviter de charger si les monstres sont déjà chargés
-        if (monsters.length > 0) {
-          console.log("Les monstres sont déjà chargés, chargement ignoré");
-          return;
-        }
+  // Charger les monstres au démarrage (Géré par le hook useMonsters)
+  // useEffect(() => { ... }, [isAuthenticated]);
 
-        setLoading(true);
-        try {
-          console.log("Chargement des monstres depuis l'index des fichiers individuels...");
-
-          // Charger l'index des monstres individuels
-          const monstersIndex = await loadMonstersIndex();
-
-          if (monstersIndex && monstersIndex.length > 0) {
-            console.log(`${monstersIndex.length} monstres chargés depuis l'index`);
-
-            // Transformer l'index au format Monster pour l'application
-            const formattedMonsters = monstersIndex.map((monster: any) => ({
-              id: monster.id,
-              name: monster.name,
-              originalName: monster.originalName,
-              cr: parseFloat(monster.cr) || 0,
-              xp: calculateXPFromCR(parseFloat(monster.cr) || 0),
-              type: monster.type || 'Inconnu',
-              size: monster.size || 'M',
-              source: 'AideDD',
-              environment: [],
-              legendary: false,
-              alignment: 'non-aligné',
-              ac: 10,
-              hp: 10,
-              image: monster.image
-            }));
-
-            setMonsters(formattedMonsters);
-          } else {
-            console.warn("Index des monstres vide, essai de chargement depuis le JSON complet");
-
-            // Fallback au JSON complet
-            const response = await fetch('/data/aidedd-monsters-all.json');
-            if (response.ok) {
-              const monstersData = await response.json();
-              // Transformer les données au format attendu par l'application
-              const monsters = monstersData.map((monster: any) => ({
-                id: monster.id || generateUniqueId(),
-                name: monster.name,
-                cr: monster.cr,
-                xp: monster.xp || calculateXPFromCR(monster.cr),
-                type: monster.type,
-                size: monster.size,
-                source: monster.source || 'MM',
-                environment: monster.environment || [],
-                legendary: monster.legendary || false,
-                alignment: monster.alignment || 'non-aligné',
-                ac: monster.ac || 10,
-                hp: monster.hp || 10
-              }));
-
-              setMonsters(monsters);
-              // Sauvegarder dans localStorage pour accélérer les prochains chargements
-              localStorage.setItem('dnd_monsters', JSON.stringify(monsters));
-            } else {
-              throw new Error("Impossible de charger le fichier JSON");
-            }
-          }
-        } catch (error) {
-          console.error("Erreur lors du chargement des monstres:", error);
-
-          // Dernier recours: utiliser les monstres stockés en localStorage
-          const localMonsters = getMonsters();
-          setMonsters(localMonsters);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      loadMonsters();
-    } else {
-      // Si l'utilisateur est authentifié, utiliser Firestore avec des mises à jour en temps réel
-      if (monsters.length > 0) {
-        console.log("Les monstres sont déjà chargés, chargement Firestore ignoré");
-        return;
-      }
-
-      setLoading(true);
-
-      try {
-        const unsubscribe = subscribeToMonsters(async (fetchedMonsters) => {
-          setLoading(false);
-
-          // Si nous avons réussi à récupérer des monstres depuis Firestore
-          if (fetchedMonsters && fetchedMonsters.length > 0) {
-            setMonsters(fetchedMonsters);
-          } else {
-            // Solution de secours: essayer d'abord l'index des fichiers individuels
-            console.log("Aucun monstre trouvé dans Firestore, essai avec l'index des fichiers individuels");
-
-            try {
-              const monstersIndex = await loadMonstersIndex();
-
-              if (monstersIndex && monstersIndex.length > 0) {
-                console.log(`${monstersIndex.length} monstres chargés depuis l'index`);
-
-                // Transformer l'index au format Monster pour l'application
-                const formattedMonsters = monstersIndex.map((monster: any) => ({
-                  id: monster.id,
-                  name: monster.name,
-                  originalName: monster.originalName,
-                  cr: parseFloat(monster.cr) || 0,
-                  xp: calculateXPFromCR(parseFloat(monster.cr) || 0),
-                  type: monster.type || 'Inconnu',
-                  size: monster.size || 'M',
-                  source: 'AideDD',
-                  environment: [],
-                  legendary: false,
-                  alignment: 'non-aligné',
-                  ac: 10,
-                  hp: 10,
-                  image: monster.image
-                }));
-
-                setMonsters(formattedMonsters);
-                // Sauvegarder dans localStorage pour accélérer les prochains chargements
-                localStorage.setItem('dnd_monsters', JSON.stringify(formattedMonsters));
-              } else {
-                // Si l'index est vide, essayer avec le JSON complet
-                console.warn("Index des monstres vide, essai avec le JSON complet");
-
-                // Essayer de charger depuis le fichier JSON complet
-                const response = await fetch('/data/aidedd-monsters-all.json');
-                if (response.ok) {
-                  const monstersData = await response.json();
-                  // Transformer les données au format attendu
-                  const monsters = monstersData.map((monster: any) => ({
-                    id: monster.id || generateUniqueId(),
-                    name: monster.name,
-                    cr: monster.cr,
-                    xp: monster.xp || calculateXPFromCR(monster.cr),
-                    type: monster.type,
-                    size: monster.size,
-                    source: monster.source || 'MM',
-                    environment: monster.environment || [],
-                    legendary: monster.legendary || false,
-                    alignment: monster.alignment || 'non-aligné',
-                    ac: monster.ac || 10,
-                    hp: monster.hp || 10
-                  }));
-
-                  setMonsters(monsters);
-                  // Sauvegarder dans localStorage pour accélérer les prochains chargements
-                  localStorage.setItem('dnd_monsters', JSON.stringify(monsters));
-                } else {
-                  throw new Error("Impossible de charger les monstres depuis le JSON");
-                }
-              }
-            } catch (error) {
-              console.error("Erreur lors du chargement des monstres:", error);
-              // Dernier recours: utiliser les monstres stockés en localStorage
-              const localMonsters = getMonsters();
-              setMonsters(localMonsters);
-            }
-          }
-        });
-
-        return () => {
-          if (unsubscribe) unsubscribe();
-        };
-      } catch (error) {
-        console.error("Erreur lors de l'abonnement aux monstres Firestore:", error);
-        setLoading(false);
-
-        // En cas d'erreur avec Firestore, utiliser les données locales
-        const localMonsters = getMonsters();
-        setMonsters(localMonsters);
-      }
-    }
-  }, [isAuthenticated]);
-
-  // Fonction pour calculer l'XP à partir du CR
-  const calculateXPFromCR = (cr: number): number => {
-    if (cr <= 0) return 10;
-    if (cr <= 0.25) return 50;
-    if (cr <= 0.5) return 100;
-    if (cr <= 1) return 200;
-    if (cr <= 2) return 450;
-    if (cr <= 3) return 700;
-    if (cr <= 4) return 1100;
-    if (cr <= 5) return 1800;
-    if (cr <= 6) return 2300;
-    if (cr <= 7) return 2900;
-    if (cr <= 8) return 3900;
-    if (cr <= 9) return 5000;
-    if (cr <= 10) return 5900;
-    if (cr <= 11) return 7200;
-    if (cr <= 12) return 8400;
-    if (cr <= 13) return 10000;
-    if (cr <= 14) return 11500;
-    if (cr <= 15) return 13000;
-    if (cr <= 16) return 15000;
-    if (cr <= 17) return 18000;
-    if (cr <= 18) return 20000;
-    if (cr <= 19) return 22000;
-    if (cr <= 20) return 25000;
-    if (cr <= 21) return 33000;
-    if (cr <= 22) return 41000;
-    if (cr <= 23) return 50000;
-    if (cr <= 24) return 62000;
-    if (cr <= 25) return 75000;
-    if (cr <= 26) return 90000;
-    if (cr <= 27) return 105000;
-    if (cr <= 28) return 120000;
-    if (cr <= 29) return 135000;
-    return 155000;
-  };
+  // calculateXPFromCR supprimé (géré dans le hook ou non utilisé ici)
 
   // Fonction pour appliquer les filtres à un tableau de monstres
   const applyFiltersToMonsters = (monstersToFilter: Monster[]): Monster[] => {
@@ -309,90 +96,18 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
 
   // Filtrer les monstres en fonction des critères
   useEffect(() => {
-    const filteredMonsters = applyFiltersToMonsters(monsters);
-    setFilteredMonsters(filteredMonsters);
+    const filtered = applyFiltersToMonsters(monsters);
+    setFilteredMonsters(filtered);
+    setVisibleCount(50); // Reset visible count on filter change
   }, [searchQuery, crMin, crMax, selectedType, selectedSize, selectedCategory, selectedEnvironment, monsters]);
 
   // Rafraîchir les monstres depuis l'API
   const handleRefreshMonsters = async () => {
-    setLoading(true);
-
-    try {
-      // Charger l'index des monstres individuels
-      const monstersIndex = await loadMonstersIndex();
-
-      if (monstersIndex && monstersIndex.length > 0) {
-        console.log(`${monstersIndex.length} monstres chargés depuis l'index`);
-
-        // Transformer l'index au format Monster pour l'application
-        const formattedMonsters = monstersIndex.map((monster: any) => ({
-          id: monster.id,
-          name: monster.name,
-          originalName: monster.originalName,
-          cr: parseFloat(monster.cr) || 0,
-          xp: calculateXPFromCR(parseFloat(monster.cr) || 0),
-          type: monster.type || 'Inconnu',
-          size: monster.size || 'M',
-          source: 'AideDD',
-          environment: [],
-          legendary: false,
-          alignment: 'non-aligné',
-          ac: 10,
-          hp: 10,
-          image: monster.image
-        }));
-
-        setMonsters(formattedMonsters);
-        localStorage.setItem('dnd_monsters', JSON.stringify(formattedMonsters));
-
-        toast({
-          title: "Succès",
-          description: `${formattedMonsters.length} monstres chargés avec succès`,
-          variant: "default"
-        });
-      } else {
-        // Fallback au JSON complet
-        const response = await fetch('/data/aidedd-monsters-all.json');
-        if (response.ok) {
-          const monstersData = await response.json();
-          // Transformer les données au format attendu par l'application
-          const monsters = monstersData.map((monster: any) => ({
-            id: monster.id || generateUniqueId(),
-            name: monster.name,
-            cr: monster.cr,
-            xp: monster.xp || calculateXPFromCR(monster.cr),
-            type: monster.type,
-            size: monster.size,
-            source: monster.source || 'MM',
-            environment: monster.environment || [],
-            legendary: monster.legendary || false,
-            alignment: monster.alignment || 'non-aligné',
-            ac: monster.ac || 10,
-            hp: monster.hp || 10
-          }));
-
-          setMonsters(monsters);
-          localStorage.setItem('dnd_monsters', JSON.stringify(monsters));
-
-          toast({
-            title: "Succès",
-            description: `${monsters.length} monstres chargés depuis le JSON`,
-            variant: "default"
-          });
-        } else {
-          throw new Error("Impossible de charger le fichier JSON");
-        }
-      }
-    } catch (error) {
-      console.error("Erreur lors de l'actualisation des monstres:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de recharger les monstres",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
+    await refresh();
+    toast({
+      title: "Rafraîchissement",
+      description: "Liste des monstres mise à jour",
+    });
   };
 
   // Nouvelle fonction pour récupérer les détails d'un monstre (version iframe)
@@ -418,31 +133,13 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
     setSelectedCategory('all');
     setSelectedSize('all');
     setSelectedEnvironment('all');
-
-    // Recharger la liste complète des monstres
-    setLoading(true);
-
-    if (isAuthenticated) {
-      // Si l'utilisateur est authentifié, réabonner à tous les monstres sans filtre
-      subscribeToMonsters((allMonsters) => {
-        setMonsters(allMonsters);
-        setLoading(false);
-      });
-    } else {
-      // Sinon utiliser les données locales
-      try {
-        const allMonsters = getMonsters();
-        setMonsters(allMonsters);
-      } catch (error) {
-        console.error("Erreur lors du rechargement des monstres:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
+    refresh();
   };
 
   // Obtenir les valeurs de CR uniques pour les filtres
-  const crValues = [...new Set(getMonsters().map(monster => monster.cr))].sort((a, b) => a - b);
+  const crValues = useMemo(() => {
+    return [...new Set(monsters.map(monster => monster.cr))].sort((a, b) => a - b);
+  }, [monsters]);
 
   return (
     <div className="w-full">
@@ -616,7 +313,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-glass-border/20 bg-transparent">
-                    {filteredMonsters.map((monster) => (
+                    {filteredMonsters.slice(0, visibleCount).map((monster) => (
                       <tr key={monster.id} className="hover:bg-primary/5 transition-colors cursor-pointer group" onClick={() => handleSelectMonster(monster)}>
                         <td className="px-4 py-2">
                           <div className="flex items-center">
@@ -624,6 +321,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                               <img
                                 src={getMonsterImageUrl(monster)}
                                 alt={monster.name}
+                                loading="lazy"
                                 className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                                 onError={(e) => {
                                   const target = e.target as HTMLImageElement;
@@ -679,6 +377,19 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                         </td>
                       </tr>
                     ))}
+                    {filteredMonsters.length > visibleCount && (
+                      <tr>
+                        <td colSpan={6} className="text-center py-4">
+                          <Button
+                            variant="ghost"
+                            onClick={() => setVisibleCount(prev => prev + 50)}
+                            className="w-full text-muted-foreground hover:text-primary"
+                          >
+                            Charger plus... ({filteredMonsters.length - visibleCount} restants)
+                          </Button>
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>

@@ -27,9 +27,11 @@ import {
   LogIn,
   CreditCard,
   PenTool,
+  Search,
   Scroll,
   Menu,
-  X
+  X,
+  Gem
 } from 'lucide-react';
 
 const Header: React.FC = () => {
@@ -104,6 +106,18 @@ const Header: React.FC = () => {
       </Button>
 
       <Button
+        variant={isActive('/items') ? 'default' : 'ghost'}
+        size="sm"
+        asChild
+        onClick={closeMenu}
+        className="w-full justify-start md:w-auto"
+      >
+        <Link to="/items" className="flex items-center">
+          <Gem className="mr-2 h-4 w-4" /> Objets
+        </Link>
+      </Button>
+
+      <Button
         variant={isActive('/encounters') || isActive('/custom') ? 'default' : 'ghost'}
         size="sm"
         asChild
@@ -165,6 +179,17 @@ const Header: React.FC = () => {
           {/* Navigation Desktop */}
           <nav className="hidden md:flex items-center space-x-1">
             <NavItems />
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-4 text-muted-foreground bg-white/50 border-glass-border/30 w-48 justify-between"
+              onClick={() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))}
+            >
+              <span className="flex items-center"><Search className="mr-2 h-3.5 w-3.5" /> Rechercher...</span>
+              <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                <span className="text-xs">⌘</span>K
+              </kbd>
+            </Button>
           </nav>
 
           {/* Menu utilisateur */}

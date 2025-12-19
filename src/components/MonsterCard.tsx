@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Shield, Image as ImageIcon } from 'lucide-react';
+import { Shield, Image as ImageIcon, Skull, Zap, Eye, MessagesSquare, ScrollText, Swords } from 'lucide-react';
 import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { getAideDDMonsterSlug } from '../lib/utils';
+import { EncounterMonster } from '../lib/types';
 
 // Traduire les tailles
 const sizeTranslation: { [key: string]: string } = {
@@ -298,11 +300,14 @@ const formatList = (list: string[] | string | null | undefined): string => {
   return 'aucune';
 };
 
+
 interface MonsterCardProps {
   monster: any;
+  onSelect?: () => void;
+  isSelected?: boolean;
 }
 
-export function MonsterCard({ monster }: MonsterCardProps) {
+export function MonsterCard({ monster, onSelect, isSelected = false }: MonsterCardProps) {
   const [loading, setLoading] = useState(false);
 
   // Obtenir l'URL de la page AideDD du monstre
@@ -311,9 +316,54 @@ export function MonsterCard({ monster }: MonsterCardProps) {
     return `https://www.aidedd.org/dnd/monstres.php?vf=${slug}`;
   };
 
+  // Image handling
+  const getMonsterImageUrl = (monster: any) => {
+    if (monster.imageUrl) return monster.imageUrl;
+    // Fallback logic could be here
+    return '/images/monsters/unknown.jpg';
+  };
+  const imageUrl = getMonsterImageUrl(monster);
+
+
+  // Formatting names
+  const getDisplayNames = (monster: any) => {
+    return {
+      main: monster.name,
+      sub: monster.originalName !== monster.name ? monster.originalName : null
+    }
+  }
+  const displayNames = getDisplayNames(monster);
+
   // Utiliser le nom original s'il existe, sinon le nom standard
   const monsterName = monster.originalName || monster.name;
   const monsterUrl = getMonsterUrl(monsterName);
+
+  // Helper pour les traductions
+  const typeTranslation: Record<string, string> = {
+    'humanoid': 'humanoïde',
+    'beast': 'bête',
+    'undead': 'mort-vivant',
+    'dragon': 'dragon',
+    'giant': 'géant',
+    'construct': 'créature artificielle',
+    'fiend': 'fiélon',
+    'monstrosity': 'monstruosité',
+    'plant': 'plante',
+    'elemental': 'élémentaire',
+    'fey': 'fée',
+    'celestial': 'céleste',
+    'aberration': 'aberration',
+    'ooze': 'vase'
+  };
+
+  const sizeTranslation: Record<string, string> = {
+    'T': 'très petit',
+    'S': 'petit',
+    'M': 'moyen',
+    'L': 'grand',
+    'H': 'très grand',
+    'G': 'gigantesque'
+  };
 
   // Calculer le modificateur d'une caractéristique
   const getAbilityModifier = (value: number): string => {
@@ -322,174 +372,77 @@ export function MonsterCard({ monster }: MonsterCardProps) {
     return modifier >= 0 ? `+${modifier}` : `${modifier}`;
   };
 
+  const formatHP = (hp: any) => {
+    if (!hp) return "10";
+    return hp.toString(); // Simple implementation
+  }
+
   return (
-    <div className="glass-card rounded-xl overflow-hidden hover:scale-[1.02] transition-transform duration-300">
-      <div className="p-3 bg-gradient-to-r from-primary/10 to-transparent border-b border-primary/10 flex justify-between items-center">
-        <h3 className="font-bold text-lg">{monster.name}</h3>
-        <a
-          href={monsterUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-600 hover:underline text-sm"
-        >
-          Ouvrir dans AideDD
-        </a>
+    <div className={`glass-card h-full flex flex-col group relative overflow-hidden rounded-xl ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-transparent' : ''}`}>
+      {/* Image de fond avec dégradé */}
+      <div className="relative h-48 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />
+        <img
+          src={imageUrl}
+          alt={monster.name}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = '/images/monsters/unknown.jpg';
+          }}
+        />
+        <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
+          <h3 className="text-xl font-bold text-white font-cinzel leading-tight mb-1 truncate">{displayNames.main}</h3>
+          {displayNames.sub && (
+            <p className="text-xs text-gray-300 italic truncate">{displayNames.sub}</p>
+          )}
+        </div>
+
+        {/* Badge CR */}
+        <div className="absolute top-2 right-2 z-20">
+          <Badge className="bg-black/50 backdrop-blur-md border border-white/20 text-white font-bold hover:bg-primary/80 transition-colors">
+            CR {monster.cr}
+          </Badge>
+        </div>
       </div>
 
-      <div className="p-4">
-        <div className="text-sm italic mb-4">
-          {monster.size || 'M'} {monster.type || 'créature'}, {monster.alignment || 'non aligné'}
+      <div className="p-4 flex-grow flex flex-col gap-2">
+        <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+          <div className="flex items-center gap-1">
+            <Shield className="w-3 h-3" />
+            <span>FP {monster.xp} XP</span>
+          </div>
+          <span className="capitalize">{sizeTranslation[monster.size] || monster.size}</span>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <div className="font-semibold">Classe d'armure</div>
-            <div>{monster.ac || 10}</div>
-          </div>
-
-          <div>
-            <div className="font-semibold">Points de vie</div>
-            <div>{monster.hp || 10}</div>
-          </div>
+        <div className="flex flex-wrap gap-1 mb-3">
+          <Badge variant="outline" className="text-xs border-primary/30 bg-primary/5 text-primary">
+            {typeTranslation[monster.type] || monster.type}
+          </Badge>
+          <Badge variant="outline" className="text-xs border-glass-border/30 bg-glass/20">
+            AC {monster.ac}
+          </Badge>
+          <Badge variant="outline" className="text-xs border-glass-border/30 bg-glass/20">
+            PV {formatHP(monster.hp)}
+          </Badge>
         </div>
+      </div>
 
-        <div className="mb-4">
-          <div className="font-semibold">Vitesse</div>
-          <div>{typeof monster.speed === 'string' ? monster.speed :
-            Array.isArray(monster.speed) ? monster.speed.join(', ') : '9 m'}</div>
-        </div>
-
-        {/* Caractéristiques */}
-        <div className="grid grid-cols-6 gap-2 mb-4 bg-primary/5 p-3 rounded-lg border border-primary/10">
-          <div className="text-center">
-            <div className="font-semibold">FOR</div>
-            <div>{monster.str || 10}</div>
-            <div className="text-xs">({getAbilityModifier(monster.str || 10)})</div>
-          </div>
-          <div className="text-center">
-            <div className="font-semibold">DEX</div>
-            <div>{monster.dex || 10}</div>
-            <div className="text-xs">({getAbilityModifier(monster.dex || 10)})</div>
-          </div>
-          <div className="text-center">
-            <div className="font-semibold">CON</div>
-            <div>{monster.con || 10}</div>
-            <div className="text-xs">({getAbilityModifier(monster.con || 10)})</div>
-          </div>
-          <div className="text-center">
-            <div className="font-semibold">INT</div>
-            <div>{monster.int || 10}</div>
-            <div className="text-xs">({getAbilityModifier(monster.int || 10)})</div>
-          </div>
-          <div className="text-center">
-            <div className="font-semibold">SAG</div>
-            <div>{monster.wis || 10}</div>
-            <div className="text-xs">({getAbilityModifier(monster.wis || 10)})</div>
-          </div>
-          <div className="text-center">
-            <div className="font-semibold">CHA</div>
-            <div>{monster.cha || 10}</div>
-            <div className="text-xs">({getAbilityModifier(monster.cha || 10)})</div>
-          </div>
-        </div>
-
-        {/* Compétences et immunités */}
-        {monster.skills && (
-          <div className="mb-3">
-            <div className="font-semibold">Compétences</div>
-            <div>{monster.skills}</div>
-          </div>
-        )}
-
-        {monster.damageResistances && (
-          <div className="mb-3">
-            <div className="font-semibold">Résistances aux dégâts</div>
-            <div>{monster.damageResistances}</div>
-          </div>
-        )}
-
-        {monster.damageImmunities && (
-          <div className="mb-3">
-            <div className="font-semibold">Immunités aux dégâts</div>
-            <div>{monster.damageImmunities}</div>
-          </div>
-        )}
-
-        {monster.conditionImmunities && (
-          <div className="mb-3">
-            <div className="font-semibold">Immunités aux états</div>
-            <div>{monster.conditionImmunities}</div>
-          </div>
-        )}
-
-        {monster.senses && (
-          <div className="mb-3">
-            <div className="font-semibold">Sens</div>
-            <div>{monster.senses}</div>
-          </div>
-        )}
-
-        {monster.languages && (
-          <div className="mb-3">
-            <div className="font-semibold">Langues</div>
-            <div>{monster.languages}</div>
-          </div>
-        )}
-
-        <div className="mb-4">
-          <div className="font-semibold">Puissance</div>
-          <div>{monster.cr} ({monster.xp || 0} PX)</div>
-        </div>
-
-        {/* Traits */}
-        {monster.traits && monster.traits.length > 0 && (
-          <div className="mb-4">
-            <h4 className="font-bold border-b pb-1 mb-2">Traits</h4>
-            {monster.traits.map((trait: any, index: number) => (
-              <div key={index} className="mb-2">
-                <div className="font-semibold">{trait.name}</div>
-                <div>{trait.description}</div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Actions */}
-        {monster.actions && monster.actions.length > 0 && (
-          <div className="mb-4">
-            <h4 className="font-bold border-b pb-1 mb-2">Actions</h4>
-            {monster.actions.map((action: any, index: number) => (
-              <div key={index} className="mb-2">
-                <div className="font-semibold">{action.name}</div>
-                <div>{action.description}</div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Actions légendaires */}
-        {monster.legendaryActions && monster.legendaryActions.length > 0 && (
-          <div className="mb-4">
-            <h4 className="font-bold border-b pb-1 mb-2">Actions légendaires</h4>
-            {monster.legendaryActions.map((action: any, index: number) => (
-              <div key={index} className="mb-2">
-                <div className="font-semibold">{action.name}</div>
-                <div>{action.description}</div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <div className="text-center mt-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => window.open(monsterUrl, '_blank')}
-          >
-            Voir la fiche complète sur AideDD
-          </Button>
-        </div>
+      <div className="p-4 pt-0 mt-auto">
+        <Button
+          onClick={onSelect}
+          className={`w-full ${isSelected ? 'bg-red-500 hover:bg-red-600' : 'bg-primary/80 hover:bg-primary'} text-white shadow-lg transition-all`}
+        >
+          {isSelected ? (
+            <>
+              <span className="mr-2">Retirer</span>
+            </>
+          ) : (
+            <>
+              <span className="mr-2">Ajouter</span>
+            </>
+          )}
+        </Button>
       </div>
     </div>
   );
-} 
+}

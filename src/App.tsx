@@ -10,9 +10,12 @@ import EncounterTracker from './components/EncounterTracker';
 import EncounterHistory from './components/EncounterHistory';
 import PartyEditor from './components/PartyEditor';
 import SpellBrowser from './components/SpellBrowser';
+import MagicItemBrowser from './components/MagicItemBrowser';
 import UserProfile from './components/auth/UserProfile';
 import Header from './components/layout/Header';
 import { useAuth } from './auth/AuthContext';
+import ErrorBoundary from './components/ui/ErrorBoundary';
+import { GlobalCommandPalette } from './components/GlobalCommandPalette';
 import './App.css';
 
 // Composant de protection des routes authentifiées
@@ -46,58 +49,62 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
+      <GlobalCommandPalette />
 
-      <main className="w-full max-w-[1920px] mx-auto px-4 md:px-8 py-6">
-        <Routes>
-          {/* Routes publiques */}
-          <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/login" element={<Navigate to="/auth" replace />} />
-          <Route path="/monsters" element={<MonsterBrowser />} />
-          <Route path="/grimoire" element={<SpellBrowser />} />
-          <Route path="/encounter-tracker" element={<EncounterTracker />} />
-          <Route path="/encounter-tracker/:encounterId" element={<EncounterTracker />} />
+      <main className="w-full mx-auto px-4 py-6">
+        <ErrorBoundary>
+          <Routes>
+            {/* Routes publiques */}
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/login" element={<Navigate to="/auth" replace />} />
+            <Route path="/monsters" element={<MonsterBrowser />} />
+            <Route path="/grimoire" element={<SpellBrowser />} />
+            <Route path="/items" element={<MagicItemBrowser />} />
+            <Route path="/encounter-tracker" element={<EncounterTracker />} />
+            <Route path="/encounter-tracker/:encounterId" element={<EncounterTracker />} />
 
-          {/* Routes protégées (utilisateur connecté) */}
-          <Route path="/profile" element={
-            <ProtectedRoute>
-              <UserProfile />
-            </ProtectedRoute>
-          } />
+            {/* Routes protégées (utilisateur connecté) */}
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            } />
 
-          <Route path="/subscription" element={
-            <ProtectedRoute>
-              <SubscriptionPage />
-            </ProtectedRoute>
-          } />
+            <Route path="/subscription" element={
+              <ProtectedRoute>
+                <SubscriptionPage />
+              </ProtectedRoute>
+            } />
 
-          <Route path="/parties" element={
-            <ProtectedRoute>
-              <PartyEditor />
-            </ProtectedRoute>
-          } />
+            <Route path="/parties" element={
+              <ProtectedRoute>
+                <PartyEditor />
+              </ProtectedRoute>
+            } />
 
-          <Route path="/encounters" element={
-            <ProtectedRoute>
-              <EncounterBuilder />
-            </ProtectedRoute>
-          } />
+            <Route path="/encounters" element={
+              <ProtectedRoute>
+                <EncounterBuilder />
+              </ProtectedRoute>
+            } />
 
-          <Route path="/custom" element={
-            <ProtectedRoute>
-              <CustomEncounterGenerator />
-            </ProtectedRoute>
-          } />
+            <Route path="/custom" element={
+              <ProtectedRoute>
+                <CustomEncounterGenerator />
+              </ProtectedRoute>
+            } />
 
-          <Route path="/history" element={
-            <ProtectedRoute>
-              <EncounterHistory />
-            </ProtectedRoute>
-          } />
+            <Route path="/history" element={
+              <ProtectedRoute>
+                <EncounterHistory />
+              </ProtectedRoute>
+            } />
 
-          {/* Redirection vers la page d'accueil si la route n'existe pas */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+            {/* Redirection vers la page d'accueil si la route n'existe pas */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </ErrorBoundary>
       </main>
 
       <footer className="bg-gray-800 text-white p-4 mt-8">

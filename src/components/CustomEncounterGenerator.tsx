@@ -19,6 +19,7 @@ import UsageStats from './UsageStats';
 import { useAuth } from '../auth/AuthContext';
 import { getParties, canCreateEncounter, saveEncounter, getEncounters, deleteEncounter, subscribeToEncounters } from '../lib/firebaseApi';
 import { Party, Monster, Encounter } from '../lib/types';
+import { useMonsters } from '../hooks/useMonsters';
 
 // Difficultés d'une rencontre
 const ENCOUNTER_DIFFICULTIES = ['easy', 'medium', 'hard', 'deadly'] as const;
@@ -41,7 +42,10 @@ const CustomEncounterGenerator: React.FC = () => {
   const [selectedPartyId, setSelectedPartyId] = useState<string>('');
   const [encounters, setEncounters] = useState<Encounter[]>([]);
   const [canCreate, setCanCreate] = useState(true);
-  
+
+  // Hook de récupérations des monstres (remplace les mocks)
+  const { monsters: allMonsters, loading: loadingMonsters } = useMonsters();
+
   // État pour le formulaire de création de rencontre
   const [encounterName, setEncounterName] = useState('');
   const [monsterList, setMonsterList] = useState<Monster[]>([]);
@@ -49,27 +53,27 @@ const CustomEncounterGenerator: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Monster[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  
+
   // Chargement initial des données
   useEffect(() => {
     if (!isAuthenticated) return;
-    
+
     const loadData = async () => {
       try {
         setIsLoading(true);
-        
+
         // Charger les groupes
         const fetchedParties = await getParties();
         setParties(fetchedParties);
-        
+
         if (fetchedParties.length > 0) {
           setSelectedPartyId(fetchedParties[0].id);
         }
-        
+
         // Vérifier si l'utilisateur peut créer une nouvelle rencontre
         const canCreateNew = await canCreateEncounter();
         setCanCreate(canCreateNew);
-        
+
         // Utiliser l'abonnement aux rencontres pour obtenir les mises à jour en temps réel
         // Les données chargées initialement et également lors des modifications
       } catch (err) {
@@ -79,82 +83,47 @@ const CustomEncounterGenerator: React.FC = () => {
         setIsLoading(false);
       }
     };
-    
+
     loadData();
-    
+
     // S'abonner aux changements dans les rencontres
     const unsubscribe = subscribeToEncounters((fetchedEncounters) => {
       setEncounters(fetchedEncounters);
     });
-    
+
     // Nettoyer l'abonnement lors du démontage du composant
     return () => unsubscribe();
   }, [isAuthenticated]);
-  
+
   // Rechercher des monstres
   const searchMonsters = async () => {
-    if (!searchQuery.trim()) return;
-    
-    try {
-      setIsSearching(true);
-      
-      // Simulation de recherche - à remplacer par une vraie API
-      setTimeout(() => {
-        const mockResults: Monster[] = [
-          {
-            id: uuidv4(),
-            name: 'Gobelin',
-            challengeRating: 0.25,
-            xp: 50,
-            type: 'humanoïde',
-            size: 'petit',
-            source: 'Manuel des Monstres'
-          },
-          {
-            id: uuidv4(),
-            name: 'Troll',
-            challengeRating: 5,
-            xp: 1800,
-            type: 'géant',
-            size: 'grand',
-            source: 'Manuel des Monstres'
-          },
-          {
-            id: uuidv4(),
-            name: 'Dragon rouge',
-            challengeRating: 17,
-            xp: 18000,
-            type: 'dragon',
-            size: 'gigantesque',
-            source: 'Manuel des Monstres'
-          }
-        ];
-        
-        setSearchResults(mockResults);
-        setIsSearching(false);
-      }, 1000);
-    } catch (err) {
-      console.error('Erreur lors de la recherche de monstres:', err);
-      toast({
-        title: "Erreur",
-        description: "Impossible de rechercher des monstres",
-        variant: "destructive"
-      });
-      setIsSearching(false);
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
     }
+
+    setIsSearching(true);
+
+    // Filtrage simple côté client sur la liste complète chargée par le hook
+    const results = allMonsters.filter(m =>
+      m.name.toLowerCase().includes(searchQuery.toLowerCase())
+    ).slice(0, 20); // Limiter à 20 résultats pour la perf
+
+    setSearchResults(results);
+    setIsSearching(false);
   };
-  
+
   // Ajouter un monstre à la rencontre
   const addMonster = (monster: Monster) => {
-    setMonsterList([...monsterList, {...monster, id: uuidv4()}]);
+    setMonsterList([...monsterList, { ...monster, id: uuidv4() }]);
     setSelectedMonster(null);
   };
-  
+
   // Supprimer un monstre de la rencontre
   const removeMonster = (monsterId: string) => {
     setMonsterList(monsterList.filter(m => m.id !== monsterId));
   };
-  
+
   // Sauvegarder la rencontre
   const handleSaveEncounter = async () => {
     if (!selectedPartyId) {
@@ -165,7 +134,7 @@ const CustomEncounterGenerator: React.FC = () => {
       });
       return;
     }
-    
+
     if (!encounterName.trim()) {
       toast({
         title: "Erreur",
@@ -174,7 +143,7 @@ const CustomEncounterGenerator: React.FC = () => {
       });
       return;
     }
-    
+
     if (monsterList.length === 0) {
       toast({
         title: "Erreur",
@@ -183,7 +152,7 @@ const CustomEncounterGenerator: React.FC = () => {
       });
       return;
     }
-    
+
     try {
       // Vérifier si l'utilisateur peut créer une nouvelle rencontre
       if (!(await canCreateEncounter())) {
@@ -194,18 +163,18 @@ const CustomEncounterGenerator: React.FC = () => {
         });
         return;
       }
-      
+
       const selectedParty = parties.find(p => p.id === selectedPartyId);
       if (!selectedParty) return;
-      
+
       // Calculer le niveau moyen du groupe
       const averageLevel = selectedParty.players.length > 0
         ? selectedParty.players.reduce((sum, p) => sum + p.level, 0) / selectedParty.players.length
         : 0;
-      
+
       // Déterminer la difficulté (simplifiée pour l'exemple)
       const difficulty = monsterList.length > 3 ? 'deadly' : monsterList.length > 2 ? 'hard' : monsterList.length > 1 ? 'medium' : 'easy';
-      
+
       const newEncounter: Omit<Encounter, 'id' | 'createdAt' | 'updatedAt'> = {
         name: encounterName,
         monsters: monsterList,
@@ -213,17 +182,17 @@ const CustomEncounterGenerator: React.FC = () => {
         partyId: selectedPartyId,
         partyLevel: averageLevel
       };
-      
+
       const savedEncounter = await saveEncounter(newEncounter);
-      
+
       if (savedEncounter) {
         setEncounters([savedEncounter, ...encounters]);
         setEncounterName('');
         setMonsterList([]);
-        
+
         // Mettre à jour l'état de capacité de création
         setCanCreate(await canCreateEncounter());
-        
+
         toast({
           title: "Succès",
           description: "La rencontre a été sauvegardée avec succès",
@@ -239,22 +208,22 @@ const CustomEncounterGenerator: React.FC = () => {
       });
     }
   };
-  
+
   // Supprimer une rencontre
   const handleDeleteEncounter = async (encounterId: string) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cette rencontre?')) {
       return;
     }
-    
+
     try {
       const success = await deleteEncounter(encounterId);
-      
+
       if (success) {
         setEncounters(encounters.filter(e => e.id !== encounterId));
-        
+
         // Mettre à jour l'état de capacité de création
         setCanCreate(await canCreateEncounter());
-        
+
         toast({
           title: "Succès",
           description: "La rencontre a été supprimée",
@@ -270,7 +239,7 @@ const CustomEncounterGenerator: React.FC = () => {
       });
     }
   };
-  
+
   // Formater le facteur de défi (CR)
   const formatCR = (cr: number): string => {
     if (cr < 1) {
@@ -282,7 +251,7 @@ const CustomEncounterGenerator: React.FC = () => {
     }
     return cr.toString();
   };
-  
+
   // Si l'utilisateur n'est pas authentifié
   if (!isAuthenticated) {
     return (
@@ -308,11 +277,11 @@ const CustomEncounterGenerator: React.FC = () => {
       </Card>
     );
   }
-  
+
   return (
     <div className="space-y-6">
       <UsageStats />
-      
+
       <Tabs defaultValue="generator" className="w-full">
         <TabsList className="w-full justify-start mb-2">
           <TabsTrigger value="generator" className="flex items-center">
@@ -325,7 +294,7 @@ const CustomEncounterGenerator: React.FC = () => {
             <Badge variant="secondary" className="ml-2">{encounters.length}</Badge>
           </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="generator">
           <Card>
             <CardHeader>
@@ -344,7 +313,7 @@ const CustomEncounterGenerator: React.FC = () => {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-              
+
               {isLoading ? (
                 <div className="space-y-4">
                   <Skeleton className="h-10 w-full" />
@@ -388,7 +357,7 @@ const CustomEncounterGenerator: React.FC = () => {
                       </Select>
                     </div>
                   </div>
-                  
+
                   <div className="border rounded-md p-4">
                     <h3 className="text-base font-medium mb-3">Rechercher des monstres</h3>
                     <div className="flex gap-2 mb-4">
@@ -398,7 +367,7 @@ const CustomEncounterGenerator: React.FC = () => {
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="flex-1"
                       />
-                      <Button 
+                      <Button
                         onClick={searchMonsters}
                         disabled={isSearching || !searchQuery.trim()}
                       >
@@ -410,19 +379,19 @@ const CustomEncounterGenerator: React.FC = () => {
                         Rechercher
                       </Button>
                     </div>
-                    
+
                     {searchResults.length > 0 && (
                       <ScrollArea className="h-48 border rounded-md">
                         <div className="p-2">
                           {searchResults.map(monster => (
-                            <div 
-                              key={monster.id} 
+                            <div
+                              key={monster.id}
                               className="flex justify-between items-center p-2 hover:bg-accent rounded-md cursor-pointer"
                               onClick={() => setSelectedMonster(monster)}
                             >
                               <div>
                                 <div className="font-medium">
-                                  <a 
+                                  <a
                                     href={`https://www.aidedd.org/dnd/monstres.php?vf=${getAideDDMonsterSlug(monster.name)}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -436,8 +405,8 @@ const CustomEncounterGenerator: React.FC = () => {
                                   FD {formatCR(monster.challengeRating)} • {monster.size} {monster.type}
                                 </div>
                               </div>
-                              <Button 
-                                size="sm" 
+                              <Button
+                                size="sm"
                                 variant="ghost"
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -452,7 +421,7 @@ const CustomEncounterGenerator: React.FC = () => {
                       </ScrollArea>
                     )}
                   </div>
-                  
+
                   <div>
                     <h3 className="text-base font-medium mb-3">Monstres de la rencontre</h3>
                     {monsterList.length === 0 ? (
@@ -478,7 +447,7 @@ const CustomEncounterGenerator: React.FC = () => {
                           {monsterList.map(monster => (
                             <TableRow key={monster.id}>
                               <TableCell className="font-medium">
-                                <a 
+                                <a
                                   href={`https://www.aidedd.org/dnd/monstres.php?vf=${getAideDDMonsterSlug(monster.name)}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
@@ -491,8 +460,8 @@ const CustomEncounterGenerator: React.FC = () => {
                               <TableCell>{monster.size}</TableCell>
                               <TableCell>{formatCR(monster.challengeRating)}</TableCell>
                               <TableCell className="text-right">
-                                <Button 
-                                  variant="ghost" 
+                                <Button
+                                  variant="ghost"
                                   size="sm"
                                   className="text-red-500 hover:text-red-700"
                                   onClick={() => removeMonster(monster.id)}
@@ -506,9 +475,9 @@ const CustomEncounterGenerator: React.FC = () => {
                       </Table>
                     )}
                   </div>
-                  
+
                   <div className="flex justify-end">
-                    <Button 
+                    <Button
                       onClick={handleSaveEncounter}
                       disabled={!canCreate || monsterList.length === 0 || !encounterName.trim() || !selectedPartyId}
                     >
@@ -516,7 +485,7 @@ const CustomEncounterGenerator: React.FC = () => {
                       Sauvegarder la rencontre
                     </Button>
                   </div>
-                  
+
                   {!canCreate && (
                     <Alert className="mt-4">
                       <AlertCircle className="h-4 w-4 mr-2" />
@@ -530,7 +499,7 @@ const CustomEncounterGenerator: React.FC = () => {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="saved">
           <Card>
             <CardHeader>
@@ -555,7 +524,7 @@ const CustomEncounterGenerator: React.FC = () => {
                   <p className="text-gray-500 mb-4">
                     Vous n'avez pas encore de rencontres sauvegardées
                   </p>
-                  <Button 
+                  <Button
                     variant="default"
                     onClick={() => {
                       const generatorTab = document.querySelector('[data-value="generator"]') as HTMLElement;
@@ -570,12 +539,11 @@ const CustomEncounterGenerator: React.FC = () => {
                 <div className="space-y-4">
                   {encounters.map(encounter => (
                     <Card key={encounter.id} className="overflow-hidden">
-                      <div className={`absolute top-0 left-0 w-1 h-full ${
-                        encounter.difficulty === 'deadly' ? 'bg-red-500' :
-                        encounter.difficulty === 'hard' ? 'bg-orange-500' :
-                        encounter.difficulty === 'medium' ? 'bg-yellow-500' :
-                        'bg-green-500'
-                      }`} />
+                      <div className={`absolute top-0 left-0 w-1 h-full ${encounter.difficulty === 'deadly' ? 'bg-red-500' :
+                          encounter.difficulty === 'hard' ? 'bg-orange-500' :
+                            encounter.difficulty === 'medium' ? 'bg-yellow-500' :
+                              'bg-green-500'
+                        }`} />
                       <CardContent className="p-4">
                         <div className="flex justify-between items-start mb-2">
                           <div>
@@ -583,14 +551,14 @@ const CustomEncounterGenerator: React.FC = () => {
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                               <Badge variant={
                                 encounter.difficulty === 'deadly' ? 'destructive' :
-                                encounter.difficulty === 'hard' ? 'default' :
-                                encounter.difficulty === 'medium' ? 'secondary' :
-                                'outline'
+                                  encounter.difficulty === 'hard' ? 'default' :
+                                    encounter.difficulty === 'medium' ? 'secondary' :
+                                      'outline'
                               }>
                                 {encounter.difficulty === 'deadly' ? 'Mortelle' :
-                                 encounter.difficulty === 'hard' ? 'Difficile' :
-                                 encounter.difficulty === 'medium' ? 'Moyenne' :
-                                 'Facile'}
+                                  encounter.difficulty === 'hard' ? 'Difficile' :
+                                    encounter.difficulty === 'medium' ? 'Moyenne' :
+                                      'Facile'}
                               </Badge>
                               <span>{encounter.monsters.length} monstre(s)</span>
                               <span>•</span>
@@ -599,8 +567,8 @@ const CustomEncounterGenerator: React.FC = () => {
                               </span>
                             </div>
                           </div>
-                          <Button 
-                            variant="ghost" 
+                          <Button
+                            variant="ghost"
                             size="sm"
                             className="text-red-500 hover:text-red-700"
                             onClick={() => handleDeleteEncounter(encounter.id)}
@@ -608,11 +576,11 @@ const CustomEncounterGenerator: React.FC = () => {
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
-                        
+
                         <div className="mt-2 flex flex-wrap gap-1">
                           {encounter.monsters.map(monster => (
                             <Badge key={monster.id} variant="outline" className="text-xs">
-                              <a 
+                              <a
                                 href={`https://www.aidedd.org/dnd/monstres.php?vf=${getAideDDMonsterSlug(monster.name)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"

@@ -39,6 +39,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { db, auth } from '../firebase/firebase';
 import { Party, Player, UserStats, Monster, Encounter, EncounterMonster } from './types';
 import { User } from 'firebase/auth';
+import { EncounterSchema, PartySchema } from './schemas';
 
 // Constants pour les limites des plans
 const FREE_PLAN_LIMITS = {
@@ -213,7 +214,17 @@ export const subscribeToParties = (
         );
 
         // Appeler le callback avec les données mises à jour
-        callback(sortedParties);
+        // Validation Zod
+        const validatedParties = sortedParties.map(p => {
+          const result = PartySchema.safeParse(p);
+          if (!result.success) {
+            console.warn(`[Validation] Groupe ${p.id} invalide:`, result.error.format());
+            return p; // Best effort
+          }
+          return result.data;
+        });
+
+        callback(validatedParties);
       },
       (error) => {
         console.error("Erreur dans onSnapshot (parties):", error);
@@ -561,7 +572,26 @@ export const subscribeToEncounters = (
         console.log("subscribeToEncounters - Rencontres triées:", sortedEncounters.length);
 
         // Appeler le callback avec les données mises à jour
-        callback(sortedEncounters);
+        // Validation Zod pour chaque rencontre
+        const validatedEncounters = sortedEncounters.filter(enc => {
+          const result = EncounterSchema.safeParse(enc);
+          if (!result.success) {
+            console.warn(`[Validation] Rencontre ${enc.id} invalide:`, result.error.format());
+            // Optionnel: On pourrait essayer de réparer ici, mais pour l'instant on garde l'objet
+            // si on veut éviter le crash. Ou on le filtre ?
+            // Le plan disait "Safe Fallback". Comme on a déjà construit l'objet avec des valeurs par défaut
+            // dans le code ci-dessus, il devrait être proche du valide.
+            // Si le schéma a des défauts (z.default), safeParse va retourner un objet corrigé !
+            return true;
+          }
+          return true;
+        }).map(enc => {
+          const result = EncounterSchema.safeParse(enc);
+          if (result.success) return result.data;
+          return enc; // Fallback 'best effort'
+        });
+
+        callback(validatedEncounters);
       },
       (error) => {
         console.error("subscribeToEncounters - Erreur dans onSnapshot:", error);
