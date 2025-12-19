@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -7,65 +6,87 @@
 
 @layer base {
   :root {
-    --background: 43 13% 97%;
-    --foreground: 220 13% 18%;
+    /* Premium "Mystic" Palette - Deep Purple/Gold/Teal */
+    --background: 260 20% 98%;
+    /* Very light lavender/cream tint */
+    --foreground: 260 40% 10%;
+    /* Deep dark purple-black */
 
-    --card: 43 13% 99%;
-    --card-foreground: 220 13% 18%;
+    /* Glass Vars */
+    --glass: 260 30% 98%;
+    --glass-foreground: 260 40% 10%;
+    --glass-border: 260 20% 100%;
 
-    --popover: 43 13% 99%;
-    --popover-foreground: 220 13% 18%;
+    --card: 260 20% 98%;
+    --card-foreground: 260 40% 10%;
 
-    --primary: 348 79% 44%;
-    --primary-foreground: 43 13% 97%;
+    --popover: 260 20% 98%;
+    --popover-foreground: 260 40% 10%;
 
-    --secondary: 45 100% 51%;
-    --secondary-foreground: 220 13% 18%;
+    --primary: 270 70% 50%;
+    /* Mystic Indigo/Purple */
+    --primary-foreground: 260 20% 98%;
+    --primary-glow: 270 80% 70%;
+    /* Lighter purple for glows */
 
-    --muted: 43 13% 94%;
-    --muted-foreground: 220 13% 46%;
+    --secondary: 180 80% 40%;
+    /* Ethereal Teal */
+    --secondary-foreground: 260 20% 98%;
 
-    --accent: 45 100% 51%;
-    --accent-foreground: 220 13% 18%;
+    --muted: 260 10% 90%;
+    --muted-foreground: 260 20% 40%;
+
+    --accent: 45 100% 50%;
+    /* Gold remains for highlights */
+    --accent-foreground: 260 40% 10%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 43 13% 97%;
+    --destructive-foreground: 260 20% 98%;
 
-    --border: 43 13% 91%;
-    --input: 43 13% 91%;
-    --ring: 348 79% 44%;
+    --border: 260 20% 88%;
+    --input: 260 20% 88%;
+    --ring: 270 70% 50%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
   }
 
   .dark {
-    --background: 220 13% 9%;
-    --foreground: 43 13% 97%;
+    --background: 260 40% 5%;
+    /* Deep Void Purple */
+    --foreground: 260 20% 97%;
 
-    --card: 220 13% 11%;
-    --card-foreground: 43 13% 97%;
+    --glass: 260 40% 10%;
+    --glass-foreground: 260 20% 97%;
+    --glass-border: 260 30% 20%;
 
-    --popover: 220 13% 11%;
-    --popover-foreground: 43 13% 97%;
+    --card: 260 40% 8%;
+    --card-foreground: 260 20% 97%;
 
-    --primary: 348 79% 44%;
-    --primary-foreground: 43 13% 97%;
+    --popover: 260 40% 8%;
+    --popover-foreground: 260 20% 97%;
 
-    --secondary: 45 100% 51%;
-    --secondary-foreground: 220 13% 9%;
+    --primary: 270 80% 60%;
+    /* Bright Mystic Purple */
+    --primary-foreground: 260 20% 97%;
+    --primary-glow: 270 90% 50%;
 
-    --muted: 220 13% 15%;
-    --muted-foreground: 43 13% 65%;
+    --secondary: 180 80% 50%;
+    /* Bright Teal */
+    --secondary-foreground: 260 40% 5%;
 
-    --accent: 45 100% 51%;
-    --accent-foreground: 220 13% 9%;
+    --muted: 260 30% 15%;
+    --muted-foreground: 260 20% 65%;
+
+    --accent: 45 100% 50%;
+    /* Gold */
+    --accent-foreground: 260 40% 10%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 43 13% 97%;
 
-    --border: 220 13% 15%;
-    --input: 220 13% 15%;
-    --ring: 348 79% 44%;
+    --border: 260 30% 18%;
+    --input: 260 30% 18%;
+    --ring: 270 80% 60%;
   }
 }
 
@@ -75,7 +96,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-inter;
+    @apply ethereal-bg text-foreground font-inter antialiased;
   }
 
   .font-cinzel {
@@ -88,32 +109,33 @@
 }
 
 @layer components {
-  .parchment-bg {
-    background: linear-gradient(135deg, #fdf6e3 0%, #f7f0e0 100%);
-    position: relative;
+
+  /* Subtle Ethereal Background + Spotlight */
+  .ethereal-bg {
+    background-color: hsl(var(--background));
+    background-image:
+      radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), hsla(45, 100%, 50%, 0.15) 0px, transparent 250px),
+      radial-gradient(at 0% 0%, hsla(350, 80%, 60%, 0.03) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(45, 100%, 50%, 0.05) 0px, transparent 50%);
+    background-attachment: fixed;
   }
 
-  .parchment-bg::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 20% 20%, rgba(196, 30, 58, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(212, 175, 55, 0.03) 0%, transparent 50%);
-    pointer-events: none;
+  /* Glassmorphism Utility */
+  .glass-panel {
+    @apply bg-glass/60 backdrop-blur-md border border-glass-border/30;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
   }
 
-  .card-shadow {
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
+  .glass-card {
+    @apply bg-glass/40 backdrop-blur-sm border border-glass-border/20 transition-all duration-300;
   }
 
-  .hero-gradient {
-    background: linear-gradient(135deg, 
-      hsl(var(--primary)) 0%, 
-      hsl(var(--primary) / 0.8) 50%, 
-      hsl(var(--secondary)) 100%);
+  .glass-card:hover {
+    @apply bg-glass/60 -translate-y-1 shadow-glow border-primary/20;
+  }
+
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -154,6 +176,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -164,6 +187,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

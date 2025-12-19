@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Button } from '../../components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,33 +8,40 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '../../components/ui/dropdown-menu';
-import { Badge } from '../../components/ui/badge';
-import { useAuth } from '../../auth/AuthContext';
-import { 
-  Home, 
-  Users, 
-  Book, 
-  Sword,
-  History, 
-  Settings, 
-  LogOut, 
-  User, 
+} from '@/components/ui/dropdown-menu';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import { useAuth } from '@/auth/AuthContext';
+import {
+  Home,
+  Users,
+  Book,
+  History,
+  User,
   ChevronDown,
   LogIn,
   CreditCard,
-  PenTool
+  PenTool,
+  Scroll,
+  Menu,
+  X
 } from 'lucide-react';
 
 const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  
+  const [isOpen, setIsOpen] = useState(false);
+
   const isActive = (path: string) => {
     return location.pathname === path;
   };
-  
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -43,72 +50,123 @@ const Header: React.FC = () => {
       console.error('Erreur de déconnexion:', error);
     }
   };
-  
+
+  const closeMenu = () => setIsOpen(false);
+
+  const NavItems = () => (
+    <>
+      <Button
+        variant={isActive('/') ? 'default' : 'ghost'}
+        size="sm"
+        asChild
+        onClick={closeMenu}
+        className="w-full justify-start md:w-auto"
+      >
+        <Link to="/" className="flex items-center">
+          <Home className="mr-2 h-4 w-4" /> Accueil
+        </Link>
+      </Button>
+
+      <Button
+        variant={isActive('/parties') ? 'default' : 'ghost'}
+        size="sm"
+        asChild
+        onClick={closeMenu}
+        className="w-full justify-start md:w-auto"
+      >
+        <Link to="/parties" className="flex items-center">
+          <Users className="mr-2 h-4 w-4" /> Groupes
+        </Link>
+      </Button>
+
+      <Button
+        variant={isActive('/monsters') ? 'default' : 'ghost'}
+        size="sm"
+        asChild
+        onClick={closeMenu}
+        className="w-full justify-start md:w-auto"
+      >
+        <Link to="/monsters" className="flex items-center">
+          <Book className="mr-2 h-4 w-4" /> Bestiaire
+        </Link>
+      </Button>
+
+      <Button
+        variant={isActive('/grimoire') ? 'default' : 'ghost'}
+        size="sm"
+        asChild
+        onClick={closeMenu}
+        className="w-full justify-start md:w-auto"
+      >
+        <Link to="/grimoire" className="flex items-center">
+          <Scroll className="mr-2 h-4 w-4" /> Grimoire
+        </Link>
+      </Button>
+
+      <Button
+        variant={isActive('/encounters') || isActive('/custom') ? 'default' : 'ghost'}
+        size="sm"
+        asChild
+        onClick={closeMenu}
+        className="w-full justify-start md:w-auto"
+      >
+        <Link to="/encounters" className="flex items-center">
+          <PenTool className="mr-2 h-4 w-4" /> Rencontres
+        </Link>
+      </Button>
+
+      <Button
+        variant={isActive('/history') ? 'default' : 'ghost'}
+        size="sm"
+        asChild
+        onClick={closeMenu}
+        className="w-full justify-start md:w-auto"
+      >
+        <Link to="/history" className="flex items-center">
+          <History className="mr-2 h-4 w-4" /> Historique
+        </Link>
+      </Button>
+    </>
+  );
+
   return (
-    <header className="bg-white shadow-sm border-b">
-      <div className="container mx-auto px-4 py-3">
+    <header className="glass-panel sticky top-0 z-50 border-b-0">
+      <div className="w-full max-w-[1920px] mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
           {/* Logo et titre */}
           <div className="flex items-center space-x-2">
-            <PenTool className="h-6 w-6 text-primary" />
-            <Link to="/" className="text-xl font-bold font-cinzel">
-              Trame
-            </Link>
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[250px] sm:w-[300px]">
+                <SheetHeader>
+                  <SheetTitle className="text-left flex items-center gap-2 font-cinzel">
+                    <PenTool className="h-5 w-5 text-primary" />
+                    Trame
+                  </SheetTitle>
+                </SheetHeader>
+                <div className="flex flex-col gap-2 mt-6">
+                  <NavItems />
+                </div>
+              </SheetContent>
+            </Sheet>
+
+            <div className="flex items-center gap-2">
+              <PenTool className="h-6 w-6 text-primary hidden md:block" />
+              <Link to="/" className="text-xl font-bold font-cinzel">
+                Trame
+              </Link>
+            </div>
           </div>
-          
-          {/* Navigation principale */}
+
+          {/* Navigation Desktop */}
           <nav className="hidden md:flex items-center space-x-1">
-            <Button 
-              variant={isActive('/') ? 'default' : 'ghost'} 
-              size="sm" 
-              asChild
-            >
-              <Link to="/" className="flex items-center">
-                <Home className="mr-1 h-4 w-4" /> Accueil
-              </Link>
-            </Button>
-            
-            <Button 
-              variant={isActive('/parties') ? 'default' : 'ghost'} 
-              size="sm" 
-              asChild
-            >
-              <Link to="/parties" className="flex items-center">
-                <Users className="mr-1 h-4 w-4" /> Groupes
-              </Link>
-            </Button>
-            
-            <Button 
-              variant={isActive('/monsters') ? 'default' : 'ghost'} 
-              size="sm" 
-              asChild
-            >
-              <Link to="/monsters" className="flex items-center">
-                <Book className="mr-1 h-4 w-4" /> Bestiaire
-              </Link>
-            </Button>
-            
-            <Button 
-              variant={isActive('/encounters') || isActive('/custom') ? 'default' : 'ghost'} 
-              size="sm" 
-              asChild
-            >
-              <Link to="/encounters" className="flex items-center">
-                <PenTool className="mr-1 h-4 w-4" /> Rencontres
-              </Link>
-            </Button>
-            
-            <Button 
-              variant={isActive('/history') ? 'default' : 'ghost'} 
-              size="sm" 
-              asChild
-            >
-              <Link to="/history" className="flex items-center">
-                <History className="mr-1 h-4 w-4" /> Historique
-              </Link>
-            </Button>
+            <NavItems />
           </nav>
-          
+
           {/* Menu utilisateur */}
           <div className="flex items-center space-x-2">
             {user ? (
@@ -116,7 +174,7 @@ const Header: React.FC = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="flex items-center">
                     <User className="mr-1 h-4 w-4" />
-                    <span className="max-w-[100px] truncate">
+                    <span className="max-w-[100px] truncate hidden sm:inline">
                       {user.displayName || user.email?.split('@')[0]}
                     </span>
                     <ChevronDown className="ml-1 h-4 w-4" />
@@ -135,7 +193,7 @@ const Header: React.FC = () => {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout}>
-                    <LogOut className="mr-2 h-4 w-4" />
+                    <X className="mr-2 h-4 w-4" />
                     <span>Déconnexion</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -143,7 +201,7 @@ const Header: React.FC = () => {
             ) : (
               <Button variant="default" size="sm" onClick={() => navigate('/login')} className="flex items-center">
                 <LogIn className="mr-1 h-4 w-4" />
-                Connexion
+                <span className="hidden sm:inline">Connexion</span>
               </Button>
             )}
           </div>
@@ -153,4 +211,4 @@ const Header: React.FC = () => {
   );
 };
 
-export default Header; 
+export default Header;

@@ -9,13 +9,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { toast } from '../hooks/use-toast';
 import { Users, UserPlus, Trash2, Edit, Plus, Sword, AlertCircle, Save } from 'lucide-react';
-import { 
-  getParties, 
-  createParty, 
-  updateParty, 
-  deleteParty, 
-  addPlayerToParty, 
-  updatePlayer, 
+import {
+  getParties,
+  createParty,
+  updateParty,
+  deleteParty,
+  addPlayerToParty,
+  updatePlayer,
   removePlayerFromParty,
   canCreateParty,
   subscribeToParties
@@ -26,7 +26,7 @@ import { useAuth } from '../auth/AuthContext';
 
 // Classes de personnages D&D
 const CHARACTER_CLASSES = [
-  'Barbare', 'Barde', 'Clerc', 'Druide', 'Ensorceleur', 'Guerrier', 
+  'Barbare', 'Barde', 'Clerc', 'Druide', 'Ensorceleur', 'Guerrier',
   'Magicien', 'Moine', 'Occultiste', 'Paladin', 'Rôdeur', 'Roublard'
 ];
 
@@ -54,12 +54,12 @@ const PartyEditor: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [canCreate, setCanCreate] = useState(true);
-  
+
   // État pour le dialogue de création/édition de groupe
   const [isPartyDialogOpen, setIsPartyDialogOpen] = useState(false);
   const [newPartyName, setNewPartyName] = useState('');
   const [isEditingParty, setIsEditingParty] = useState(false);
-  
+
   // État pour le dialogue de création/édition de joueur
   const [isPlayerDialogOpen, setIsPlayerDialogOpen] = useState(false);
   const [newPlayer, setNewPlayer] = useState<Omit<Player, 'id'>>({
@@ -69,11 +69,12 @@ const PartyEditor: React.FC = () => {
     race: '',
     ac: 10,
     maxHp: 10,
-    currentHp: 10
+    currentHp: 10,
+    dndBeyondId: ''
   });
   const [isEditingPlayer, setIsEditingPlayer] = useState(false);
   const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
-  
+
   // État pour l'import D&D Beyond
   const [dndBeyondUrl, setDndBeyondUrl] = useState('');
   const [isImporting, setIsImporting] = useState(false);
@@ -84,36 +85,36 @@ const PartyEditor: React.FC = () => {
       `https://corsproxy.io/?${encodeURIComponent(url)}`,
       `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
     ];
-    
+
     for (const proxyUrl of proxyServices) {
       try {
         console.log('Tentative de scraping HTML depuis:', proxyUrl);
-        
+
         const response = await fetch(proxyUrl);
         if (!response.ok) continue;
-        
+
         const html = await response.text();
-        
+
         // Chercher les données JSON dans le HTML (D&D Beyond stocke souvent les données dans des scripts)
-        const jsonMatch = html.match(/window\.characterData\s*=\s*({.*?});/s) || 
-                         html.match(/data-character\s*=\s*"([^"]*)"/) ||
-                         html.match(/"character":\s*({.*?})/s);
-        
+        const jsonMatch = html.match(/window\.characterData\s*=\s*({.*?});/s) ||
+          html.match(/data-character\s*=\s*"([^"]*)"/) ||
+          html.match(/"character":\s*({.*?})/s);
+
         if (jsonMatch) {
           let jsonStr = jsonMatch[1];
           if (jsonMatch[0].includes('data-character')) {
             jsonStr = jsonMatch[1].replace(/&quot;/g, '"');
           }
-          
+
           const characterData = JSON.parse(jsonStr);
           console.log('Données extraites du HTML:', characterData);
           return characterData;
         }
-        
+
         // Fallback: extraire des informations basiques depuis le HTML
         const nameMatch = html.match(/<h1[^>]*class="[^"]*character-name[^"]*"[^>]*>([^<]+)</i) ||
-                         html.match(/<title>([^-]+)\s*-\s*D&D Beyond</i);
-        
+          html.match(/<title>([^-]+)\s*-\s*D&D Beyond</i);
+
         if (nameMatch) {
           return {
             data: {
@@ -126,13 +127,13 @@ const PartyEditor: React.FC = () => {
             }
           };
         }
-        
+
       } catch (error) {
         console.warn(`Échec du scraping avec ${proxyUrl}:`, error);
         continue;
       }
     }
-    
+
     throw new Error('Impossible d\'extraire les données depuis le HTML');
   };
 
@@ -140,246 +141,164 @@ const PartyEditor: React.FC = () => {
   const importFromDndBeyond = async (url: string) => {
     try {
       setIsImporting(true);
-      
+
       // Vérifier que l'URL est valide
       if (!url.includes('dndbeyond.com/characters/')) {
         throw new Error('URL D&D Beyond invalide. Utilisez une URL du type: https://www.dndbeyond.com/characters/[ID]');
       }
-      
+
       // Extraire l'ID du personnage depuis l'URL
       const characterIdMatch = url.match(/\/characters\/(\d+)/);
       if (!characterIdMatch) {
         throw new Error('Impossible d\'extraire l\'ID du personnage depuis l\'URL');
       }
-      
+
       const characterId = characterIdMatch[1];
       console.log('ID du personnage D&D Beyond:', characterId);
-      
-      // Utiliser l'API JSON de D&D Beyond
-      const apiUrl = `https://character-service.dndbeyond.com/character/v5/character/${characterId}`;
-      
-      // Liste de services proxy à essayer
-      const proxyServices = [
-        `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`,
-        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(apiUrl)}`,
-        `https://cors-anywhere.herokuapp.com/${apiUrl}`,
-        `https://thingproxy.freeboard.io/fetch/${apiUrl}`
-      ];
-      
-      let characterData = null;
-      let lastError = null;
-      
-      // Essayer chaque service proxy
-      for (const proxyUrl of proxyServices) {
-        try {
-          console.log('Tentative de récupération depuis:', proxyUrl);
-          
-          const response = await fetch(proxyUrl, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-            },
-          });
-          
-          if (!response.ok) {
-            throw new Error(`Erreur ${response.status}: ${response.statusText}`);
-          }
-          
-          const responseText = await response.text();
-          console.log('Réponse brute:', responseText.substring(0, 200) + '...');
-          
-          // Essayer de parser la réponse JSON
-          try {
-            characterData = JSON.parse(responseText);
-          } catch (parseError) {
-            // Si c'est un proxy qui retourne un objet avec contents
-            try {
-              const proxyData = JSON.parse(responseText);
-              if (proxyData.contents) {
-                characterData = JSON.parse(proxyData.contents);
-              } else {
-                characterData = proxyData;
-              }
-            } catch (nestedParseError) {
-              throw new Error('Impossible de parser les données JSON');
-            }
-          }
-          
-          // Si on arrive ici, on a réussi à récupérer les données
-          console.log('Données récupérées avec succès depuis:', proxyUrl);
-          break;
-          
-        } catch (error) {
-          console.warn(`Échec avec ${proxyUrl}:`, error);
-          lastError = error;
-          continue;
-        }
+
+      // Utiliser le proxy local configuré dans Vite
+      const apiUrl = `/api/dndbeyond/character/v5/character/${characterId}`;
+
+      console.log('Tentative de récupération depuis le proxy local:', apiUrl);
+
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erreur ${response.status}: ${response.statusText} - Vérifiez que le personnage est PUBLIC sur D&D Beyond.`);
       }
-      
-      // Si aucun proxy n'a fonctionné, essayer le scraping HTML
-      if (!characterData) {
-        console.log('Tous les proxies API ont échoué, tentative de scraping HTML...');
-        
-        try {
-          characterData = await tryHtmlScraping(url);
-        } catch (scrapingError) {
-          console.warn('Échec du scraping HTML:', scrapingError);
-        }
-      }
-      
-      // Si vraiment rien n'a fonctionné
-      if (!characterData) {
-        console.log('Toutes les méthodes ont échoué');
-        
-        // Proposer une saisie manuelle avec des données pré-remplies basées sur l'URL
-        toast({
-          title: "Import automatique impossible",
-          description: "Impossible d'accéder aux données D&D Beyond. Vérifiez que le personnage est public et réessayez plus tard.",
-          variant: "destructive"
-        });
-        
-        // Pré-remplir quelques champs basiques si possible
-        const characterIdStr = characterId;
-        setNewPlayer({
-          name: `Personnage-${characterIdStr}`,
-          level: 1,
-          characterClass: 'Guerrier',
-          race: '',
-          ac: 10,
-          maxHp: 10,
-          currentHp: 10
-        });
-        
-        return;
-      }
-      
-      console.log('Données du personnage D&D Beyond:', characterData);
-      
+
+      const characterData = await response.json();
+      console.log('Données récupérées avec succès');
+
       // Extraire les informations pertinentes
       const character = characterData.data || characterData;
-      
-      // Log détaillé de la structure pour déboguer
-      console.log('Structure du personnage:', {
-        keys: Object.keys(character),
-        armorClass: character.armorClass,
-        stats: character.stats,
-        decorations: character.decorations,
-        modifiers: character.modifiers,
-        bonuses: character.bonuses
-      });
-      
+
       if (!character) {
         throw new Error('Données du personnage non trouvées dans la réponse');
       }
-      
-      // Extraire le nom
+
+      // 1. Extraire le nom
       const name = character.name || 'Personnage';
-      
-      // Extraire la race
+
+      // 2. Extraire la race
       const race = character.race?.fullName || character.race?.baseName || '';
-      
-      // Extraire la classe et le niveau
+
+      // 3. Extraire la classe et le niveau
       let characterClass = 'Guerrier';
       let level = 1;
-      
+
       if (character.classes && character.classes.length > 0) {
         const primaryClass = character.classes[0];
         const englishClassName = primaryClass.definition?.name || 'Fighter';
-        characterClass = CLASS_MAPPING[englishClassName] || 'Guerrier';
+        characterClass = CLASS_MAPPING[englishClassName] || englishClassName;
         level = primaryClass.level || 1;
-      }
-      
-      // Extraire la CA (essayer plusieurs champs possibles)
-      let ac = 10;
-      if (character.armorClass !== undefined) {
-        ac = character.armorClass;
-      } else if (character.stats && character.stats.armorClass !== undefined) {
-        ac = character.stats.armorClass;
-      } else if (character.decorations && character.decorations.armorClass !== undefined) {
-        ac = character.decorations.armorClass;
-      } else if (character.totalAC !== undefined) {
-        ac = character.totalAC;
-      } else if (character.ac !== undefined) {
-        ac = character.ac;
-      } else if (character.modifiers && character.modifiers.armorClass !== undefined) {
-        ac = character.modifiers.armorClass;
-      } else if (character.bonuses && character.bonuses.armorClass !== undefined) {
-        ac = character.bonuses.armorClass;
-      } else if (character.calculatedStats && character.calculatedStats.armorClass !== undefined) {
-        ac = character.calculatedStats.armorClass;
-      } else if (character.finalStats && character.finalStats.armorClass !== undefined) {
-        ac = character.finalStats.armorClass;
-      }
-      
-      // Fallback: chercher dans les objets imbriqués
-      if (ac === 10) {
-        // Parcourir tous les objets pour trouver une propriété AC
-        const searchForAC = (obj: any, path = ''): number | null => {
-          if (!obj || typeof obj !== 'object') return null;
-          
-          for (const [key, value] of Object.entries(obj)) {
-            const currentPath = path ? `${path}.${key}` : key;
-            
-            // Chercher des clés qui pourraient contenir l'AC
-            if ((key.toLowerCase().includes('armor') || key.toLowerCase().includes('ac')) && 
-                typeof value === 'number' && value > 10 && value < 30) {
-              console.log(`AC trouvée dans ${currentPath}:`, value);
-              return value;
-            }
-            
-            // Recherche récursive
-            if (typeof value === 'object' && value !== null) {
-              const found = searchForAC(value, currentPath);
-              if (found !== null) return found;
-            }
-          }
-          return null;
-        };
-        
-        const foundAC = searchForAC(character);
-        if (foundAC !== null) {
-          ac = foundAC;
+
+        // Ajouter les niveaux des autres classes si multiclassage
+        for (let i = 1; i < character.classes.length; i++) {
+          level += character.classes[i].level || 0;
         }
       }
-      
-      console.log('AC extraite:', ac, 'depuis character:', {
-        armorClass: character.armorClass,
-        'stats.armorClass': character.stats?.armorClass,
-        'decorations.armorClass': character.decorations?.armorClass,
-        totalAC: character.totalAC,
-        ac: character.ac
-      });
-      
-      // Extraire les PV (essayer plusieurs champs possibles)
+
+      // 4. Extraire les caractéristiques (Base + Bonus + Modificateurs)
+      const stats = character.stats || [];
+      const bonusStats = character.bonusStats || [];
+      const overrideStats = character.overrideStats || [];
+
+      // Ordre D&D Beyond: STR(0), DEX(1), CON(2), INT(3), WIS(4), CHA(5)
+      const getStatValue = (index: number) => {
+        // Vérifier si une valeur de surcharge existe
+        if (overrideStats[index] && overrideStats[index].value) {
+          return overrideStats[index].value;
+        }
+
+        // Sinon: Base + Bonus
+        const base = (stats[index]?.value || 10);
+        const bonus = (bonusStats[index]?.value || 0);
+        return base + bonus;
+      };
+
+      const str = getStatValue(0);
+      const dex = getStatValue(1);
+      const con = getStatValue(2);
+      const int = getStatValue(3);
+      const wis = getStatValue(4);
+      const cha = getStatValue(5);
+
+      // 5. Extraire les PV
       let maxHp = 10;
       let currentHp = 10;
-      
-      if (character.baseHitPoints !== undefined) {
-        maxHp = character.baseHitPoints + (character.bonusHitPoints || 0);
+
+      if (character.baseHitPoints) {
+        // Calcul un peu plus complexe pour les PV réels (Base + CON mod * Level + autres bonus)
+        // Pour simplifier, on prend ce qui est fourni ou une estimation
+        const conMod = Math.floor((con - 10) / 2);
+        maxHp = (character.baseHitPoints || 10) + (character.bonusHitPoints || 0) + (conMod * level);
+
+        // Vérifier si une surcharge de PV existe
+        if (character.overrideHitPoints) {
+          maxHp = character.overrideHitPoints;
+        }
+
         currentHp = maxHp - (character.removedHitPoints || 0);
-      } else if (character.hitPoints !== undefined) {
+      }
+      // Fallback sur d'autres champs si le calcul standard échoue
+      else if (character.hitPoints) {
         maxHp = character.hitPoints;
         currentHp = character.currentHitPoints || maxHp;
-      } else if (character.stats && character.stats.hitPoints !== undefined) {
-        maxHp = character.stats.hitPoints;
-        currentHp = character.stats.currentHitPoints || maxHp;
-      } else if (character.hp !== undefined) {
-        maxHp = character.hp;
-        currentHp = character.currentHp || maxHp;
       }
-      
-      console.log('PV extraits:', { maxHp, currentHp }, 'depuis character:', {
-        baseHitPoints: character.baseHitPoints,
-        bonusHitPoints: character.bonusHitPoints,
-        removedHitPoints: character.removedHitPoints,
-        hitPoints: character.hitPoints,
-        currentHitPoints: character.currentHitPoints,
-        'stats.hitPoints': character.stats?.hitPoints,
-        hp: character.hp,
-        currentHp: character.currentHp
-      });
-      
+
+      // 6. Extraire la CA
+      // D&D Beyond fournit souvent la CA calculée dans des champs différents selon l'équipement
+      // On essaie de trouver le meilleur candidat
+      let ac = 10;
+
+      // Logique simplifiée : chercher la meilleure CA disponible
+      // Idéalement, il faudrait recalculer à partir de l'équipement, mais c'est complexe
+      // On cherche souvent une propriété "armorClass" explicite si disponible
+      if (character.overrideStats && character.overrideStats[0]?.name === "Armor Class") {
+        ac = character.overrideStats[0].value;
+      } else {
+        // Estimation basique: 10 + Dex Mod
+        const dexMod = Math.floor((dex - 10) / 2);
+        ac = 10 + dexMod;
+      }
+
+      // 7. Extraire la vitesse
+      const speedList: string[] = [];
+      if (character.race?.weightSpeeds?.normal?.walk) {
+        speedList.push(`${character.race.weightSpeeds.normal.walk} ft`);
+      }
+
+      // 8. Extraire l'initiative
+      // Dex Mod + Bonus éventuels (Alert feat, etc.)
+      const dexMod = Math.floor((dex - 10) / 2);
+      let initiative = dexMod;
+
+      // Vérifier les bonus d'initiative
+      if (character.modifiers?.race) {
+        character.modifiers.race.forEach((mod: any) => {
+          if (mod.subType === "initiative") initiative += mod.value;
+        });
+      }
+      if (character.modifiers?.class) {
+        character.modifiers.class.forEach((mod: any) => {
+          if (mod.subType === "initiative") initiative += mod.value;
+        });
+      }
+      if (character.modifiers?.feat) {
+        character.modifiers.feat.forEach((mod: any) => {
+          if (mod.subType === "initiative") initiative += mod.value;
+        });
+      }
+
+      console.log('Stats extraites:', { str, dex, con, int, wis, cha, ac, maxHp });
+
       // Mettre à jour le formulaire avec les données extraites
       setNewPlayer({
         name: name,
@@ -388,23 +307,33 @@ const PartyEditor: React.FC = () => {
         race: race,
         ac: ac,
         maxHp: maxHp,
-        currentHp: currentHp
+        currentHp: currentHp,
+        // Nouveaux champs
+        str: str,
+        dex: dex,
+        con: con,
+        int: int,
+        wis: wis,
+        cha: cha,
+        speed: speedList,
+        initiative: initiative,
+        dndBeyondId: characterId
       });
-      
+
       toast({
         title: "Import réussi !",
-        description: `Les données de ${name} ont été importées depuis D&D Beyond. AC: ${ac}, PV: ${maxHp}/${currentHp}`,
+        description: `Importé: ${name} (Niv ${level} ${characterClass}) - STR:${str} DEX:${dex}`,
         variant: "default"
       });
-      
+
       // Effacer l'URL après l'import
       setDndBeyondUrl('');
-      
+
     } catch (error) {
       console.error('Erreur lors de l\'import D&D Beyond:', error);
       toast({
         title: "Erreur d'import",
-        description: error instanceof Error ? error.message : "Impossible d'importer les données depuis D&D Beyond. Vérifiez que le personnage est public.",
+        description: error instanceof Error ? error.message : "Impossible d'importer les données. Vérifiez l'URL.",
         variant: "destructive"
       });
     } finally {
@@ -415,26 +344,33 @@ const PartyEditor: React.FC = () => {
   // Chargement initial des données
   useEffect(() => {
     if (!isAuthenticated) return;
-    
+
     const loadParties = async () => {
       try {
         setIsLoading(true);
-        
+
         // Vérifier si l'utilisateur peut créer un nouveau groupe
         const canCreateNewParty = await canCreateParty();
         setCanCreate(canCreateNewParty);
-        
+
         // Utiliser l'abonnement aux parties au lieu de getParties
-        const unsubscribe = subscribeToParties((fetchedParties) => {
-          setParties(fetchedParties);
-          setIsLoading(false);
-          
-          // Sélectionner le premier groupe par défaut s'il y en a
-          if (fetchedParties.length > 0 && !selectedParty) {
-            setSelectedParty(fetchedParties[0]);
+        const unsubscribe = subscribeToParties(
+          (fetchedParties) => {
+            setParties(fetchedParties);
+            setIsLoading(false);
+
+            // Sélectionner le premier groupe par défaut s'il y en a
+            if (fetchedParties.length > 0 && !selectedParty) {
+              setSelectedParty(fetchedParties[0]);
+            }
+          },
+          (err) => {
+            console.error('Erreur de souscription aux parties:', err);
+            setError('Erreur de connexion à la base de données');
+            setIsLoading(false);
           }
-        });
-        
+        );
+
         // Nettoyer l'abonnement quand le composant est démonté
         return () => unsubscribe();
       } catch (err) {
@@ -467,7 +403,7 @@ const PartyEditor: React.FC = () => {
           title: "Succès",
           description: `Le groupe "${newPartyName}" a été créé`
         });
-        
+
         // Mettre à jour l'état de capacité de création
         setCanCreate(await canCreateParty());
       }
@@ -497,7 +433,7 @@ const PartyEditor: React.FC = () => {
     try {
       const updatedParty = await updateParty(selectedParty.id, { name: newPartyName });
       if (updatedParty) {
-        setParties(parties.map(party => 
+        setParties(parties.map(party =>
           party.id === updatedParty.id ? updatedParty : party
         ));
         setSelectedParty(updatedParty);
@@ -530,15 +466,15 @@ const PartyEditor: React.FC = () => {
       if (success) {
         const updatedParties = parties.filter(party => party.id !== partyId);
         setParties(updatedParties);
-        
+
         // Si le groupe supprimé était sélectionné, sélectionner le premier groupe restant
         if (selectedParty && selectedParty.id === partyId) {
           setSelectedParty(updatedParties.length > 0 ? updatedParties[0] : null);
         }
-        
+
         // Mettre à jour l'état de capacité de création
         setCanCreate(await canCreateParty());
-        
+
         toast({
           title: "Succès",
           description: "Le groupe a été supprimé"
@@ -556,7 +492,7 @@ const PartyEditor: React.FC = () => {
   // Gestion de l'ajout d'un joueur
   const handleAddPlayer = async () => {
     if (!selectedParty) return;
-    
+
     if (!newPlayer.name.trim()) {
       toast({
         title: "Erreur",
@@ -574,12 +510,12 @@ const PartyEditor: React.FC = () => {
           ...selectedParty,
           players: [...selectedParty.players, addedPlayer]
         };
-        
+
         setSelectedParty(updatedParty);
-        setParties(parties.map(party => 
+        setParties(parties.map(party =>
           party.id === updatedParty.id ? updatedParty : party
         ));
-        
+
         toast({
           title: "Succès",
           description: `${newPlayer.name} a été ajouté au groupe`
@@ -607,7 +543,7 @@ const PartyEditor: React.FC = () => {
   // Gestion de la mise à jour d'un joueur
   const handleUpdatePlayer = async () => {
     if (!selectedParty || !editingPlayerId) return;
-    
+
     if (!newPlayer.name.trim()) {
       toast({
         title: "Erreur",
@@ -621,20 +557,20 @@ const PartyEditor: React.FC = () => {
       const updatedPlayer = await updatePlayer(selectedParty.id, editingPlayerId, newPlayer);
       if (updatedPlayer) {
         // Mettre à jour le groupe sélectionné avec le joueur modifié
-        const updatedPlayers = selectedParty.players.map(player => 
+        const updatedPlayers = selectedParty.players.map(player =>
           player.id === editingPlayerId ? updatedPlayer : player
         );
-        
+
         const updatedParty = {
           ...selectedParty,
           players: updatedPlayers
         };
-        
+
         setSelectedParty(updatedParty);
-        setParties(parties.map(party => 
+        setParties(parties.map(party =>
           party.id === updatedParty.id ? updatedParty : party
         ));
-        
+
         toast({
           title: "Succès",
           description: `${updatedPlayer.name} a été mis à jour`
@@ -664,7 +600,7 @@ const PartyEditor: React.FC = () => {
   // Gestion de la suppression d'un joueur
   const handleRemovePlayer = async (playerId: string) => {
     if (!selectedParty) return;
-    
+
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce personnage?')) {
       return;
     }
@@ -677,12 +613,12 @@ const PartyEditor: React.FC = () => {
           ...selectedParty,
           players: selectedParty.players.filter(player => player.id !== playerId)
         };
-        
+
         setSelectedParty(updatedParty);
-        setParties(parties.map(party => 
+        setParties(parties.map(party =>
           party.id === updatedParty.id ? updatedParty : party
         ));
-        
+
         toast({
           title: "Succès",
           description: "Le personnage a été supprimé du groupe"
@@ -705,7 +641,8 @@ const PartyEditor: React.FC = () => {
       characterClass: player.characterClass,
       ac: player.ac,
       maxHp: player.maxHp,
-      currentHp: player.currentHp
+      currentHp: player.currentHp,
+      dndBeyondId: player.dndBeyondId || ''
     });
     setEditingPlayerId(player.id);
     setIsEditingPlayer(true);
@@ -757,7 +694,7 @@ const PartyEditor: React.FC = () => {
   return (
     <div className="space-y-6">
       <UsageStats />
-      
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
@@ -775,7 +712,7 @@ const PartyEditor: React.FC = () => {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          
+
           {isLoading ? (
             <div className="flex justify-center py-10">
               <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
@@ -797,12 +734,12 @@ const PartyEditor: React.FC = () => {
                     </span>
                   </Button>
                 ))}
-                
+
                 <Dialog open={isPartyDialogOpen} onOpenChange={setIsPartyDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      className="border-dashed" 
+                    <Button
+                      variant="outline"
+                      className="border-dashed"
                       disabled={!canCreate}
                       onClick={() => {
                         if (canCreate) {
@@ -828,8 +765,8 @@ const PartyEditor: React.FC = () => {
                         {isEditingParty ? "Modifier le groupe" : "Créer un nouveau groupe"}
                       </DialogTitle>
                       <DialogDescription>
-                        {isEditingParty 
-                          ? "Modifiez le nom de votre groupe d'aventuriers" 
+                        {isEditingParty
+                          ? "Modifiez le nom de votre groupe d'aventuriers"
                           : "Donnez un nom à votre nouveau groupe d'aventuriers"}
                       </DialogDescription>
                     </DialogHeader>
@@ -845,8 +782,8 @@ const PartyEditor: React.FC = () => {
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         onClick={() => {
                           setIsPartyDialogOpen(false);
                           setNewPartyName('');
@@ -855,7 +792,7 @@ const PartyEditor: React.FC = () => {
                       >
                         Annuler
                       </Button>
-                      <Button 
+                      <Button
                         onClick={isEditingParty ? handleUpdateParty : handleCreateParty}
                       >
                         {isEditingParty ? "Enregistrer" : "Créer"}
@@ -864,7 +801,7 @@ const PartyEditor: React.FC = () => {
                   </DialogContent>
                 </Dialog>
               </div>
-              
+
               {selectedParty ? (
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
@@ -877,16 +814,16 @@ const PartyEditor: React.FC = () => {
                       </h3>
                     </div>
                     <div className="flex space-x-2">
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         onClick={openEditPartyDialog}
                       >
                         <Edit className="h-4 w-4 mr-1" />
                         Renommer
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         className="text-red-500 hover:text-red-700"
                         onClick={() => handleDeleteParty(selectedParty.id)}
@@ -896,15 +833,15 @@ const PartyEditor: React.FC = () => {
                       </Button>
                     </div>
                   </div>
-                  
+
                   <Card>
                     <CardHeader className="p-4 pb-2">
                       <div className="flex justify-between items-center">
                         <CardTitle className="text-base">Personnages</CardTitle>
-                        
+
                         <Dialog open={isPlayerDialogOpen} onOpenChange={setIsPlayerDialogOpen}>
                           <DialogTrigger asChild>
-                            <Button 
+                            <Button
                               size="sm"
                               onClick={() => {
                                 setIsEditingPlayer(false);
@@ -930,8 +867,8 @@ const PartyEditor: React.FC = () => {
                                 {isEditingPlayer ? "Modifier le personnage" : "Ajouter un personnage"}
                               </DialogTitle>
                               <DialogDescription>
-                                {isEditingPlayer 
-                                  ? "Modifiez les détails de ce personnage" 
+                                {isEditingPlayer
+                                  ? "Modifiez les détails de ce personnage"
                                   : "Ajoutez un nouveau personnage à votre groupe"}
                               </DialogDescription>
                             </DialogHeader>
@@ -986,24 +923,41 @@ const PartyEditor: React.FC = () => {
                                   </p>
                                 </div>
                               )}
-                              
+
                               <div className="space-y-2">
                                 <Label htmlFor="playerName">Nom du personnage</Label>
                                 <Input
                                   id="playerName"
                                   placeholder="Bruenor Battlehammer"
                                   value={newPlayer.name}
-                                  onChange={(e) => setNewPlayer({...newPlayer, name: e.target.value})}
+                                  onChange={(e) => setNewPlayer({ ...newPlayer, name: e.target.value })}
                                 />
                               </div>
-                              
+
                               <div className="space-y-2">
                                 <Label htmlFor="playerRace">Race</Label>
                                 <Input
                                   id="playerRace"
                                   placeholder="Nain des montagnes"
                                   value={newPlayer.race || ''}
-                                  onChange={(e) => setNewPlayer({...newPlayer, race: e.target.value})}
+                                  onChange={(e) => setNewPlayer({ ...newPlayer, race: e.target.value })}
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label htmlFor="dndBeyondId">ID D&D Beyond (Optionnel)</Label>
+                                <div className="text-xs text-muted-foreground mb-1">
+                                  ID du personnage pour la synchronisation (ex: 123456)
+                                </div>
+                                <Input
+                                  id="dndBeyondId"
+                                  placeholder="ex: 123456"
+                                  value={newPlayer.dndBeyondId || ''}
+                                  onChange={(e) => {
+                                    // Garder uniquement les chiffres
+                                    const val = e.target.value.replace(/[^0-9]/g, '');
+                                    setNewPlayer({ ...newPlayer, dndBeyondId: val });
+                                  }}
                                 />
                               </div>
                               <div className="grid grid-cols-2 gap-4">
@@ -1011,7 +965,7 @@ const PartyEditor: React.FC = () => {
                                   <Label htmlFor="playerClass">Classe</Label>
                                   <Select
                                     value={newPlayer.characterClass}
-                                    onValueChange={(value) => setNewPlayer({...newPlayer, characterClass: value})}
+                                    onValueChange={(value) => setNewPlayer({ ...newPlayer, characterClass: value })}
                                   >
                                     <SelectTrigger id="playerClass">
                                       <SelectValue placeholder="Choisir une classe" />
@@ -1029,13 +983,13 @@ const PartyEditor: React.FC = () => {
                                   <Label htmlFor="playerLevel">Niveau</Label>
                                   <Select
                                     value={newPlayer.level.toString()}
-                                    onValueChange={(value) => setNewPlayer({...newPlayer, level: parseInt(value)})}
+                                    onValueChange={(value) => setNewPlayer({ ...newPlayer, level: parseInt(value) })}
                                   >
                                     <SelectTrigger id="playerLevel">
                                       <SelectValue placeholder="Niveau" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                      {Array.from({length: 20}, (_, i) => i + 1).map(level => (
+                                      {Array.from({ length: 20 }, (_, i) => i + 1).map(level => (
                                         <SelectItem key={level} value={level.toString()}>
                                           {level}
                                         </SelectItem>
@@ -1044,7 +998,7 @@ const PartyEditor: React.FC = () => {
                                   </Select>
                                 </div>
                               </div>
-                              
+
                               <div className="grid grid-cols-3 gap-4">
                                 <div className="space-y-2">
                                   <Label htmlFor="playerAC">Classe d'Armure (CA)</Label>
@@ -1054,7 +1008,7 @@ const PartyEditor: React.FC = () => {
                                     min="0"
                                     placeholder="10"
                                     value={newPlayer.ac || 10}
-                                    onChange={(e) => setNewPlayer({...newPlayer, ac: parseInt(e.target.value) || 10})}
+                                    onChange={(e) => setNewPlayer({ ...newPlayer, ac: parseInt(e.target.value) || 10 })}
                                   />
                                 </div>
                                 <div className="space-y-2">
@@ -1068,10 +1022,10 @@ const PartyEditor: React.FC = () => {
                                     onChange={(e) => {
                                       const maxHp = parseInt(e.target.value) || 10;
                                       // Ajuster le PV actuel si nécessaire
-                                      const currentHp = newPlayer.currentHp && newPlayer.currentHp > maxHp 
-                                        ? maxHp 
+                                      const currentHp = newPlayer.currentHp && newPlayer.currentHp > maxHp
+                                        ? maxHp
                                         : newPlayer.currentHp || maxHp;
-                                      setNewPlayer({...newPlayer, maxHp, currentHp});
+                                      setNewPlayer({ ...newPlayer, maxHp, currentHp });
                                     }}
                                   />
                                 </div>
@@ -1088,15 +1042,17 @@ const PartyEditor: React.FC = () => {
                                       const currentHp = parseInt(e.target.value) || 0;
                                       // S'assurer que le PV actuel ne dépasse pas le maximum
                                       const validCurrentHp = Math.min(currentHp, newPlayer.maxHp || 10);
-                                      setNewPlayer({...newPlayer, currentHp: validCurrentHp});
+                                      setNewPlayer({ ...newPlayer, currentHp: validCurrentHp });
                                     }}
                                   />
                                 </div>
                               </div>
                             </div>
+
+
                             <DialogFooter>
-                              <Button 
-                                variant="outline" 
+                              <Button
+                                variant="outline"
                                 onClick={() => {
                                   setIsPlayerDialogOpen(false);
                                   setNewPlayer({
@@ -1115,7 +1071,7 @@ const PartyEditor: React.FC = () => {
                               >
                                 Annuler
                               </Button>
-                              <Button 
+                              <Button
                                 onClick={isEditingPlayer ? handleUpdatePlayer : handleAddPlayer}
                               >
                                 <Save className="h-4 w-4 mr-2" />
@@ -1171,27 +1127,34 @@ const PartyEditor: React.FC = () => {
                           <TableBody>
                             {selectedParty.players.map(player => (
                               <TableRow key={player.id}>
-                                <TableCell className="font-medium">{player.name}</TableCell>
+                                <TableCell className="font-medium">
+                                  {player.name}
+                                  {player.dndBeyondId && (
+                                    <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-100 text-red-800 border border-red-200">
+                                      Sync
+                                    </span>
+                                  )}
+                                </TableCell>
                                 <TableCell>{player.race || '-'}</TableCell>
                                 <TableCell>{player.characterClass}</TableCell>
                                 <TableCell>{player.level}</TableCell>
                                 <TableCell>{player.ac || '-'}</TableCell>
                                 <TableCell>
-                                  {player.currentHp !== undefined && player.maxHp !== undefined 
+                                  {player.currentHp !== undefined && player.maxHp !== undefined
                                     ? `${player.currentHp}/${player.maxHp}`
                                     : '-'}
                                 </TableCell>
                                 <TableCell className="text-right">
                                   <div className="flex justify-end space-x-1">
-                                    <Button 
-                                      variant="ghost" 
+                                    <Button
+                                      variant="ghost"
                                       size="sm"
                                       onClick={() => openEditPlayerDialog(player)}
                                     >
                                       <Edit className="h-4 w-4" />
                                     </Button>
-                                    <Button 
-                                      variant="ghost" 
+                                    <Button
+                                      variant="ghost"
                                       size="sm"
                                       className="text-red-500 hover:text-red-700"
                                       onClick={() => handleRemovePlayer(player.id)}
@@ -1219,7 +1182,7 @@ const PartyEditor: React.FC = () => {
                 <div className="flex flex-col items-center justify-center py-10 text-center">
                   <Users className="h-16 w-16 text-gray-300 mb-4" />
                   <p className="text-gray-500 mb-4">Vous n'avez pas encore de groupe d'aventuriers</p>
-                  <Button 
+                  <Button
                     variant="default"
                     onClick={() => {
                       if (canCreate) {
@@ -1245,7 +1208,7 @@ const PartyEditor: React.FC = () => {
           )}
         </CardContent>
       </Card>
-    </div>
+    </div >
   );
 };
 

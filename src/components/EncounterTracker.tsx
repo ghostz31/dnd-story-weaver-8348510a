@@ -1,17 +1,24 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Sword, Shield, Heart, SkipForward, RefreshCw, Skull, Plus, Minus, Pencil, Square, RotateCcw, Calendar, User, Dice4, Save, Zap, Droplets, Eye, EyeOff, Smile, Users, Link, Snowflake, Clock, Ghost, Anchor, ArrowDown, Brain, Footprints, ShieldX, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Sword, Shield, Heart, SkipForward, RefreshCw, Skull, Plus, Minus, Pencil, Square, RotateCcw, Calendar, User, Dice4, Save, Zap, Droplets, Eye, EyeOff, Smile, Users, Link, Snowflake, Clock, Ghost, Anchor, ArrowDown, Brain, Footprints, ShieldX, ChevronLeft, ChevronRight, Scroll } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { toast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import SpellBrowser from './SpellBrowser';
+import FloatingGrimoireBubble from './FloatingGrimoireBubble';
 import { Player } from '../lib/types';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { MonsterCard } from './MonsterCard';
 import { adaptMonsterDataFormat } from '@/lib/monsterAdapter';
+import ActiveCombatantDisplay from './ActiveCombatantDisplay';
+import { useDnDBeyondLive } from '@/hooks/useDnDBeyondLive';
+
 
 import {
   getMonsterFromAideDD,
@@ -22,7 +29,7 @@ import {
 } from '@/lib/api';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { v4 as uuid } from 'uuid';
-import { updateFirestoreEncounter } from '../lib/firebaseApi';
+import { updateFirestoreEncounter, updatePlayer } from '../lib/firebaseApi';
 import { useToast } from '../hooks/use-toast';
 import { useAuth } from '../auth/AuthContext';
 import { getDoc, doc } from 'firebase/firestore';
@@ -93,7 +100,7 @@ const getConditionInfo = (conditionName: string) => {
     'Ralenti': { icon: Clock, color: 'text-blue-500 border-blue-500' },
     'Hâté': { icon: Zap, color: 'text-green-500 border-green-500' }
   };
-  
+
   return conditionMap[conditionName as keyof typeof conditionMap] || { icon: Square, color: 'text-gray-500 border-gray-500' };
 };
 
@@ -149,13 +156,14 @@ const EncounterTracker: React.FC = () => {
   console.log("=== CHARGEMENT DU COMPOSANT ENCOUNTERTRACKER ===");
   console.log("EncounterTracker: Composant monté");
   console.log("EncounterTracker: URL actuelle:", window.location.href);
-  
+
   // État de la rencontre
   const [encounter, setEncounter] = useState<{
     name: string;
     participants: EncounterParticipant[];
     currentTurn: number;
     round: number;
+    party?: { id: string; name: string };
   }>({
     name: 'Rencontre',
     participants: [],
@@ -189,11 +197,11 @@ const EncounterTracker: React.FC = () => {
     currentHp: 0,
     maxHp: 0
   });
-  
+
   // État pour l'édition rapide des PV
   const [hpModifierValue, setHpModifierValue] = useState<number>(1);
   const [showHpModifier, setShowHpModifier] = useState<string | null>(null);
-  
+
   // État pour le dialogue d'édition de l'initiative
   const [initiativeDialogOpen, setInitiativeDialogOpen] = useState(false);
   const [editingInitiative, setEditingInitiative] = useState<{
@@ -219,22 +227,22 @@ const EncounterTracker: React.FC = () => {
     name: '',
     notes: ''
   });
-  
+
   // État pour stocker le dictionnaire de correspondance des noms
   const [monsterNameMap, setMonsterNameMap] = useState<MonsterNameMapping>({});
-  
+
   // État pour stocker les mappings d'URL
   const [urlMap, setUrlMap] = useState<UrlMapping>({});
-  
+
   // États pour gérer les détails des monstres
   const [monsterDetails, setMonsterDetails] = useState<Record<string, any>>({});
   const [loadingDetails, setLoadingDetails] = useState<boolean>(false);
   const [currentMonsterDetails, setCurrentMonsterDetails] = useState<any>(null);
-  
+
   // État pour l'iframe des créatures
   const [selectedCreatureUrl, setSelectedCreatureUrl] = useState<string | null>(null);
   const [showCreatureFrame, setShowCreatureFrame] = useState<boolean>(false);
-  
+
   // État pour le mode édition rapide d'initiative
   const [quickInitiativeMode, setQuickInitiativeMode] = useState<boolean>(false);
   const [isLoadingEncounter, setIsLoadingEncounter] = useState(false);
@@ -242,6 +250,12 @@ const EncounterTracker: React.FC = () => {
 
   // Ajouter une référence pour suivre si un chargement est déjà en cours
   const loadingRef = useRef<boolean>(false);
+
+  // État pour le participant sélectionné manuellement (click-to-select)
+  const [selectedParticipantId, setSelectedParticipantId] = useState<string | null>(null);
+
+  // État pour le grimoire
+  const [grimoireOpen, setGrimoireOpen] = useState(false);
 
   // Hooks pour la navigation et les paramètres
   const navigate = useNavigate();
@@ -268,7 +282,7 @@ const EncounterTracker: React.FC = () => {
   const getStatusBadge = (participant: EncounterParticipant) => {
     const numericMaxHp = extractNumericHP(participant.maxHp);
     const hpPercentage = (participant.currentHp / numericMaxHp) * 100;
-    
+
     if (participant.currentHp <= 0) {
       return <Badge className="bg-gray-500">Mort</Badge>;
     } else if (hpPercentage <= 25) {
@@ -295,19 +309,19 @@ const EncounterTracker: React.FC = () => {
     console.log("Paramètres:", params);
     console.log("Utilisateur authentifié:", isAuthenticated);
     console.log("User:", user);
-    
+
     // Ajout d'un délai pour s'assurer que sessionStorage est chargé
     const timeoutId = setTimeout(() => {
       const searchParams = new URLSearchParams(window.location.search);
       const source = searchParams.get('source');
-      
+
       try {
         // Cas 1: Données stockées dans sessionStorage
         if (source === 'session') {
           console.log("Chargement des données depuis sessionStorage");
           const sessionData = sessionStorage.getItem('current_encounter');
           console.log("Données brutes sessionStorage:", sessionData);
-          
+
           if (!sessionData) {
             console.error("Aucune donnée trouvée dans sessionStorage");
             toast({
@@ -317,38 +331,38 @@ const EncounterTracker: React.FC = () => {
             });
             return;
           }
-          
+
           try {
             const parsedData = JSON.parse(sessionData);
             console.log("Données chargées depuis sessionStorage:", parsedData);
-            
+
             // Si les données contiennent déjà des participants initialisés, les utiliser directement
             if (parsedData.participants && Array.isArray(parsedData.participants) && parsedData.participants.length > 0) {
               console.log("Utilisation des participants déjà initialisés:", parsedData.participants);
-              
+
               setEncounter({
                 name: parsedData.name || "Rencontre",
                 participants: parsedData.participants,
                 currentTurn: parsedData.currentTurn || 0,
                 round: parsedData.round || 1
               });
-              
+
               // Charger automatiquement les vraies données des monstres dès le début
               setTimeout(async () => {
                 const monsterParticipants = parsedData.participants.filter((p: any) => !p.isPC);
                 console.log(`Chargement des vraies données pour ${monsterParticipants.length} monstres`);
-                
+
                 for (const participant of monsterParticipants) {
                   await loadRealMonsterData(participant.id);
                 }
               }, 100); // Réduire le délai pour un chargement plus rapide
-              
+
               toast({
                 title: "Rencontre chargée",
                 description: `${parsedData.name} a été chargée avec succès`,
                 variant: "default"
               });
-              
+
               return;
             }
           } catch (jsonError) {
@@ -360,7 +374,7 @@ const EncounterTracker: React.FC = () => {
             });
             return;
           }
-        } 
+        }
         // Cas 2: ID de rencontre dans les paramètres de l'URL
         else if (params.encounterId) {
           console.log("Chargement depuis l'ID de la rencontre:", params.encounterId);
@@ -368,7 +382,7 @@ const EncounterTracker: React.FC = () => {
           loadSavedEncounter();
           return;
         }
-        
+
       } catch (error) {
         console.error("Erreur lors du chargement des données:", error);
         toast({
@@ -381,7 +395,7 @@ const EncounterTracker: React.FC = () => {
 
     // Nettoyer le timeout si le composant est démonté
     return () => clearTimeout(timeoutId);
-  }, [params.encounterId, encounter.participants.length, toast]);
+  }, [params.encounterId]);
 
   // Charger le dictionnaire de correspondance
   useEffect(() => {
@@ -394,7 +408,7 @@ const EncounterTracker: React.FC = () => {
       .catch(error => {
         console.error("Erreur lors du chargement du dictionnaire de noms:", error);
       });
-      
+
     // Charger les mappings d'URL depuis le fichier de noms de monstres
     fetch('/data/aidedd-monster-names.txt')
       .then(response => response.text())
@@ -402,7 +416,7 @@ const EncounterTracker: React.FC = () => {
         // Convertir chaque ligne en un mapping de nom à URL
         const lines = data.split('\n').filter(line => line.trim() !== '');
         const mappings: UrlMapping = {};
-        
+
         lines.forEach(slug => {
           // Convertir le slug en nom lisible
           const readableName = slug
@@ -413,10 +427,10 @@ const EncounterTracker: React.FC = () => {
             .replace(/([Gg])eant(e?)/g, '$1éant$2')
             .replace(/([Ee])lementaire/g, '$1lémentaire')
             .replace(/([Ee])veille/g, '$1veillé');
-          
+
           // Créer le mapping dans les deux sens
           mappings[readableName] = slug;
-          
+
           // Ajouter aussi des versions sans accents
           const unaccentedName = readableName
             .normalize('NFD')
@@ -425,7 +439,7 @@ const EncounterTracker: React.FC = () => {
             mappings[unaccentedName] = slug;
           }
         });
-        
+
         setUrlMap(mappings);
       })
       .catch(error => {
@@ -436,16 +450,16 @@ const EncounterTracker: React.FC = () => {
   // Charger automatiquement les données des monstres dès qu'ils sont ajoutés
   useEffect(() => {
     const monsterParticipants = encounter.participants.filter(p => !p.isPC);
-    
+
     if (monsterParticipants.length > 0) {
       // Vérifier si certains monstres ont encore les valeurs par défaut
-      const monstersWithDefaultValues = monsterParticipants.filter(p => 
+      const monstersWithDefaultValues = monsterParticipants.filter(p =>
         p.maxHp === 10 && p.ac === 10
       );
-      
+
       if (monstersWithDefaultValues.length > 0) {
         console.log(`Chargement automatique des données pour ${monstersWithDefaultValues.length} monstres`);
-        
+
         // Charger les données avec un petit délai pour éviter les appels simultanés
         setTimeout(async () => {
           for (const participant of monstersWithDefaultValues) {
@@ -529,6 +543,22 @@ const EncounterTracker: React.FC = () => {
     }));
   };
 
+  // Activer la synchro D&D Beyond Live
+  useDnDBeyondLive({
+    participants: encounter.participants,
+    onUpdateHp: (id, currentHp, maxHp) => {
+      setEncounter(prev => ({
+        ...prev,
+        participants: prev.participants.map(p =>
+          p.id === id ? { ...p, currentHp, maxHp } : p
+        )
+      }));
+    },
+    enabled: true // Toujours activé si des IDs sont présents
+  });
+
+  // Ouvrir l'éditeur de points de vie
+
   // Ouvrir l'éditeur de points de vie
   const openHpEditor = (participant: EncounterParticipant) => {
     setEditingParticipant({
@@ -549,15 +579,15 @@ const EncounterTracker: React.FC = () => {
           // S'assurer que les valeurs sont valides (permettre le dépassement des PV max)
           const newMaxHp = Math.max(1, editingParticipant.maxHp);
           const newCurrentHp = Math.max(0, editingParticipant.currentHp); // Pas de limite max
-          
+
           return { ...p, currentHp: newCurrentHp, maxHp: newMaxHp };
         }
         return p;
       })
     }));
-    
+
     setHpEditorOpen(false);
-    
+
     toast({
       title: "Points de vie modifiés",
       description: "Les points de vie ont été mis à jour."
@@ -568,19 +598,19 @@ const EncounterTracker: React.FC = () => {
   const saveInitiativeChanges = () => {
     setEncounter(prev => ({
       ...prev,
-      participants: prev.participants.map(p => 
-        p.id === editingInitiative.id 
-          ? { 
-              ...p, 
-              initiative: editingInitiative.initiative,
-              initiativeModifier: editingInitiative.modifier
-            }
+      participants: prev.participants.map(p =>
+        p.id === editingInitiative.id
+          ? {
+            ...p,
+            initiative: editingInitiative.initiative,
+            initiativeModifier: editingInitiative.modifier
+          }
           : p
       ).sort((a, b) => b.initiative - a.initiative) // Re-trier par initiative
     }));
-    
+
     setInitiativeDialogOpen(false);
-    
+
     toast({
       title: "Initiative mise à jour",
       description: `${editingInitiative.name} : Initiative ${editingInitiative.initiative} (modificateur ${editingInitiative.modifier >= 0 ? '+' : ''}${editingInitiative.modifier})`,
@@ -599,27 +629,67 @@ const EncounterTracker: React.FC = () => {
     setInitiativeDialogOpen(true);
   };
 
+  // Lier un ID D&D Beyond à un participant existant
+  const handleLinkDndBeyond = (id: string, url: string) => {
+    try {
+      const idMatch = url.match(/\/characters\/(\d+)/);
+      if (!idMatch) {
+        toast({
+          title: "URL invalide",
+          description: "Format attendu: https://www.dndbeyond.com/characters/123456",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const dndBeyondId = idMatch[1];
+
+      setEncounter(prev => ({
+        ...prev,
+        participants: prev.participants.map(p =>
+          p.id === id ? { ...p, dndBeyondId } : p
+        )
+      }));
+
+      // Sauvegarder de manière persistante si c'est un joueur d'un groupe
+      if (id.startsWith('pc-') && encounter.party) {
+        const realPlayerId = id.replace('pc-', '');
+        updatePlayer(encounter.party.id, realPlayerId, { dndBeyondId })
+          .then(() => console.log("Lien D&D Beyond sauvegardé pour le futur"))
+          .catch(err => console.error("Erreur sauvegarde lien D&D Beyond", err));
+      }
+
+      toast({
+        title: "Lien établi et sauvegardé",
+        description: "La synchronisation est active et mémorisée pour le futur."
+      });
+
+    } catch (e) {
+      console.error("Erreur de lien D&D Beyond", e);
+    }
+  };
+
   // Fonction pour déplacer un participant dans l'ordre d'initiative
   const moveParticipant = (participantId: string, direction: 'up' | 'down') => {
     setEncounter(prev => {
       const participants = [...prev.participants];
       const currentIndex = participants.findIndex(p => p.id === participantId);
-      
+
       if (currentIndex === -1) return prev;
-      
+
       const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-      
+
       if (newIndex < 0 || newIndex >= participants.length) return prev;
-      
+
       // Échanger les participants
       [participants[currentIndex], participants[newIndex]] = [participants[newIndex], participants[currentIndex]];
-      
+
       return {
         ...prev,
         participants
       };
     });
-    
+
     toast({
       title: "Ordre d'initiative modifié",
       description: `L'ordre d'initiative a été ajusté.`,
@@ -640,17 +710,17 @@ const EncounterTracker: React.FC = () => {
         // Charger depuis Firestore avec la bonne référence de collection
         const docRef = doc(db, 'users', user.uid, 'encounters', params.encounterId);
         const docSnap = await getDoc(docRef);
-        
+
         if (docSnap.exists()) {
           const encounterData = docSnap.data() as EncounterType;
-          
+
           // Si la rencontre n'a pas de participants initialisés, les créer à partir des données
           let participants = encounterData.participants || [];
-          
+
           // Si pas de participants mais qu'il y a des monstres et un groupe, les initialiser
           if (participants.length === 0 && encounterData.monsters && encounterData.party) {
             console.log("Initialisation des participants à partir des données de rencontre");
-            
+
             // Participants pour les joueurs
             const playerParticipants = (encounterData.party.players || []).map(player => {
               const maxHp = player.maxHp || 10;
@@ -663,12 +733,22 @@ const EncounterTracker: React.FC = () => {
                 maxHp: maxHp,
                 isPC: true,
                 conditions: [],
-                notes: `${player.characterClass} niveau ${player.level}`
+                notes: `${player.characterClass} niveau ${player.level}`,
+                // Mapping des stats étendues
+                str: player.str,
+                dex: player.dex,
+                con: player.con,
+                int: player.int,
+                wis: player.wis,
+                cha: player.cha,
+                speed: player.speed,
+                initiativeModifier: player.initiative, // Bonus d'initiative spécifique
+                dndBeyondId: player.dndBeyondId
               };
             });
-            
+
             // Participants pour les monstres
-            const monsterParticipants = encounterData.monsters.flatMap(({ monster, quantity }) => 
+            const monsterParticipants = encounterData.monsters.flatMap(({ monster, quantity }) =>
               Array.from({ length: quantity }, (_, index) => {
                 const maxHp = monster.hp || 10;
                 return {
@@ -687,19 +767,19 @@ const EncounterTracker: React.FC = () => {
                 };
               })
             );
-            
+
             participants = [...playerParticipants, ...monsterParticipants];
           }
-          
+
           // Convertir les données de Firestore au format EncounterTracker
           setEncounter({
             name: encounterData.name,
             participants: participants,
             currentTurn: encounterData.currentTurn || 0,
             round: encounterData.round || 1,
-            
+
           });
-          
+
           toast({
             title: "Rencontre chargée",
             description: `Rencontre "${encounterData.name}" chargée avec succès.`,
@@ -711,25 +791,25 @@ const EncounterTracker: React.FC = () => {
       } else {
         // Charger depuis localStorage - essayer d'abord avec la clé spécifique
         let encounterData = null;
-        
+
         // Essayer la clé spécifique d'abord
         const specificEncounter = localStorage.getItem(`encounter_${params.encounterId}`);
         if (specificEncounter) {
           encounterData = JSON.parse(specificEncounter);
         } else {
           // Sinon chercher dans la liste générale
-        const savedEncounters = JSON.parse(localStorage.getItem('dnd_encounters') || '[]');
+          const savedEncounters = JSON.parse(localStorage.getItem('dnd_encounters') || '[]');
           encounterData = savedEncounters.find((e: any) => e.id === params.encounterId);
         }
-        
+
         if (encounterData) {
           // Si la rencontre n'a pas de participants initialisés, les créer à partir des données
           let participants = encounterData.participants || [];
-          
+
           // Si pas de participants mais qu'il y a des monstres et un groupe, les initialiser
           if (participants.length === 0 && encounterData.monsters && encounterData.party) {
             console.log("Initialisation des participants à partir des données de rencontre (localStorage)");
-            
+
             // Participants pour les joueurs
             const playerParticipants = (encounterData.party.players || []).map(player => {
               const maxHp = player.maxHp || 10;
@@ -742,12 +822,22 @@ const EncounterTracker: React.FC = () => {
                 maxHp: maxHp,
                 isPC: true,
                 conditions: [],
-                notes: `${player.characterClass} niveau ${player.level}`
+                notes: `${player.characterClass} niveau ${player.level}`,
+                // Mapping des stats étendues
+                str: player.str,
+                dex: player.dex,
+                con: player.con,
+                int: player.int,
+                wis: player.wis,
+                cha: player.cha,
+                speed: player.speed,
+                initiativeModifier: player.initiative, // Bonus d'initiative spécifique
+                dndBeyondId: player.dndBeyondId
               };
             });
-            
+
             // Participants pour les monstres
-            const monsterParticipants = encounterData.monsters.flatMap(({ monster, quantity }) => 
+            const monsterParticipants = encounterData.monsters.flatMap(({ monster, quantity }) =>
               Array.from({ length: quantity }, (_, index) => {
                 const maxHp = monster.hp || 10;
                 return {
@@ -766,18 +856,18 @@ const EncounterTracker: React.FC = () => {
                 };
               })
             );
-            
+
             participants = [...playerParticipants, ...monsterParticipants];
           }
-          
+
           setEncounter({
             name: encounterData.name,
             participants: participants,
             currentTurn: encounterData.currentTurn || 0,
             round: encounterData.round || 1,
-            
+
           });
-          
+
           toast({
             title: "Rencontre chargée",
             description: `Rencontre "${encounterData.name}" chargée avec succès.`,
@@ -813,15 +903,15 @@ const EncounterTracker: React.FC = () => {
   const saveNotesChanges = () => {
     setEncounter(prev => ({
       ...prev,
-      participants: prev.participants.map(p => 
-        p.id === editingNotes.id 
+      participants: prev.participants.map(p =>
+        p.id === editingNotes.id
           ? { ...p, notes: editingNotes.notes }
           : p
       )
     }));
-    
+
     setNotesDialogOpen(false);
-    
+
     toast({
       title: "Notes mises à jour",
       description: `Notes de ${editingNotes.name} mises à jour.`,
@@ -864,7 +954,7 @@ const EncounterTracker: React.FC = () => {
 
       // Utiliser l'ID de la rencontre au lieu du nom
       await updateFirestoreEncounter(params.encounterId, encounterData);
-      
+
       toast({
         title: "Rencontre sauvegardée",
         description: "L'état de la rencontre a été sauvegardé avec succès.",
@@ -907,17 +997,17 @@ const EncounterTracker: React.FC = () => {
       // Valeur par défaut : 6 cases (9 mètres)
       return 6;
     }
-    
+
     // Essayer de trouver la vitesse de base dans le format "X m" ou "X ft"
     const speedText = participant.speed[0];
     const speedMatch = speedText.match(/(\d+)\s*(?:m|ft)/);
-    
+
     if (speedMatch && speedMatch[1]) {
       const speedInMeters = parseInt(speedMatch[1], 10);
       // Convertir en cases (arrondir au plus proche)
       return Math.round(speedInMeters / 1.5);
     }
-    
+
     // Si aucune information, retourner une valeur par défaut
     return 6;
   };
@@ -942,7 +1032,7 @@ const EncounterTracker: React.FC = () => {
         return p;
       })
     }));
-    
+
     toast({
       title: `${actionType === 'action' ? 'Action' : actionType === 'bonusAction' ? 'Action bonus' : 'Réaction'} utilisée`,
       description: `${encounter.participants.find(p => p.id === participantId)?.name} a utilisé son ${actionType === 'action' ? 'action' : actionType === 'bonusAction' ? 'action bonus' : 'réaction'} pour ce tour.`
@@ -970,14 +1060,14 @@ const EncounterTracker: React.FC = () => {
 
     try {
       console.log(`Chargement des vraies données pour ${participant.name}`);
-      
+
       // Charger les données complètes du monstre depuis AideDD
       const monsterDetails = await findMonsterDetails(participant.name, false);
-      
+
       if (monsterDetails && monsterDetails.hp) {
         // Extraire la valeur numérique des PV depuis la chaîne "51 (6d10 + 18)"
         let realMaxHp = 10; // Valeur par défaut
-        
+
         if (typeof monsterDetails.hp === 'string') {
           // Chercher le premier nombre dans la chaîne (avant la parenthèse)
           const hpMatch = monsterDetails.hp.match(/^(\d+)/);
@@ -987,9 +1077,9 @@ const EncounterTracker: React.FC = () => {
         } else if (typeof monsterDetails.hp === 'number') {
           realMaxHp = monsterDetails.hp;
         }
-        
+
         console.log(`PV réels trouvés pour ${participant.name}: ${realMaxHp} (source: ${monsterDetails.hp})`);
-        
+
         // Extraire la CA numérique aussi
         let realAC = participant.ac;
         if (monsterDetails.ac) {
@@ -1002,7 +1092,7 @@ const EncounterTracker: React.FC = () => {
             realAC = monsterDetails.ac;
           }
         }
-        
+
         // Mettre à jour le participant avec les vraies données
         setEncounter(prev => ({
           ...prev,
@@ -1037,21 +1127,21 @@ const EncounterTracker: React.FC = () => {
     try {
       console.log("Chargement des vraies données de tous les monstres...");
       const monsterParticipants = encounter.participants.filter(p => !p.isPC);
-      
+
       if (monsterParticipants.length === 0) {
         console.log("Aucun monstre à charger");
         return;
       }
-      
+
       // Charger les données de tous les monstres en parallèle
-      const loadPromises = monsterParticipants.map(participant => 
+      const loadPromises = monsterParticipants.map(participant =>
         loadRealMonsterData(participant.id)
       );
-      
+
       await Promise.all(loadPromises);
-      
+
       console.log(`Données chargées pour ${monsterParticipants.length} monstres`);
-      
+
       toast({
         title: "Données des monstres chargées",
         description: `${monsterParticipants.length} monstres ont été mis à jour avec leurs vraies valeurs.`
@@ -1073,10 +1163,10 @@ const EncounterTracker: React.FC = () => {
       if (encounter.participants.every(p => p.initiative === 0)) {
         await rollInitiativeForAll();
       }
-      
+
       // Charger les vraies données des monstres
       await loadAllMonsterData();
-      
+
       // Initialiser les actions pour tous les participants
       setEncounter(prev => ({
         ...prev,
@@ -1088,7 +1178,7 @@ const EncounterTracker: React.FC = () => {
           remainingMovement: calculateMovementSpeed(p)
         }))
       }));
-      
+
       toast({
         title: "Combat initialisé",
         description: "Le combat a été initialisé avec les vraies données des monstres."
@@ -1121,7 +1211,7 @@ const EncounterTracker: React.FC = () => {
         remainingMovement: calculateMovementSpeed(p)
       }))
     }));
-    
+
     // Fermer l'iframe lors du reset
     setShowCreatureFrame(false);
     setSelectedCreatureUrl(null);
@@ -1144,7 +1234,7 @@ const EncounterTracker: React.FC = () => {
           const hasCondition = p.conditions.includes(condition);
           return {
             ...p,
-            conditions: hasCondition 
+            conditions: hasCondition
               ? p.conditions.filter(c => c !== condition)
               : [...p.conditions, condition]
           };
@@ -1174,39 +1264,39 @@ const EncounterTracker: React.FC = () => {
     const updatedParticipants = encounter.participants.map(participant => {
       // Calculer le modificateur d'initiative
       const dexMod = participant.dex ? Math.floor((participant.dex - 10) / 2) : 0;
-      const initiativeModifier = participant.isPC 
-        ? estimateDexModifier(participant) 
+      const initiativeModifier = participant.isPC
+        ? estimateDexModifier(participant)
         : dexMod;
-      
+
       // Lancer le dé d'initiative
       const diceRoll = Math.floor(Math.random() * 20) + 1;
       const newInitiative = diceRoll + initiativeModifier;
-      
+
       return {
         ...participant,
         initiative: newInitiative,
         initiativeModifier
       };
     });
-    
+
     // Trier les participants par initiative (du plus haut au plus bas)
     const sortedParticipants = [...updatedParticipants].sort((a, b) => {
       // Priorité à l'initiative la plus élevée
       if (b.initiative !== a.initiative) return b.initiative - a.initiative;
-      
+
       // En cas d'égalité, priorité au modificateur de DEX le plus élevé
       const aDexMod = a.dex ? Math.floor((a.dex - 10) / 2) : 0;
       const bDexMod = b.dex ? Math.floor((b.dex - 10) / 2) : 0;
-      
+
       return bDexMod - aDexMod;
     });
-    
+
     setEncounter(prev => ({
       ...prev,
       participants: sortedParticipants,
       currentTurn: 0 // Réinitialiser le tour au début
     }));
-    
+
     toast({
       title: "Initiative lancée pour tous",
       description: `${updatedParticipants.length} participants ont lancé l'initiative et ont été triés`
@@ -1219,12 +1309,12 @@ const EncounterTracker: React.FC = () => {
       // Pour les monstres, utiliser le modificateur de DEX réel
       return participant.dex ? Math.floor((participant.dex - 10) / 2) : 0;
     }
-    
+
     // Pour les PJs, utiliser le modificateur explicite s'il existe
     if (participant.initiativeModifier !== undefined) {
       return participant.initiativeModifier;
     }
-    
+
     // Estimer le modificateur de DEX basé sur la classe
     const classModifiers: Record<string, number> = {
       'Barbare': 0,
@@ -1240,11 +1330,11 @@ const EncounterTracker: React.FC = () => {
       'Roublard': 3,
       'Sorcier': 1
     };
-    
+
     // Extraire la classe du champ notes
     const classMatch = participant.notes.match(/(\w+) niveau/);
     const characterClass = classMatch ? classMatch[1] : '';
-    
+
     return classModifiers[characterClass] || 0;
   };
 
@@ -1254,13 +1344,13 @@ const EncounterTracker: React.FC = () => {
     if (urlMap[name]) {
       return urlMap[name]; // Retourne directement le slug sans encodage
     }
-    
+
     // 2. Essayer avec le nom corrigé des accents
     const nameWithCorrectAccents = getAideDDMonsterName(name);
     if (urlMap[nameWithCorrectAccents]) {
       return urlMap[nameWithCorrectAccents]; // Retourne directement le slug sans encodage
     }
-    
+
     // 3. Cas spéciaux connus pour la correction manuelle
     const specialCases: Record<string, string> = {
       'Dragon d\'ombre rouge jeune': 'dragon-d-ombre-rouge-jeune',
@@ -1272,33 +1362,33 @@ const EncounterTracker: React.FC = () => {
       'Arbre éveillé': 'arbre-eveille',
       'Balor': 'balor'
     };
-    
+
     const normalizedName = name.trim();
     if (specialCases[normalizedName]) {
       return specialCases[normalizedName];
     }
-    
+
     // 4. Si tout échoue, convertir manuellement en slug
     // IMPORTANT: Ne pas utiliser encodeURIComponent, car le site attend un format avec tirets
     let slug = name.toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, ''); // Enlever les accents
-    
+
     // Correction spéciale pour les apostrophes: 'd'ombre' devient 'd-ombre'
     slug = slug.replace(/'(\w)/g, '-$1');
-    
+
     // Traitement spécial pour les apostrophes
     slug = slug.replace(/([a-z])\'([a-z])/g, '$1-$2');
-    
+
     // Remplacer les espaces par des tirets
     slug = slug.replace(/ /g, '-');
-    
+
     // Supprimer les caractères non alphanumériques (sauf les tirets)
     slug = slug.replace(/[^a-z0-9-]/g, '');
-    
+
     // Éviter les tirets consécutifs
     slug = slug.replace(/-+/g, '-');
-    
+
     return slug;
   };
 
@@ -1308,7 +1398,7 @@ const EncounterTracker: React.FC = () => {
     if (monsterNameMap[name]) {
       return monsterNameMap[name];
     }
-    
+
     // Règles spécifiques pour les cas non couverts par le dictionnaire
     const nameWithCorrectAccents = name
       .replace(/([Gg])eant(e?)/g, '$1éant$2')
@@ -1317,7 +1407,7 @@ const EncounterTracker: React.FC = () => {
       .replace(/([Ee])lan/g, '$1lan')
       .replace(/([Ee])pee/g, '$1pée')
       .replace(/([Ee])pouvantail/g, '$1pouvantail');
-    
+
     return nameWithCorrectAccents;
   };
 
@@ -1327,18 +1417,18 @@ const EncounterTracker: React.FC = () => {
       console.error("Nom de monstre manquant");
       return null;
     }
-    
+
     try {
       console.log(`Recherche du monstre: ${name}`);
-      
+
       // Essayer d'obtenir le monstre depuis AideDD
       const aideddMonster = await getMonsterFromAideDD(name, forceRefresh);
-      
+
       if (aideddMonster) {
         console.log("Monstre trouvé dans AideDD:", aideddMonster);
         return aideddMonster;
       }
-      
+
       // Si le monstre n'est pas trouvé sur AideDD, retourner null
       console.warn(`Monstre non trouvé: ${name}`);
       return null;
@@ -1390,27 +1480,27 @@ const EncounterTracker: React.FC = () => {
   const loadMonsterOnDemand = async (participantId: string): Promise<void> => {
     const participant = encounter.participants.find(p => p.id === participantId);
     if (!participant || participant.isPC) return;
-      
+
     try {
       // Indiquer que nous sommes en train de charger les données
       setLoadingDetails(true);
       setCurrentMonsterDetails(null); // Réinitialiser les détails actuels pour montrer le chargement
-      
+
       console.log(`Chargement des détails pour: ${participant.name}`);
-      
+
       // Rechercher les détails du monstre
       const monsterName = participant.name;
       console.log(`Recherche des détails pour: ${monsterName}`);
-      
+
       // Force un nouveau chargement
       const monsterDetails = await findMonsterDetails(monsterName, true);
-          
+
       if (monsterDetails) {
         console.log(`Détails trouvés pour ${monsterName}:`, monsterDetails);
-        
+
         // Mettre à jour l'état avec les détails du monstre
         setCurrentMonsterDetails(monsterDetails);
-        
+
         // Mettre à jour le participant avec les nouvelles informations (AC, HP, etc.)
         setEncounter(prev => ({
           ...prev,
@@ -1436,7 +1526,7 @@ const EncounterTracker: React.FC = () => {
             return p;
           })
         }));
-        
+
         toast({
           title: "Succès",
           description: `Informations de ${monsterName} mises à jour`,
@@ -1444,11 +1534,11 @@ const EncounterTracker: React.FC = () => {
         });
       } else {
         console.warn(`Aucun détail trouvé pour ${monsterName}`);
-        
+
         // Créer un monstre générique si aucun détail n'est trouvé
         const genericMonster = createGenericMonster(monsterName);
         setCurrentMonsterDetails(genericMonster);
-        
+
         toast({
           title: "Information",
           description: `Aucune information trouvée pour ${monsterName}`,
@@ -1475,10 +1565,10 @@ const EncounterTracker: React.FC = () => {
 
     const monsterSlug = getAideDDMonsterSlug(participant.name);
     const creatureUrl = `https://www.aidedd.org/dnd/monstres.php?vf=${monsterSlug}`;
-    
+
     setSelectedCreatureUrl(creatureUrl);
     setShowCreatureFrame(true);
-    
+
     // Charger aussi les détails pour la carte locale
     loadMonsterOnDemand(participantId);
   };
@@ -1486,11 +1576,11 @@ const EncounterTracker: React.FC = () => {
   // Modifier la fonction nextTurn pour réinitialiser les actions
   const nextTurn = () => {
     if (sortedParticipants.length === 0) return;
-    
+
     // Trouver le prochain participant actif (ignorer les morts)
     let nextParticipantIndex = encounter.currentTurn;
     let newRound = encounter.round;
-    
+
     // Initialiser le combat si on est au premier tour (sans recharger les données des monstres)
     if (encounter.round === 1 && encounter.currentTurn === 0) {
       // Juste initialiser les actions, les données des monstres sont déjà chargées
@@ -1505,18 +1595,18 @@ const EncounterTracker: React.FC = () => {
         }))
       }));
     }
-    
+
     // Parcourir les participants jusqu'à trouver un participant vivant
     let participantsChecked = 0;
     do {
       nextParticipantIndex = (nextParticipantIndex + 1) % sortedParticipants.length;
       participantsChecked++;
-      
+
       // Si on a fait le tour complet sans trouver de participant vivant, incrémenter le tour
       if (nextParticipantIndex === 0) {
         newRound++;
       }
-      
+
       // Éviter une boucle infinie si tous les participants sont morts
       if (participantsChecked > sortedParticipants.length) {
         toast({
@@ -1527,18 +1617,21 @@ const EncounterTracker: React.FC = () => {
         return;
       }
     } while (sortedParticipants[nextParticipantIndex].currentHp <= 0);
-    
+
     // Réinitialiser les actions du nouveau participant actif
     const nextParticipantId = sortedParticipants[nextParticipantIndex].id;
     resetActionsForParticipant(nextParticipantId);
-    
+
+    // Réinitialiser la sélection manuelle quand on change de tour
+    setSelectedParticipantId(null);
+
     // Mettre à jour l'état
     setEncounter(prev => ({
       ...prev,
       currentTurn: nextParticipantIndex,
       round: newRound
     }));
-    
+
     // Charger automatiquement l'iframe et les détails du monstre actif s'il n'est pas un PJ
     const activeParticipant = sortedParticipants[nextParticipantIndex];
     if (!activeParticipant.isPC) {
@@ -1553,39 +1646,42 @@ const EncounterTracker: React.FC = () => {
   // Fonction pour aller au tour précédent
   const previousTurn = () => {
     if (sortedParticipants.length === 0) return;
-    
+
     // Trouver le participant précédent actif (ignorer les morts)
     let prevParticipantIndex = encounter.currentTurn;
     let newRound = encounter.round;
-    
+
     // Parcourir les participants jusqu'à trouver un participant vivant
     let participantsChecked = 0;
     do {
       prevParticipantIndex = prevParticipantIndex === 0 ? sortedParticipants.length - 1 : prevParticipantIndex - 1;
       participantsChecked++;
-      
+
       // Si on revient au dernier participant, décrémenter le tour (si on n'est pas déjà au tour 1)
       if (prevParticipantIndex === sortedParticipants.length - 1 && newRound > 1) {
         newRound--;
       }
-      
+
       // Éviter une boucle infinie si tous les participants sont morts
       if (participantsChecked > sortedParticipants.length) {
         return;
       }
     } while (sortedParticipants[prevParticipantIndex].currentHp <= 0);
-    
+
     // Réinitialiser les actions du participant précédent
     const prevParticipantId = sortedParticipants[prevParticipantIndex].id;
     resetActionsForParticipant(prevParticipantId);
-    
+
+    // Réinitialiser la sélection manuelle quand on change de tour
+    setSelectedParticipantId(null);
+
     // Mettre à jour l'état
     setEncounter(prev => ({
       ...prev,
       currentTurn: prevParticipantIndex,
       round: newRound
     }));
-    
+
     // Charger automatiquement l'iframe et les détails du monstre actif s'il n'est pas un PJ
     const activeParticipant = sortedParticipants[prevParticipantIndex];
     if (!activeParticipant.isPC) {
@@ -1616,13 +1712,13 @@ const EncounterTracker: React.FC = () => {
                 {monster.size} {monster.type}, {monster.alignment}
               </p>
             </div>
-            <Badge 
+            <Badge
               className={`
-                ${monster.cr <= 1 ? 'bg-green-100 text-green-800' : 
-                monster.cr <= 5 ? 'bg-yellow-100 text-yellow-800' : 
-                monster.cr <= 10 ? 'bg-orange-100 text-orange-800' : 
-                monster.cr <= 15 ? 'bg-red-100 text-red-800' : 
-                'bg-purple-100 text-purple-800'}
+                ${monster.cr <= 1 ? 'bg-green-100 text-green-800' :
+                  monster.cr <= 5 ? 'bg-yellow-100 text-yellow-800' :
+                    monster.cr <= 10 ? 'bg-orange-100 text-orange-800' :
+                      monster.cr <= 15 ? 'bg-red-100 text-red-800' :
+                        'bg-purple-100 text-purple-800'}
               `}
             >
               FP {monster.cr}
@@ -1726,7 +1822,7 @@ const EncounterTracker: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-1 py-1">
+    <div className="w-full px-4 max-w-[1920px] mx-auto py-2">
       <div className="flex justify-between items-center mb-2">
         <div>
           <h1 className="text-2xl font-bold">
@@ -1741,44 +1837,44 @@ const EncounterTracker: React.FC = () => {
             {encounter.participants.filter(p => p.isPC).length} personnages, {encounter.participants.filter(p => !p.isPC).length} monstres
           </p>
         </div>
-        
+
         <div className="flex gap-2">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             onClick={rollInitiativeForAll}
           >
             <Dice4 className="h-4 w-4 mr-1" />
             Lancer l'initiative
           </Button>
-          
+
           {encounter.participants.length > 0 && (
             <>
-          <Button 
+              <Button
                 variant="outline"
-            size="sm"
+                size="sm"
                 onClick={previousTurn}
                 disabled={encounter.participants.length === 0}
               >
                 <ChevronLeft className="h-4 w-4 mr-1" />
                 Tour précédent
-          </Button>
-          
-            <Button 
+              </Button>
+
+              <Button
                 variant="default"
-              size="sm"
+                size="sm"
                 onClick={nextTurn}
                 disabled={encounter.participants.length === 0}
-            >
+              >
                 <ChevronRight className="h-4 w-4 mr-1" />
-              Tour suivant
-            </Button>
+                Tour suivant
+              </Button>
             </>
           )}
-          
+
           {isAuthenticated && params.encounterId && (
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={saveCurrentEncounterState}
               disabled={isSaving}
@@ -1787,9 +1883,9 @@ const EncounterTracker: React.FC = () => {
               {isSaving ? "Sauvegarde..." : "Sauvegarder"}
             </Button>
           )}
-          
-          <Button 
-            variant="outline" 
+
+          <Button
+            variant="outline"
             size="sm"
             onClick={resetEncounter}
           >
@@ -1798,7 +1894,7 @@ const EncounterTracker: React.FC = () => {
           </Button>
         </div>
       </div>
-      
+
       {/* Résumé du tour actuel */}
       {encounter.participants.length > 0 && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2">
@@ -1808,13 +1904,13 @@ const EncounterTracker: React.FC = () => {
                 Tour de {sortedParticipants[encounter.currentTurn]?.name || "?"}
               </h2>
               <p className="text-sm text-blue-700">
-                {sortedParticipants[encounter.currentTurn]?.isPC ? "Personnage joueur" : "Monstre"} • 
-                Initiative: {sortedParticipants[encounter.currentTurn]?.initiative || "?"} • 
-                CA: {sortedParticipants[encounter.currentTurn]?.ac || "?"} • 
+                {sortedParticipants[encounter.currentTurn]?.isPC ? "Personnage joueur" : "Monstre"} •
+                Initiative: {sortedParticipants[encounter.currentTurn]?.initiative || "?"} •
+                CA: {sortedParticipants[encounter.currentTurn]?.ac || "?"} •
                 PV: {sortedParticipants[encounter.currentTurn]?.currentHp || 0}/{extractNumericHP(sortedParticipants[encounter.currentTurn]?.maxHp) || 0}
               </p>
             </div>
-            
+
             <div className="flex flex-col items-end">
               <div className="text-sm font-semibold text-blue-800">Actions disponibles</div>
               <div className="flex gap-2 mt-1">
@@ -1833,7 +1929,7 @@ const EncounterTracker: React.FC = () => {
               </div>
             </div>
           </div>
-          
+
           {sortedParticipants[encounter.currentTurn]?.conditions.length > 0 && (
             <div className="mt-2 pt-2 border-t border-blue-200">
               <div className="text-sm font-semibold text-blue-800">Conditions:</div>
@@ -1844,8 +1940,8 @@ const EncounterTracker: React.FC = () => {
                   return (
                     <Badge key={condition} variant="outline" className={`flex items-center gap-1 ${conditionInfo.color}`}>
                       <IconComponent className="h-3 w-3" />
-                    {condition}
-                  </Badge>
+                      {condition}
+                    </Badge>
                   );
                 })}
               </div>
@@ -1853,70 +1949,72 @@ const EncounterTracker: React.FC = () => {
           )}
         </div>
       )}
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-10 gap-2 mb-2">
         <div className="lg:col-span-7">
-          <Card>
-        <CardHeader>
+          <Card className="glass-card border-0">
+            <CardHeader>
               <CardTitle className="flex justify-between items-center">
                 <span>Participants</span>
                 <div>
-              <Button 
-                variant="outline" 
-                size="sm"
+
+
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className="mr-2"
                     onClick={rollInitiativeForAll}
                   >
                     <Dice4 className="h-4 w-4 mr-1" />
-                Lancer
-              </Button>
-              
-              <Button 
-                variant={quickInitiativeMode ? "default" : "outline"}
-                size="sm"
-                className="mr-2"
-                onClick={() => setQuickInitiativeMode(!quickInitiativeMode)}
-              >
-                <Pencil className="h-4 w-4 mr-1" />
-                Éditer
-              </Button>
-              
-              {encounter.participants.length > 0 && (
-                <>
-                  <Button 
-                    variant="outline"
+                    Lancer
+                  </Button>
+
+                  <Button
+                    variant={quickInitiativeMode ? "default" : "outline"}
                     size="sm"
                     className="mr-2"
-                    onClick={previousTurn}
-                    disabled={encounter.participants.length === 0}
+                    onClick={() => setQuickInitiativeMode(!quickInitiativeMode)}
                   >
-                    <ChevronLeft className="h-4 w-4 mr-1" />
-                    Précédent
+                    <Pencil className="h-4 w-4 mr-1" />
+                    Éditer
                   </Button>
-                  
-                  <Button 
-                    variant="default"
-                    size="sm"
-                    onClick={nextTurn}
-                    disabled={encounter.participants.length === 0}
-                  >
-                    <ChevronRight className="h-4 w-4 mr-1" />
-                    Suivant
-                  </Button>
-                  </>
-                )}
-            </div>
+
+                  {encounter.participants.length > 0 && (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mr-2"
+                        onClick={previousTurn}
+                        disabled={encounter.participants.length === 0}
+                      >
+                        <ChevronLeft className="h-4 w-4 mr-1" />
+                        Précédent
+                      </Button>
+
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={nextTurn}
+                        disabled={encounter.participants.length === 0}
+                      >
+                        <ChevronRight className="h-4 w-4 mr-1" />
+                        Suivant
+                      </Button>
+                    </>
+                  )}
+                </div>
               </CardTitle>
               <CardDescription>
                 Gérez les personnages et les monstres dans cette rencontre
               </CardDescription>
-        </CardHeader>
-        
-        <CardContent>
+            </CardHeader>
+
+            <CardContent>
               {sortedParticipants.length === 0 ? (
                 <div className="text-center py-4 text-gray-500">
                   Aucun participant dans cette rencontre. Ajoutez des personnages ou des monstres pour commencer.
-          </div>
+                </div>
               ) : (
                 <div className="w-full">
                   <Table className="table-fixed w-full">
@@ -1932,244 +2030,259 @@ const EncounterTracker: React.FC = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-            {sortedParticipants.map((participant, index) => (
-                        <TableRow 
-                key={participant.id} 
-                          className={
-                            sortedParticipants[encounter.currentTurn]?.id === participant.id 
-                              ? 'bg-blue-100' 
-                              : ''
-                          }
-                        >
-                          <TableCell>
-                            {sortedParticipants[encounter.currentTurn]?.id === participant.id && (
-                              <div className="flex justify-center">
-                                <Sword className="h-7 w-7 text-blue-600" />
-                      </div>
-                    )}
-                          </TableCell>
-                          <TableCell>
-                                                        <div className="font-medium text-sm">
-                              <div className="truncate" title={participant.name}>
-                              {participant.name}
-                              </div>
-                              {participant.isPC && (
-                                <Badge variant="outline" className="text-xs">PC</Badge>
-                              )}
-                      </div>
-                            {participant.notes && (
-                              <div className="text-xs text-gray-500">{participant.notes}</div>
-                            )}
-                            {/* ActionTracker supprimé */}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center space-x-1">
-                              {quickInitiativeMode ? (
-                                <Input
-                                  type="number"
-                                  value={participant.initiative}
-                                  onChange={(e) => {
-                                    const newInitiative = parseInt(e.target.value) || 0;
-                                    setEncounter(prev => ({
-                                      ...prev,
-                                      participants: prev.participants.map(p =>
-                                        p.id === participant.id 
-                                          ? { ...p, initiative: newInitiative }
-                                          : p
-                                      )
-                                    }));
-                                  }}
-                                  className="w-16 h-8 text-center"
-                                />
-                              ) : (
-                              <span 
-                                  className="cursor-pointer hover:underline min-w-[30px] text-center"
-                                onClick={() => openInitiativeEditor(participant)}
-                              >
-                                {participant.initiative}
-                              </span>
-                              )}
-                              <div className="flex flex-col">
-                                <Button 
-                                  variant="ghost" 
-                                  size="icon" 
-                                  className="h-5 w-5 p-0" 
-                                  onClick={() => moveParticipant(participant.id, 'up')}
-                                >
-                                  <span className="text-[10px]">▲</span>
-                                </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="icon" 
-                                  className="h-5 w-5 p-0" 
-                                  onClick={() => moveParticipant(participant.id, 'down')}
-                                >
-                                  <span className="text-[10px]">▼</span>
-                                </Button>
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell>{participant.ac}</TableCell>
-                          <TableCell>
-                            <div className="flex flex-col gap-1">
-                              {/* Affichage principal des PV */}
-                            <div className="flex items-center space-x-1">
-                              <div 
-                                  className="font-medium text-xs cursor-pointer"
-                                  onClick={() => {
-                                    if (showHpModifier === participant.id) {
-                                      setShowHpModifier(null);
-                                    } else {
-                                      setShowHpModifier(participant.id);
-                                      setHpModifierValue(1);
-                                    }
-                                  }}
-                                  title={`${participant.currentHp}/${extractNumericHP(participant.maxHp)} PV - Cliquer pour modifier`}
-                                >
-                                  {participant.currentHp}/{extractNumericHP(participant.maxHp)}
-                              </div>
-                        </div>
-                              
-                              {/* Interface de modification rapide */}
-                              {showHpModifier === participant.id && (
-                                <div className="flex items-center space-x-1 p-1 bg-gray-50 rounded border">
-                                  <input
-                                    type="number"
-                                    value={hpModifierValue}
-                                    onChange={(e) => setHpModifierValue(parseInt(e.target.value) || 1)}
-                                    className="w-12 h-6 text-xs border rounded px-1"
-                                    min="1"
-                                    max="100"
-                                  />
-                                  <button
-                                    onClick={() => {
-                                      updateHp(participant.id, hpModifierValue);
-                                      setShowHpModifier(null);
-                                    }}
-                                    className="flex items-center justify-center w-6 h-6 bg-green-500 hover:bg-green-600 text-white rounded"
-                                    title={`Soigner ${hpModifierValue} PV`}
-                                  >
-                                    <Plus className="h-3 w-3" />
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      updateHp(participant.id, -hpModifierValue);
-                                      setShowHpModifier(null);
-                                    }}
-                                    className="flex items-center justify-center w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded"
-                                    title={`Infliger ${hpModifierValue} dégâts`}
-                                  >
-                                    <Minus className="h-3 w-3" />
-                                  </button>
-                      </div>
-                              )}
-                              
-                              {/* Barre de progression */}
-                        <Progress
-                                value={(participant.currentHp / extractNumericHP(participant.maxHp)) * 100}
-                                className="h-1" 
-                                indicatorClassName={participant.currentHp <= 0 ? 'bg-gray-500' : participant.currentHp < extractNumericHP(participant.maxHp) / 2 ? 'bg-red-500' : 'bg-green-500'}
-                              />
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex flex-col gap-1 min-w-[180px]">
-                              {/* Badge de statut */}
-                              <div className="flex justify-start">
-                              {getStatusBadge(participant)}
-                              </div>
-                              
-                              {/* Affichage des conditions existantes avec icônes */}
-                    {participant.conditions.length > 0 && (
-                                <div className="flex flex-wrap gap-1">
-                                  {participant.conditions.map(condition => {
-                                    const conditionInfo = getConditionInfo(condition);
-                                    const IconComponent = conditionInfo.icon;
-                                    return (
-                                    <Badge 
-                                      key={condition} 
-                                      variant="outline" 
-                                        className={`cursor-pointer text-xs flex items-center gap-1 ${conditionInfo.color} hover:opacity-75`}
-                                      onClick={() => toggleCondition(participant.id, condition)}
-                                        title={`Cliquer pour retirer la condition "${condition}"`}
+                      <AnimatePresence mode="popLayout">
+                        {sortedParticipants.map((participant, index) => {
+                          const isCurrentTurn = sortedParticipants[encounter.currentTurn]?.id === participant.id;
+                          const isSelected = selectedParticipantId === participant.id;
+
+                          return (
+                            <motion.tr
+                              key={participant.id}
+                              layout
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0, x: 20 }}
+                              transition={{ duration: 0.3, delay: index * 0.05 }}
+                              className={`
+                                border-b transition-colors data-[state=selected]:bg-muted
+                                cursor-pointer
+                                ${isCurrentTurn ? 'bg-blue-100/50 hover:bg-blue-100' : 'hover:bg-gray-50'}
+                                ${isSelected && !isCurrentTurn ? 'bg-amber-50 border-l-4 border-amber-400' : ''}
+                                ${isSelected && isCurrentTurn ? 'border-l-4 border-blue-600' : ''}
+                              `}
+                              onClick={() => setSelectedParticipantId(participant.id)}
+                            >
+                              <TableCell>
+                                {isCurrentTurn && (
+                                  <div className="flex justify-center">
+                                    <Sword className="h-5 w-5 text-blue-600 animate-pulse" />
+                                  </div>
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                <div className="font-medium text-sm">
+                                  <div className="truncate" title={participant.name}>
+                                    {participant.name}
+                                  </div>
+                                  {participant.isPC && (
+                                    <Badge variant="outline" className="text-xs">PC</Badge>
+                                  )}
+                                </div>
+                                {participant.notes && (
+                                  <div className="text-xs text-gray-500">{participant.notes}</div>
+                                )}
+                                {/* ActionTracker supprimé */}
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex items-center space-x-1">
+                                  {quickInitiativeMode ? (
+                                    <Input
+                                      type="number"
+                                      value={participant.initiative}
+                                      onChange={(e) => {
+                                        const newInitiative = parseInt(e.target.value) || 0;
+                                        setEncounter(prev => ({
+                                          ...prev,
+                                          participants: prev.participants.map(p =>
+                                            p.id === participant.id
+                                              ? { ...p, initiative: newInitiative }
+                                              : p
+                                          )
+                                        }));
+                                      }}
+                                      className="w-16 h-8 text-center"
+                                    />
+                                  ) : (
+                                    <span
+                                      className="cursor-pointer hover:underline min-w-[30px] text-center"
+                                      onClick={() => openInitiativeEditor(participant)}
                                     >
-                                        <IconComponent className="h-3 w-3" />
-                                      {condition}
-                                    </Badge>
-                                    );
-                                  })}
-                      </div>
-                    )}
-                              
-                              {/* Menu déroulant pour ajouter de nouvelles conditions */}
-                              <div className="w-full">
-                                <select 
-                                  className="w-full h-6 text-xs border rounded px-1 bg-white"
-                                  onChange={(e) => {
-                                    if (e.target.value) {
-                                      toggleCondition(participant.id, e.target.value);
-                                      e.target.value = '';
-                                    }
-                                  }}
-                                  value=""
-                                >
-                                  <option value="">+ Ajouter condition</option>
-                                  {CONDITIONS.filter(condition => !participant.conditions.includes(condition)).map(condition => {
-                                    return (
-                                    <option key={condition} value={condition}>
-                                      {condition}
-                                    </option>
-                                    );
-                                  })}
-                                </select>
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center space-x-0.5">
-                              {!participant.isPC && (
-                                <>
-                        <Button 
-                                  variant="ghost" 
+                                      {participant.initiative}
+                                    </span>
+                                  )}
+                                  <div className="flex flex-col">
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-5 w-5 p-0"
+                                      onClick={() => moveParticipant(participant.id, 'up')}
+                                    >
+                                      <span className="text-[10px]">▲</span>
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-5 w-5 p-0"
+                                      onClick={() => moveParticipant(participant.id, 'down')}
+                                    >
+                                      <span className="text-[10px]">▼</span>
+                                    </Button>
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>{participant.ac}</TableCell>
+                              <TableCell>
+                                <div className="flex flex-col gap-1">
+                                  {/* Affichage principal des PV */}
+                                  <div className="flex items-center space-x-1">
+                                    <div
+                                      className="font-medium text-xs cursor-pointer"
+                                      onClick={() => {
+                                        if (showHpModifier === participant.id) {
+                                          setShowHpModifier(null);
+                                        } else {
+                                          setShowHpModifier(participant.id);
+                                          setHpModifierValue(1);
+                                        }
+                                      }}
+                                      title={`${participant.currentHp}/${extractNumericHP(participant.maxHp)} PV - Cliquer pour modifier`}
+                                    >
+                                      {participant.currentHp}/{extractNumericHP(participant.maxHp)}
+                                    </div>
+                                  </div>
+
+                                  {/* Interface de modification rapide */}
+                                  {showHpModifier === participant.id && (
+                                    <div className="flex items-center space-x-1 p-1 bg-gray-50 rounded border">
+                                      <input
+                                        type="number"
+                                        value={hpModifierValue}
+                                        onChange={(e) => setHpModifierValue(parseInt(e.target.value) || 1)}
+                                        className="w-12 h-6 text-xs border rounded px-1"
+                                        min="1"
+                                        max="100"
+                                      />
+                                      <button
+                                        onClick={() => {
+                                          updateHp(participant.id, hpModifierValue);
+                                          setShowHpModifier(null);
+                                        }}
+                                        className="flex items-center justify-center w-6 h-6 bg-green-500 hover:bg-green-600 text-white rounded"
+                                        title={`Soigner ${hpModifierValue} PV`}
+                                      >
+                                        <Plus className="h-3 w-3" />
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          updateHp(participant.id, -hpModifierValue);
+                                          setShowHpModifier(null);
+                                        }}
+                                        className="flex items-center justify-center w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded"
+                                        title={`Infliger ${hpModifierValue} dégâts`}
+                                      >
+                                        <Minus className="h-3 w-3" />
+                                      </button>
+                                    </div>
+                                  )}
+
+                                  {/* Barre de progression */}
+                                  <Progress
+                                    value={(participant.currentHp / extractNumericHP(participant.maxHp)) * 100}
+                                    className="h-1"
+                                    indicatorClassName={participant.currentHp <= 0 ? 'bg-gray-500' : participant.currentHp < extractNumericHP(participant.maxHp) / 2 ? 'bg-red-500' : 'bg-green-500'}
+                                  />
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex flex-col gap-1 min-w-[180px]">
+                                  {/* Badge de statut */}
+                                  <div className="flex justify-start">
+                                    {getStatusBadge(participant)}
+                                  </div>
+
+                                  {/* Affichage des conditions existantes avec icônes */}
+                                  {participant.conditions.length > 0 && (
+                                    <div className="flex flex-wrap gap-1">
+                                      {participant.conditions.map(condition => {
+                                        const conditionInfo = getConditionInfo(condition);
+                                        const IconComponent = conditionInfo.icon;
+                                        return (
+                                          <Badge
+                                            key={condition}
+                                            variant="outline"
+                                            className={`cursor-pointer text-xs flex items-center gap-1 ${conditionInfo.color} hover:opacity-75`}
+                                            onClick={() => toggleCondition(participant.id, condition)}
+                                            title={`Cliquer pour retirer la condition "${condition}"`}
+                                          >
+                                            <IconComponent className="h-3 w-3" />
+                                            {condition}
+                                          </Badge>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
+
+                                  {/* Menu déroulant pour ajouter de nouvelles conditions */}
+                                  <div className="w-full">
+                                    <select
+                                      className="w-full h-6 text-xs border rounded px-1 bg-white"
+                                      onChange={(e) => {
+                                        if (e.target.value) {
+                                          toggleCondition(participant.id, e.target.value);
+                                          e.target.value = '';
+                                        }
+                                      }}
+                                      value=""
+                                    >
+                                      <option value="">+ Ajouter condition</option>
+                                      {CONDITIONS.filter(condition => !participant.conditions.includes(condition)).map(condition => {
+                                        return (
+                                          <option key={condition} value={condition}>
+                                            {condition}
+                                          </option>
+                                        );
+                                      })}
+                                    </select>
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex items-center space-x-0.5">
+                                  {!participant.isPC && (
+                                    <>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-6 w-6 p-0"
+                                        onClick={() => openCreatureFrame(participant.id)}
+                                        title="Voir la page AideDD"
+                                      >
+                                        <Link className="h-3 w-3" />
+                                      </Button>
+                                      {/* Bouton "Charger les détails" supprimé - la fonction est appelée automatiquement */}
+                                    </>
+                                  )}
+                                  <Button
+                                    variant="ghost"
                                     size="sm"
                                     className="h-6 w-6 p-0"
-                                    onClick={() => openCreatureFrame(participant.id)}
-                                    title="Voir la page AideDD"
+                                    onClick={() => openNotesEditor(participant)}
+                                    title="Modifier les notes"
                                   >
-                                    <Link className="h-3 w-3" />
-                        </Button>
-                                  {/* Bouton "Charger les détails" supprimé - la fonction est appelée automatiquement */}
-                                </>
-                              )}
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                className="h-6 w-6 p-0"
-                                onClick={() => openNotesEditor(participant)}
-                                title="Modifier les notes"
-                              >
-                                <Square className="h-3 w-3" />
-                              </Button>
-                        <Button 
-                                variant="ghost" 
-                                size="sm"
-                                className="h-6 w-6 p-0"
-                                onClick={() => removeParticipant(participant.id)}
-                                title="Supprimer"
-                              >
-                                <Skull className="h-3 w-3 text-red-500" />
-                        </Button>
-                      </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                                    <Square className="h-3 w-3" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 w-6 p-0"
+                                    onClick={() => removeParticipant(participant.id)}
+                                    title="Supprimer"
+                                  >
+                                    <Skull className="h-3 w-3 text-red-500" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </motion.tr>
+                          );
+                        })}
+                      </AnimatePresence>
                     </TableBody>
                   </Table>
-                        </div>
+                </div>
               )}
-                        
+
               <div className="mt-4 flex justify-between">
-                          <div>
+                <div>
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button variant="outline">
@@ -2177,7 +2290,7 @@ const EncounterTracker: React.FC = () => {
                         Ajouter un personnage
                       </Button>
                     </DialogTrigger>
-                    
+
                     <DialogContent>
                       <DialogHeader>
                         <DialogTitle>Ajouter un personnage</DialogTitle>
@@ -2185,7 +2298,7 @@ const EncounterTracker: React.FC = () => {
                           Ajoutez un nouveau personnage joueur à la rencontre
                         </DialogDescription>
                       </DialogHeader>
-                      
+
                       <div className="grid gap-4 py-4">
                         <div className="grid grid-cols-4 items-center gap-4">
                           <Label htmlFor="pc-name" className="text-right">
@@ -2199,7 +2312,7 @@ const EncounterTracker: React.FC = () => {
                             placeholder="Nom du personnage"
                           />
                         </div>
-                        
+
                         <div className="grid grid-cols-4 items-center gap-4">
                           <Label htmlFor="pc-initiative" className="text-right">
                             Initiative
@@ -2212,7 +2325,7 @@ const EncounterTracker: React.FC = () => {
                             className="col-span-3"
                           />
                         </div>
-                        
+
                         <div className="grid grid-cols-4 items-center gap-4">
                           <Label htmlFor="pc-ac" className="text-right">
                             CA
@@ -2225,7 +2338,7 @@ const EncounterTracker: React.FC = () => {
                             className="col-span-3"
                           />
                         </div>
-                        
+
                         <div className="grid grid-cols-4 items-center gap-4">
                           <Label htmlFor="pc-hp" className="text-right">
                             Points de vie
@@ -2239,18 +2352,18 @@ const EncounterTracker: React.FC = () => {
                           />
                         </div>
                       </div>
-                      
+
                       <DialogFooter>
                         <Button onClick={addPlayerCharacter}>Ajouter</Button>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
-                                  </div>
+                </div>
                 <div>
                   {/* Boutons de navigation toujours visibles */}
                   {encounter.participants.length > 0 && (
                     <>
-                      <Button 
+                      <Button
                         onClick={previousTurn}
                         className="mr-2"
                         variant="outline"
@@ -2258,65 +2371,50 @@ const EncounterTracker: React.FC = () => {
                         <ChevronLeft className="h-4 w-4 mr-1" />
                         Tour précédent
                       </Button>
-                                      <Button 
-                      onClick={nextTurn}
-                      className="mr-2"
-                    >
+                      <Button
+                        onClick={nextTurn}
+                        className="mr-2"
+                      >
                         <ChevronRight className="h-4 w-4 mr-1" />
-                      Tour suivant
-                                      </Button>
+                        Tour suivant
+                      </Button>
                     </>
                   )}
-                                      <Button 
-                                        variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={resetEncounter}
-                                      >
+                  >
                     <RotateCcw className="h-4 w-4 mr-1" />
                     Réinitialiser
-                                      </Button>
-                                  </div>
-                                </div>
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
-                  </div>
-        
+        </div>
+
         <div className="lg:col-span-3">
-          {/* Iframe pour les créatures - hauteur complète */}
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                Créature AideDD
-                {showCreatureFrame && (
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setShowCreatureFrame(false)}
-                  >
-                    Fermer
-                  </Button>
-                )}
-              </CardTitle>
-              <CardDescription>
-                Page détaillée de la créature depuis AideDD.org
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="h-full pb-4">
-              {showCreatureFrame && selectedCreatureUrl ? (
-                <div className="w-full h-[calc(100vh-300px)] border rounded">
-                  <iframe
-                    src={selectedCreatureUrl}
-                    className="w-full h-full rounded"
-                    title="Détails de la créature"
-                    sandbox="allow-scripts allow-same-origin"
-                  />
+          {/* Vue du combattant actif (Monstre Iframe ou Joueur Stats) */}
+          <div className="h-full">
+            {sortedParticipants.length > 0 ? (
+              <ActiveCombatantDisplay
+                participant={
+                  // Utiliser le participant sélectionné, ou par défaut celui dont c'est le tour
+                  selectedParticipantId
+                    ? sortedParticipants.find(p => p.id === selectedParticipantId) || sortedParticipants[encounter.currentTurn]
+                    : sortedParticipants[encounter.currentTurn]
+                }
+                className="h-full"
+                onLinkDndBeyond={handleLinkDndBeyond}
+              />
+            ) : (
+              <Card className="h-full flex items-center justify-center p-6 text-center text-gray-500">
+                <div>
+                  <p>Commencez la rencontre pour voir les détails du combattant actif.</p>
                 </div>
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  L'iframe s'affichera automatiquement au tour de la créature active
-            </div>
-          )}
-        </CardContent>
-      </Card>
+              </Card>
+            )}
+          </div>
         </div>
       </div>
 
@@ -2336,7 +2434,7 @@ const EncounterTracker: React.FC = () => {
               </Label>
               <Input
                 id="currentHp"
-                  type="number"
+                type="number"
                 value={editingParticipant.currentHp}
                 onChange={(e) => setEditingParticipant(prev => ({ ...prev, currentHp: parseInt(e.target.value, 10) }))}
                 className="col-span-3"
@@ -2348,19 +2446,19 @@ const EncounterTracker: React.FC = () => {
               </Label>
               <Input
                 id="maxHp"
-                  type="number"
+                type="number"
                 value={editingParticipant.maxHp}
                 onChange={(e) => setEditingParticipant(prev => ({ ...prev, maxHp: parseInt(e.target.value, 10) }))}
                 className="col-span-3"
               />
-          </div>
+            </div>
           </div>
           <DialogFooter>
             <Button onClick={saveHpChanges}>Sauvegarder</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
+
       {/* Dialogue d'édition de l'initiative */}
       <Dialog open={initiativeDialogOpen} onOpenChange={setInitiativeDialogOpen}>
         <DialogContent>
@@ -2370,7 +2468,7 @@ const EncounterTracker: React.FC = () => {
               Modifiez l'initiative de {editingInitiative.name}
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="initiative" className="text-right">
@@ -2387,7 +2485,7 @@ const EncounterTracker: React.FC = () => {
                 className="col-span-3"
               />
             </div>
-            
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="modifier" className="text-right">
                 Modificateur
@@ -2404,7 +2502,7 @@ const EncounterTracker: React.FC = () => {
               />
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setInitiativeDialogOpen(false)}>
               Annuler
@@ -2425,7 +2523,7 @@ const EncounterTracker: React.FC = () => {
               Modifiez les notes de {editingNotes.name}
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="notes" className="text-right">
@@ -2443,7 +2541,7 @@ const EncounterTracker: React.FC = () => {
               />
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setNotesDialogOpen(false)}>
               Annuler
@@ -2454,10 +2552,10 @@ const EncounterTracker: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
+
       {/* Boutons flottants pour la sauvegarde */}
       <div className="fixed bottom-4 right-4 flex flex-col gap-2">
-            <Button
+        <Button
           size="icon"
           className="rounded-full h-12 w-12 shadow-lg"
           onClick={saveCurrentEncounterState}
@@ -2468,18 +2566,36 @@ const EncounterTracker: React.FC = () => {
           ) : (
             <Save className="h-6 w-6" />
           )}
-            </Button>
-        
-                      <Button
-                        variant="outline"
+        </Button>
+
+        <Button
+          variant="outline"
           size="icon"
           className="rounded-full h-12 w-12 shadow-lg"
           onClick={() => window.history.back()}
         >
           <Calendar className="h-6 w-6" />
-            </Button>
+        </Button>
+      </div>
+
+
+      {/* Sheet du Grimoire */}
+      <Sheet open={grimoireOpen} onOpenChange={setGrimoireOpen}>
+        <SheetContent side="right" className="w-[400px] sm:w-[540px] p-0">
+          <SheetHeader className="px-6 py-4 border-b">
+            <SheetTitle className="flex items-center gap-2">
+              <Scroll className="h-5 w-5" /> Grimoire
+            </SheetTitle>
+          </SheetHeader>
+          <div className="h-[calc(100vh-80px)]">
+            <SpellBrowser className="h-full" />
           </div>
-    </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Bulle flottante du Grimoire */}
+      <FloatingGrimoireBubble onOpen={() => setGrimoireOpen(true)} />
+    </div >
   );
 };
 

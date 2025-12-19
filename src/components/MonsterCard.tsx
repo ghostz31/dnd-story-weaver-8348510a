@@ -59,13 +59,13 @@ const getMonsterImageUrl = (monster: any): string => {
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/ /g, '-')
     .replace(/[^a-z0-9-]/g, '');
-  
+
   // Essayer d'utiliser une image spécifique (si elle existe)
   const specificImageUrl = `/images/monsters/${slugName}.jpg`;
-  
+
   // Sinon utiliser une image générique basée sur le type
   const genericImageUrl = monsterTypeImages[monster.type] || '/images/monsters/unknown.jpg';
-  
+
   // Si une image spécifique existe, l'utiliser, sinon utiliser l'image générique
   // Note: ceci est une approximation, en production on vérifierait vraiment si le fichier existe
   return specificImageUrl;
@@ -75,7 +75,7 @@ const getMonsterImageUrl = (monster: any): string => {
 const formatHP = (hp: string | number | undefined): string => {
   if (!hp) return '10 (1d8 + 2)';
   if (typeof hp === 'string') return hp;
-  
+
   // Ces valeurs sont des estimations basées sur les formules DnD
   const hitDieSize = {
     'TP': 4,
@@ -85,45 +85,45 @@ const formatHP = (hp: string | number | undefined): string => {
     'TG': 12,
     'Gig': 20
   };
-  
+
   // Estimation basique du nombre de dés et du modificateur
   let size = 'M';
   const estimatedHitDie = hitDieSize[size as keyof typeof hitDieSize] || 8;
   const estimatedDiceCount = Math.max(1, Math.floor(hp / (estimatedHitDie / 2 + 2)));
   const estimatedModifier = hp - (estimatedDiceCount * (estimatedHitDie / 2 + 0.5));
-  
+
   return `${hp} (${estimatedDiceCount}d${estimatedHitDie}${estimatedModifier > 0 ? ` + ${Math.floor(estimatedModifier)}` : estimatedModifier < 0 ? ` - ${Math.abs(Math.floor(estimatedModifier))}` : ''})`;
 };
 
 // Fonction pour formater la vitesse
 const formatSpeed = (speeds: any): string => {
   if (!speeds) return '9 m';
-  
+
   // Si speeds est déjà une chaîne formatée, la retourner directement
   if (typeof speeds === 'string') return speeds;
-  
+
   // Si speeds est un tableau
   if (Array.isArray(speeds)) {
     return speeds.join(', ').replace(/(\d+) feet/g, (match, p1) => `${Math.round(parseInt(p1) * 0.3)} m`);
   }
-  
+
   // Si speeds est un objet avec des valeurs structurées
   if (typeof speeds === 'object') {
     const formattedSpeeds = [];
-    
+
     // Traiter les différentes propriétés possibles
     if (speeds.walk || speeds.marche) formattedSpeeds.push(`${speeds.walk || speeds.marche} m`);
     if (speeds.fly || speeds.vol) formattedSpeeds.push(`vol ${speeds.fly || speeds.vol} m`);
     if (speeds.swim || speeds.nage) formattedSpeeds.push(`nage ${speeds.swim || speeds.nage} m`);
     if (speeds.burrow || speeds.creusement) formattedSpeeds.push(`creusement ${speeds.burrow || speeds.creusement} m`);
     if (speeds.climb || speeds.escalade) formattedSpeeds.push(`escalade ${speeds.climb || speeds.escalade} m`);
-    
+
     // Si nous n'avons rien trouvé, retourner une valeur par défaut
     if (formattedSpeeds.length === 0) return '9 m';
-    
+
     return formattedSpeeds.join(', ');
   }
-  
+
   return '9 m';
 };
 
@@ -151,15 +151,15 @@ const generateGenericActions = (monster: any): { name: string, description: stri
   if (monster.actions && Array.isArray(monster.actions) && monster.actions.length > 0) {
     return monster.actions;
   }
-  
+
   const actions: { name: string, description: string }[] = [];
-  
+
   // Ajouter une attaque de base pour tous les monstres
   actions.push({
     name: "Attaque au corps à corps",
     description: `Le monstre effectue une attaque au corps à corps. +${Math.max(1, Math.floor(monster.cr / 2) + 2)} au toucher, allonge 1,50 m, une cible. Touché : ${Math.max(1, Math.floor(monster.cr) + 2)} dégâts.`
   });
-  
+
   // Ajouter des actions spécifiques selon le type
   switch (monster.type) {
     case 'Dragon':
@@ -213,7 +213,7 @@ const generateGenericActions = (monster: any): { name: string, description: stri
         });
       }
   }
-  
+
   return actions;
 };
 
@@ -223,9 +223,9 @@ const generateSpecialAbilities = (monster: any): { name: string, description: st
   if (monster.traits && Array.isArray(monster.traits) && monster.traits.length > 0) {
     return monster.traits;
   }
-  
+
   const abilities: { name: string, description: string }[] = [];
-  
+
   // Capacités basées sur le type
   switch (monster.type) {
     case 'Dragon':
@@ -247,7 +247,7 @@ const generateSpecialAbilities = (monster: any): { name: string, description: st
       });
       break;
   }
-  
+
   // Capacités basées sur l'environnement
   if (monster.environment) {
     if (typeof monster.environment === 'string') {
@@ -278,7 +278,7 @@ const generateSpecialAbilities = (monster: any): { name: string, description: st
       }
     }
   }
-  
+
   // Capacités basées sur le CR
   if (monster.cr >= 10) {
     abilities.push({
@@ -286,7 +286,7 @@ const generateSpecialAbilities = (monster: any): { name: string, description: st
       description: `Le monstre a l'avantage aux jets de sauvegarde contre les sorts et autres effets magiques.`
     });
   }
-  
+
   return abilities;
 };
 
@@ -314,19 +314,19 @@ export function MonsterCard({ monster }: MonsterCardProps) {
   // Utiliser le nom original s'il existe, sinon le nom standard
   const monsterName = monster.originalName || monster.name;
   const monsterUrl = getMonsterUrl(monsterName);
-  
+
   // Calculer le modificateur d'une caractéristique
   const getAbilityModifier = (value: number): string => {
     if (!value) return '+0';
     const modifier = Math.floor((value - 10) / 2);
     return modifier >= 0 ? `+${modifier}` : `${modifier}`;
   };
-  
+
   return (
-    <div className="bg-white border border-gray-300 rounded-md overflow-hidden">
-      <div className="p-2 bg-gray-100 border-b flex justify-between items-center">
+    <div className="glass-card rounded-xl overflow-hidden hover:scale-[1.02] transition-transform duration-300">
+      <div className="p-3 bg-gradient-to-r from-primary/10 to-transparent border-b border-primary/10 flex justify-between items-center">
         <h3 className="font-bold text-lg">{monster.name}</h3>
-        <a 
+        <a
           href={monsterUrl}
           target="_blank"
           rel="noopener noreferrer"
@@ -335,32 +335,32 @@ export function MonsterCard({ monster }: MonsterCardProps) {
           Ouvrir dans AideDD
         </a>
       </div>
-      
+
       <div className="p-4">
         <div className="text-sm italic mb-4">
           {monster.size || 'M'} {monster.type || 'créature'}, {monster.alignment || 'non aligné'}
         </div>
-        
+
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
             <div className="font-semibold">Classe d'armure</div>
             <div>{monster.ac || 10}</div>
           </div>
-          
-              <div>
+
+          <div>
             <div className="font-semibold">Points de vie</div>
             <div>{monster.hp || 10}</div>
-              </div>
-            </div>
-            
+          </div>
+        </div>
+
         <div className="mb-4">
           <div className="font-semibold">Vitesse</div>
-          <div>{typeof monster.speed === 'string' ? monster.speed : 
-              Array.isArray(monster.speed) ? monster.speed.join(', ') : '9 m'}</div>
-            </div>
-            
+          <div>{typeof monster.speed === 'string' ? monster.speed :
+            Array.isArray(monster.speed) ? monster.speed.join(', ') : '9 m'}</div>
+        </div>
+
         {/* Caractéristiques */}
-        <div className="grid grid-cols-6 gap-2 mb-4 border p-2 rounded">
+        <div className="grid grid-cols-6 gap-2 mb-4 bg-primary/5 p-3 rounded-lg border border-primary/10">
           <div className="text-center">
             <div className="font-semibold">FOR</div>
             <div>{monster.str || 10}</div>
@@ -375,72 +375,72 @@ export function MonsterCard({ monster }: MonsterCardProps) {
             <div className="font-semibold">CON</div>
             <div>{monster.con || 10}</div>
             <div className="text-xs">({getAbilityModifier(monster.con || 10)})</div>
-                  </div>
+          </div>
           <div className="text-center">
             <div className="font-semibold">INT</div>
             <div>{monster.int || 10}</div>
             <div className="text-xs">({getAbilityModifier(monster.int || 10)})</div>
-                </div>
+          </div>
           <div className="text-center">
             <div className="font-semibold">SAG</div>
             <div>{monster.wis || 10}</div>
             <div className="text-xs">({getAbilityModifier(monster.wis || 10)})</div>
-            </div>
+          </div>
           <div className="text-center">
             <div className="font-semibold">CHA</div>
             <div>{monster.cha || 10}</div>
             <div className="text-xs">({getAbilityModifier(monster.cha || 10)})</div>
-              </div>
-              </div>
-        
+          </div>
+        </div>
+
         {/* Compétences et immunités */}
         {monster.skills && (
           <div className="mb-3">
             <div className="font-semibold">Compétences</div>
             <div>{monster.skills}</div>
-              </div>
-            )}
-            
+          </div>
+        )}
+
         {monster.damageResistances && (
           <div className="mb-3">
             <div className="font-semibold">Résistances aux dégâts</div>
             <div>{monster.damageResistances}</div>
-              </div>
-            )}
-            
+          </div>
+        )}
+
         {monster.damageImmunities && (
           <div className="mb-3">
             <div className="font-semibold">Immunités aux dégâts</div>
             <div>{monster.damageImmunities}</div>
-              </div>
-            )}
-            
+          </div>
+        )}
+
         {monster.conditionImmunities && (
           <div className="mb-3">
             <div className="font-semibold">Immunités aux états</div>
             <div>{monster.conditionImmunities}</div>
-              </div>
-            )}
-            
+          </div>
+        )}
+
         {monster.senses && (
           <div className="mb-3">
             <div className="font-semibold">Sens</div>
             <div>{monster.senses}</div>
-              </div>
-            )}
-            
+          </div>
+        )}
+
         {monster.languages && (
           <div className="mb-3">
             <div className="font-semibold">Langues</div>
             <div>{monster.languages}</div>
-              </div>
-            )}
-            
+          </div>
+        )}
+
         <div className="mb-4">
           <div className="font-semibold">Puissance</div>
           <div>{monster.cr} ({monster.xp || 0} PX)</div>
-            </div>
-            
+        </div>
+
         {/* Traits */}
         {monster.traits && monster.traits.length > 0 && (
           <div className="mb-4">
@@ -451,9 +451,9 @@ export function MonsterCard({ monster }: MonsterCardProps) {
                 <div>{trait.description}</div>
               </div>
             ))}
-              </div>
-            )}
-            
+          </div>
+        )}
+
         {/* Actions */}
         {monster.actions && monster.actions.length > 0 && (
           <div className="mb-4">
@@ -462,11 +462,11 @@ export function MonsterCard({ monster }: MonsterCardProps) {
               <div key={index} className="mb-2">
                 <div className="font-semibold">{action.name}</div>
                 <div>{action.description}</div>
-                    </div>
-                  ))}
               </div>
-            )}
-            
+            ))}
+          </div>
+        )}
+
         {/* Actions légendaires */}
         {monster.legendaryActions && monster.legendaryActions.length > 0 && (
           <div className="mb-4">
@@ -479,17 +479,17 @@ export function MonsterCard({ monster }: MonsterCardProps) {
             ))}
           </div>
         )}
-        
+
         <div className="text-center mt-4">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             onClick={() => window.open(monsterUrl, '_blank')}
           >
             Voir la fiche complète sur AideDD
           </Button>
-            </div>
-          </div>
         </div>
+      </div>
+    </div>
   );
 } 

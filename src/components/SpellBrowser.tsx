@@ -1,0 +1,215 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { Spell } from '@/lib/types';
+import SpellCard from './SpellCard';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Search, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+
+interface SpellBrowserProps {
+    onSelectSpell?: (spell: Spell) => void;
+    className?: string;
+}
+
+const SpellBrowser: React.FC<SpellBrowserProps> = ({ onSelectSpell, className = '' }) => {
+    const [spells, setSpells] = useState<Spell[]>([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedClass, setSelectedClass] = useState<string>('all');
+    const [selectedLevel, setSelectedLevel] = useState<string>('all');
+    const [selectedSchool, setSelectedSchool] = useState<string>('all');
+    const [loading, setLoading] = useState(true);
+    const [selectedSpell, setSelectedSpell] = useState<Spell | null>(null);
+
+    // Charger les sorts
+    useEffect(() => {
+        const loadSpells = async () => {
+            try {
+                const response = await fetch('/data/aidedd-complete/spells.json');
+                if (response.ok) {
+                    const data = await response.json();
+                    setSpells(data);
+                } else {
+                    console.error("Impossible de charger les sorts");
+                }
+            } catch (error) {
+                console.error("Erreur chargement sorts:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadSpells();
+    }, []);
+
+    // Filtrage
+    const filteredSpells = useMemo(() => {
+        return spells.filter(spell => {
+            // Recherche textuelle
+            if (searchQuery && !spell.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+                return false;
+            }
+
+            // Filtre Classe
+            if (selectedClass !== 'all' && (!spell.classes || !spell.classes.includes(selectedClass))) {
+                return false;
+            }
+
+            // Filtre Niveau
+            if (selectedLevel !== 'all') {
+                const levelNum = parseInt(selectedLevel);
+                if (spell.level !== levelNum) return false;
+            }
+
+            // Filtre École
+            if (selectedSchool !== 'all' && spell.school.toLowerCase() !== selectedSchool.toLowerCase()) {
+                return false;
+            }
+
+            return true;
+        });
+    }, [spells, searchQuery, selectedClass, selectedLevel, selectedSchool]);
+
+    const uniqueClasses = useMemo(() => {
+        const classes = new Set<string>();
+        spells.forEach(s => s.classes?.forEach(c => {
+            if (c && c.trim()) classes.add(c);
+        }));
+        return Array.from(classes).sort();
+    }, [spells]);
+
+    const uniqueSchools = useMemo(() => {
+        const schools = new Set<string>();
+        spells.forEach(s => {
+            if (s.school && s.school.trim()) schools.add(s.school);
+        });
+        return Array.from(schools).sort();
+    }, [spells]);
+
+    return (
+        <div className={`p-4 h-full flex flex-col ${className}`}>
+            {/* Barre de recherche et filtres */}
+            <div className="flex flex-col gap-4 mb-6 bg-white p-4 rounded-lg shadow-sm border">
+                <div className="flex gap-2">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                        <Input
+                            placeholder="Rechercher un sort..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-9"
+                        />
+                    </div>
+                    {(searchQuery || selectedClass !== 'all' || selectedLevel !== 'all' || selectedSchool !== 'all') && (
+                        <Button
+                            variant="ghost"
+                            onClick={() => {
+                                setSearchQuery('');
+                                setSelectedClass('all');
+                                setSelectedLevel('all');
+                                setSelectedSchool('all');
+                            }}
+                            className="px-2"
+                        >
+                            <X className="h-4 w-4" />
+                        </Button>
+                    )}
+                </div>
+
+                <div className="flex justify-between items-center gap-2 flex-wrap">
+                    <div className="flex gap-2 flex-wrap flex-1">
+                        <Select value={selectedClass} onValueChange={setSelectedClass}>
+                            <SelectTrigger className="w-[130px]">
+                                <SelectValue placeholder="Classe" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Toutes classes</SelectItem>
+                                {uniqueClasses.map(cls => (
+                                    <SelectItem key={cls} value={cls}>{cls}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
+                        <Select value={selectedLevel} onValueChange={setSelectedLevel}>
+                            <SelectTrigger className="w-[130px]">
+                                <SelectValue placeholder="Niveau" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Tous niveaux</SelectItem>
+                                <SelectItem value="0">Tour de magie</SelectItem>
+                                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(lvl => (
+                                    <SelectItem key={lvl} value={lvl.toString()}>Niveau {lvl}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
+                        <Select value={selectedSchool} onValueChange={setSelectedSchool}>
+                            <SelectTrigger className="w-[130px]">
+                                <SelectValue placeholder="École" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Toutes écoles</SelectItem>
+                                {uniqueSchools.map(sch => (
+                                    <SelectItem key={sch} value={sch}>{sch}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+            </div>
+
+            {/* Liste des sorts */}
+            <div className="flex-1 overflow-y-auto">
+                {loading ? (
+                    <div className="flex justify-center p-8">Chargement du grimoire...</div>
+                ) : (
+                    <>
+                        <div className="flex flex-col gap-2 pb-4">
+                            {filteredSpells.map(spell => (
+                                <div
+                                    key={spell.name}
+                                    className="flex items-center justify-between p-3 bg-white border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors shadow-sm"
+                                    onClick={() => {
+                                        setSelectedSpell(spell);
+                                        onSelectSpell && onSelectSpell(spell);
+                                    }}
+                                >
+                                    <div className="flex flex-col gap-0.5">
+                                        <div className="font-medium text-gray-900 flex items-center gap-2">
+                                            {spell.name}
+                                            {spell.ritual && <Badge variant="secondary" className="text-[10px] h-4 px-1">R</Badge>}
+                                        </div>
+                                        <div className="text-xs text-gray-500">
+                                            {spell.level === 0 ? 'Tour de magie' : `Niveau ${spell.level}`} • {spell.school}
+                                        </div>
+                                    </div>
+                                    <div className="text-xs font-mono text-gray-400">
+                                        {spell.components}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {filteredSpells.length === 0 && (
+                            <div className="col-span-full text-center text-gray-500 py-10">
+                                Aucun sort ne correspond à votre recherche.
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
+
+            {/* Modal Détail (si pas de callback onSelectSpell) */}
+            {
+                selectedSpell && !onSelectSpell && (
+                    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setSelectedSpell(null)}>
+                        <div className="w-full max-w-2xl max-h-[90vh] h-[600px]" onClick={e => e.stopPropagation()}>
+                            <SpellCard spell={selectedSpell} />
+                        </div>
+                    </div>
+                )
+            }
+        </div >
+    );
+};
+
+export default SpellBrowser;

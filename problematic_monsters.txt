@@ -1,0 +1,428 @@
+Aarakocra
+Aboleth
+Acolyte
+Aigle
+Aigle géant
+Allosaure
+Âme en peine
+Androsphinx
+Ankheg
+Ankylosaure
+Araignée
+Araignée de phase
+Araignée géante
+Araignée-loup géante
+Arbre éveillé
+Arbuste éveillé
+Arcanaloth
+Archimage
+Armure animée
+Assassin
+Azer
+Babélien
+Babouin
+Balor
+Bandit
+Bandit, capitaine
+Banshie
+Barlgura
+Basilic
+Bec de hache
+Béhir
+Belette
+Belette géante
+Berserker
+Bête éclipsante
+Blaireau
+Blaireau géant
+Blême
+Brutacien
+Bulette
+Cambion
+Centaure
+Cerf
+Chacal
+Chameau
+Charognard rampant
+Chasme
+Chat
+Chauve-souris
+Chauve-souris géante
+Cheval de guerre
+Cheval de selle
+Cheval de trait
+Chevalier
+Chevalier de la mort
+Chèvre
+Chèvre géante
+Chien de chasse infernal
+Chien du trépas
+Chien esquiveur
+Chimère
+Chouette
+Chouette géante
+Chuul
+Cockatrice
+Corbeau
+Couatl
+Crabe
+Crabe géant
+Crânefeu
+Crapaud géant
+Criard
+Crocodile
+Crocodile géant
+Cube gélatineux
+Cultiste
+Cyclope
+Dao
+Demi-dragon rouge, vétéran
+Demi-liche
+Demi-ogre
+Démon des ombres
+Destrier noir
+Déva
+Dévoreur d'intellect
+Diable à chaînes
+Diable barbelé
+Diable barbu
+Diable cornu
+Diable épineux
+Diable gelé
+Diable osseux
+Diablotin
+Diantrefosse
+Djinn
+Doppelganger
+Dracoliche bleue, adulte
+Dragon blanc, adulte
+Dragon blanc, ancien
+Dragon blanc, dragonnet
+Dragon blanc, jeune
+Dragon bleu, adulte
+Dragon bleu, ancien
+Dragon bleu, dragonnet
+Dragon bleu, jeune
+Dragon d'airain, adulte
+Dragon d'airain, ancien
+Dragon d'airain, dragonnet
+Dragon d'airain, jeune
+Dragon d'argent, adulte
+Dragon d'argent, ancien
+Dragon d'argent, dragonnet
+Dragon d'argent, jeune
+Dragon d'ombre rouge, jeune
+Dragon d'or, adulte
+Dragon d'or, ancien
+Dragon d'or, dragonnet
+Dragon d'or, jeune
+Dragon de bronze, adulte
+Dragon de bronze, ancien
+Dragon de bronze, dragonnet
+Dragon de bronze, jeune
+Dragon de cuivre, adulte
+Dragon de cuivre, ancien
+Dragon de cuivre, dragonnet
+Dragon de cuivre, jeune
+Dragon féerique
+Dragon noir, adulte
+Dragon noir, ancien
+Dragon noir, dragonnet
+Dragon noir, jeune
+Dragon rouge, adulte
+Dragon rouge, ancien
+Dragon rouge, dragonnet
+Dragon rouge, jeune
+Dragon vert, adulte
+Dragon vert, ancien
+Dragon vert, dragonnet
+Dragon vert, jeune
+Dragon-tortue
+Dretch
+Drider
+Drow
+Drow, guerrier d'élite
+Drow, mage
+Drow, prêtresse de Lolth
+Druide
+Dryade
+Duergar
+Duodrone
+Éclaireur
+Éfrit
+Élan
+Élan géant
+Élémentaire de l'air
+Élémentaire de l'eau
+Élémentaire de la terre
+Élémentaire du feu
+Éléphant
+Empyréen
+Enlaceur
+Épaulard
+Épée volante
+Épouvantail
+Érinye
+Espion
+Esprit follet
+Ettercap
+Ettin
+Fanatique
+Fantôme
+Faucon
+Faucon de sang
+Feu follet
+Flagelleur mental
+Flumph
+Fomorien
+Galeb duhr
+Garde
+Gardien animé
+Gargouille
+Garou-chacal
+Géant des collines
+Géant des nuages
+Géant des pierres
+Géant des tempêtes
+Géant du feu
+Géant du givre
+Gelée ocre
+Githyanki, chevalier
+Githyanki, guerrier
+Githzerai, moine
+Githzerai, zerth
+Glabrezu
+Gladiateur
+Gnoll
+Gnoll, croc de Yeenoghu
+Gnoll, seigneur de meute
+Gnome des profondeurs (svirfnebelin)
+Gobelin
+Gobelin, chef
+Gobelours
+Gobelours, chef
+Golem d'argile
+Golem de chair
+Golem de fer
+Golem de pierre
+Gorgone
+Goristro
+Goule
+Grand singe
+Grell
+Grenouille
+Grenouille géante
+Grick
+Grick dominant
+Griffe rampante
+Griffon
+Guenaude marine
+Guenaude nocturne
+Guenaude verte
+Guêpe géante
+Guerrier tribal
+Gynosphinx
+Harpie
+Hezrou
+Hippocampe
+Hippocampe géant
+Hippogriffe
+Hobgobelin
+Hobgobelin, capitaine
+Hobgobelin, seigneur de guerre
+Homme-lézard
+Homme-lézard, chaman
+Homme-poisson
+Homoncule
+Horreur casquée
+Horreur crochue
+Hydre
+Hyène
+Hyène géante
+Kenku
+Kobold
+Kobold ailé
+Kraken
+Kuo-toa
+Kuo-toa, archiprêtre
+Kuo-toa, fouet
+Lamie
+Lémure
+Lézard
+Lézard géant
+Liche
+Licorne
+Lierreux
+Lion
+Loup
+Loup arctique
+Loup sanguinaire
+Loup-garou
+Mage
+Magmatique
+Malfrat
+Mammouth
+Mâne
+Mante obscure
+Manteleur
+Manticore
+Maride
+Marilith
+Mastodonte des ombres
+Méduse
+Méphite boueux
+Méphite fumant
+Méphite gelé
+Méphite magmatique
+Méphite poussiéreux
+Méphite vaporeux
+Merrow
+Mezzoloth
+Mille-pattes géant
+Mimique
+Minotaure
+Moisissure violette
+Molosse
+Momie
+Monodrone
+Mule
+Myconide, adulte
+Myconide, pousse
+Myconide, souverain
+Naga corrupteur
+Naga gardien
+Naga osseux
+Nalfeshnie
+Nécrophage
+Nielleux
+Noble
+Nothic
+Nuée d'insectes
+Nuée de chauves-souris
+Nuée de corbeaux
+Nuée de piranhas
+Nuée de rats
+Nuée de serpents venimeux
+Nycaloth
+Ogre
+Ombre
+Oni
+Orc
+Orc, chef de guerre
+Orc, Oeil de Gruumsh
+Orog
+Otyugh
+Ours brun
+Ours noir
+Ours polaire
+Ours-garou
+Ours-hibou
+Oxydeur
+Panthère
+Pégase
+Pentadrone
+Perceur
+Péryton
+Pieuvre
+Pieuvre géante
+Piranha
+Pixie
+Planétar
+Plésiosaure
+Poney
+Pouding noir
+Prêtre
+Pseudodragon
+Ptéranodon
+Quadrone
+Quaggoth
+Quaggoth, serviteur des spores
+Quasit
+Rakshasa
+Rat
+Rat géant
+Rat-garou
+Remorhaz
+Remorhaz, jeune
+Requin de récif
+Requin géant
+Requin-chasseur
+Résinieux
+Revenant
+Rhinocéros
+Roc
+Roi/reine lézard
+Roturier
+Sahuagin
+Sahuagin, baron
+Sahuagin, prêtresse
+Salamandre
+Sanglier
+Sanglier géant
+Sanglier-garou
+Satyre
+Scarabée de feu géant
+Scorpion
+Scorpion géant
+Seigneur momie
+Sentinelle d'eau
+Serpent constricteur
+Serpent constricteur géant
+Serpent de feu
+Serpent venimeux
+Serpent venimeux géant
+Serpent volant
+Singe géant
+Slaad bleu
+Slaad funeste
+Slaad gris
+Slaad rouge
+Slaad vert
+Slaad, têtard
+Solar
+Spectateur
+Spectre
+Spore gazeuse
+Squelette
+Squelette de cheval de guerre
+Squelette de minotaure
+Strige
+Succube
+Sylvanien
+Tapis étouffant
+Tarasque
+Tertre errant
+Thri-kreen
+Tigre
+Tigre à dents de sabre
+Tigre-garou
+Torve
+Traqueur invisible
+Tricératops
+Tridrone
+Troglodyte
+Troll
+Tyramort
+Tyrannoeil
+Tyrannosaure
+Ultroloth
+Vampire
+Vampirien
+Vase grise
+Vautour
+Vautour géant
+Ver pourpre
+Vétéran
+Vrock
+Wiverne
+Worg
+Xorn
+Yéti
+Yéti abominable
+Yochlol
+Yuan-ti, abomination
+Yuan-ti, malison
+Yuan-ti, sang-pur
+Zombi
+Zombi ogre
+Zombi tyrannoeil

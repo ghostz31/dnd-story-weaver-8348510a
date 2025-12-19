@@ -20,6 +20,17 @@ export default defineConfig(({ mode }) => ({
           });
         },
       },
+      // Proxy pour D&D Beyond
+      '/api/dndbeyond': {
+        target: 'https://character-service.dndbeyond.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/dndbeyond/, ''),
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, _req, _res) => {
+            console.log('Erreur de proxy D&D Beyond:', err);
+          });
+        },
+      },
     },
   },
   plugins: [

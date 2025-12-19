@@ -18,18 +18,18 @@ service cloud.firestore {
 }
 */
 
-import { 
-  collection, 
-  doc, 
-  addDoc, 
-  getDocs, 
-  updateDoc, 
-  deleteDoc, 
-  serverTimestamp, 
-  getDoc, 
-  query, 
-  where, 
-  arrayUnion, 
+import {
+  collection,
+  doc,
+  addDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  serverTimestamp,
+  getDoc,
+  query,
+  where,
+  arrayUnion,
   arrayRemove,
   increment,
   onSnapshot,
@@ -62,11 +62,11 @@ const getUserRole = async (): Promise<'free' | 'premium'> => {
   try {
     const userId = getCurrentUserId();
     const userDoc = await getDoc(doc(db, 'users', userId));
-    
+
     if (userDoc.exists()) {
       return userDoc.data().role || 'free';
     }
-    
+
     return 'free';
   } catch (error) {
     console.error('Erreur lors de la récupération du rôle utilisateur:', error);
@@ -89,14 +89,14 @@ export const canCreateParty = async (): Promise<boolean> => {
     const user = getCurrentUser();
     const userRef = doc(db, 'users', user.uid);
     const userDoc = await getDoc(userRef);
-    
+
     if (!userDoc.exists()) {
       throw new Error("Utilisateur non trouvé");
     }
-    
+
     const userData = userDoc.data();
     const stats = await getUserStats();
-    
+
     // Vérifier si l'utilisateur a atteint sa limite de parties
     if (userData.subscriptionPlan === 'premium') {
       return true; // Les utilisateurs premium n'ont pas de limite
@@ -115,14 +115,14 @@ export const canCreateEncounter = async (): Promise<boolean> => {
     const user = getCurrentUser();
     const userRef = doc(db, 'users', user.uid);
     const userDoc = await getDoc(userRef);
-    
+
     if (!userDoc.exists()) {
       throw new Error("Utilisateur non trouvé");
     }
-    
+
     const userData = userDoc.data();
     const stats = await getUserStats();
-    
+
     // Vérifier si l'utilisateur a atteint sa limite de rencontres
     if (userData.subscriptionPlan === 'premium') {
       return true; // Les utilisateurs premium n'ont pas de limite
@@ -143,11 +143,11 @@ export const getParties = async (): Promise<Party[]> => {
     const user = getCurrentUser();
     const partiesRef = collection(db, 'users', user.uid, 'parties');
     const querySnapshot = await getDocs(partiesRef);
-    
+
     const parties: Party[] = [];
     querySnapshot.forEach(doc => {
       const data = doc.data();
-      
+
       // Fonction helper pour gérer les dates
       const formatDate = (dateField: any): string => {
         if (!dateField) return new Date().toISOString();
@@ -155,7 +155,7 @@ export const getParties = async (): Promise<Party[]> => {
         if (typeof dateField === 'string') return dateField;
         return new Date().toISOString();
       };
-      
+
       parties.push({
         id: doc.id,
         name: data.name,
@@ -164,7 +164,7 @@ export const getParties = async (): Promise<Party[]> => {
         updatedAt: formatDate(data.updatedAt)
       });
     });
-    
+
     // Trier par date de mise à jour (le plus récent d'abord)
     return parties.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
   } catch (error) {
@@ -174,48 +174,59 @@ export const getParties = async (): Promise<Party[]> => {
 };
 
 // Écouter les changements des parties en temps réel
-export const subscribeToParties = (callback: (parties: Party[]) => void): (() => void) => {
+export const subscribeToParties = (
+  callback: (parties: Party[]) => void,
+  errorCallback?: (error: any) => void
+): (() => void) => {
   try {
     const user = getCurrentUser();
     const partiesRef = collection(db, 'users', user.uid, 'parties');
-    
+
     // Créer un écouteur qui se déclenche à chaque changement dans la collection
-    const unsubscribe = onSnapshot(partiesRef, (snapshot) => {
-      const parties: Party[] = [];
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        
-        // Fonction helper pour gérer les dates
-        const formatDate = (dateField: any): string => {
-          if (!dateField) return new Date().toISOString();
-          if (typeof dateField.toDate === 'function') return dateField.toDate().toISOString();
-          if (typeof dateField === 'string') return dateField;
-          return new Date().toISOString();
-        };
-        
-        parties.push({
-          id: doc.id,
-          name: data.name,
-          players: data.players || [],
-          createdAt: formatDate(data.createdAt),
-          updatedAt: formatDate(data.updatedAt)
+    const unsubscribe = onSnapshot(
+      partiesRef,
+      (snapshot) => {
+        const parties: Party[] = [];
+        snapshot.forEach(doc => {
+          const data = doc.data();
+
+          // Fonction helper pour gérer les dates
+          const formatDate = (dateField: any): string => {
+            if (!dateField) return new Date().toISOString();
+            if (typeof dateField.toDate === 'function') return dateField.toDate().toISOString();
+            if (typeof dateField === 'string') return dateField;
+            return new Date().toISOString();
+          };
+
+          parties.push({
+            id: doc.id,
+            name: data.name,
+            players: data.players || [],
+            createdAt: formatDate(data.createdAt),
+            updatedAt: formatDate(data.updatedAt)
+          });
         });
-      });
-      
-      // Trier par date de mise à jour (le plus récent d'abord)
-      const sortedParties = parties.sort((a, b) => 
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      );
-      
-      // Appeler le callback avec les données mises à jour
-      callback(sortedParties);
-    });
-    
+
+        // Trier par date de mise à jour (le plus récent d'abord)
+        const sortedParties = parties.sort((a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        );
+
+        // Appeler le callback avec les données mises à jour
+        callback(sortedParties);
+      },
+      (error) => {
+        console.error("Erreur dans onSnapshot (parties):", error);
+        if (errorCallback) errorCallback(error);
+      }
+    );
+
     // Retourner la fonction pour se désabonner quand nécessaire
     return unsubscribe;
   } catch (error) {
     console.error("Erreur lors de l'abonnement aux parties:", error);
-    return () => {}; // Retourner une fonction vide en cas d'erreur
+    if (errorCallback) errorCallback(error);
+    return () => { }; // Retourner une fonction vide en cas d'erreur
   }
 };
 
@@ -223,16 +234,16 @@ export const subscribeToParties = (callback: (parties: Party[]) => void): (() =>
 export const createParty = async (name: string): Promise<Party | null> => {
   try {
     const user = getCurrentUser();
-    
+
     // Vérifier si l'utilisateur peut créer une nouvelle partie
     const canCreate = await canCreateParty();
     if (!canCreate) {
       throw new Error("Vous avez atteint la limite de groupes pour votre plan");
     }
-    
+
     const userRef = doc(db, 'users', user.uid);
     const partiesRef = collection(userRef, 'parties');
-    
+
     const now = serverTimestamp();
     const partyData = {
       name,
@@ -240,14 +251,14 @@ export const createParty = async (name: string): Promise<Party | null> => {
       createdAt: now,
       updatedAt: now
     };
-    
+
     const docRef = await addDoc(partiesRef, partyData);
-    
-    // Mettre à jour les statistiques de l'utilisateur
-    await updateDoc(userRef, {
-      'stats.parties': increment(1)
-    });
-    
+
+    // Mettre à jour les statistiques de l'utilisateur avec setDoc pour gérer le cas où le document n'existe pas
+    await setDoc(userRef, {
+      stats: { parties: increment(1) }
+    }, { merge: true });
+
     return {
       id: docRef.id,
       name,
@@ -266,11 +277,11 @@ export const getParty = async (partyId: string): Promise<Party | null> => {
   try {
     const userId = getCurrentUserId();
     const partyDoc = await getDoc(doc(db, 'users', userId, 'parties', partyId));
-    
+
     if (!partyDoc.exists()) {
       return null;
     }
-    
+
     return { id: partyDoc.id, ...partyDoc.data() } as Party;
   } catch (error) {
     console.error('Erreur lors de la récupération du groupe:', error);
@@ -283,23 +294,23 @@ export const updateParty = async (partyId: string, updates: Partial<Omit<Party, 
   try {
     const user = getCurrentUser();
     const partyRef = doc(db, 'users', user.uid, 'parties', partyId);
-    
+
     const partyDoc = await getDoc(partyRef);
     if (!partyDoc.exists()) {
       throw new Error("Groupe non trouvé");
     }
-    
+
     const updateData = {
       ...updates,
       updatedAt: serverTimestamp()
     };
-    
+
     await updateDoc(partyRef, updateData);
-    
+
     // Récupérer la partie mise à jour
     const updatedDoc = await getDoc(partyRef);
     const data = updatedDoc.data();
-    
+
     // Fonction helper pour gérer les dates
     const formatDate = (dateField: any): string => {
       if (!dateField) return new Date().toISOString();
@@ -307,7 +318,7 @@ export const updateParty = async (partyId: string, updates: Partial<Omit<Party, 
       if (typeof dateField === 'string') return dateField;
       return new Date().toISOString();
     };
-    
+
     return {
       id: partyId,
       name: data?.name,
@@ -327,14 +338,14 @@ export const deleteParty = async (partyId: string): Promise<boolean> => {
     const user = getCurrentUser();
     const partyRef = doc(db, 'users', user.uid, 'parties', partyId);
     const userRef = doc(db, 'users', user.uid);
-    
+
     await deleteDoc(partyRef);
-    
-    // Mettre à jour les statistiques de l'utilisateur
-    await updateDoc(userRef, {
-      'stats.parties': increment(-1)
-    });
-    
+
+    // Mettre à jour les statistiques de l'utilisateur avec setDoc pour éviter les crashs
+    await setDoc(userRef, {
+      stats: { parties: increment(-1) }
+    }, { merge: true });
+
     return true;
   } catch (error) {
     console.error("Erreur lors de la suppression d'une partie:", error);
@@ -347,17 +358,17 @@ export const addPlayerToParty = async (partyId: string, playerData: Omit<Player,
   try {
     const user = getCurrentUser();
     const partyRef = doc(db, 'users', user.uid, 'parties', partyId);
-    
+
     const player: Player = {
       ...playerData,
       id: uuidv4()
     };
-    
+
     await updateDoc(partyRef, {
       players: arrayUnion(player),
       updatedAt: serverTimestamp()
     });
-    
+
     return player;
   } catch (error) {
     console.error("Erreur lors de l'ajout d'un joueur:", error);
@@ -366,20 +377,20 @@ export const addPlayerToParty = async (partyId: string, playerData: Omit<Player,
 };
 
 // Mettre à jour un joueur
-export const updatePlayer = async (partyId: string, playerId: string, updates: Omit<Player, 'id'>): Promise<Player | null> => {
+export const updatePlayer = async (partyId: string, playerId: string, updates: Partial<Omit<Player, 'id'>>): Promise<Player | null> => {
   try {
     const user = getCurrentUser();
     const partyRef = doc(db, 'users', user.uid, 'parties', partyId);
-    
+
     // Récupérer la partie et ses joueurs
     const partyDoc = await getDoc(partyRef);
     if (!partyDoc.exists()) {
       throw new Error("Groupe non trouvé");
     }
-    
+
     const partyData = partyDoc.data();
     const players = partyData.players || [];
-    
+
     // Trouver et mettre à jour le joueur spécifique
     const updatedPlayers = players.map((player: Player) => {
       if (player.id === playerId) {
@@ -387,13 +398,13 @@ export const updatePlayer = async (partyId: string, playerId: string, updates: O
       }
       return player;
     });
-    
+
     // Mettre à jour la partie avec la liste mise à jour des joueurs
     await updateDoc(partyRef, {
       players: updatedPlayers,
       updatedAt: serverTimestamp()
     });
-    
+
     // Retourner le joueur mis à jour
     const updatedPlayer = updatedPlayers.find((p: Player) => p.id === playerId);
     return updatedPlayer || null;
@@ -408,31 +419,31 @@ export const removePlayerFromParty = async (partyId: string, playerId: string): 
   try {
     const user = getCurrentUser();
     const partyRef = doc(db, 'users', user.uid, 'parties', partyId);
-    
+
     // Récupérer la partie et ses joueurs
     const partyDoc = await getDoc(partyRef);
     if (!partyDoc.exists()) {
       throw new Error("Groupe non trouvé");
     }
-    
+
     const partyData = partyDoc.data();
     const players = partyData.players || [];
-    
+
     // Trouver le joueur à supprimer
     const playerToRemove = players.find((p: Player) => p.id === playerId);
     if (!playerToRemove) {
       throw new Error("Joueur non trouvé");
     }
-    
+
     // Filtrer la liste des joueurs
     const updatedPlayers = players.filter((p: Player) => p.id !== playerId);
-    
+
     // Mettre à jour la partie avec la liste mise à jour des joueurs
     await updateDoc(partyRef, {
       players: updatedPlayers,
       updatedAt: serverTimestamp()
     });
-    
+
     return true;
   } catch (error) {
     console.error("Erreur lors de la suppression d'un joueur:", error);
@@ -448,11 +459,11 @@ export const getEncounters = async (): Promise<Encounter[]> => {
     const user = getCurrentUser();
     const encountersRef = collection(db, 'users', user.uid, 'encounters');
     const querySnapshot = await getDocs(encountersRef);
-    
+
     const encounters: Encounter[] = [];
     querySnapshot.forEach(doc => {
       const data = doc.data();
-      
+
       // Fonction helper pour gérer les dates
       const formatDate = (dateField: any): string => {
         if (!dateField) return new Date().toISOString();
@@ -460,7 +471,7 @@ export const getEncounters = async (): Promise<Encounter[]> => {
         if (typeof dateField === 'string') return dateField;
         return new Date().toISOString();
       };
-      
+
       encounters.push({
         id: doc.id,
         name: data.name,
@@ -480,7 +491,7 @@ export const getEncounters = async (): Promise<Encounter[]> => {
         updatedAt: formatDate(data.updatedAt)
       });
     });
-    
+
     // Trier par date de mise à jour (le plus récent d'abord)
     return encounters.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
   } catch (error) {
@@ -490,71 +501,80 @@ export const getEncounters = async (): Promise<Encounter[]> => {
 };
 
 // Écouter les changements des rencontres en temps réel
-export const subscribeToEncounters = (callback: (encounters: Encounter[]) => void): (() => void) => {
+export const subscribeToEncounters = (
+  callback: (encounters: Encounter[]) => void,
+  errorCallback?: (error: any) => void
+): (() => void) => {
   try {
     const user = getCurrentUser();
     console.log("subscribeToEncounters - Utilisateur:", user.uid);
     const encountersRef = collection(db, 'users', user.uid, 'encounters');
     console.log("subscribeToEncounters - Référence collection:", encountersRef.path);
-    
+
     // Créer un écouteur qui se déclenche à chaque changement dans la collection
-    const unsubscribe = onSnapshot(encountersRef, (snapshot) => {
-      console.log("subscribeToEncounters - Snapshot reçu, taille:", snapshot.size);
-      console.log("subscribeToEncounters - Snapshot vide?", snapshot.empty);
-      
-      const encounters: Encounter[] = [];
-      snapshot.forEach(doc => {
-        console.log("subscribeToEncounters - Document:", doc.id, doc.data());
-        const data = doc.data();
-        
-        // Fonction helper pour gérer les dates
-        const formatDate = (dateField: any): string => {
-          if (!dateField) return new Date().toISOString();
-          if (typeof dateField.toDate === 'function') return dateField.toDate().toISOString();
-          if (typeof dateField === 'string') return dateField;
-          return new Date().toISOString();
-        };
-        
-        encounters.push({
-          id: doc.id,
-          name: data.name,
-          description: data.description || '',
-          environment: data.environment || '',
-          monsters: data.monsters || [],
-          party: data.party || null,
-          participants: data.participants || [],
-          difficulty: data.difficulty || 'medium',
-          totalXP: data.totalXP || 0,
-          adjustedXP: data.adjustedXP || 0,
-          status: data.status || 'draft',
-          round: data.round || 1,
-          currentTurn: data.currentTurn || 0,
-          isActive: data.isActive || false,
-          createdAt: formatDate(data.createdAt),
-          updatedAt: formatDate(data.updatedAt)
+    const unsubscribe = onSnapshot(
+      encountersRef,
+      (snapshot) => {
+        console.log("subscribeToEncounters - Snapshot reçu, taille:", snapshot.size);
+        console.log("subscribeToEncounters - Snapshot vide?", snapshot.empty);
+
+        const encounters: Encounter[] = [];
+        snapshot.forEach(doc => {
+          console.log("subscribeToEncounters - Document:", doc.id, doc.data());
+          const data = doc.data();
+
+          // Fonction helper pour gérer les dates
+          const formatDate = (dateField: any): string => {
+            if (!dateField) return new Date().toISOString();
+            if (typeof dateField.toDate === 'function') return dateField.toDate().toISOString();
+            if (typeof dateField === 'string') return dateField;
+            return new Date().toISOString();
+          };
+
+          encounters.push({
+            id: doc.id,
+            name: data.name,
+            description: data.description || '',
+            environment: data.environment || '',
+            monsters: data.monsters || [],
+            party: data.party || null,
+            participants: data.participants || [],
+            difficulty: data.difficulty || 'medium',
+            totalXP: data.totalXP || 0,
+            adjustedXP: data.adjustedXP || 0,
+            status: data.status || 'draft',
+            round: data.round || 1,
+            currentTurn: data.currentTurn || 0,
+            isActive: data.isActive || false,
+            createdAt: formatDate(data.createdAt),
+            updatedAt: formatDate(data.updatedAt)
+          });
         });
-      });
-      
-      console.log("subscribeToEncounters - Rencontres extraites:", encounters.length);
-      
-      // Trier par date de mise à jour (le plus récent d'abord)
-      const sortedEncounters = encounters.sort((a, b) => 
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      );
-      
-      console.log("subscribeToEncounters - Rencontres triées:", sortedEncounters.length);
-      
-      // Appeler le callback avec les données mises à jour
-      callback(sortedEncounters);
-    }, (error) => {
-      console.error("subscribeToEncounters - Erreur dans onSnapshot:", error);
-    });
-    
+
+        console.log("subscribeToEncounters - Rencontres extraites:", encounters.length);
+
+        // Trier par date de mise à jour (le plus récent d'abord)
+        const sortedEncounters = encounters.sort((a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        );
+
+        console.log("subscribeToEncounters - Rencontres triées:", sortedEncounters.length);
+
+        // Appeler le callback avec les données mises à jour
+        callback(sortedEncounters);
+      },
+      (error) => {
+        console.error("subscribeToEncounters - Erreur dans onSnapshot:", error);
+        if (errorCallback) errorCallback(error);
+      }
+    );
+
     // Retourner la fonction pour se désabonner quand nécessaire
     return unsubscribe;
   } catch (error) {
     console.error("Erreur lors de l'abonnement aux rencontres:", error);
-    return () => {}; // Retourner une fonction vide en cas d'erreur
+    if (errorCallback) errorCallback(error);
+    return () => { }; // Retourner une fonction vide en cas d'erreur
   }
 };
 
@@ -562,24 +582,24 @@ export const subscribeToEncounters = (callback: (encounters: Encounter[]) => voi
 export const saveEncounter = async (encounterData: Omit<Encounter, 'id' | 'createdAt' | 'updatedAt'>): Promise<Encounter | null> => {
   try {
     const user = getCurrentUser();
-    
+
     // Vérifier si l'utilisateur peut créer une nouvelle rencontre
     const canCreate = await canCreateEncounter();
     if (!canCreate) {
       throw new Error("Vous avez atteint la limite de rencontres pour votre plan");
     }
-    
+
     const userRef = doc(db, 'users', user.uid);
     const encountersRef = collection(userRef, 'encounters');
-    
+
     // Préparer les données à sauvegarder
     const { party, participants, monsters, ...restData } = encounterData;
-    
+
     // Vérifier si les participants contiennent des données cycliques et les nettoyer
     const cleanParticipants = participants ? participants.map(participant => {
       // Créer une copie sans propriétés problématiques pour Firestore
       const { actions, traits, ...cleanParticipant } = participant;
-      
+
       // Convertir les actions et traits en format sérialisable si nécessaires
       return {
         ...cleanParticipant,
@@ -593,12 +613,12 @@ export const saveEncounter = async (encounterData: Omit<Encounter, 'id' | 'creat
         })) : []
       };
     }) : [];
-    
+
     // Nettoyer et préparer les monstres
     const cleanMonsters = monsters ? monsters.map(({ monster, quantity }) => {
       // Extraire les propriétés nécessaires du monstre
       const { id, name, originalName, cr, xp, type, size, ac, hp, str, dex, con, int, wis, cha } = monster;
-      
+
       return {
         monster: {
           id,
@@ -612,7 +632,7 @@ export const saveEncounter = async (encounterData: Omit<Encounter, 'id' | 'creat
           hp,
           str,
           dex,
-          con, 
+          con,
           int,
           wis,
           cha
@@ -620,7 +640,7 @@ export const saveEncounter = async (encounterData: Omit<Encounter, 'id' | 'creat
         quantity
       };
     }) : [];
-    
+
     // Préparer les données du groupe
     const cleanParty = party ? {
       id: party.id,
@@ -635,9 +655,9 @@ export const saveEncounter = async (encounterData: Omit<Encounter, 'id' | 'creat
         maxHp: p.maxHp || 10
       }))
     } : null;
-    
+
     const now = serverTimestamp();
-    
+
     // Nettoyer toutes les valeurs undefined
     const cleanData = (obj: any): any => {
       if (obj === null || obj === undefined) return null;
@@ -653,7 +673,7 @@ export const saveEncounter = async (encounterData: Omit<Encounter, 'id' | 'creat
       }
       return obj;
     };
-    
+
     const data = cleanData({
       ...restData,
       monsters: cleanMonsters,
@@ -662,14 +682,14 @@ export const saveEncounter = async (encounterData: Omit<Encounter, 'id' | 'creat
       createdAt: now,
       updatedAt: now
     });
-    
+
     const docRef = await addDoc(encountersRef, data);
-    
-    // Mettre à jour les statistiques de l'utilisateur
-    await updateDoc(userRef, {
-      'stats.encounters': increment(1)
-    });
-    
+
+    // Mettre à jour les statistiques de l'utilisateur avec setDoc pour gérer le cas où le document n'existe pas
+    await setDoc(userRef, {
+      stats: { encounters: increment(1) }
+    }, { merge: true });
+
     return {
       id: docRef.id,
       ...encounterData,
@@ -688,14 +708,14 @@ export const deleteEncounter = async (encounterId: string): Promise<boolean> => 
     const user = getCurrentUser();
     const encounterRef = doc(db, 'users', user.uid, 'encounters', encounterId);
     const userRef = doc(db, 'users', user.uid);
-    
+
     await deleteDoc(encounterRef);
-    
-    // Mettre à jour les statistiques de l'utilisateur
-    await updateDoc(userRef, {
-      'stats.encounters': increment(-1)
-    });
-    
+
+    // Mettre à jour les statistiques de l'utilisateur avec setDoc pour éviter les crashs
+    await setDoc(userRef, {
+      stats: { encounters: increment(-1) }
+    }, { merge: true });
+
     return true;
   } catch (error) {
     console.error("Erreur lors de la suppression de la rencontre:", error);
@@ -711,18 +731,18 @@ export const updateFirestoreEncounter = async (
   try {
     const user = getCurrentUser();
     const encounterRef = doc(db, 'users', user.uid, 'encounters', encounterId);
-    
+
     // Vérifier si la rencontre existe déjà
     const encounterDoc = await getDoc(encounterRef);
-    
+
     // Préparer les données à mettre à jour
     const { party, participants, monsters, ...restUpdates } = updates;
-    
+
     // Vérifier si les participants contiennent des données cycliques et les nettoyer
     const cleanParticipants = participants ? participants.map(participant => {
       // Créer une copie sans propriétés problématiques pour Firestore
       const { actions, traits, ...cleanParticipant } = participant;
-      
+
       // Convertir les actions et traits en format sérialisable si nécessaires
       return {
         ...cleanParticipant,
@@ -736,12 +756,12 @@ export const updateFirestoreEncounter = async (
         })) : []
       };
     }) : undefined;
-    
+
     // Nettoyer et préparer les monstres
     const cleanMonsters = monsters ? monsters.map(({ monster, quantity }) => {
       // Extraire les propriétés nécessaires du monstre
       const { id, name, originalName, cr, xp, type, size, ac, hp, str, dex, con, int, wis, cha } = monster;
-      
+
       return {
         monster: {
           id,
@@ -755,7 +775,7 @@ export const updateFirestoreEncounter = async (
           hp,
           str,
           dex,
-          con, 
+          con,
           int,
           wis,
           cha
@@ -763,7 +783,7 @@ export const updateFirestoreEncounter = async (
         quantity
       };
     }) : undefined;
-    
+
     // Préparer les données du groupe
     const cleanParty = party ? {
       id: party.id,
@@ -778,9 +798,9 @@ export const updateFirestoreEncounter = async (
         maxHp: p.maxHp || 10
       }))
     } : undefined;
-    
+
     const now = serverTimestamp();
-    
+
     // Nettoyer toutes les valeurs undefined (utiliser la même fonction que dans saveEncounter)
     const cleanData = (obj: any): any => {
       if (obj === null || obj === undefined) return null;
@@ -796,20 +816,20 @@ export const updateFirestoreEncounter = async (
       }
       return obj;
     };
-    
+
     const updateData: any = {
       ...restUpdates,
       updatedAt: now
     };
-    
+
     // N'ajouter les champs que s'ils sont définis
     if (cleanParticipants) updateData.participants = cleanParticipants;
     if (cleanMonsters) updateData.monsters = cleanMonsters;
     if (cleanParty) updateData.party = cleanParty;
-    
+
     // Nettoyer les données avant l'envoi
     const cleanedUpdateData = cleanData(updateData);
-    
+
     if (encounterDoc.exists()) {
       // Mise à jour d'une rencontre existante
       await updateDoc(encounterRef, cleanedUpdateData);
@@ -817,22 +837,22 @@ export const updateFirestoreEncounter = async (
       // Création d'une nouvelle rencontre
       cleanedUpdateData.createdAt = now;
       await setDoc(encounterRef, cleanedUpdateData);
-      
-      // Mettre à jour les statistiques de l'utilisateur
+
+      // Mettre à jour les statistiques de l'utilisateur avec setDoc pour éviter les crashs
       const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
-        'stats.encounters': increment(1)
-      });
+      await setDoc(userRef, {
+        stats: { encounters: increment(1) }
+      }, { merge: true });
     }
-    
+
     // Récupérer les données mises à jour
     const updatedDoc = await getDoc(encounterRef);
     if (!updatedDoc.exists()) {
       throw new Error("Erreur: Impossible de récupérer la rencontre après mise à jour");
     }
-    
+
     const data = updatedDoc.data();
-    
+
     return {
       id: encounterId,
       name: data.name,
@@ -880,10 +900,10 @@ export const calculateEncounterDifficulty = (
   const totalXP = monsters.reduce((sum, { monster, quantity }) => {
     return sum + monster.xp * quantity;
   }, 0);
-  
+
   // Compter le nombre total de monstres
   const monsterCount = monsters.reduce((sum, { quantity }) => sum + quantity, 0);
-  
+
   // Déterminer le multiplicateur en fonction du nombre de monstres
   let multiplier = 1;
   if (monsterCount === 1) {
@@ -899,10 +919,10 @@ export const calculateEncounterDifficulty = (
   } else if (monsterCount >= 15) {
     multiplier = 4;
   }
-  
+
   // Calculer l'XP ajustée
   const adjustedXP = Math.floor(totalXP * multiplier);
-  
+
   // Calculer les seuils de difficulté pour le groupe
   const thresholds = {
     easy: 0,
@@ -910,7 +930,7 @@ export const calculateEncounterDifficulty = (
     hard: 0,
     deadly: 0
   };
-  
+
   // Seuils de difficulté par joueur, selon le DMG
   const xpThresholds: Record<number, Record<string, number>> = {
     1: { easy: 25, medium: 50, hard: 75, deadly: 100 },
@@ -934,7 +954,7 @@ export const calculateEncounterDifficulty = (
     19: { easy: 2400, medium: 4900, hard: 7300, deadly: 10900 },
     20: { easy: 2800, medium: 5700, hard: 8500, deadly: 12700 }
   };
-  
+
   // Calculer les seuils pour chaque joueur
   party.players.forEach(player => {
     const level = Math.min(Math.max(player.level, 1), 20);
@@ -943,7 +963,7 @@ export const calculateEncounterDifficulty = (
     thresholds.hard += xpThresholds[level].hard;
     thresholds.deadly += xpThresholds[level].deadly;
   });
-  
+
   // Déterminer la difficulté
   let difficulty: 'easy' | 'medium' | 'hard' | 'deadly';
   if (adjustedXP < thresholds.easy) {
@@ -957,7 +977,7 @@ export const calculateEncounterDifficulty = (
   } else {
     difficulty = 'deadly';
   }
-  
+
   return { totalXP, adjustedXP, difficulty };
 };
 
@@ -968,16 +988,24 @@ export const getUserStats = async (): Promise<UserStats> => {
   try {
     const user = getCurrentUser();
     const userRef = doc(db, 'users', user.uid);
-    
+
     const userDoc = await getDoc(userRef);
-    if (!userDoc.exists()) {
-      throw new Error("Utilisateur non trouvé");
+
+    // Valeurs par défaut si l'utilisateur n'existe pas encore ou n'a pas de stats
+    const defaultStats = {
+      parties: 0,
+      encounters: 0
+    };
+
+    let stats = defaultStats;
+    let plan = 'free';
+
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      stats = userData.stats || defaultStats;
+      plan = userData.subscriptionPlan || 'free';
     }
-    
-    const userData = userDoc.data();
-    const stats = userData.stats || {};
-    const plan = userData.subscriptionPlan || 'free';
-    
+
     // Limites selon le plan
     const limits: Record<string, { maxParties: number, maxEncounters: number }> = {
       free: {
@@ -989,7 +1017,7 @@ export const getUserStats = async (): Promise<UserStats> => {
         maxEncounters: Number.POSITIVE_INFINITY
       }
     };
-    
+
     return {
       parties: stats.parties || 0,
       encounters: stats.encounters || 0,
@@ -998,7 +1026,13 @@ export const getUserStats = async (): Promise<UserStats> => {
     };
   } catch (error) {
     console.error("Erreur lors de la récupération des statistiques:", error);
-    throw error;
+    // En cas d'erreur, retourner les stats par défaut pour ne pas bloquer l'UI
+    return {
+      parties: 0,
+      encounters: 0,
+      maxParties: FREE_PLAN_LIMITS.MAX_PARTIES,
+      maxEncounters: FREE_PLAN_LIMITS.MAX_ENCOUNTERS
+    };
   }
 };
 
@@ -1007,7 +1041,7 @@ export const initializeTestMonsters = async (): Promise<void> => {
   try {
     const user = getCurrentUser();
     const monstersCollection = collection(db, 'monsters'); // Collection globale
-    
+
     // Quelques monstres de base pour tester
     const testMonsters = [
       {
@@ -1053,7 +1087,7 @@ export const initializeTestMonsters = async (): Promise<void> => {
         createdBy: user.uid
       }
     ];
-    
+
     // Ajouter chaque monstre à la collection globale
     for (const monster of testMonsters) {
       await addDoc(monstersCollection, {
@@ -1061,7 +1095,7 @@ export const initializeTestMonsters = async (): Promise<void> => {
         createdAt: serverTimestamp()
       });
     }
-    
+
     console.log('Monstres de test ajoutés avec succès');
     return;
   } catch (error) {
@@ -1079,10 +1113,10 @@ export const subscribeToMonsters = (
     const user = getCurrentUser();
     // Utiliser la collection globale de monstres au lieu d'une sous-collection utilisateur
     const monstersRef = collection(db, 'monsters');
-    
+
     // Créer un écouteur qui se déclenche à chaque changement dans la collection
     const unsubscribe = onSnapshot(
-      monstersRef, 
+      monstersRef,
       (snapshot) => {
         const monsters: Monster[] = [];
         snapshot.forEach(doc => {
@@ -1103,7 +1137,7 @@ export const subscribeToMonsters = (
             custom: data.custom || true
           });
         });
-        
+
         // Appeler le callback avec les données mises à jour
         callback(monsters);
       },
@@ -1115,7 +1149,7 @@ export const subscribeToMonsters = (
         }
       }
     );
-    
+
     // Retourner la fonction pour se désabonner quand nécessaire
     return unsubscribe;
   } catch (error) {
@@ -1124,7 +1158,7 @@ export const subscribeToMonsters = (
     if (errorCallback) {
       errorCallback(error);
     }
-    return () => {}; // Retourner une fonction vide en cas d'erreur
+    return () => { }; // Retourner une fonction vide en cas d'erreur
   }
 };
 

@@ -19,6 +19,16 @@ export interface Player {
   ac?: number;
   currentHp?: number;
   maxHp?: number;
+  // Caractéristiques pour l'import D&D Beyond
+  str?: number;
+  dex?: number;
+  con?: number;
+  int?: number;
+  wis?: number;
+  cha?: number;
+  speed?: string[]; // Vitesse (ex: ["9m", "Vol 18m"])
+  initiative?: number; // Modificateur d'initiative
+  dndBeyondId?: string; // ID pour la synchro live
 }
 
 export interface Party {
@@ -217,4 +227,19 @@ export interface EncounterParticipant {
   cha?: number;
   actions?: any[];
   traits?: any[];
+  dndBeyondId?: string; // ID pour la synchro live
+}
+
+export interface Spell {
+  name: string;
+  level: number;
+  school: string;
+  castingTime: string;
+  range: string;
+  components: string;
+  duration: string;
+  classes: string[];
+  description: string;
+  source?: string;
+  ritual?: boolean;
 } 

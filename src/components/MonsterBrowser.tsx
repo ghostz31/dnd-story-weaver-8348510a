@@ -6,9 +6,11 @@ import { FaSync, FaSearch, FaFilter, FaChevronDown, FaChevronUp, FaPlus, FaInfoC
 import { useAuth } from '../auth/AuthContext';
 import { toast } from '../hooks/use-toast';
 import { enrichMonster, mergeAideDDData } from '@/lib/monsterEnricher';
-import MonsterCard from './MonsterCard';
+import { MonsterCard } from './MonsterCard';
 import { Button } from './ui/button';
-import { Image as ImageIcon } from 'lucide-react';
+import { Badge } from './ui/badge';
+import { Image as ImageIcon, X } from 'lucide-react';
+import { getAideDDMonsterSlug, getMonsterImageUrl, generateUniqueId } from '../lib/monsterUtils';
 
 interface MonsterBrowserProps {
   onSelectMonster?: (monster: Monster) => void;
@@ -16,20 +18,6 @@ interface MonsterBrowserProps {
 }
 
 // Fonction utilitaire pour générer des identifiants uniques
-const generateUniqueId = () => {
-  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-};
-
-// Fonction utilitaire pour générer des slugs AideDD corrects
-const getAideDDMonsterSlug = (name: string): string => {
-  // Convertir le nom en slug
-  return name.toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Enlever les accents
-    .replace(/ /g, '-')              // Remplacer les espaces par des tirets
-    .replace(/[^a-z0-9-]/g, '');     // Supprimer les caractères non alphanumériques
-};
-
 const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSelectable = false }) => {
   const [monsters, setMonsters] = useState<Monster[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -48,30 +36,30 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedSize, setSelectedSize] = useState('all');
   const [selectedEnvironment, setSelectedEnvironment] = useState('all');
-  
+
   const { isAuthenticated } = useAuth();
-  
+
   // Charger les monstres au démarrage
   useEffect(() => {
     if (!isAuthenticated) {
       // Si l'utilisateur n'est pas authentifié, utiliser les données locales
-    const loadMonsters = async () => {
-      // Éviter de charger si les monstres sont déjà chargés
-      if (monsters.length > 0) {
-        console.log("Les monstres sont déjà chargés, chargement ignoré");
-        return;
-      }
-      
-      setLoading(true);
-      try {
+      const loadMonsters = async () => {
+        // Éviter de charger si les monstres sont déjà chargés
+        if (monsters.length > 0) {
+          console.log("Les monstres sont déjà chargés, chargement ignoré");
+          return;
+        }
+
+        setLoading(true);
+        try {
           console.log("Chargement des monstres depuis l'index des fichiers individuels...");
-          
+
           // Charger l'index des monstres individuels
           const monstersIndex = await loadMonstersIndex();
-          
+
           if (monstersIndex && monstersIndex.length > 0) {
             console.log(`${monstersIndex.length} monstres chargés depuis l'index`);
-            
+
             // Transformer l'index au format Monster pour l'application
             const formattedMonsters = monstersIndex.map((monster: any) => ({
               id: monster.id,
@@ -89,11 +77,11 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
               hp: 10,
               image: monster.image
             }));
-            
+
             setMonsters(formattedMonsters);
           } else {
             console.warn("Index des monstres vide, essai de chargement depuis le JSON complet");
-            
+
             // Fallback au JSON complet
             const response = await fetch('/data/aidedd-monsters-all.json');
             if (response.ok) {
@@ -113,52 +101,52 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                 ac: monster.ac || 10,
                 hp: monster.hp || 10
               }));
-        
-        setMonsters(monsters);
+
+              setMonsters(monsters);
               // Sauvegarder dans localStorage pour accélérer les prochains chargements
               localStorage.setItem('dnd_monsters', JSON.stringify(monsters));
             } else {
               throw new Error("Impossible de charger le fichier JSON");
             }
           }
-      } catch (error) {
-        console.error("Erreur lors du chargement des monstres:", error);
-          
+        } catch (error) {
+          console.error("Erreur lors du chargement des monstres:", error);
+
           // Dernier recours: utiliser les monstres stockés en localStorage
           const localMonsters = getMonsters();
           setMonsters(localMonsters);
-      } finally {
-        setLoading(false);
-      }
-    };
+        } finally {
+          setLoading(false);
+        }
+      };
 
-    loadMonsters();
+      loadMonsters();
     } else {
       // Si l'utilisateur est authentifié, utiliser Firestore avec des mises à jour en temps réel
       if (monsters.length > 0) {
         console.log("Les monstres sont déjà chargés, chargement Firestore ignoré");
         return;
       }
-      
+
       setLoading(true);
-      
+
       try {
         const unsubscribe = subscribeToMonsters(async (fetchedMonsters) => {
           setLoading(false);
-          
+
           // Si nous avons réussi à récupérer des monstres depuis Firestore
           if (fetchedMonsters && fetchedMonsters.length > 0) {
             setMonsters(fetchedMonsters);
           } else {
             // Solution de secours: essayer d'abord l'index des fichiers individuels
             console.log("Aucun monstre trouvé dans Firestore, essai avec l'index des fichiers individuels");
-            
+
             try {
               const monstersIndex = await loadMonstersIndex();
-              
+
               if (monstersIndex && monstersIndex.length > 0) {
                 console.log(`${monstersIndex.length} monstres chargés depuis l'index`);
-                
+
                 // Transformer l'index au format Monster pour l'application
                 const formattedMonsters = monstersIndex.map((monster: any) => ({
                   id: monster.id,
@@ -176,14 +164,14 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                   hp: 10,
                   image: monster.image
                 }));
-                
+
                 setMonsters(formattedMonsters);
                 // Sauvegarder dans localStorage pour accélérer les prochains chargements
                 localStorage.setItem('dnd_monsters', JSON.stringify(formattedMonsters));
               } else {
                 // Si l'index est vide, essayer avec le JSON complet
                 console.warn("Index des monstres vide, essai avec le JSON complet");
-                
+
                 // Essayer de charger depuis le fichier JSON complet
                 const response = await fetch('/data/aidedd-monsters-all.json');
                 if (response.ok) {
@@ -203,7 +191,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                     ac: monster.ac || 10,
                     hp: monster.hp || 10
                   }));
-                  
+
                   setMonsters(monsters);
                   // Sauvegarder dans localStorage pour accélérer les prochains chargements
                   localStorage.setItem('dnd_monsters', JSON.stringify(monsters));
@@ -219,17 +207,17 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
             }
           }
         });
-        
+
         return () => {
           if (unsubscribe) unsubscribe();
         };
       } catch (error) {
         console.error("Erreur lors de l'abonnement aux monstres Firestore:", error);
-              setLoading(false);
-        
+        setLoading(false);
+
         // En cas d'erreur avec Firestore, utiliser les données locales
-              const localMonsters = getMonsters();
-              setMonsters(localMonsters);
+        const localMonsters = getMonsters();
+        setMonsters(localMonsters);
       }
     }
   }, [isAuthenticated]);
@@ -278,32 +266,32 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
       if (searchQuery && !monster.name.toLowerCase().includes(searchQuery.toLowerCase())) {
         return false;
       }
-      
+
       // Filtre par CR
       if (crMin !== undefined && monster.cr < crMin) {
         return false;
       }
-      
+
       if (crMax !== undefined && monster.cr > crMax) {
         return false;
       }
-      
+
       // Filtre par type
       if (selectedType !== 'all' && monster.type !== selectedType) {
         return false;
       }
-      
+
       // Filtre par taille
       if (selectedSize !== 'all' && monster.size !== selectedSize) {
         return false;
       }
-      
+
       // Filtre par environnement
-      if (selectedEnvironment !== 'all' && 
-          (!monster.environment || !monster.environment.includes(selectedEnvironment))) {
+      if (selectedEnvironment !== 'all' &&
+        (!monster.environment || !monster.environment.includes(selectedEnvironment))) {
         return false;
       }
-      
+
       // Filtre par catégorie (à adapter selon votre modèle de données)
       if (selectedCategory !== 'all') {
         if (selectedCategory === 'monstre' && monster.type !== 'humanoid' && monster.type !== 'monstrosity') {
@@ -314,7 +302,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
           return false;
         }
       }
-      
+
       return true;
     });
   };
@@ -327,15 +315,15 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
 
   // Rafraîchir les monstres depuis l'API
   const handleRefreshMonsters = async () => {
-      setLoading(true);
-    
+    setLoading(true);
+
     try {
       // Charger l'index des monstres individuels
       const monstersIndex = await loadMonstersIndex();
-      
+
       if (monstersIndex && monstersIndex.length > 0) {
         console.log(`${monstersIndex.length} monstres chargés depuis l'index`);
-        
+
         // Transformer l'index au format Monster pour l'application
         const formattedMonsters = monstersIndex.map((monster: any) => ({
           id: monster.id,
@@ -353,10 +341,10 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
           hp: 10,
           image: monster.image
         }));
-        
+
         setMonsters(formattedMonsters);
         localStorage.setItem('dnd_monsters', JSON.stringify(formattedMonsters));
-        
+
         toast({
           title: "Succès",
           description: `${formattedMonsters.length} monstres chargés avec succès`,
@@ -364,121 +352,52 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
         });
       } else {
         // Fallback au JSON complet
-      const response = await fetch('/data/aidedd-monsters-all.json');
-      if (response.ok) {
-        const monstersData = await response.json();
-        // Transformer les données au format attendu par l'application
+        const response = await fetch('/data/aidedd-monsters-all.json');
+        if (response.ok) {
+          const monstersData = await response.json();
+          // Transformer les données au format attendu par l'application
           const monsters = monstersData.map((monster: any) => ({
             id: monster.id || generateUniqueId(),
-          name: monster.name,
-          cr: monster.cr,
+            name: monster.name,
+            cr: monster.cr,
             xp: monster.xp || calculateXPFromCR(monster.cr),
-          type: monster.type,
-          size: monster.size,
-          source: monster.source || 'MM',
-          environment: monster.environment || [],
-          legendary: monster.legendary || false,
-          alignment: monster.alignment || 'non-aligné',
-          ac: monster.ac || 10,
-          hp: monster.hp || 10
-        }));
-        
+            type: monster.type,
+            size: monster.size,
+            source: monster.source || 'MM',
+            environment: monster.environment || [],
+            legendary: monster.legendary || false,
+            alignment: monster.alignment || 'non-aligné',
+            ac: monster.ac || 10,
+            hp: monster.hp || 10
+          }));
+
           setMonsters(monsters);
           localStorage.setItem('dnd_monsters', JSON.stringify(monsters));
-        
-        toast({
-          title: "Succès",
+
+          toast({
+            title: "Succès",
             description: `${monsters.length} monstres chargés depuis le JSON`,
-          variant: "default"
-        });
-      } else {
+            variant: "default"
+          });
+        } else {
           throw new Error("Impossible de charger le fichier JSON");
         }
       }
-      } catch (error) {
+    } catch (error) {
       console.error("Erreur lors de l'actualisation des monstres:", error);
       toast({
         title: "Erreur",
         description: "Impossible de recharger les monstres",
         variant: "destructive"
       });
-      } finally {
-        setLoading(false);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Nouvelle fonction pour récupérer les détails d'un monstre depuis AideDD
-  const fetchMonsterDetails = async (monster: Monster) => {
-    // Réinitialiser complètement les états pour éviter les problèmes de rendu
-    setEnrichedMonster(null);
-    setSelectedMonster(null);
-    
-    // Ensuite seulement mettre à jour l'état de chargement et le nom
-    setLoadingDetails(true);
-    setCurrentMonsterName(monster.name);
-    
-    // AJOUTER DES LOGS POUR LE DÉBOGAGE
-    console.log("==================== DÉBUT DEBUG ====================");
-    console.log("Monster sélectionné:", monster);
-    
-    try {
-      // Essayer d'abord de récupérer depuis AideDD
-      console.log("Tentative de récupération depuis AideDD pour:", monster.name);
-      const aideddData = await fetchMonsterFromAideDD(monster.name);
-      console.log("Données reçues d'AideDD:", aideddData);
-      
-      if (aideddData) {
-        // Si on a des données de AideDD, les adapter à notre format
-        console.log("Adaptation des données AideDD");
-        const adaptedData = adaptAideDDData(aideddData);
-        console.log("Données adaptées:", adaptedData);
-        
-        // Utiliser la fonction de fusion pour combiner les données
-        console.log("Fusion des données avec mergeAideDDData");
-        const enriched = mergeAideDDData(adaptedData, monster);
-        console.log("Données finales après fusion:", enriched);
-        
-        // Mettre à jour l'état
-        setEnrichedMonster(enriched);
-        setSelectedMonster(monster);
-        
-        toast({
-          title: "Succès",
-          description: "Données du monstre récupérées depuis AideDD",
-          variant: "default"
-        });
-      } else {
-        // Si AideDD échoue, utiliser directement notre service d'enrichissement
-        console.log("Aucune donnée reçue d'AideDD, utilisation de enrichMonster");
-        const enriched = enrichMonster(monster);
-        console.log("Données enrichies:", enriched);
-        setEnrichedMonster(enriched);
-        setSelectedMonster(monster);
-        
-        toast({
-          title: "Information",
-          description: "Utilisation des données générées (AideDD non disponible)",
-          variant: "default"
-        });
-      }
-    } catch (error) {
-      console.error("Erreur lors de la récupération des détails du monstre:", error);
-      // En cas d'erreur, utiliser notre service d'enrichissement
-      console.log("Utilisation de enrichMonster suite à une erreur");
-      const enriched = enrichMonster(monster);
-      console.log("Données enrichies après erreur:", enriched);
-      setEnrichedMonster(enriched);
-      setSelectedMonster(monster);
-      
-      toast({
-        title: "Erreur",
-        description: "Impossible de récupérer les détails complets du monstre. Affichage des données générées.",
-        variant: "destructive"
-      });
-    } finally {
-      console.log("==================== FIN DEBUG ====================");
-      setLoadingDetails(false);
-    }
+  // Nouvelle fonction pour récupérer les détails d'un monstre (version iframe)
+  const fetchMonsterDetails = (monster: Monster) => {
+    setSelectedMonster(monster);
   };
 
   // Remplacer la fonction handleSelectMonster existante
@@ -499,10 +418,10 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
     setSelectedCategory('all');
     setSelectedSize('all');
     setSelectedEnvironment('all');
-    
+
     // Recharger la liste complète des monstres
     setLoading(true);
-    
+
     if (isAuthenticated) {
       // Si l'utilisateur est authentifié, réabonner à tous les monstres sans filtre
       subscribeToMonsters((allMonsters) => {
@@ -511,13 +430,13 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
       });
     } else {
       // Sinon utiliser les données locales
-    try {
-      const allMonsters = getMonsters();
-      setMonsters(allMonsters);
-    } catch (error) {
-      console.error("Erreur lors du rechargement des monstres:", error);
-    } finally {
-      setLoading(false);
+      try {
+        const allMonsters = getMonsters();
+        setMonsters(allMonsters);
+      } catch (error) {
+        console.error("Erreur lors du rechargement des monstres:", error);
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -528,49 +447,50 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
   return (
     <div className="w-full">
       {/* Barre de recherche et filtres */}
-      <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-2">
+      <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-2 glass-panel p-3 rounded-xl">
         <div className="relative w-full sm:w-1/2">
-            <input
-              type="text"
-              value={searchQuery}
+          <input
+            type="text"
+            value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Rechercher un monstre..."
-            className="pl-10 pr-4 py-2 border rounded-md w-full"
-            />
-          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            className="pl-10 pr-4 py-2 border-glass-border/30 bg-white/50 backdrop-blur-sm rounded-md w-full focus:ring-primary/50 focus:border-primary/50 placeholder:text-muted-foreground/70 text-foreground"
+          />
+          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
         </div>
-        
-        <div className="flex gap-2 items-center">
-        <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-1 px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
-          >
-            <FaFilter className="text-gray-700" />
-            {showFilters ? "Masquer" : "Filtres"}
-            {showFilters ? <FaChevronUp className="text-gray-700" /> : <FaChevronDown className="text-gray-700" />}
-        </button>
 
-            <button
+        <div className="flex gap-2 items-center">
+          <Button
+            variant="outline"
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center gap-2 border-glass-border/30 hover:bg-primary/10"
+          >
+            <FaFilter className="text-muted-foreground" />
+            {showFilters ? "Masquer" : "Filtres"}
+            {showFilters ? <FaChevronUp className="text-muted-foreground size-3" /> : <FaChevronDown className="text-muted-foreground size-3" />}
+          </Button>
+
+          <Button
             onClick={handleRefreshMonsters}
-            className={`flex items-center gap-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={loading}
-            >
+            className="flex items-center gap-2"
+          >
             <FaSync className={`${loading ? 'animate-spin' : ''}`} />
             Actualiser
-            </button>
-          </div>
-            </div>
+          </Button>
+        </div>
+      </div>
 
       {/* Filtres */}
       {showFilters && (
-        <div className="mb-4 p-4 bg-gray-50 rounded-md">
+        <div className="mb-4 p-4 glass-card rounded-xl border border-glass-border/20">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+              <label className="block text-sm font-cinzel font-bold text-foreground mb-1">Type</label>
               <select
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border border-glass-border/30 bg-white/50 backdrop-blur-sm rounded-md focus:ring-primary/50"
               >
                 {monsterTypes.map(type => (
                   <option key={type.value} value={type.value}>{type.label}</option>
@@ -578,11 +498,11 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Taille</label>
+              <label className="block text-sm font-cinzel font-bold text-foreground mb-1">Taille</label>
               <select
                 value={selectedSize}
                 onChange={(e) => setSelectedSize(e.target.value)}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border border-glass-border/30 bg-white/50 backdrop-blur-sm rounded-md focus:ring-primary/50"
               >
                 {monsterSizes.map(size => (
                   <option key={size.value} value={size.value}>{size.label}</option>
@@ -590,11 +510,11 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
+              <label className="block text-sm font-cinzel font-bold text-foreground mb-1">Catégorie</label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border border-glass-border/30 bg-white/50 backdrop-blur-sm rounded-md focus:ring-primary/50"
               >
                 {monsterCategories.map(category => (
                   <option key={category.value} value={category.value}>{category.label}</option>
@@ -602,11 +522,11 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Environnement</label>
+              <label className="block text-sm font-cinzel font-bold text-foreground mb-1">Environnement</label>
               <select
                 value={selectedEnvironment}
                 onChange={(e) => setSelectedEnvironment(e.target.value)}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border border-glass-border/30 bg-white/50 backdrop-blur-sm rounded-md focus:ring-primary/50"
               >
                 {environments.map(env => (
                   <option key={env.value} value={env.value}>{env.label}</option>
@@ -614,7 +534,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">FP Min</label>
+              <label className="block text-sm font-cinzel font-bold text-foreground mb-1">FP Min</label>
               <input
                 type="number"
                 min="0"
@@ -622,11 +542,11 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                 step="0.125"
                 value={crMin !== undefined ? crMin : ''}
                 onChange={(e) => setCrMin(e.target.value !== '' ? parseFloat(e.target.value) : undefined)}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border border-glass-border/30 bg-white/50 backdrop-blur-sm rounded-md focus:ring-primary/50"
               />
-          </div>
+            </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">FP Max</label>
+              <label className="block text-sm font-cinzel font-bold text-foreground mb-1">FP Max</label>
               <input
                 type="number"
                 min="0"
@@ -634,21 +554,22 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                 step="0.125"
                 value={crMax !== undefined ? crMax : ''}
                 onChange={(e) => setCrMax(e.target.value !== '' ? parseFloat(e.target.value) : undefined)}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border border-glass-border/30 bg-white/50 backdrop-blur-sm rounded-md focus:ring-primary/50"
               />
-        </div>
+            </div>
             <div className="flex items-end">
-          <button
-            onClick={resetFilters}
-                className="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300 w-full"
-          >
+              <Button
+                variant="secondary"
+                onClick={resetFilters}
+                className="w-full bg-white/50 hover:bg-white/80"
+              >
                 Réinitialiser
-          </button>
+              </Button>
             </div>
           </div>
         </div>
       )}
-      
+
       {loading ? (
         <div className="flex justify-center items-center py-8">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
@@ -658,7 +579,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
           {/* Ajout du bouton pour ajouter tous les monstres filtrés */}
           {isSelectable && filteredMonsters.length > 0 && (
             <div className="mb-4">
-              <Button 
+              <Button
                 onClick={() => {
                   if (onSelectMonster) {
                     // Ajouter le premier monstre pour déclencher l'événement
@@ -678,144 +599,154 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
               </Button>
             </div>
           )}
-          
+
           {/* Affichage en mode liste au lieu de grille */}
-          <div className="overflow-y-auto pb-4">
+          <div className="overflow-y-auto pb-4 custom-scrollbar">
             {filteredMonsters.length > 0 ? (
-              <div className="bg-white rounded-lg shadow overflow-hidden">
-                <table className="min-w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Taille</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">FP</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">XP</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-                  <tbody className="divide-y divide-gray-200">
+              <div className="glass-card rounded-xl overflow-hidden shadow-lg border border-glass-border/20">
+                <table className="min-w-full divide-y divide-glass-border/20">
+                  <thead className="bg-primary/5">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">Nom</th>
+                      <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">Type</th>
+                      <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">Taille</th>
+                      <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">FP</th>
+                      <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">XP</th>
+                      <th className="px-4 py-3 text-center text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-glass-border/20 bg-transparent">
                     {filteredMonsters.map((monster) => (
-                      <tr key={monster.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => handleSelectMonster(monster)}>
+                      <tr key={monster.id} className="hover:bg-primary/5 transition-colors cursor-pointer group" onClick={() => handleSelectMonster(monster)}>
                         <td className="px-4 py-2">
                           <div className="flex items-center">
-                            <div className="flex-shrink-0 h-8 w-8 bg-gray-200 rounded-full overflow-hidden">
-                              {monster.image ? (
-                                <img 
-                                  src={`/data/aidedd-complete/img/${monster.image}`} 
-                                  alt={monster.name}
-                                  className="h-8 w-8 object-cover"
-                                  onError={(e) => {
-                                    const target = e.target as HTMLImageElement;
-                                    target.onerror = null;
-                                    target.src = '/images/monsters/unknown.jpg';
-                                  }}
-                                />
-                              ) : (
-                                <div className="h-8 w-8 flex items-center justify-center text-gray-500">
-                                  <ImageIcon size={16} />
-                                </div>
-                              )}
+                            <div className="flex-shrink-0 h-[36px] w-[36px] bg-gray-200 rounded-lg overflow-hidden border border-glass-border/30 relative">
+                              <img
+                                src={getMonsterImageUrl(monster)}
+                                alt={monster.name}
+                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.style.display = 'none';
+                                  target.parentElement!.classList.add('flex', 'items-center', 'justify-center', 'bg-secondary');
+                                  target.parentElement!.innerHTML = '<span class="text-xs text-secondary-foreground font-bold">' + monster.name.charAt(0).toUpperCase() + '</span>';
+                                }}
+                              />
                             </div>
                             <div className="ml-3">
-                              <div className="text-sm font-medium text-gray-900">{monster.name}</div>
+                              <div className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{monster.name}</div>
                             </div>
                           </div>
                         </td>
                         <td className="px-4 py-2">
-                          <span className="text-sm text-gray-700">{monster.type || "Inconnu"}</span>
+                          <span className="text-sm text-muted-foreground">{monster.type || "Inconnu"}</span>
                         </td>
                         <td className="px-4 py-2">
-                          <span className="text-sm text-gray-700">{monster.size || "M"}</span>
+                          <span className="text-sm text-muted-foreground">{monster.size || "M"}</span>
                         </td>
                         <td className="px-4 py-2">
-                          <span className="text-sm text-gray-700">{monster.cr}</span>
+                          <Badge variant="outline" className="font-mono bg-white/20">
+                            {monster.cr}
+                          </Badge>
                         </td>
                         <td className="px-4 py-2">
-                          <span className="text-sm text-gray-700">{monster.xp}</span>
+                          <span className="text-sm text-muted-foreground">{monster.xp}</span>
                         </td>
                         <td className="px-4 py-2 text-sm text-right space-x-2">
                           {isSelectable && (
-                            <button
+                            <Button
+                              size="sm"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 onSelectMonster && onSelectMonster(monster);
                               }}
-                              className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                              className="h-7 px-2"
                             >
-                              <FaPlus className="mr-1" size={12} /> Ajouter
-                            </button>
+                              <FaPlus className="mr-1" size={10} /> Ajouter
+                            </Button>
                           )}
-                          <button 
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
                               fetchMonsterDetails(monster);
                             }}
-                            className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                            className="h-7 px-2 hover:bg-white/20"
                           >
                             <FaInfoCircle className="mr-1" size={12} /> Détails
-                          </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             ) : (
-              <div className="text-center py-8 text-gray-500">
-                Aucun monstre trouvé. Essayez de modifier vos critères de recherche.
-        </div>
-      )}
-      </div>
+              <div className="glass-card p-8 text-center rounded-xl border border-dashed border-glass-border/30 text-muted-foreground">
+                <p>Aucun monstre trouvé. Essayez de modifier vos critères de recherche.</p>
+              </div>
+            )}
+          </div>
         </>
       )}
 
       {/* Modal de détails du monstre */}
-      {selectedMonster && enrichedMonster && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center p-4 border-b">
-              <h2 className="text-xl font-bold">{enrichedMonster.name}</h2>
-              <button 
-                onClick={() => setSelectedMonster(null)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                ×
-              </button>
+      {selectedMonster && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="glass-panel w-full max-w-4xl h-[85vh] flex flex-col rounded-xl overflow-hidden shadow-2xl relative">
+            <div className="flex justify-between items-center p-4 border-b border-glass-border/20 bg-primary/5">
+              <h2 className="text-xl font-cinzel font-bold px-2">{selectedMonster.name}</h2>
+              <div className="flex items-center gap-2">
+                <a
+                  href={`https://www.aidedd.org/dnd/monstres.php?vf=${getAideDDMonsterSlug(selectedMonster.name)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-primary hover:text-primary/80 hover:underline mr-4"
+                >
+                  Ouvrir dans un nouvel onglet
+                </a>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSelectedMonster(null)}
+                  className="hover:bg-red-500/10 hover:text-red-500"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
             </div>
-            <div className="p-4">
-        {loadingDetails ? (
-                <div className="flex justify-center items-center py-8">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
-          </div>
-              ) : (
-                <div className="monster-details prose max-w-none" dangerouslySetInnerHTML={{ __html: enrichedMonster.htmlDescription }} />
-              )}
+            <div className="flex-1 bg-white/90 overflow-hidden">
+              <iframe
+                src={`https://www.aidedd.org/dnd/monstres.php?vf=${getAideDDMonsterSlug(selectedMonster.name)}`}
+                className="w-full h-full border-none"
+                title={`Détails de ${selectedMonster.name}`}
+              />
             </div>
-            <div className="p-4 border-t flex justify-end">
+            <div className="p-4 border-t border-glass-border/20 bg-white/40 backdrop-blur flex justify-end gap-2">
               {isSelectable && (
-              <Button 
+                <Button
                   onClick={() => {
                     onSelectMonster && onSelectMonster(selectedMonster);
                     setSelectedMonster(null);
                   }}
-                  className="mr-2 bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                   Ajouter à la rencontre
-              </Button>
+                </Button>
               )}
-              <button 
+              <Button
+                variant="outline"
                 onClick={() => setSelectedMonster(null)}
-                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
               >
                 Fermer
-              </button>
+              </Button>
             </div>
           </div>
-          </div>
-        )}
+        </div>
+      )}
     </div>
   );
 };
 
-export default MonsterBrowser; 
+export default MonsterBrowser;

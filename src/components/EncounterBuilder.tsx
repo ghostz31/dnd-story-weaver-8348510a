@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getParties as getLocalParties, createEncounter, getEncounters as getLocalEncounters, updateEncounter, deleteEncounter as deleteLocalEncounter } from '../lib/api';
-import { subscribeToParties, getUserStats, subscribeToEncounters, deleteEncounter as deleteFirestoreEncounter, updateFirestoreEncounter, getEncounters } from '../lib/firebaseApi'; 
+import { subscribeToParties, getUserStats, subscribeToEncounters, deleteEncounter as deleteFirestoreEncounter, updateFirestoreEncounter, getEncounters } from '../lib/firebaseApi';
 import { Monster, Party, Encounter, EncounterMonster, environments, UserStats } from '../lib/types';
 import MonsterBrowser from './MonsterBrowser';
 import { FaPlus, FaMinus, FaTrash, FaSave, FaEdit, FaDragon } from 'react-icons/fa';
@@ -23,15 +23,16 @@ import { Save } from "lucide-react";
 import { saveEncounter } from "../lib/firebaseApi";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play } from "lucide-react";
+import { Play, PenTool, X } from "lucide-react";
 
 // Interface pour la version API locale des rencontres qui utilise Party comme objet complet
-interface LocalEncounter extends Omit<Encounter, 'partyId' | 'monsters'> {
+interface LocalEncounter extends Omit<Encounter, 'monsters'> {
   party: Party;
   monsters: EncounterMonster[];
 }
 
 const EncounterBuilder: React.FC = () => {
+  console.log("[EncounterBuilder] Rendering...");
   const [parties, setParties] = useState<Party[]>([]);
   const [encounters, setEncounters] = useState<any[]>([]);
   const [selectedParty, setSelectedParty] = useState<Party | null>(null);
@@ -54,7 +55,7 @@ const EncounterBuilder: React.FC = () => {
         const stats = await getUserStats();
         console.log("Statistiques utilisateur chargées:", stats);
         setUserStats(stats);
-        
+
         // Test direct des rencontres Firestore
         try {
           const directEncounters = await getEncounters(); // Firestore getEncounters
@@ -73,7 +74,7 @@ const EncounterBuilder: React.FC = () => {
     return localEncounters.map(encounter => {
       // Trouver le groupe correspondant
       const party = localParties.find(p => p.id === encounter.partyId);
-      
+
       if (!party) {
         console.warn(`Groupe non trouvé pour la rencontre ${encounter.name} (partyId: ${encounter.partyId})`);
         // Créer un groupe par défaut pour éviter les erreurs
@@ -84,13 +85,13 @@ const EncounterBuilder: React.FC = () => {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };
-        
+
         return {
           ...encounter,
           party: defaultParty
         } as LocalEncounter;
       }
-      
+
       return {
         ...encounter,
         party
@@ -104,18 +105,33 @@ const EncounterBuilder: React.FC = () => {
     const loadEncounters = () => {
       console.log("=== DÉBUT CHARGEMENT RENCONTRES ===");
       console.log("isAuthenticated:", isAuthenticated);
-      
+
       if (isAuthenticated) {
         // Si l'utilisateur est authentifié, utiliser Firestore avec abonnement
         try {
           console.log("Tentative d'abonnement aux rencontres Firestore...");
-          const unsubscribeEncounters = subscribeToEncounters((fetchedEncounters) => {
-            console.log("=== RENCONTRES REÇUES DE FIRESTORE ===");
-            console.log("Nombre de rencontres:", fetchedEncounters.length);
-            console.log("Rencontres détaillées:", fetchedEncounters);
-            setEncounters(fetchedEncounters);
-          });
-          
+          const unsubscribeEncounters = subscribeToEncounters(
+            (fetchedEncounters) => {
+              console.log("=== RENCONTRES REÇUES DE FIRESTORE ===");
+              console.log("Nombre de rencontres:", fetchedEncounters.length);
+              console.log("Rencontres détaillées:", fetchedEncounters);
+              setEncounters(fetchedEncounters);
+            },
+            (error) => {
+              console.error("Erreur d'abonnement aux rencontres:", error);
+              toast({
+                title: "Erreur de connexion",
+                description: "Impossible de charger les rencontres depuis la base de données.",
+                variant: "destructive"
+              });
+              // Fallback local en cas d'erreur persistante
+              const localEncounters = getLocalEncounters();
+              const localParties = getLocalParties();
+              const transformedEncounters = transformLocalEncounters(localEncounters, localParties);
+              setEncounters(transformedEncounters);
+            }
+          );
+
           return unsubscribeEncounters;
         } catch (error) {
           console.error("Erreur lors de l'abonnement aux rencontres:", error);
@@ -151,7 +167,7 @@ const EncounterBuilder: React.FC = () => {
             console.log("Parties chargées depuis Firestore:", fetchedParties);
             setParties(fetchedParties);
           });
-          
+
           return unsubscribe;
         } catch (error) {
           console.error("Erreur lors de l'abonnement aux parties:", error);
@@ -168,10 +184,10 @@ const EncounterBuilder: React.FC = () => {
     // Charger les données
     const unsubscribeEncounters = loadEncounters();
     const unsubscribeParties = loadParties();
-    
+
     // Charger les statistiques utilisateur
     loadUserStats();
-    
+
     // Nettoyage
     return () => {
       if (unsubscribeParties && typeof unsubscribeParties === 'function') {
@@ -196,7 +212,7 @@ const EncounterBuilder: React.FC = () => {
   // Sélectionner une rencontre existante
   const handleSelectEncounter = (encounter: LocalEncounter) => {
     console.log("Rencontre sélectionnée:", encounter);
-    
+
     // Vérifier que encounter.monsters existe et est un tableau
     if (!encounter.monsters || !Array.isArray(encounter.monsters)) {
       console.error("Format de monstres invalide:", encounter);
@@ -205,7 +221,7 @@ const EncounterBuilder: React.FC = () => {
         description: "Format de rencontre invalide. Impossible de charger les monstres.",
         variant: "destructive"
       });
-      
+
       // Créer un tableau vide de monstres pour éviter les erreurs
       const emptyMonsters: EncounterMonster[] = [];
       setSelectedEncounter(encounter);
@@ -216,7 +232,23 @@ const EncounterBuilder: React.FC = () => {
       setIsEditing(true);
       return;
     }
-    
+
+    // Tenter de retrouver le groupe à jour depuis la liste globale des groupes
+    let updatedParty = encounter.party;
+    if (encounter.partyId) {
+      const freshParty = parties.find(p => p.id === encounter.partyId);
+      if (freshParty) {
+        console.log("Groupe à jour trouvé pour la rencontre:", freshParty);
+        updatedParty = freshParty;
+      }
+    } else if (encounter.party && encounter.party.id) {
+      // Fallback si partyId n'est pas à la racine mais qu'on a un objet party
+      const freshParty = parties.find(p => p.id === encounter.party.id);
+      if (freshParty) {
+        updatedParty = freshParty;
+      }
+    }
+
     // Vérifier et corriger les monstres qui n'ont pas de propriété xp
     const validatedMonsters = encounter.monsters.map(monsterEntry => {
       // Vérifier si monsterEntry est valide
@@ -235,11 +267,11 @@ const EncounterBuilder: React.FC = () => {
           quantity: 1
         };
       }
-      
+
       // Préserver le nom original et le nom du monstre
       const monsterName = monsterEntry.monster.name || "Monstre inconnu";
       const originalName = monsterEntry.monster.originalName || monsterName;
-      
+
       // Si le monstre n'a pas de propriété xp, lui donner une valeur par défaut
       if (monsterEntry.monster && !monsterEntry.monster.xp) {
         console.log("Monstre sans XP trouvé:", monsterName);
@@ -258,7 +290,7 @@ const EncounterBuilder: React.FC = () => {
           else if (cr <= 16) estimatedXP = 20000;
           else estimatedXP = 32500;
         }
-        
+
         return {
           monster: {
             ...monsterEntry.monster,
@@ -269,7 +301,7 @@ const EncounterBuilder: React.FC = () => {
           quantity: monsterEntry.quantity || 1
         };
       }
-      
+
       // Vérifier si la quantité est définie
       if (monsterEntry.quantity === undefined) {
         return {
@@ -281,7 +313,7 @@ const EncounterBuilder: React.FC = () => {
           quantity: 1
         };
       }
-      
+
       // S'assurer que le nom et le nom original sont préservés
       return {
         monster: {
@@ -292,11 +324,11 @@ const EncounterBuilder: React.FC = () => {
         quantity: monsterEntry.quantity
       };
     });
-    
+
     console.log("Monstres validés:", validatedMonsters);
-    
+
     setSelectedEncounter(encounter);
-    setSelectedParty(encounter.party);
+    setSelectedParty(updatedParty);
     setSelectedMonsters(validatedMonsters);
     setEncounterName(encounter.name);
     setSelectedEnvironment(encounter.environment || '');
@@ -306,23 +338,23 @@ const EncounterBuilder: React.FC = () => {
   // Ajouter un monstre à la rencontre
   const handleAddMonster = (monster: Monster) => {
     console.log("Ajout du monstre à la rencontre:", monster);
-    
+
     // Vérifier que monster.xp existe, sinon calculer à partir du CR
     if (!monster.xp && monster.cr !== undefined) {
       const xpValue = calculateXPFromCR(parseFloat(monster.cr.toString()));
       console.log(`XP calculé à partir du CR ${monster.cr}: ${xpValue}`);
       monster.xp = xpValue;
     }
-    
+
     // Si nous n'avons pas de valeur XP, attribuer une valeur par défaut basée sur le CR ou 10
     if (!monster.xp) {
       console.log("Pas de valeur XP ou CR disponible, utilisation de la valeur par défaut (10)");
       monster.xp = 10;
     }
-    
+
     // Chercher si ce monstre est déjà dans la liste
     const existingMonsterIndex = selectedMonsters.findIndex(m => m.monster.id === monster.id);
-    
+
     if (existingMonsterIndex !== -1) {
       // Si le monstre existe déjà, augmenter sa quantité
       const updatedMonsters = [...selectedMonsters];
@@ -353,7 +385,7 @@ const EncounterBuilder: React.FC = () => {
         }
       ]);
     }
-    
+
     // Fermer le navigateur de monstres après l'ajout
     setShowMonsterBrowser(false);
   };
@@ -421,7 +453,7 @@ const EncounterBuilder: React.FC = () => {
     if (!selectedMonsters || selectedMonsters.length === 0) {
       return { totalXP: 0, adjustedXP: 0 };
     }
-    
+
     // Calculer le total d'XP en vérifiant que monster.xp existe
     const totalXP = selectedMonsters.reduce(
       (sum, { monster, quantity }) => {
@@ -434,18 +466,18 @@ const EncounterBuilder: React.FC = () => {
       },
       0
     );
-    
+
     // Calculer le nombre total de monstres
     const monsterCount = selectedMonsters.reduce(
       (sum, { quantity }) => sum + quantity,
       0
     );
-    
+
     // Déterminer le multiplicateur
     let multiplier = 1;
     if (selectedParty) {
       const playerCount = selectedParty.players.length;
-      
+
       if (monsterCount === 1) {
         multiplier = 1;
       } else if (monsterCount === 2) {
@@ -460,9 +492,9 @@ const EncounterBuilder: React.FC = () => {
         multiplier = 4;
       }
     }
-    
+
     const adjustedXP = Math.floor(totalXP * multiplier);
-    
+
     return { totalXP, adjustedXP };
   };
 
@@ -471,9 +503,9 @@ const EncounterBuilder: React.FC = () => {
     if (!selectedParty || selectedMonsters.length === 0) {
       return null;
     }
-    
+
     const { adjustedXP } = calculateTotalXP();
-    
+
     // Calculer les seuils de difficulté pour le groupe
     const thresholds = {
       easy: 0,
@@ -481,7 +513,7 @@ const EncounterBuilder: React.FC = () => {
       hard: 0,
       deadly: 0
     };
-    
+
     // Seuils de difficulté par niveau (DMG)
     const xpThresholds: Record<number, Record<string, number>> = {
       1: { easy: 25, medium: 50, hard: 75, deadly: 100 },
@@ -505,7 +537,7 @@ const EncounterBuilder: React.FC = () => {
       19: { easy: 2400, medium: 4900, hard: 7300, deadly: 10900 },
       20: { easy: 2800, medium: 5700, hard: 8500, deadly: 12700 }
     };
-    
+
     // Additionner les seuils pour chaque joueur
     selectedParty.players.forEach(player => {
       const level = Math.min(player.level, 20);
@@ -514,7 +546,7 @@ const EncounterBuilder: React.FC = () => {
       thresholds.hard += xpThresholds[level].hard;
       thresholds.deadly += xpThresholds[level].deadly;
     });
-    
+
     // Déterminer la difficulté
     if (adjustedXP >= thresholds.deadly) {
       return { level: 'deadly', color: 'text-red-600' };
@@ -532,7 +564,7 @@ const EncounterBuilder: React.FC = () => {
   // Calculer l'XP par joueur
   const getXPPerPlayer = () => {
     if (!selectedParty || selectedParty.players.length === 0) return 0;
-    
+
     const { totalXP } = calculateTotalXP();
     return Math.floor(totalXP / selectedParty.players.length);
   };
@@ -544,7 +576,7 @@ const EncounterBuilder: React.FC = () => {
   const launchEncounter = async () => {
     try {
       console.log("Lancement de la rencontre...");
-      
+
       // Vérifications
       if (!selectedParty) {
         toast({
@@ -554,7 +586,7 @@ const EncounterBuilder: React.FC = () => {
         });
         return;
       }
-      
+
       if (!encounterName) {
         toast({
           title: "Erreur",
@@ -563,9 +595,9 @@ const EncounterBuilder: React.FC = () => {
         });
         return;
       }
-      
+
       if (selectedMonsters.length === 0) {
-      toast({
+        toast({
           title: "Erreur",
           description: "Veuillez ajouter au moins un monstre à la rencontre.",
           variant: "destructive"
@@ -575,14 +607,14 @@ const EncounterBuilder: React.FC = () => {
 
       // Soit on utilise une rencontre existante, soit on en crée une nouvelle
       let encounterToUse = selectedEncounter;
-      
+
       if (!encounterToUse) {
         console.log("Aucune rencontre sélectionnée, création d'une nouvelle rencontre...");
         // Si aucune rencontre n'est sélectionnée, on sauvegarde d'abord
         const difficultyValue = getDifficulty()?.level;
         const difficultyString = (difficultyValue === 'trivial' ? 'easy' : difficultyValue) as 'easy' | 'medium' | 'hard' | 'deadly';
         const { totalXP: xpTotal, adjustedXP: xpAdjusted } = calculateTotalXP();
-        
+
         // Préparer les données pour la sauvegarde
         const encounterData = {
           name: encounterName,
@@ -595,7 +627,7 @@ const EncounterBuilder: React.FC = () => {
           partyId: selectedParty?.id || '',
           party: selectedParty
         };
-        
+
         try {
           // Sauvegarde en Firebase ou localement selon l'authentification
           if (isAuthenticated) {
@@ -616,11 +648,11 @@ const EncounterBuilder: React.FC = () => {
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString()
             };
-            
+
             // Ajouter la rencontre à l'état local
             setEncounters([newEncounter, ...encounters]);
             localStorage.setItem(`encounter_${newEncounterId}`, JSON.stringify(newEncounter));
-            
+
             encounterToUse = newEncounter;
             console.log("Rencontre sauvegardée localement:", newEncounter);
           }
@@ -634,11 +666,11 @@ const EncounterBuilder: React.FC = () => {
           return;
         }
       }
-      
+
       if (!encounterToUse) {
         throw new Error("Données de rencontre non disponibles");
       }
-      
+
       console.log("Lancement de la rencontre avec:", encounterToUse);
 
       // NOUVELLE APPROCHE: Stocker dans sessionStorage et naviguer avec l'ID uniquement
@@ -682,11 +714,12 @@ const EncounterBuilder: React.FC = () => {
               maxHp: maxHp,
               isPC: true,
               conditions: [],
-              notes: `${player.characterClass} niveau ${player.level}`
+              notes: `${player.characterClass} niveau ${player.level}`,
+              dndBeyondId: player.dndBeyondId
             };
           }),
           // Participants pour les monstres
-          ...selectedMonsters.flatMap(({ monster, quantity }) => 
+          ...selectedMonsters.flatMap(({ monster, quantity }) =>
             Array.from({ length: quantity }, (_, index) => {
               const maxHp = monster.hp || 10;
               return {
@@ -710,14 +743,14 @@ const EncounterBuilder: React.FC = () => {
         currentTurn: 0,
         isActive: false
       };
-      
+
       // Stocker les données complètes en sessionStorage
       sessionStorage.setItem('current_encounter', JSON.stringify(completeEncounterData));
       console.log("Données de rencontre stockées dans sessionStorage");
-      
+
       // Rediriger vers la page d'affrontement avec un identifiant simple
       console.log("Tentative de navigation vers /encounter-tracker?source=session");
-      
+
       // Essayer d'abord avec React Router
       try {
         navigate('/encounter-tracker?source=session');
@@ -726,7 +759,7 @@ const EncounterBuilder: React.FC = () => {
         console.error("Erreur avec React Router, utilisation de window.location:", error);
         window.location.href = '/encounter-tracker?source=session';
       }
-      
+
       toast({
         title: "Rencontre lancée",
         description: "Préparez-vous au combat !",
@@ -784,9 +817,9 @@ const EncounterBuilder: React.FC = () => {
       // Préparer les données de la rencontre
       const encounterData = {
         name: encounterName,
-        monsters: selectedMonsters.map(m => ({ 
-          monster: m.monster, 
-          quantity: m.quantity 
+        monsters: selectedMonsters.map(m => ({
+          monster: m.monster,
+          quantity: m.quantity
         })),
         difficulty: difficultyString,
         totalXP: xpTotal,
@@ -801,18 +834,18 @@ const EncounterBuilder: React.FC = () => {
 
       if (isAuthenticated) {
         console.log("Tentative de sauvegarde avec Firebase...");
-      // Sauvegarder dans Firebase
+        // Sauvegarder dans Firebase
         savedEncounter = await saveEncounter(encounterData);
-        
+
         if (!savedEncounter) {
           throw new Error("Échec de la sauvegarde de la rencontre");
         }
-        
+
         console.log("Rencontre sauvegardée avec succès:", savedEncounter);
       } else {
         // Sauvegarde locale pour les utilisateurs non connectés
         const newEncounterId = selectedEncounter?.id || uuidv4();
-        
+
         // Créer la rencontre au format localStorage (avec partyId)
         const localEncounterData = {
           ...encounterData,
@@ -821,44 +854,44 @@ const EncounterBuilder: React.FC = () => {
           createdAt: selectedEncounter?.createdAt || new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };
-        
+
         // Supprimer party pour le localStorage (on garde partyId)
         const { party, ...localEncounterForStorage } = localEncounterData;
-        
+
         // Sauvegarder dans le localStorage
         const currentLocalEncounters = getLocalEncounters();
-        const updatedLocalEncounters = selectedEncounter 
+        const updatedLocalEncounters = selectedEncounter
           ? currentLocalEncounters.map(e => e.id === newEncounterId ? localEncounterForStorage : e)
           : [localEncounterForStorage, ...currentLocalEncounters];
-        
+
         localStorage.setItem('dnd_encounters', JSON.stringify(updatedLocalEncounters));
-        
+
         // Transformer pour l'affichage
         const localParties = getLocalParties();
         const transformedEncounters = transformLocalEncounters(updatedLocalEncounters, localParties);
         setEncounters(transformedEncounters);
-        
+
         // Préparer savedEncounter avec party pour l'interface
         savedEncounter = {
           ...localEncounterData,
           party: selectedParty
         };
-        
+
         // Mettre à jour la sélection
         setSelectedEncounter(savedEncounter as LocalEncounter);
-        
+
         console.log("Rencontre sauvegardée localement:", savedEncounter);
       }
 
-        // Fermer le dialogue
-        setSaveDialogOpen(false);
-        
-        toast({
-          title: "Rencontre sauvegardée",
-          description: `"${encounterName}" a été enregistré avec succès.`,
-          variant: "default"
-        });
-      
+      // Fermer le dialogue
+      setSaveDialogOpen(false);
+
+      toast({
+        title: "Rencontre sauvegardée",
+        description: `"${encounterName}" a été enregistré avec succès.`,
+        variant: "default"
+      });
+
       return savedEncounter;
     } catch (error) {
       console.error("Erreur lors de la sauvegarde de la rencontre:", error);
@@ -885,15 +918,15 @@ const EncounterBuilder: React.FC = () => {
                 {userStats.encounters}/{userStats.maxEncounters}
               </span>
             )}
-          <button
+            <button
               onClick={resetForm}
-            className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Nouvelle
-          </button>
+              className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Nouvelle
+            </button>
           </div>
         </div>
-        
+
         {encounters.length === 0 ? (
           <div>
             <p className="text-gray-500">Aucune rencontre créée. Créez votre première rencontre !</p>
@@ -904,19 +937,18 @@ const EncounterBuilder: React.FC = () => {
             {encounters.map(encounter => (
               <li
                 key={encounter.id}
-                className={`py-2 px-2 cursor-pointer hover:bg-gray-50 flex justify-between items-center ${
-                  selectedEncounter?.id === encounter.id ? 'bg-blue-50' : ''
-                }`}
+                className={`py-2 px-2 cursor-pointer hover:bg-gray-50 flex justify-between items-center ${selectedEncounter?.id === encounter.id ? 'bg-blue-50' : ''
+                  }`}
                 onClick={() => handleSelectEncounter(encounter as LocalEncounter)}
               >
                 <div>
                   <span className="font-medium">{encounter.name}</span>
                   <div className="text-sm text-gray-500">
                     Difficulté: <span className={
-                      encounter.difficulty === 'deadly' ? 'text-red-600' : 
-                                       encounter.difficulty === 'hard' ? 'text-orange-500' :
-                      encounter.difficulty === 'medium' ? 'text-yellow-500' : 
-                      'text-green-500'
+                      encounter.difficulty === 'deadly' ? 'text-red-600' :
+                        encounter.difficulty === 'hard' ? 'text-orange-500' :
+                          encounter.difficulty === 'medium' ? 'text-yellow-500' :
+                            'text-green-500'
                     }>
                       {encounter.difficulty}
                     </span>
@@ -971,24 +1003,24 @@ const EncounterBuilder: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nom de la rencontre</label>
+            <label className="block text-sm font-bold font-cinzel text-foreground mb-1">Nom de la rencontre</label>
             <input
               type="text"
               value={encounterName}
               onChange={e => setEncounterName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 bg-white/50 backdrop-blur-sm border border-glass-border/30 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground placeholder:text-muted-foreground"
               placeholder="Ex: Embuscade gobeline"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Groupe de joueurs</label>
+            <label className="block text-sm font-bold font-cinzel text-foreground mb-1">Groupe de joueurs</label>
             <select
               value={selectedParty?.id || ''}
               onChange={e => {
                 const party = parties.find(p => p.id === e.target.value);
                 setSelectedParty(party || null);
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 bg-white/50 backdrop-blur-sm border border-glass-border/30 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground"
             >
               <option value="">Sélectionner un groupe</option>
               {parties.map(party => (
@@ -1005,11 +1037,11 @@ const EncounterBuilder: React.FC = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Environnement (optionnel)</label>
+          <label className="block text-sm font-bold font-cinzel text-foreground mb-1">Environnement (optionnel)</label>
           <select
             value={selectedEnvironment}
             onChange={e => setSelectedEnvironment(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-white/50 backdrop-blur-sm border border-glass-border/30 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground"
           >
             <option value="">Aucun environnement spécifique</option>
             {environments.filter(env => env.value !== 'all').map(env => (
@@ -1023,38 +1055,41 @@ const EncounterBuilder: React.FC = () => {
         {/* Monstres sélectionnés */}
         <div className="mb-4">
           <div className="flex justify-between items-center mb-2">
-            <h3 className="text-lg font-medium">Monstres</h3>
-            <button
+            <h3 className="text-lg font-medium font-cinzel">Monstres</h3>
+            <Button
               onClick={() => setShowMonsterBrowser(true)}
-              className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center"
+              size="sm"
+              className="flex items-center"
             >
               <FaPlus className="mr-1" /> Ajouter
-            </button>
+            </Button>
           </div>
 
           {selectedMonsters.length === 0 ? (
-            <p className="text-gray-500">Aucun monstre ajouté. Cliquez sur "Ajouter" pour sélectionner des monstres.</p>
+            <div className="text-center py-8 border-2 border-dashed border-glass-border/30 rounded-lg">
+              <p className="text-muted-foreground">Aucun monstre ajouté. Cliquez sur "Ajouter" pour sélectionner des monstres.</p>
+            </div>
           ) : (
-            <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">FP</th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">XP</th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantité</th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {selectedMonsters.map(({ monster, quantity }) => (
-                  <tr key={monster.id}>
-                    <td className="px-3 py-2 whitespace-nowrap">{monster.name}</td>
-                    <td className="px-3 py-2 whitespace-nowrap">{monster.cr}</td>
-                    <td className="px-3 py-2 whitespace-nowrap">{monster.xp}</td>
-                    <td className="px-3 py-2 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <button
+            <div className="overflow-x-auto rounded-lg border border-glass-border/20">
+              <table className="min-w-full divide-y divide-glass-border/20">
+                <thead className="bg-primary/5">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">Nom</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">FP</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">XP</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">Quantité</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-glass-border/20 bg-transparent">
+                  {selectedMonsters.map(({ monster, quantity }) => (
+                    <tr key={monster.id} className="hover:bg-primary/5 transition-colors">
+                      <td className="px-4 py-3 whitespace-nowrap font-medium text-foreground">{monster.name}</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">{monster.cr}</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">{monster.xp}</td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <button
                             onClick={() => {
                               if (quantity > 1) {
                                 setSelectedMonsters(
@@ -1067,11 +1102,11 @@ const EncounterBuilder: React.FC = () => {
                               }
                             }}
                             className="px-1 text-gray-500 hover:text-gray-700"
-                        >
-                          <FaMinus />
-                        </button>
-                        <span className="mx-2">{quantity}</span>
-                        <button
+                          >
+                            <FaMinus />
+                          </button>
+                          <span className="mx-2">{quantity}</span>
+                          <button
                             onClick={() => {
                               setSelectedMonsters(
                                 selectedMonsters.map(m =>
@@ -1080,33 +1115,33 @@ const EncounterBuilder: React.FC = () => {
                               );
                             }}
                             className="px-1 text-gray-500 hover:text-gray-700"
-                        >
-                          <FaPlus />
-                        </button>
-                      </div>
-                    </td>
-                    <td className="px-3 py-2 whitespace-nowrap">
-                      <button
+                          >
+                            <FaPlus />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="px-3 py-2 whitespace-nowrap">
+                        <button
                           onClick={() => {
                             setSelectedMonsters(selectedMonsters.filter(m => m.monster.id !== monster.id));
                           }}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <FaTrash />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <FaTrash />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
 
         {/* Résumé de la rencontre */}
         {selectedParty && selectedMonsters.length > 0 && (
-          <div className="bg-gray-50 p-4 rounded-md mb-4">
-            <h3 className="text-lg font-medium mb-2">Résumé de la rencontre</h3>
+          <div className="glass-card border border-primary/20 bg-primary/5 p-4 rounded-xl mb-6">
+            <h3 className="text-lg font-medium font-cinzel mb-2">Résumé de la rencontre</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p>XP total: <span className="font-medium">{totalXP}</span></p>
@@ -1153,7 +1188,7 @@ const EncounterBuilder: React.FC = () => {
                           <td className="px-2 py-1">{player.level}</td>
                           <td className="px-2 py-1">{player.ac || '-'}</td>
                           <td className="px-2 py-1">
-                            {player.currentHp !== undefined && player.maxHp !== undefined 
+                            {player.currentHp !== undefined && player.maxHp !== undefined
                               ? `${player.currentHp}/${player.maxHp}`
                               : '-'}
                           </td>
@@ -1177,24 +1212,24 @@ const EncounterBuilder: React.FC = () => {
             <FaSave className="mr-2" />
             {isEditing ? "Mettre à jour" : "Enregistrer"}
           </button>
-          
+
           {/* Bouton pour lancer la rencontre */}
-            <button
-              onClick={launchEncounter}
-              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 flex items-center"
+          <button
+            onClick={launchEncounter}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 flex items-center"
             disabled={!selectedMonsters.length || isSaving}
-            >
-              <FaDragon className="mr-2" />
+          >
+            <FaDragon className="mr-2" />
             Lancer la rencontre
-            </button>
+          </button>
         </div>
 
         {/* Dialogue de sauvegarde */}
         <div className="flex flex-col gap-4 md:flex-row mt-4">
           <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
             <DialogTrigger asChild>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full"
                 disabled={!selectedMonsters.length || isSaving}
               >
@@ -1241,24 +1276,24 @@ const EncounterBuilder: React.FC = () => {
                   <div className="col-span-3">
                     <Badge className={
                       getDifficulty()?.level === 'easy' ? 'bg-green-500' :
-                      getDifficulty()?.level === 'medium' ? 'bg-yellow-500' :
-                      getDifficulty()?.level === 'hard' ? 'bg-orange-500' :
-                      getDifficulty()?.level === 'deadly' ? 'bg-red-500' :
-                      'bg-gray-500'
+                        getDifficulty()?.level === 'medium' ? 'bg-yellow-500' :
+                          getDifficulty()?.level === 'hard' ? 'bg-orange-500' :
+                            getDifficulty()?.level === 'deadly' ? 'bg-red-500' :
+                              'bg-gray-500'
                     }>
                       {getDifficulty()?.level === 'easy' ? 'Facile' :
-                       getDifficulty()?.level === 'medium' ? 'Moyen' :
-                       getDifficulty()?.level === 'hard' ? 'Difficile' :
-                       getDifficulty()?.level === 'deadly' ? 'Mortel' :
-                       'Trivial'}
+                        getDifficulty()?.level === 'medium' ? 'Moyen' :
+                          getDifficulty()?.level === 'hard' ? 'Difficile' :
+                            getDifficulty()?.level === 'deadly' ? 'Mortel' :
+                              'Trivial'}
                     </Badge>
                     <span className="ml-2 text-muted-foreground text-sm">{adjustedXP} XP ajustés</span>
                   </div>
                 </div>
               </div>
               <DialogFooter>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   onClick={handleSaveEncounter}
                   disabled={isSaving || !encounterName.trim()}
                 >
@@ -1281,40 +1316,22 @@ const EncounterBuilder: React.FC = () => {
       {showMonsterBrowser && (
         <div className="fixed inset-0 z-10 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen p-4">
-            <div className="fixed inset-0 bg-black opacity-50" onClick={() => setShowMonsterBrowser(false)}></div>
-            <div className="relative bg-white rounded-lg max-w-4xl w-full max-h-screen overflow-y-auto">
-              <div className="p-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-bold">Sélectionner un monstre</h2>
-                  <button
-                    onClick={() => setShowMonsterBrowser(false)}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    ✕
-                  </button>
-                </div>
-                <MonsterBrowser 
-                  onSelectMonster={(monster) => {
-                    // Vérifier si le monstre est déjà dans la liste
-                    const existingIndex = selectedMonsters.findIndex(m => m.monster.id === monster.id);
-                    
-                    if (existingIndex >= 0) {
-                      // Incrémenter la quantité
-                      setSelectedMonsters(
-                        selectedMonsters.map((m, idx) => 
-                          idx === existingIndex ? { ...m, quantity: m.quantity + 1 } : m
-                        )
-                      );
-                    } else {
-                      // Ajouter un nouveau monstre
-                      setSelectedMonsters([...selectedMonsters, { monster, quantity: 1 }]);
-                    }
-                    
-                    setShowMonsterBrowser(false);
-                  }} 
-                  isSelectable={true} 
-                />
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowMonsterBrowser(false)}></div>
+            <div className="relative glass-card rounded-xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
+              <div className="p-4 border-b border-glass-border/20 flex justify-between items-center bg-primary/5">
+                <h2 className="text-xl font-bold font-cinzel">Sélectionner un monstre</h2>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowMonsterBrowser(false)}
+                >
+                  <X className="h-5 w-5" />
+                </Button>
               </div>
+              <MonsterBrowser
+                onSelectMonster={handleAddMonster}
+                isSelectable={true}
+              />
             </div>
           </div>
         </div>
@@ -1322,5 +1339,6 @@ const EncounterBuilder: React.FC = () => {
     </div>
   );
 };
+
 
 export default EncounterBuilder; 
