@@ -40,7 +40,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedSize, setSelectedSize] = useState('all');
   const [selectedAlignment, setSelectedAlignment] = useState('all');
-  const [isLegendary, setIsLegendary] = useState(false);
+
   const [isCustom, setIsCustom] = useState(false);
 
   const alignments = [
@@ -108,8 +108,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
         if (!monster.alignment.toLowerCase().includes(selectedAlignment)) return false;
       }
 
-      // Filtre Légendaire
-      if (isLegendary && !monster.legendary) return false;
+
 
       // Filtre Custom
       if (isCustom && !monster.custom) return false;
@@ -130,7 +129,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
     });
     setFilteredMonsters(sorted);
     setVisibleCount(50);
-  }, [searchQuery, crMin, crMax, selectedType, selectedSize, selectedCategory, selectedAlignment, isLegendary, isCustom, monsters]);
+  }, [searchQuery, crMin, crMax, selectedType, selectedSize, selectedCategory, selectedAlignment, isCustom, monsters]);
 
   const handleRefreshMonsters = async () => {
     await refresh();
@@ -199,7 +198,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
     setSelectedCategory('all');
     setSelectedSize('all');
     setSelectedAlignment('all');
-    setIsLegendary(false);
+
     setIsCustom(false);
     refresh();
   };
@@ -211,10 +210,9 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
     if (selectedCategory !== 'all') count++;
     if (selectedAlignment !== 'all') count++;
     if (crMin !== undefined || crMax !== undefined) count++;
-    if (isLegendary) count++;
     if (isCustom) count++;
     return count;
-  }, [selectedType, selectedSize, selectedCategory, selectedAlignment, crMin, crMax, isLegendary, isCustom]);
+  }, [selectedType, selectedSize, selectedCategory, selectedAlignment, crMin, crMax, isCustom]);
 
   // Editor Handlers
   const handleCreateMonster = () => {
@@ -319,6 +317,38 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
             <FaPlus className="mr-2" /> Créer
           </Button>
           <Button
+            onClick={async () => {
+              try {
+                const recoveryFn = (useMonsters() as any).recoverLostMonsters;
+                const count = await recoveryFn();
+                if (count > 0) {
+                  toast({
+                    title: "Récupération terminée",
+                    description: `${count} monstres ont été restaurés (Cloud & Local).`,
+                  });
+                  refresh();
+                } else {
+                  toast({
+                    title: "Aucun monstre trouvé",
+                    description: "Aucun monstre perdu n'a été trouvé.",
+                  });
+                }
+              } catch (e) {
+                console.error(e);
+                toast({
+                  title: "Erreur",
+                  description: "Erreur lors de la récupération.",
+                  variant: "destructive"
+                });
+              }
+            }}
+            variant="outline"
+            className="whitespace-nowrap bg-white/50"
+            title="Tenter de récupérer les monstres perdus depuis les rencontres"
+          >
+            Récupérer
+          </Button>
+          <Button
             onClick={handleRefreshMonsters}
             disabled={loading}
             variant="outline"
@@ -414,14 +444,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
             </div>
 
             <div className="flex items-end pb-2">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="legendary-filter"
-                  checked={isLegendary}
-                  onCheckedChange={(checked) => setIsLegendary(checked === true)}
-                />
-                <Label htmlFor="legendary-filter" className="cursor-pointer font-bold text-amber-700">Légendaire / Boss</Label>
-              </div>
+
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="custom-filter"

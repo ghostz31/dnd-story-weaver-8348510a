@@ -51,8 +51,10 @@ export const useEncounterManager = () => {
     const [urlMap, setUrlMap] = useState<UrlMapping>({});
 
     // Monster Details / Iframe
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [monsterDetails, setMonsterDetails] = useState<Record<string, any>>({});
     const [loadingDetails, setLoadingDetails] = useState<boolean>(false);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [currentMonsterDetails, setCurrentMonsterDetails] = useState<any>(null);
     const [selectedCreatureUrl, setSelectedCreatureUrl] = useState<string | null>(null);
     const [showCreatureFrame, setShowCreatureFrame] = useState<boolean>(false);
@@ -199,7 +201,9 @@ export const useEncounterManager = () => {
 
                 // Also update the main list if present (simplified)
                 try {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const all = JSON.parse(localStorage.getItem('dnd_encounters') || '[]');
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const idx = all.findIndex((e: any) => e.id === encounterId);
                     if (idx >= 0) {
                         all[idx] = { ...all[idx], ...dataToSave };
@@ -260,6 +264,7 @@ export const useEncounterManager = () => {
                             const partyRef = doc(db, 'users', user.uid, 'parties', data.party.id);
                             const partySnap = await getDoc(partyRef);
                             if (partySnap.exists()) {
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 syncedParty = { id: partySnap.id, ...partySnap.data() } as any;
                                 console.log("[loadSavedEncounter] Synced with latest party data");
                             }
@@ -281,6 +286,7 @@ export const useEncounterManager = () => {
                     if (participants.length > 0 && syncedParty && syncedParty.players) {
                         participants = participants.map(p => {
                             if (p.isPC) {
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 const player = syncedParty.players?.find((pl: any) =>
                                     pl.id === p.id.replace('pc-', '') || pl.name === p.name
                                 );
@@ -307,6 +313,7 @@ export const useEncounterManager = () => {
                     // Only recreate participants if none exist AND we have source data
                     if (participants.length === 0 && data.monsters && syncedParty) {
                         console.log("[loadSavedEncounter] No participants found, creating from monsters and party");
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         const playerParticipants = (syncedParty.players || []).map((player: any) => ({
                             id: `pc-${player.id}`,
                             name: player.name,
@@ -326,7 +333,8 @@ export const useEncounterManager = () => {
                             str: player.str, dex: player.dex, con: player.con, int: player.int, wis: player.wis, cha: player.cha, speed: player.speed
                         } as EncounterParticipant));
 
-                        const monsterParticipants = data.monsters.flatMap(({ monster, quantity }) =>
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const monsterParticipants = data.monsters.flatMap(({ monster, quantity }: any) =>
                             Array.from({ length: quantity }, (_, idx) => ({
                                 id: `monster-${monster.id}-${idx}`,
                                 name: monster.name,
@@ -359,7 +367,9 @@ export const useEncounterManager = () => {
                 }
             } else {
                 // LocalStorage
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const savedEncounters = JSON.parse(localStorage.getItem('dnd_encounters') || '[]');
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const found = savedEncounters.find((e: any) => e.id === encounterId);
                 // Also check specific key
                 const specific = localStorage.getItem(`encounter_${encounterId}`);
@@ -370,8 +380,10 @@ export const useEncounterManager = () => {
 
                     // Heal/Sync existing participants with party stats (Local/Session)
                     if (participants.length > 0 && data.party && data.party.players) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         participants = participants.map((p: any) => {
                             if (p.isPC) {
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 const player = data.party.players.find((pl: any) =>
                                     (pl.id && p.id.includes(pl.id)) || pl.name === p.name
                                 );
@@ -397,6 +409,7 @@ export const useEncounterManager = () => {
                     }
                     if (participants.length === 0 && data.monsters && data.party) {
                         // Same init logic... (can extract to helper?)
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         const playerParticipants = (data.party.players || []).map((player: any) => ({
                             id: `pc-${player.id}`,
                             name: player.name,
@@ -437,6 +450,7 @@ export const useEncounterManager = () => {
 
                     setEncounter({
                         name: data.name,
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         participants: participants.map((p: any) => ({
                             ...p,
                             currentHp: extractNumericHP(p.currentHp),

@@ -28,13 +28,42 @@ export const useDnDBeyondLive = ({ participants, onUpdateHp, enabled }: UseDnDBe
                 try {
                     processingRef.current[p.id] = true;
 
-                    // Utiliser le proxy local avec un timestamp pour éviter le cache
-                    const response = await fetch(`/api/dndbeyond/character/v5/character/${p.dndBeyondId}?t=${Date.now()}`);
+                    // Stratégie de récupération :
+                    // 1. Essayer le proxy local (fonctionne en dev)
+                    // 2. Fallback sur corsproxy.io (fonctionne en prod / Netlify)
 
-                    if (!response.ok) continue;
+                    let data = null;
+                    const timestamp = Date.now();
+                    const targetUrl = `https://character-service.dndbeyond.com/character/v5/character/${p.dndBeyondId}`;
 
-                    const data = await response.json();
-                    const char = data.data || data;
+                    try {
+                        // Tentative 1: Proxy local
+                        const localResponse = await fetch(`/api/dndbeyond/character/v5/character/${p.dndBeyondId}?t=${timestamp}`);
+                        if (localResponse.ok) {
+                            const jsonData = await localResponse.json();
+                            data = jsonData.data || jsonData;
+                        }
+                    } catch (e) {
+                        console.log(`[Sync] Proxy local échec, tentative fallback...`);
+                    }
+
+                    // Tentative 2: CORS Proxy public (si la tentative 1 a échoué)
+                    if (!data) {
+                        try {
+                            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}?t=${timestamp}`;
+                            const proxyResponse = await fetch(proxyUrl);
+                            if (proxyResponse.ok) {
+                                const jsonData = await proxyResponse.json();
+                                data = jsonData.data || jsonData;
+                            }
+                        } catch (e) {
+                            console.error(`[Sync] Echec total pour ${p.name}`, e);
+                        }
+                    }
+
+                    if (!data) continue;
+
+                    const char = data;
 
                     // Calculer les données pour une mise à jour précise
                     // 1. Stats pour le modificateur de CON

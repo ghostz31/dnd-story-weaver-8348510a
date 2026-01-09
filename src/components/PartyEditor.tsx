@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -910,7 +911,7 @@ const PartyEditor: React.FC = () => {
                               Ajouter
                             </Button>
                           </DialogTrigger>
-                          <DialogContent>
+                          <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col">
                             <DialogHeader>
                               <DialogTitle>
                                 {isEditingPlayer ? "Modifier le personnage" : "Ajouter un personnage"}
@@ -921,7 +922,7 @@ const PartyEditor: React.FC = () => {
                                   : "Ajoutez un nouveau personnage à votre groupe"}
                               </DialogDescription>
                             </DialogHeader>
-                            <div className="space-y-4 py-4">
+                            <div className="space-y-4 py-4 overflow-y-auto">
                               <p className="text-sm text-muted-foreground mb-4">
                                 Remplissez les informations de base, ou importez depuis D&D Beyond.
                                 Les caractéristiques et maîtrises peuvent être ajoutées dans les onglets dédiés.

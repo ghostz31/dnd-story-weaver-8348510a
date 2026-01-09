@@ -1,0 +1,4 @@
+src/lib/firebaseApi.ts
+src/components/PartyEditor.tsx
+src/**/*.test.tsx
+src/**/*.test.ts

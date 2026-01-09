@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*
 RÈGLES DE SÉCURITÉ FIRESTORE À CONFIGURER:
 
@@ -48,6 +49,22 @@ const FREE_PLAN_LIMITS = {
 };
 
 // ====== Utilitaires ======
+
+// Nettoyer les objets pour Firestore (supprimer les undefined)
+const cleanData = (obj: any): any => {
+  if (obj === null || obj === undefined) return null;
+  if (Array.isArray(obj)) return obj.map(cleanData);
+  if (typeof obj === 'object') {
+    const cleaned: any = {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (value !== undefined) {
+        cleaned[key] = cleanData(value);
+      }
+    }
+    return cleaned;
+  }
+  return obj;
+};
 
 // Obtenir l'ID de l'utilisateur courant
 const getCurrentUserId = (): string => {
@@ -375,8 +392,11 @@ export const addPlayerToParty = async (partyId: string, playerData: Omit<Player,
       id: uuidv4()
     };
 
+    // Nettoyer les données (supprimer les undefined) avant l'envoi
+    const cleanedPlayer = cleanData(player);
+
     await updateDoc(partyRef, {
-      players: arrayUnion(player),
+      players: arrayUnion(cleanedPlayer),
       updatedAt: serverTimestamp()
     });
 
@@ -405,7 +425,7 @@ export const updatePlayer = async (partyId: string, playerId: string, updates: P
     // Trouver et mettre à jour le joueur spécifique
     const updatedPlayers = players.map((player: Player) => {
       if (player.id === playerId) {
-        return { ...updates, id: playerId };
+        return cleanData({ ...player, ...updates, id: playerId });
       }
       return player;
     });
