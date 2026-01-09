@@ -4,8 +4,11 @@ import { getAideDDMonsterSlug } from '../lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Shield, Heart, Zap, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Shield, Heart, Zap, ExternalLink, ChevronLeft, ChevronRight, Edit, Save, X, User, Book, Hash, Swords } from 'lucide-react';
 import { StatBlock } from './StatBlock';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 interface ActiveCombatantDisplayProps {
     participant: EncounterParticipant;
@@ -153,6 +156,10 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
     const [linkUrl, setLinkUrl] = React.useState('');
     const [localNotes, setLocalNotes] = React.useState(participant.notes || '');
 
+    // Edit Mode State
+    const [isEditing, setIsEditing] = React.useState(false);
+    const [editData, setEditData] = React.useState<Partial<EncounterParticipant>>({});
+
     // Sync local notes if participant changes externally
     React.useEffect(() => {
         setLocalNotes(participant.notes || '');
@@ -164,6 +171,43 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
             setIsLinking(false);
             setLinkUrl('');
         }
+    };
+
+    const handleStartEdit = () => {
+        setEditData({
+            name: participant.name,
+            race: participant.race || '',
+            class: participant.class || '',
+            level: participant.level || 1,
+            str: participant.str || 10,
+            dex: participant.dex || 10,
+            con: participant.con || 10,
+            int: participant.int || 10,
+            wis: participant.wis || 10,
+            cha: participant.cha || 10,
+            proficiencies: participant.proficiencies || '',
+            ac: participant.ac,
+            maxHp: participant.maxHp,
+            currentHp: participant.currentHp,
+            initiative: participant.initiative
+        });
+        setIsEditing(true);
+    };
+
+    const handleSaveEdit = () => {
+        if (onUpdate) {
+            onUpdate(editData);
+        }
+        setIsEditing(false);
+    };
+
+    const handleCancelEdit = () => {
+        setIsEditing(false);
+        setEditData({});
+    };
+
+    const handleChange = (field: keyof EncounterParticipant, value: any) => {
+        setEditData(prev => ({ ...prev, [field]: value }));
     };
 
     if (isCollapsed) {
@@ -181,6 +225,9 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                 </Button>
                 <div className="max-w-sm mx-auto bg-white/90 p-4 rounded-lg shadow-md border border-blue-200">
                     <h3 className="text-lg font-bold text-blue-800 mb-3">{participant.name}</h3>
+                    <div className="text-xs text-blue-600 mb-2">
+                        {participant.race} {participant.class} {participant.level ? `Niv. ${participant.level}` : ''}
+                    </div>
                     <div className="grid grid-cols-2 gap-3 text-sm">
                         <div className="flex items-center gap-2">
                             <Shield className="h-4 w-4 text-blue-500" />
@@ -204,16 +251,55 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
         <Card className="w-full h-full flex flex-col overflow-hidden border-none shadow-none bg-blue-50/50 relative">
             <CardHeader className="py-2 px-4 bg-blue-100 border-b">
                 <div className="flex justify-between items-start">
-                    <div>
-                        <CardTitle className="text-lg font-bold text-blue-900">
-                            {participant.name}
-                        </CardTitle>
-                        <p className="text-sm text-blue-700">{participant.isPC ? 'Personnage Joueur' : (participant.notes || 'Note')}</p>
+                    <div className="flex-1">
+                        {isEditing ? (
+                            <Input
+                                value={editData.name as string}
+                                onChange={(e) => handleChange('name', e.target.value)}
+                                className="font-bold text-lg h-8 mb-2"
+                            />
+                        ) : (
+                            <CardTitle className="text-lg font-bold text-blue-900 flex items-center gap-2">
+                                {participant.name}
+                            </CardTitle>
+                        )}
+
+                        {!isEditing && (
+                            <div className="flex flex-wrap gap-2 text-sm text-blue-700 mt-1">
+                                {(participant.race || participant.class || participant.level) ? (
+                                    <>
+                                        {participant.race && <Badge variant="secondary" className="bg-white/50">{participant.race}</Badge>}
+                                        {participant.class && <Badge variant="secondary" className="bg-white/50">{participant.class}</Badge>}
+                                        {participant.level && <Badge variant="outline" className="bg-blue-50">Niveau {participant.level}</Badge>}
+                                    </>
+                                ) : (
+                                    <span className="text-blue-400 italic">Détails non définis</span>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex gap-1">
+                        {!participant.dndBeyondId && !isEditing && (
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-blue-600 hover:text-blue-800" onClick={handleStartEdit} title="Modifier">
+                                <Edit className="h-4 w-4" />
+                            </Button>
+                        )}
+                        {isEditing && (
+                            <>
+                                <Button size="icon" variant="ghost" className="h-8 w-8 text-green-600 hover:text-green-800" onClick={handleSaveEdit} title="Sauvegarder">
+                                    <Save className="h-4 w-4" />
+                                </Button>
+                                <Button size="icon" variant="ghost" className="h-8 w-8 text-red-600 hover:text-red-800" onClick={handleCancelEdit} title="Annuler">
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            </>
+                        )}
                     </div>
                 </div>
 
                 {/* Zone de contrôle D&D Beyond */}
-                <div className="mt-3 pt-2 border-t border-blue-200">
+                <div className="mt-2 pt-2 border-t border-blue-200">
                     {participant.dndBeyondId ? (
                         <div className="flex flex-col gap-2">
                             <div className="flex items-center gap-2">
@@ -235,105 +321,197 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                         </div>
                     ) : (
                         <div className="flex flex-col gap-2">
-                            <div className="flex items-center gap-2 text-yellow-700 bg-yellow-50 px-2 py-1 rounded text-xs">
-                                <Badge variant="outline" className="border-yellow-500 text-yellow-700">Non lié</Badge>
-                                <span>Pas de synchronisation</span>
-                            </div>
-
-                            {onLinkDndBeyond ? (
-                                !isLinking ? (
-                                    <button
-                                        onClick={() => setIsLinking(true)}
-                                        className="text-xs bg-white border border-blue-300 text-blue-700 px-2 py-1 rounded hover:bg-blue-50 flex items-center gap-1 w-fit"
-                                    >
-                                        <ExternalLink size={12} /> Lier une fiche D&D Beyond
-                                    </button>
-                                ) : (
-                                    <div className="flex flex-col gap-2 bg-white p-2 rounded shadow-sm border border-blue-200">
-                                        <label className="text-xs font-semibold text-gray-700">URL du personnage :</label>
-                                        <div className="flex gap-2">
-                                            <input
-                                                type="text"
-                                                value={linkUrl}
-                                                onChange={(e) => setLinkUrl(e.target.value)}
-                                                placeholder="https://www.dndbeyond.com/characters/..."
-                                                className="text-xs border rounded p-1 flex-1"
-                                                autoFocus
-                                            />
-                                            <button
-                                                onClick={handleLink}
-                                                className="text-xs bg-blue-600 text-white px-2 py-1 rounded"
-                                            >
-                                                OK
-                                            </button>
-                                            <button
-                                                onClick={() => setIsLinking(false)}
-                                                className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded"
-                                            >
-                                                X
-                                            </button>
-                                        </div>
-                                        <p className="text-[10px] text-gray-400">Collez l'URL complète de la fiche personnage</p>
+                            {!isEditing && (
+                                <div className="flex justify-between items-center text-xs">
+                                    <div className="flex items-center gap-1 text-yellow-700 bg-yellow-50 px-2 py-1 rounded">
+                                        <span>Mode Manuel</span>
                                     </div>
-                                )
-                            ) : (
-                                <span className="text-xs text-red-500">Fonction de liaison indisponible</span>
+                                    {onLinkDndBeyond && !isLinking && (
+                                        <button
+                                            onClick={() => setIsLinking(true)}
+                                            className="ml-auto text-blue-600 hover:text-blue-800 underline flex items-center gap-1"
+                                        >
+                                            <ExternalLink size={10} /> Lier D&D Beyond
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+
+                            {isLinking && (
+                                <div className="flex flex-col gap-2 bg-white p-2 rounded shadow-sm border border-blue-200 mt-1">
+                                    <label className="text-xs font-semibold text-gray-700">URL du personnage :</label>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={linkUrl}
+                                            onChange={(e) => setLinkUrl(e.target.value)}
+                                            placeholder="https://www.dndbeyond.com/characters/..."
+                                            className="text-xs border rounded p-1 flex-1"
+                                            autoFocus
+                                        />
+                                        <button onClick={handleLink} className="text-xs bg-blue-600 text-white px-2 py-1 rounded">OK</button>
+                                        <button onClick={() => setIsLinking(false)} className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">X</button>
+                                    </div>
+                                </div>
                             )}
                         </div>
                     )}
                 </div>
             </CardHeader>
-            <CardContent className="p-6">
+            <CardContent className="p-6 overflow-y-auto custom-scrollbar">
+
+                {/* Infos Générales Édition */}
+                {isEditing && (
+                    <div className="grid grid-cols-3 gap-3 mb-6 bg-white p-3 rounded-lg border border-blue-100">
+                        <div className="col-span-1">
+                            <Label className="text-xs">Race</Label>
+                            <Input value={editData.race as string} onChange={(e) => handleChange('race', e.target.value)} className="h-8 text-sm" placeholder="Ex: Elfe" />
+                        </div>
+                        <div className="col-span-1">
+                            <Label className="text-xs">Classe</Label>
+                            <Input value={editData.class as string} onChange={(e) => handleChange('class', e.target.value)} className="h-8 text-sm" placeholder="Ex: Magicien" />
+                        </div>
+                        <div className="col-span-1">
+                            <Label className="text-xs">Niveau</Label>
+                            <Input type="number" value={editData.level as number} onChange={(e) => handleChange('level', parseInt(e.target.value) || 1)} className="h-8 text-sm" />
+                        </div>
+                    </div>
+                )}
+
+                {/* Stats Vitales */}
                 <div className="grid grid-cols-3 gap-4 mb-6">
-                    <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm border border-blue-100">
+                    <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm border border-blue-100 relative">
                         <Shield className="w-8 h-8 text-blue-500 mb-2" />
-                        <span className="text-2xl font-bold text-gray-800">{participant.ac}</span>
-                        <span className="text-xs text-gray-500 uppercase tracking-wider">CA</span>
+                        {isEditing ? (
+                            <Input
+                                type="number"
+                                value={editData.ac as number}
+                                onChange={(e) => handleChange('ac', parseInt(e.target.value) || 10)}
+                                className="text-center font-bold text-lg h-10 w-20"
+                            />
+                        ) : (
+                            <span className="text-2xl font-bold text-gray-800">{participant.ac}</span>
+                        )}
+                        <span className="text-xs text-gray-500 uppercase tracking-wider mt-1">CA</span>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm border border-blue-100">
-                        <div className="relative">
-                            <Heart className="w-8 h-8 text-red-500 mb-2" />
-                        </div>
-                        <span className="text-2xl font-bold text-gray-800">
-                            {participant.currentHp} <span className="text-gray-400 text-lg">/ {participant.maxHp}</span>
-                        </span>
-                        <span className="text-xs text-gray-500 uppercase tracking-wider">PV</span>
+                        <Heart className="w-8 h-8 text-red-500 mb-2" />
+                        {isEditing ? (
+                            <div className="flex items-center gap-1">
+                                <Input
+                                    type="number"
+                                    value={editData.currentHp as number}
+                                    onChange={(e) => handleChange('currentHp', parseInt(e.target.value) || 0)}
+                                    className="text-center font-bold text-lg h-10 w-16"
+                                />
+                                <span className="text-xl">/</span>
+                                <Input
+                                    type="number"
+                                    value={editData.maxHp as number}
+                                    onChange={(e) => handleChange('maxHp', parseInt(e.target.value) || 1)}
+                                    className="text-center font-bold text-lg h-10 w-16"
+                                />
+                            </div>
+                        ) : (
+                            <span className="text-2xl font-bold text-gray-800">
+                                {participant.currentHp} <span className="text-gray-400 text-lg">/ {participant.maxHp}</span>
+                            </span>
+                        )}
+                        <span className="text-xs text-gray-500 uppercase tracking-wider mt-1">PV</span>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm border border-blue-100">
                         <Zap className="w-8 h-8 text-yellow-500 mb-2" />
-                        <span className="text-2xl font-bold text-gray-800">{participant.initiative}</span>
-                        <span className="text-xs text-gray-500 uppercase tracking-wider">Initiative</span>
+                        {isEditing ? (
+                            <Input
+                                type="number"
+                                value={editData.initiative as number}
+                                onChange={(e) => handleChange('initiative', parseInt(e.target.value) || 0)}
+                                className="text-center font-bold text-lg h-10 w-20"
+                            />
+                        ) : (
+                            <span className="text-2xl font-bold text-gray-800">{participant.initiative}</span>
+                        )}
+                        <span className="text-xs text-gray-500 uppercase tracking-wider mt-1">Initiative</span>
                     </div>
                 </div>
 
                 {/* Caractéristiques */}
-                {(participant.str !== undefined) && (
-                    <div className="grid grid-cols-6 gap-2 mb-6">
-                        {[
-                            { label: 'FOR', val: participant.str },
-                            { label: 'DEX', val: participant.dex },
-                            { label: 'CON', val: participant.con },
-                            { label: 'INT', val: participant.int },
-                            { label: 'SAG', val: participant.wis },
-                            { label: 'CHA', val: participant.cha }
-                        ].map((stat, idx) => {
-                            const mod = Math.floor(((stat.val || 10) - 10) / 2);
-                            const sign = mod >= 0 ? '+' : '';
-                            return (
-                                <div key={idx} className="flex flex-col items-center p-2 bg-white rounded shadow-sm border border-gray-100">
-                                    <span className="text-xs font-bold text-gray-500">{stat.label}</span>
-                                    <span className="text-lg font-bold text-gray-800">{stat.val}</span>
-                                    <span className="text-xs text-blue-600 bg-blue-50 px-1 rounded">{sign}{mod}</span>
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
+                {/* Caractéristiques - Toujours afficher pour les joueurs */}
+                <div className="grid grid-cols-6 gap-2 mb-6">
+                    {[
+                        { label: 'FOR', key: 'str', val: isEditing ? editData.str : participant.str },
+                        { label: 'DEX', key: 'dex', val: isEditing ? editData.dex : participant.dex },
+                        { label: 'CON', key: 'con', val: isEditing ? editData.con : participant.con },
+                        { label: 'INT', key: 'int', val: isEditing ? editData.int : participant.int },
+                        { label: 'SAG', key: 'wis', val: isEditing ? editData.wis : participant.wis },
+                        { label: 'CHA', key: 'cha', val: isEditing ? editData.cha : participant.cha }
+                    ].map((stat, idx) => {
+                        const val = stat.val as number || 10;
+                        const mod = Math.floor((val - 10) / 2);
+                        const sign = mod >= 0 ? '+' : '';
 
-                {/* Vitesse */}
-                {participant.speed && participant.speed.length > 0 && (
-                    <div className="flex gap-2 mb-4">
-                        {participant.speed.map((s, i) => (
+                        return (
+                            <div key={idx} className={`flex flex-col items-center p-2 rounded shadow-sm border ${isEditing ? 'bg-blue-50 border-blue-300' : 'bg-white border-gray-100'}`}>
+                                <span className="text-[10px] font-bold text-gray-500 mb-1">{stat.label}</span>
+                                {isEditing ? (
+                                    <Input
+                                        type="number"
+                                        value={val}
+                                        onChange={(e) => handleChange(stat.key as keyof EncounterParticipant, parseInt(e.target.value) || 10)}
+                                        className="h-8 text-center text-sm p-0 mb-1"
+                                    />
+                                ) : (
+                                    <span className="text-lg font-bold text-gray-800">{val}</span>
+                                )}
+                                <span className="text-xs text-blue-600 bg-white/50 px-1 rounded font-mono">{sign}{mod}</span>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* Maitrises & Notes */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Maitrises - Affichées si non-Beyond */}
+                    {!participant.dndBeyondId && (
+                        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Swords className="h-4 w-4 text-gray-600" />
+                                <h4 className="text-sm font-semibold text-gray-700">Maîtrises & Aptitudes</h4>
+                            </div>
+                            {isEditing ? (
+                                <Textarea
+                                    value={editData.proficiencies as string}
+                                    onChange={(e) => handleChange('proficiencies', e.target.value)}
+                                    className="min-h-[100px] text-sm"
+                                    placeholder="Armures, Armes, Outils, Langues, Dons..."
+                                />
+                            ) : (
+                                <div className="text-sm text-gray-700 whitespace-pre-wrap min-h-[50px]">
+                                    {participant.proficiencies || <span className="text-gray-400 italic">Aucune maîtrise renseignée.</span>}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    <div className={`${participant.dndBeyondId ? 'col-span-2' : ''} bg-white p-4 rounded-lg shadow-sm border border-gray-100`}>
+                        <div className="flex items-center gap-2 mb-2">
+                            <Book className="h-4 w-4 text-gray-600" />
+                            <h4 className="text-sm font-semibold text-gray-700">Notes de session</h4>
+                        </div>
+                        <textarea
+                            className="w-full text-sm p-2 border rounded resize-y min-h-[100px] text-gray-700 bg-transparent focus:ring-2 focus:ring-blue-200 focus:outline-none"
+                            value={localNotes}
+                            onChange={(e) => setLocalNotes(e.target.value)}
+                            onBlur={() => onUpdate?.({ notes: localNotes })}
+                            placeholder="Notes temporaires pour ce combat..."
+                        />
+                    </div>
+                </div>
+
+                {/* Vitesse et Conditions existantes */}
+                {participant.speed && participant.speed.length > 0 && !isEditing && (
+                    <div className="flex gap-2 mt-4">
+                        {participant.speed.map((s: string, i: number) => (
                             <Badge key={i} variant="outline" className="bg-white">
                                 🦶 {s}
                             </Badge>
@@ -342,29 +520,16 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                 )}
 
                 {participant.conditions && participant.conditions.length > 0 && (
-                    <div className="bg-white p-4 rounded-lg shadow-sm border border-red-100 mb-4">
+                    <div className="mt-4 bg-white p-4 rounded-lg shadow-sm border border-red-100">
                         <h4 className="text-sm font-semibold text-gray-700 mb-2">Conditions</h4>
                         <div className="flex flex-wrap gap-2">
-                            {participant.conditions.map((condition, idx) => (
+                            {participant.conditions.map((condition: string, idx: number) => (
                                 <Badge key={idx} variant="destructive">{condition}</Badge>
                             ))}
                         </div>
                     </div>
                 )}
-
-                <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-                    <h4 className="text-sm font-semibold text-gray-700 mb-2">Notes</h4>
-                    <textarea
-                        className="w-full text-sm p-2 border rounded resize-y min-h-[100px] text-gray-700 bg-transparent focus:ring-2 focus:ring-blue-200 focus:outline-none"
-                        value={localNotes}
-                        onChange={(e) => setLocalNotes(e.target.value)}
-                        onBlur={() => onUpdate?.({ notes: localNotes })}
-                        placeholder="Notes temporaires pour ce combat (sauvegardées uniquement dans la session)..."
-                    />
-                </div>
             </CardContent>
-            {/* Pied de page informatif si lié mais pas d'iframe */}
-
         </Card>
     );
 }

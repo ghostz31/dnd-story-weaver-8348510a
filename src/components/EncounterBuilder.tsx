@@ -317,8 +317,20 @@ const EncounterBuilder: React.FC = () => {
             maxHp: player.maxHp || 10,
             isPC: true,
             conditions: [],
-            notes: `${player.characterClass} niveau ${player.level}`,
-            dndBeyondId: player.dndBeyondId
+            notes: `${player.characterClass || ''} niveau ${player.level || 1}`,
+            dndBeyondId: player.dndBeyondId,
+            // Extended stats
+            str: player.str,
+            dex: player.dex,
+            con: player.con,
+            int: player.int,
+            wis: player.wis,
+            cha: player.cha,
+            speed: player.speed,
+            race: player.race,
+            class: player.characterClass,
+            level: player.level,
+            proficiencies: player.proficiencies
           };
         }),
         // Monsters

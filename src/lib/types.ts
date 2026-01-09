@@ -29,6 +29,7 @@ export interface Player {
   speed?: string[]; // Vitesse (ex: ["9m", "Vol 18m"])
   initiative?: number; // Modificateur d'initiative
   dndBeyondId?: string; // ID pour la synchro live
+  proficiencies?: string; // Maîtrises et aptitudes (texte libre)
 }
 
 export interface Party {
@@ -277,6 +278,9 @@ export interface EncounterParticipant {
   senses?: string;
   languages?: string;
   challengeRating?: number;
+  race?: string;
+  class?: string;
+  proficiencies?: string;
 }
 
 export interface Spell {

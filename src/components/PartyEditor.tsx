@@ -3,6 +3,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
+import { Textarea } from '../components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
@@ -70,7 +72,14 @@ const PartyEditor: React.FC = () => {
     ac: 10,
     maxHp: 10,
     currentHp: 10,
-    dndBeyondId: ''
+    dndBeyondId: '',
+    str: 10,
+    dex: 10,
+    con: 10,
+    int: 10,
+    wis: 10,
+    cha: 10,
+    proficiencies: ''
   });
   const [isEditingPlayer, setIsEditingPlayer] = useState(false);
   const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
@@ -276,11 +285,9 @@ const PartyEditor: React.FC = () => {
       }
 
       // 8. Extraire l'initiative
-      // Dex Mod + Bonus éventuels (Alert feat, etc.)
       const dexMod = Math.floor((dex - 10) / 2);
       let initiative = dexMod;
 
-      // Vérifier les bonus d'initiative
       if (character.modifiers?.race) {
         character.modifiers.race.forEach((mod: any) => {
           if (mod.subType === "initiative") initiative += mod.value;
@@ -297,7 +304,41 @@ const PartyEditor: React.FC = () => {
         });
       }
 
-      console.log('Stats extraites:', { str, dex, con, int, wis, cha, ac, maxHp });
+      // 9. Extraire les Maîtrises (Armures, Armes, Outils, Langues)
+      const proficienciesList: { type: string, name: string }[] = [];
+      const languagesList: string[] = [];
+
+      const processModifiers = (modifiers: any[]) => {
+        if (!modifiers) return;
+        modifiers.forEach((mod: any) => {
+          if (mod.type === "proficiency") {
+            proficienciesList.push({ type: mod.subType, name: mod.friendlySubtypeName });
+          } else if (mod.type === "language") {
+            languagesList.push(mod.friendlySubtypeName);
+          }
+        });
+      };
+
+      // Parcourir toutes les sources de modification
+      const modKeys = ['race', 'class', 'background', 'feat', 'item'];
+      modKeys.forEach(key => {
+        if (character.modifiers && character.modifiers[key]) {
+          processModifiers(character.modifiers[key]);
+        }
+      });
+
+      // Organiser les maîtrises
+      const armorProfs = proficienciesList.filter(p => p.type.includes('armor')).map(p => p.name).join(', ');
+      const weaponProfs = proficienciesList.filter(p => p.type.includes('weapon')).map(p => p.name).join(', ');
+      const toolProfs = proficienciesList.filter(p => p.type.includes('tool') || p.type.includes('kit') || p.type.includes('supplies')).map(p => p.name).join(', ');
+
+      let proficienciesText = "";
+      if (armorProfs) proficienciesText += `**Armures:** ${armorProfs}\n`;
+      if (weaponProfs) proficienciesText += `**Armes:** ${weaponProfs}\n`;
+      if (toolProfs) proficienciesText += `**Outils:** ${toolProfs}\n`;
+      if (languagesList.length > 0) proficienciesText += `**Langues:** ${languagesList.join(', ')}\n`;
+
+      console.log('Stats extraites:', { str, dex, con, int, wis, cha, ac, maxHp, proficiencies: proficienciesText });
 
       // Mettre à jour le formulaire avec les données extraites
       setNewPlayer({
@@ -317,7 +358,8 @@ const PartyEditor: React.FC = () => {
         cha: cha,
         speed: speedList,
         initiative: initiative,
-        dndBeyondId: characterId
+        dndBeyondId: characterId,
+        proficiencies: proficienciesText
       });
 
       toast({
@@ -642,7 +684,14 @@ const PartyEditor: React.FC = () => {
       ac: player.ac,
       maxHp: player.maxHp,
       currentHp: player.currentHp,
-      dndBeyondId: player.dndBeyondId || ''
+      dndBeyondId: player.dndBeyondId || '',
+      str: player.str || 10,
+      dex: player.dex || 10,
+      con: player.con || 10,
+      int: player.int || 10,
+      wis: player.wis || 10,
+      cha: player.cha || 10,
+      proficiencies: player.proficiencies || ''
     });
     setEditingPlayerId(player.id);
     setIsEditingPlayer(true);
@@ -873,180 +922,236 @@ const PartyEditor: React.FC = () => {
                               </DialogDescription>
                             </DialogHeader>
                             <div className="space-y-4 py-4">
-                              {/* Section D&D Beyond Import */}
-                              {!isEditingPlayer && (
-                                <div className="space-y-2 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                  <Label htmlFor="dndBeyondUrl" className="text-blue-800 font-semibold">
-                                    Import depuis D&D Beyond (optionnel)
-                                  </Label>
-                                  <div className="flex gap-2">
+                              <p className="text-sm text-muted-foreground mb-4">
+                                Remplissez les informations de base, ou importez depuis D&D Beyond.
+                                Les caractéristiques et maîtrises peuvent être ajoutées dans les onglets dédiés.
+                              </p>
+
+                              <Tabs defaultValue="general" className="w-full">
+                                <TabsList className="grid w-full grid-cols-3">
+                                  <TabsTrigger value="general">Général</TabsTrigger>
+                                  <TabsTrigger value="stats">Caractéristiques</TabsTrigger>
+                                  <TabsTrigger value="proficiencies">Maîtrises</TabsTrigger>
+                                </TabsList>
+
+                                <TabsContent value="general" className="space-y-4 pt-4">
+                                  {/* Section D&D Beyond Import */}
+                                  {!isEditingPlayer && (
+                                    <div className="space-y-2 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                      <Label htmlFor="dndBeyondUrl" className="text-blue-800 font-semibold">
+                                        Import depuis D&D Beyond (optionnel)
+                                      </Label>
+                                      <div className="flex gap-2">
+                                        <Input
+                                          id="dndBeyondUrl"
+                                          placeholder="https://www.dndbeyond.com/characters/92791713"
+                                          value={dndBeyondUrl}
+                                          onChange={(e) => setDndBeyondUrl(e.target.value)}
+                                          className="flex-1"
+                                        />
+                                        <Button
+                                          type="button"
+                                          onClick={() => importFromDndBeyond(dndBeyondUrl)}
+                                          disabled={!dndBeyondUrl || isImporting}
+                                          className="bg-blue-600 hover:bg-blue-700"
+                                        >
+                                          {isImporting ? (
+                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                          ) : (
+                                            'Importer'
+                                          )}
+                                        </Button>
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          onClick={() => {
+                                            if (dndBeyondUrl) {
+                                              window.open(dndBeyondUrl, '_blank');
+                                              toast({
+                                                title: "Page ouverte",
+                                                description: "Copiez manuellement les informations depuis D&D Beyond dans les champs ci-dessous.",
+                                                variant: "default"
+                                              });
+                                            }
+                                          }}
+                                          disabled={!dndBeyondUrl}
+                                          className="border-blue-300 text-blue-600 hover:bg-blue-50"
+                                        >
+                                          Ouvrir
+                                        </Button>
+                                      </div>
+                                      <p className="text-xs text-blue-600">
+                                        Collez l'URL de votre personnage D&D Beyond pour remplir automatiquement les champs
+                                      </p>
+                                    </div>
+                                  )}
+
+                                  <div className="space-y-2">
+                                    <Label htmlFor="playerName">Nom du personnage</Label>
                                     <Input
-                                      id="dndBeyondUrl"
-                                      placeholder="https://www.dndbeyond.com/characters/92791713"
-                                      value={dndBeyondUrl}
-                                      onChange={(e) => setDndBeyondUrl(e.target.value)}
-                                      className="flex-1"
+                                      id="playerName"
+                                      placeholder="Bruenor Battlehammer"
+                                      value={newPlayer.name}
+                                      onChange={(e) => setNewPlayer({ ...newPlayer, name: e.target.value })}
                                     />
-                                    <Button
-                                      type="button"
-                                      onClick={() => importFromDndBeyond(dndBeyondUrl)}
-                                      disabled={!dndBeyondUrl || isImporting}
-                                      className="bg-blue-600 hover:bg-blue-700"
-                                    >
-                                      {isImporting ? (
-                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                      ) : (
-                                        'Importer'
-                                      )}
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      onClick={() => {
-                                        if (dndBeyondUrl) {
-                                          window.open(dndBeyondUrl, '_blank');
-                                          toast({
-                                            title: "Page ouverte",
-                                            description: "Copiez manuellement les informations depuis D&D Beyond dans les champs ci-dessous.",
-                                            variant: "default"
-                                          });
-                                        }
-                                      }}
-                                      disabled={!dndBeyondUrl}
-                                      className="border-blue-300 text-blue-600 hover:bg-blue-50"
-                                    >
-                                      Ouvrir
-                                    </Button>
                                   </div>
-                                  <p className="text-xs text-blue-600">
-                                    Collez l'URL de votre personnage D&D Beyond pour remplir automatiquement les champs
-                                  </p>
-                                </div>
-                              )}
 
-                              <div className="space-y-2">
-                                <Label htmlFor="playerName">Nom du personnage</Label>
-                                <Input
-                                  id="playerName"
-                                  placeholder="Bruenor Battlehammer"
-                                  value={newPlayer.name}
-                                  onChange={(e) => setNewPlayer({ ...newPlayer, name: e.target.value })}
-                                />
-                              </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor="playerRace">Race</Label>
+                                    <Input
+                                      id="playerRace"
+                                      placeholder="Nain des montagnes"
+                                      value={newPlayer.race || ''}
+                                      onChange={(e) => setNewPlayer({ ...newPlayer, race: e.target.value })}
+                                    />
+                                  </div>
 
-                              <div className="space-y-2">
-                                <Label htmlFor="playerRace">Race</Label>
-                                <Input
-                                  id="playerRace"
-                                  placeholder="Nain des montagnes"
-                                  value={newPlayer.race || ''}
-                                  onChange={(e) => setNewPlayer({ ...newPlayer, race: e.target.value })}
-                                />
-                              </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor="dndBeyondId">ID D&D Beyond (Optionnel)</Label>
+                                    <div className="text-xs text-muted-foreground mb-1">
+                                      ID du personnage pour la synchronisation (ex: 123456)
+                                    </div>
+                                    <Input
+                                      id="dndBeyondId"
+                                      placeholder="ex: 123456"
+                                      value={newPlayer.dndBeyondId || ''}
+                                      onChange={(e) => {
+                                        // Garder uniquement les chiffres
+                                        const val = e.target.value.replace(/[^0-9]/g, '');
+                                        setNewPlayer({ ...newPlayer, dndBeyondId: val });
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                      <Label htmlFor="playerClass">Classe</Label>
+                                      <Select
+                                        value={newPlayer.characterClass}
+                                        onValueChange={(value) => setNewPlayer({ ...newPlayer, characterClass: value })}
+                                      >
+                                        <SelectTrigger id="playerClass">
+                                          <SelectValue placeholder="Choisir une classe" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {CHARACTER_CLASSES.map(characterClass => (
+                                            <SelectItem key={characterClass} value={characterClass}>
+                                              {characterClass}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label htmlFor="playerLevel">Niveau</Label>
+                                      <Select
+                                        value={newPlayer.level.toString()}
+                                        onValueChange={(value) => setNewPlayer({ ...newPlayer, level: parseInt(value) })}
+                                      >
+                                        <SelectTrigger id="playerLevel">
+                                          <SelectValue placeholder="Niveau" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {Array.from({ length: 20 }, (_, i) => i + 1).map(level => (
+                                            <SelectItem key={level} value={level.toString()}>
+                                              {level}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                  </div>
 
-                              <div className="space-y-2">
-                                <Label htmlFor="dndBeyondId">ID D&D Beyond (Optionnel)</Label>
-                                <div className="text-xs text-muted-foreground mb-1">
-                                  ID du personnage pour la synchronisation (ex: 123456)
-                                </div>
-                                <Input
-                                  id="dndBeyondId"
-                                  placeholder="ex: 123456"
-                                  value={newPlayer.dndBeyondId || ''}
-                                  onChange={(e) => {
-                                    // Garder uniquement les chiffres
-                                    const val = e.target.value.replace(/[^0-9]/g, '');
-                                    setNewPlayer({ ...newPlayer, dndBeyondId: val });
-                                  }}
-                                />
-                              </div>
-                              <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                  <Label htmlFor="playerClass">Classe</Label>
-                                  <Select
-                                    value={newPlayer.characterClass}
-                                    onValueChange={(value) => setNewPlayer({ ...newPlayer, characterClass: value })}
-                                  >
-                                    <SelectTrigger id="playerClass">
-                                      <SelectValue placeholder="Choisir une classe" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {CHARACTER_CLASSES.map(characterClass => (
-                                        <SelectItem key={characterClass} value={characterClass}>
-                                          {characterClass}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                                <div className="space-y-2">
-                                  <Label htmlFor="playerLevel">Niveau</Label>
-                                  <Select
-                                    value={newPlayer.level.toString()}
-                                    onValueChange={(value) => setNewPlayer({ ...newPlayer, level: parseInt(value) })}
-                                  >
-                                    <SelectTrigger id="playerLevel">
-                                      <SelectValue placeholder="Niveau" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {Array.from({ length: 20 }, (_, i) => i + 1).map(level => (
-                                        <SelectItem key={level} value={level.toString()}>
-                                          {level}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                              </div>
+                                  <div className="grid grid-cols-3 gap-4">
+                                    <div className="space-y-2">
+                                      <Label htmlFor="playerAC">Classe d'Armure (CA)</Label>
+                                      <Input
+                                        id="playerAC"
+                                        type="number"
+                                        min="0"
+                                        placeholder="10"
+                                        value={newPlayer.ac || 10}
+                                        onChange={(e) => setNewPlayer({ ...newPlayer, ac: parseInt(e.target.value) || 10 })}
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label htmlFor="playerMaxHP">PV Maximum</Label>
+                                      <Input
+                                        id="playerMaxHP"
+                                        type="number"
+                                        min="1"
+                                        placeholder="10"
+                                        value={newPlayer.maxHp || 10}
+                                        onChange={(e) => {
+                                          const maxHp = parseInt(e.target.value) || 10;
+                                          // Ajuster le PV actuel si nécessaire
+                                          const currentHp = newPlayer.currentHp && newPlayer.currentHp > maxHp
+                                            ? maxHp
+                                            : newPlayer.currentHp || maxHp;
+                                          setNewPlayer({ ...newPlayer, maxHp, currentHp });
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label htmlFor="playerCurrentHP">PV Actuels</Label>
+                                      <Input
+                                        id="playerCurrentHP"
+                                        type="number"
+                                        min="0"
+                                        max={newPlayer.maxHp || 10}
+                                        placeholder="10"
+                                        value={newPlayer.currentHp || 10}
+                                        onChange={(e) => {
+                                          const currentHp = parseInt(e.target.value) || 0;
+                                          // S'assurer que le PV actuel ne dépasse pas le maximum
+                                          const validCurrentHp = Math.min(currentHp, newPlayer.maxHp || 10);
+                                          setNewPlayer({ ...newPlayer, currentHp: validCurrentHp });
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                </TabsContent>
 
-                              <div className="grid grid-cols-3 gap-4">
-                                <div className="space-y-2">
-                                  <Label htmlFor="playerAC">Classe d'Armure (CA)</Label>
-                                  <Input
-                                    id="playerAC"
-                                    type="number"
-                                    min="0"
-                                    placeholder="10"
-                                    value={newPlayer.ac || 10}
-                                    onChange={(e) => setNewPlayer({ ...newPlayer, ac: parseInt(e.target.value) || 10 })}
-                                  />
-                                </div>
-                                <div className="space-y-2">
-                                  <Label htmlFor="playerMaxHP">PV Maximum</Label>
-                                  <Input
-                                    id="playerMaxHP"
-                                    type="number"
-                                    min="1"
-                                    placeholder="10"
-                                    value={newPlayer.maxHp || 10}
-                                    onChange={(e) => {
-                                      const maxHp = parseInt(e.target.value) || 10;
-                                      // Ajuster le PV actuel si nécessaire
-                                      const currentHp = newPlayer.currentHp && newPlayer.currentHp > maxHp
-                                        ? maxHp
-                                        : newPlayer.currentHp || maxHp;
-                                      setNewPlayer({ ...newPlayer, maxHp, currentHp });
-                                    }}
-                                  />
-                                </div>
-                                <div className="space-y-2">
-                                  <Label htmlFor="playerCurrentHP">PV Actuels</Label>
-                                  <Input
-                                    id="playerCurrentHP"
-                                    type="number"
-                                    min="0"
-                                    max={newPlayer.maxHp || 10}
-                                    placeholder="10"
-                                    value={newPlayer.currentHp || 10}
-                                    onChange={(e) => {
-                                      const currentHp = parseInt(e.target.value) || 0;
-                                      // S'assurer que le PV actuel ne dépasse pas le maximum
-                                      const validCurrentHp = Math.min(currentHp, newPlayer.maxHp || 10);
-                                      setNewPlayer({ ...newPlayer, currentHp: validCurrentHp });
-                                    }}
-                                  />
-                                </div>
-                              </div>
+                                <TabsContent value="stats" className="space-y-4 pt-4">
+                                  <div className="grid grid-cols-3 gap-4">
+                                    {['str', 'dex', 'con', 'int', 'wis', 'cha'].map((stat) => (
+                                      <div key={stat} className="space-y-1">
+                                        <Label htmlFor={`stat-${stat}`} className="uppercase text-xs font-bold text-muted-foreground">
+                                          {stat}
+                                        </Label>
+                                        <Input
+                                          id={`stat-${stat}`}
+                                          type="number"
+                                          min="1"
+                                          max="30"
+                                          value={(newPlayer as any)[stat] || 10}
+                                          onChange={(e) => setNewPlayer({ ...newPlayer, [stat]: parseInt(e.target.value) || 10 })}
+                                          className="text-center"
+                                        />
+                                        <div className="text-[10px] text-center text-muted-foreground">
+                                          {Math.floor(((newPlayer as any)[stat] || 10) - 10) / 2 >= 0 ? '+' : ''}
+                                          {Math.floor(((newPlayer as any)[stat] || 10) - 10) / 2}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </TabsContent>
+
+                                <TabsContent value="proficiencies" className="space-y-4 pt-4">
+                                  <div className="space-y-2">
+                                    <Label htmlFor="playerProficiencies">Maîtrises & Aptitudes</Label>
+                                    <Textarea
+                                      id="playerProficiencies"
+                                      value={newPlayer.proficiencies || ''}
+                                      onChange={(e) => setNewPlayer({ ...newPlayer, proficiencies: e.target.value })}
+                                      placeholder="Armures légères, épées courtes, outils de voleur, Elfique...&#10;Dons : Tireur d'élite..."
+                                      className="min-h-[200px]"
+                                    />
+                                    <p className="text-xs text-muted-foreground">
+                                      Listez ici les maîtrises d'armes, d'armures, d'outils, les langues connues et les dons importants.
+                                    </p>
+                                  </div>
+                                </TabsContent>
+                              </Tabs>
                             </div>
 
 

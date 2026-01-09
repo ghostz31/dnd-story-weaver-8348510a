@@ -253,34 +253,61 @@ export const useEncounterManager = () => {
                 if (snap.exists()) {
                     const data = snap.data() as EncounterType;
 
+                    // Sync with latest party data if available
+                    let syncedParty = data.party;
+                    if (data.party?.id) {
+                        try {
+                            const partyRef = doc(db, 'users', user.uid, 'parties', data.party.id);
+                            const partySnap = await getDoc(partyRef);
+                            if (partySnap.exists()) {
+                                syncedParty = { id: partySnap.id, ...partySnap.data() } as any;
+                                console.log("[loadSavedEncounter] Synced with latest party data");
+                            }
+                        } catch (e) {
+                            console.warn("Could not sync party", e);
+                        }
+                    }
+
                     console.log("[loadSavedEncounter] Firestore data loaded:", {
                         hasParticipants: !!data.participants && data.participants.length > 0,
                         participantsCount: data.participants?.length || 0,
                         hasMonsters: !!data.monsters,
-                        hasParty: !!data.party
+                        hasParty: !!syncedParty
                     });
 
-                    // Log first participant details if available
-                    if (data.participants && data.participants.length > 0) {
-                        const firstMonster = data.participants.find(p => !p.isPC);
-                        if (firstMonster) {
-                            console.log("[loadSavedEncounter] First monster participant sample:", {
-                                name: firstMonster.name,
-                                hasActions: !!firstMonster.actions && firstMonster.actions.length > 0,
-                                hasTraits: !!firstMonster.traits && firstMonster.traits.length > 0,
-                                hasReactions: !!firstMonster.reactions && firstMonster.reactions.length > 0,
-                                hasLegendary: !!firstMonster.legendaryActionsList && firstMonster.legendaryActionsList.length > 0,
-                                actionsCount: firstMonster.actions?.length || 0,
-                                traitsCount: firstMonster.traits?.length || 0
-                            });
-                        }
+                    let participants = data.participants || [];
+
+                    // Heal/Sync existing participants with current party stats
+                    if (participants.length > 0 && syncedParty && syncedParty.players) {
+                        participants = participants.map(p => {
+                            if (p.isPC) {
+                                const player = syncedParty.players?.find((pl: any) =>
+                                    pl.id === p.id.replace('pc-', '') || pl.name === p.name
+                                );
+                                if (player) {
+                                    return {
+                                        ...p,
+                                        str: player.str,
+                                        dex: player.dex,
+                                        con: player.con,
+                                        int: player.int,
+                                        wis: player.wis,
+                                        cha: player.cha,
+                                        speed: player.speed,
+                                        race: player.race || p.race,
+                                        class: player.characterClass || p.class,
+                                        level: player.level || p.level
+                                    };
+                                }
+                            }
+                            return p;
+                        });
                     }
 
-                    let participants = data.participants || [];
                     // Only recreate participants if none exist AND we have source data
-                    if (participants.length === 0 && data.monsters && data.party) {
+                    if (participants.length === 0 && data.monsters && syncedParty) {
                         console.log("[loadSavedEncounter] No participants found, creating from monsters and party");
-                        const playerParticipants = (data.party.players || []).map(player => ({
+                        const playerParticipants = (syncedParty.players || []).map((player: any) => ({
                             id: `pc-${player.id}`,
                             name: player.name,
                             initiative: Math.floor(Math.random() * 20) + 1,
@@ -289,10 +316,12 @@ export const useEncounterManager = () => {
                             maxHp: player.maxHp || 10,
                             isPC: true,
                             conditions: [],
-                            notes: `${player.characterClass} niveau ${player.level}`,
+                            notes: '',
                             initiativeModifier: player.initiative,
                             dndBeyondId: player.dndBeyondId,
                             level: player.level,
+                            race: player.race,
+                            class: player.characterClass,
                             // Extended
                             str: player.str, dex: player.dex, con: player.con, int: player.int, wis: player.wis, cha: player.cha, speed: player.speed
                         } as EncounterParticipant));
@@ -322,9 +351,9 @@ export const useEncounterManager = () => {
                         participants,
                         currentTurn: data.currentTurn || 0,
                         round: data.round || 1,
-                        party: data.party ? { id: data.party.id, name: data.party.name } : undefined
+                        party: syncedParty
                     });
-                    toast({ title: "Chargée", description: "Rencontre chargée." });
+                    toast({ title: "Chargée", description: "Rencontre chargée et synchronisée." });
                 } else {
                     throw new Error("Introuvable (Firestore)");
                 }
@@ -338,6 +367,34 @@ export const useEncounterManager = () => {
 
                 if (data) {
                     let participants = data.participants || [];
+
+                    // Heal/Sync existing participants with party stats (Local/Session)
+                    if (participants.length > 0 && data.party && data.party.players) {
+                        participants = participants.map((p: any) => {
+                            if (p.isPC) {
+                                const player = data.party.players.find((pl: any) =>
+                                    (pl.id && p.id.includes(pl.id)) || pl.name === p.name
+                                );
+                                if (player) {
+                                    return {
+                                        ...p,
+                                        str: player.str,
+                                        dex: player.dex,
+                                        con: player.con,
+                                        int: player.int,
+                                        wis: player.wis,
+                                        cha: player.cha,
+                                        speed: player.speed,
+                                        race: player.race || p.race,
+                                        class: player.characterClass || p.class,
+                                        level: player.level || p.level,
+                                        proficiencies: player.proficiencies || p.proficiencies
+                                    };
+                                }
+                            }
+                            return p;
+                        });
+                    }
                     if (participants.length === 0 && data.monsters && data.party) {
                         // Same init logic... (can extract to helper?)
                         const playerParticipants = (data.party.players || []).map((player: any) => ({
@@ -349,10 +406,14 @@ export const useEncounterManager = () => {
                             maxHp: player.maxHp || 10,
                             isPC: true,
                             conditions: [],
-                            notes: `${player.characterClass} niveau ${player.level}`,
+                            notes: '',
                             initiativeModifier: player.initiative,
                             dndBeyondId: player.dndBeyondId,
-                            level: player.level
+                            level: player.level,
+                            race: player.race,
+                            class: player.characterClass,
+                            // Extended
+                            str: player.str, dex: player.dex, con: player.con, int: player.int, wis: player.wis, cha: player.cha, speed: player.speed
                         } as EncounterParticipant));
 
                         const monsterParticipants = data.monsters.flatMap(({ monster, quantity }: any) =>
