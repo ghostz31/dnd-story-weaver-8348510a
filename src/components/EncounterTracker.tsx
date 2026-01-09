@@ -15,11 +15,12 @@ import TrackerTable from './encounter/TrackerTable';
 import TurnControls from './encounter/TurnControls';
 import { HpEditor, InitiativeEditor, NotesEditor } from './encounter/StatEditors';
 import { useEncounterManager } from '../hooks/useEncounterManager';
-import { getConditionInfo, extractNumericHP } from '@/lib/EncounterUtils';
-import { EncounterParticipant } from '../lib/types';
+import { getConditionInfo, extractNumericHP, calculateXPFromCR } from '@/lib/EncounterUtils';
+import { EncounterParticipant, EncounterMonster } from '../lib/types';
 import ActiveCombatantDisplay from './ActiveCombatantDisplay';
 import { useToast } from '../hooks/use-toast';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import EncounterDifficultyGauge from './EncounterDifficultyGauge';
 
 
 
@@ -64,6 +65,10 @@ const EncounterTracker: React.FC = () => {
     hp: 10
   });
   const [addPlayerDialogOpen, setAddPlayerDialogOpen] = useState(false);
+
+  // Local UI State for TrackerTable
+  const [hpModifierValue, setHpModifierValue] = useState(0);
+  const [showHpModifier, setShowHpModifier] = useState<string | null>(null);
 
   // Handlers for Editors
   const openHpEditor = (participant: EncounterParticipant) => {
@@ -145,7 +150,7 @@ const EncounterTracker: React.FC = () => {
   };
 
   return (
-    <div className="w-full px-4 max-w-[1920px] mx-auto py-2">
+    <div className="w-full px-2 mx-auto py-2">
       <div className="flex justify-between items-center mb-2">
         <div>
           <h1 className="text-2xl font-bold">
@@ -156,9 +161,41 @@ const EncounterTracker: React.FC = () => {
               </Badge>
             )}
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
-            {encounter.participants.filter(p => p.isPC).length} personnages, {encounter.participants.filter(p => !p.isPC).length} monstres
-          </p>
+          <div className="flex items-center gap-4 mt-1">
+            <p className="text-sm text-gray-500">
+              {encounter.participants.filter(p => p.isPC).length} personnages, {encounter.participants.filter(p => !p.isPC).length} monstres
+            </p>
+            {/* Jauge de difficulté */}
+            <EncounterDifficultyGauge
+              party={{
+                id: encounter.party?.id || 'temp',
+                name: encounter.party?.name || 'Party',
+                players: encounter.participants.filter(p => p.isPC).map(p => ({
+                  id: p.id,
+                  name: p.name,
+                  level: p.level || 1,
+                  characterClass: 'Unknown'
+                })),
+                createdAt: '',
+                updatedAt: ''
+              }}
+              monsters={encounter.participants.filter(p => !p.isPC).map(p => ({
+                monster: {
+                  ...p,
+                  type: p.type || 'Inconnu',
+                  size: p.size || 'M',
+                  source: 'Custom',
+                  cr: typeof p.cr === 'number' ? p.cr : 0,
+                  xp: (typeof p.cr === 'number' || typeof p.cr === 'string')
+                    ? calculateXPFromCR(p.cr)
+                    : (p.xp || 0),
+                  speed: {},
+                  legendaryActions: undefined
+                },
+                quantity: 1
+              }))}
+            />
+          </div>
         </div>
 
         <div className="flex gap-2">
@@ -273,9 +310,9 @@ const EncounterTracker: React.FC = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-10 gap-2 mb-2">
-        <div className="lg:col-span-7">
-          <Card className="glass-card border-0">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 mb-2">
+        <div className="lg:col-span-8">
+          <Card className="parchment-card shadow-lg border-primary/10 border-0">
             <CardHeader>
               <CardTitle className="flex justify-between items-center">
                 <span>Participants</span>
@@ -304,12 +341,17 @@ const EncounterTracker: React.FC = () => {
                   currentTurnParticipantId={sortedParticipants[encounter.currentTurn]?.id}
                   selectedParticipantId={selectedParticipantId}
                   quickInitiativeMode={quickInitiativeMode}
+                  hpModifierValue={hpModifierValue}
+                  showHpModifier={showHpModifier}
                   onSelect={setSelectedParticipantId}
                   onUpdateHp={actions.updateHp}
+                  onMove={actions.moveParticipant}
                   onInitiativeChange={(id, val) => {
                     actions.updateParticipant(id, { initiative: val });
                   }}
                   onOpenInitiativeEditor={openInitiativeEditor}
+                  onSetHpModifier={setHpModifierValue}
+                  onToggleHpModifier={setShowHpModifier}
                   onToggleCondition={toggleCondition}
                   onOpenNotes={openNotesEditor}
                   onRemove={actions.removeParticipant}
@@ -429,7 +471,7 @@ const EncounterTracker: React.FC = () => {
           </Card>
         </div>
 
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-4 sticky top-24 h-[calc(100vh-140px)]">
           {/* Vue du combattant actif (Monstre Iframe ou Joueur Stats) */}
           <div className="h-full">
             {sortedParticipants.length > 0 ? (
@@ -442,6 +484,7 @@ const EncounterTracker: React.FC = () => {
                 }
                 className="h-full"
                 onLinkDndBeyond={handleLinkDndBeyond}
+                onUpdate={handleUpdateActiveParticipant}
               />
             ) : (
               <Card className="h-full flex items-center justify-center p-6 text-center text-gray-500">
@@ -476,11 +519,12 @@ const EncounterTracker: React.FC = () => {
           open={initiativeDialogOpen}
           onOpenChange={setInitiativeDialogOpen}
           data={{
+            id: editingParticipant.id,
             name: editingParticipant.name,
             initiative: editingParticipant.initiative,
-            initiativeModifier: editingParticipant.initiativeModifier
+            modifier: editingParticipant.initiativeModifier || 0
           }}
-          onDataChange={(data) => setEditingParticipant(prev => prev ? ({ ...prev, initiative: data.initiative, initiativeModifier: data.initiativeModifier }) : null)}
+          onDataChange={(data) => setEditingParticipant(prev => prev ? ({ ...prev, initiative: data.initiative, initiativeModifier: data.modifier }) : null)}
           onSave={saveInitiativeChanges}
         />
       )}
@@ -491,6 +535,7 @@ const EncounterTracker: React.FC = () => {
           open={notesDialogOpen}
           onOpenChange={setNotesDialogOpen}
           data={{
+            id: editingParticipant.id,
             name: editingParticipant.name,
             notes: editingParticipant.notes
           }}

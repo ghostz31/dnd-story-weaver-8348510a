@@ -19,14 +19,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { getUserStats } from '../lib/firebaseApi';
+import { getMonsterFromAideDD } from '../lib/api';
 import { Monster, Party, Encounter, EncounterMonster, environments, UserStats } from '../lib/types';
 import { useEncounterLogic } from '../hooks/useEncounterLogic';
 import { useEncounterRepository } from '../hooks/useEncounterRepository';
-import { LocalEncounter, normalizeEncounterForEditing } from '../lib/EncounterUtils';
+import { LocalEncounter, normalizeEncounterForEditing, calculateXPFromCR } from '../lib/EncounterUtils';
 import MonsterBrowser from './MonsterBrowser';
 import EncounterHeader from './encounter/EncounterHeader';
 import ParticipantList from './encounter/ParticipantList';
 import StatSummary from './encounter/StatSummary';
+import InitiativeModal, { InitiativeParticipant } from './encounter/InitiativeModal';
 
 const EncounterBuilder: React.FC = () => {
   console.log("[EncounterBuilder] Rendering...");
@@ -114,24 +116,41 @@ const EncounterBuilder: React.FC = () => {
   };
 
   // Ajouter un monstre à la rencontre
-  const handleAddMonster = (monster: Monster) => {
-    console.log("Ajout du monstre à la rencontre:", monster);
+  const handleAddMonster = async (monster: Monster) => {
+    console.log("Ajout du monstre à la rencontre (brut):", monster);
+    let monsterToAdd = { ...monster };
+
+    // Enrichment Failsafe: Ensure we have actions/traits
+    // Even if MonsterBrowser tries to fetch, we double check here to guarantee data in state
+    if (!monsterToAdd.custom && (!monsterToAdd.actions || monsterToAdd.actions.length === 0)) {
+      console.log(`[EncounterBuilder] Monster ${monsterToAdd.name} missing actions, attempting enrichment...`);
+      try {
+        const detailed = await getMonsterFromAideDD(monsterToAdd.name);
+        if (detailed) {
+          console.log(`[EncounterBuilder] Enriched ${monsterToAdd.name} with ${detailed.actions?.length} actions`);
+          // Merge detailed data but preserve any specific overrides we might have had (though usually none for fresh add)
+          monsterToAdd = { ...monsterToAdd, ...detailed };
+        }
+      } catch (err) {
+        console.error("[EncounterBuilder] Failed to enrich monster:", err);
+      }
+    }
 
     // Vérifier que monster.xp existe, sinon calculer à partir du CR
-    if (!monster.xp && monster.cr !== undefined) {
-      const xpValue = calculateXPFromCR(parseFloat(monster.cr.toString()));
-      console.log(`XP calculé à partir du CR ${monster.cr}: ${xpValue}`);
-      monster.xp = xpValue;
+    if (!monsterToAdd.xp && monsterToAdd.cr !== undefined) {
+      const xpValue = calculateXPFromCR(parseFloat(monsterToAdd.cr.toString()));
+      console.log(`XP calculé à partir du CR ${monsterToAdd.cr}: ${xpValue}`);
+      monsterToAdd.xp = xpValue;
     }
 
     // Si nous n'avons pas de valeur XP, attribuer une valeur par défaut basée sur le CR ou 10
-    if (!monster.xp) {
+    if (!monsterToAdd.xp) {
       console.log("Pas de valeur XP ou CR disponible, utilisation de la valeur par défaut (10)");
-      monster.xp = 10;
+      monsterToAdd.xp = 10;
     }
 
     // Chercher si ce monstre est déjà dans la liste
-    const existingMonsterIndex = selectedMonsters.findIndex(m => m.monster.id === monster.id);
+    const existingMonsterIndex = selectedMonsters.findIndex(m => m.monster.id === monsterToAdd.id);
 
     if (existingMonsterIndex !== -1) {
       // Si le monstre existe déjà, augmenter sa quantité
@@ -144,20 +163,20 @@ const EncounterBuilder: React.FC = () => {
         ...selectedMonsters,
         {
           monster: {
-            ...monster, // Conserver toutes les propriétés du monstre original
+            ...monsterToAdd, // Conserver toutes les propriétés du monstre original
             // S'assurer que les propriétés essentielles sont présentes
-            id: monster.id || `monster-${Date.now()}`,
-            name: monster.name,
-            xp: monster.xp,
-            type: monster.type || "Inconnu",
-            size: monster.size || "M",
+            id: monsterToAdd.id || `monster-${Date.now()}`,
+            name: monsterToAdd.name,
+            xp: monsterToAdd.xp,
+            type: monsterToAdd.type || "Inconnu",
+            size: monsterToAdd.size || "M",
             // Valeurs par défaut pour les propriétés de combat si elles n'existent pas
-            hp: monster.hp || 10,
-            ac: monster.ac || 10,
-            speed: monster.speed || { walk: 30 },
-            alignment: monster.alignment || "neutre",
-            legendary: monster.legendary || false,
-            environment: Array.isArray(monster.environment) ? monster.environment : []
+            hp: monsterToAdd.hp || 10,
+            ac: monsterToAdd.ac || 10,
+            speed: monsterToAdd.speed || { walk: 30 },
+            alignment: monsterToAdd.alignment || "neutre",
+            legendary: monsterToAdd.legendary || false,
+            environment: Array.isArray(monsterToAdd.environment) ? monsterToAdd.environment : []
           },
           quantity: 1
         }
@@ -172,12 +191,22 @@ const EncounterBuilder: React.FC = () => {
 
 
 
-  // Fonction pour lancer la rencontre
+
+  const [showInitiativeModal, setShowInitiativeModal] = useState(false);
+  const [preparedParticipants, setPreparedParticipants] = useState<InitiativeParticipant[]>([]);
+
+  // ... (previous logic)
+
+
+
+  // ... 
+
+  // Fonction pour lancer la rencontre (Modifiée)
   const launchEncounter = async () => {
     try {
-      console.log("Lancement de la rencontre...");
+      console.log("Lancement de la rencontre (Step 1: Modal)...");
 
-      // Vérifications
+      // Vérifications de base
       if (!selectedParty) {
         toast({
           title: "Erreur",
@@ -205,158 +234,146 @@ const EncounterBuilder: React.FC = () => {
         return;
       }
 
-      // Soit on utilise une rencontre existante, soit on en crée une nouvelle
+      // 1. Prepare participants for the modal
+      const players: InitiativeParticipant[] = (selectedParty.players || []).map(player => ({
+        id: `pc-${player.id}`,
+        name: player.name,
+        isPC: true,
+        initiative: 0, // Will be rolled/set in modal
+        dex: player.dex || 10,
+        ac: player.ac,
+        hp: player.maxHp,
+        image: undefined
+      }));
+
+      const monsters: InitiativeParticipant[] = selectedMonsters.flatMap(({ monster, quantity }) =>
+        Array.from({ length: quantity }, (_, index) => ({
+          id: `monster-${monster.id}-${index}`,
+          name: `${monster.name} ${quantity > 1 ? index + 1 : ''}`,
+          isPC: false,
+          initiative: 0,
+          dex: monster.dex || 10,
+          ac: monster.ac,
+          hp: monster.hp,
+          image: monster.image
+        }))
+      );
+
+      setPreparedParticipants([...players, ...monsters]);
+      setShowInitiativeModal(true);
+
+    } catch (error) {
+      console.error("Erreur lors de la préparation de la rencontre:", error);
+    }
+  };
+
+  const handleStartEncounterWithInitiative = async (participantsWithInit: InitiativeParticipant[]) => {
+    console.log("[EncounterBuilder] handleStartEncounterWithInitiative called");
+    setShowInitiativeModal(false);
+
+    try {
+      // Logic to save/setup encounter similar to original launchEncounter but with fixed initiatives
+
+      // 1. Save/Get Encounter context (Draft/New)
       let encounterToUse = selectedEncounter;
-
       if (!encounterToUse) {
-        console.log("Aucune rencontre sélectionnée, création d'une nouvelle rencontre...");
-        // Si aucune rencontre n'est sélectionnée, on sauvegarde d'abord
+        // ... create draft logic (same as before) ...
         const difficultyString = (difficulty === 'trivial' ? 'easy' : difficulty) as 'easy' | 'medium' | 'hard' | 'deadly';
-        const xpTotal = totalXP;
-        const xpAdjusted = adjustedXP;
-
-        // Préparer les données pour la sauvegarde
         const encounterData = {
           name: encounterName,
           monsters: selectedMonsters,
           difficulty: difficultyString,
-          totalXP: xpTotal,
-          adjustedXP: xpAdjusted,
+          totalXP: totalXP,
+          adjustedXP: adjustedXP,
           environment: selectedEnvironment !== 'all' ? selectedEnvironment : '',
           status: 'draft' as const,
           partyId: selectedParty?.id || '',
           party: selectedParty
         };
 
-        // Persist via Repository Hook
-        try {
-          const saved = await saveEncounter(encounterData);
-          if (saved) {
-            encounterToUse = saved as LocalEncounter;
-            // LocalEncounter requires 'party' object.
-            // Ensure we attach the party before using it for launch
-            encounterToUse = { ...saved, party: selectedParty! } as LocalEncounter;
-            console.log("Rencontre sauvegardée:", encounterToUse);
-          } else {
-            throw new Error("Erreur inconnue lors de la sauvegarde");
-          }
-        } catch (error) {
-          console.error("Erreur lors de la sauvegarde:", error);
-          toast({
-            title: "Erreur",
-            description: "Impossible de sauvegarder la rencontre.",
-            variant: "destructive"
-          });
-          setIsSaving(false);
-          return;
+        const saved = await saveEncounter(encounterData);
+        if (saved) {
+          encounterToUse = { ...saved, party: selectedParty! } as LocalEncounter;
+        } else {
+          throw new Error("Erreur de sauvegarde automatique");
         }
       }
 
-      if (!encounterToUse) {
-        throw new Error("Données de rencontre non disponibles");
-      }
+      if (!encounterToUse) throw new Error("Impossible de préparer la rencontre");
 
-      console.log("Lancement de la rencontre avec:", encounterToUse);
+      // 2. Build complete data
+      // We construct the "Active Participants" list by merging original data + initiative results
 
-      // NOUVELLE APPROCHE: Stocker dans sessionStorage et naviguer avec l'ID uniquement
-      // Stocker la rencontre complète avec ses participants initialisés
+      const activeParticipants = [
+        // Players
+        ...(selectedParty!.players || []).map(player => {
+          const initData = participantsWithInit.find(p => p.id === `pc-${player.id}`);
+          return {
+            id: `pc-${player.id}`,
+            name: player.name,
+            initiative: initData?.initiative || 0, // USES CONFIRMED INIT
+            ac: player.ac || 10,
+            currentHp: player.currentHp || player.maxHp || 10,
+            maxHp: player.maxHp || 10,
+            isPC: true,
+            conditions: [],
+            notes: `${player.characterClass} niveau ${player.level}`,
+            dndBeyondId: player.dndBeyondId
+          };
+        }),
+        // Monsters
+        ...selectedMonsters.flatMap(({ monster, quantity }) =>
+          Array.from({ length: quantity }, (_, index) => {
+            const id = `monster-${monster.id}-${index}`;
+            const initData = participantsWithInit.find(p => p.id === id);
+            const displayName = `${monster.name} ${quantity > 1 ? index + 1 : ''}`;
+
+            return {
+              ...monster,
+              id: id,
+              name: displayName,
+              originalName: monster.originalName,
+              initiative: initData?.initiative || 0, // USES CONFIRMED INIT
+              ac: monster.ac || 10,
+              currentHp: monster.hp || 10,
+              maxHp: monster.hp || 10,
+              isPC: false,
+              conditions: [],
+              notes: "",
+              type: monster.type,
+              size: monster.size,
+              image: monster.image
+            };
+          })
+        )
+      ];
+
       const completeEncounterData = {
         id: encounterToUse.id,
         name: encounterToUse.name,
-        monsters: selectedMonsters.map(({ monster, quantity }) => ({
-          monster: {
-            ...monster,
-            name: monster.name,
-            originalName: monster.originalName || monster.name,
-            id: monster.id,
-            cr: monster.cr || 0,
-            xp: monster.xp || 0,
-            type: monster.type || "Inconnu",
-            size: monster.size || "M",
-            source: monster.source || "Manuel"
-          },
-          quantity
-        })),
+        monsters: selectedMonsters.map(m => ({ ...m, monster: { ...m.monster, id: m.monster.id } })), // simplify
         environment: encounterToUse.environment,
         difficulty: encounterToUse.difficulty,
-        party: {
-          id: selectedParty.id,
-          name: selectedParty.name,
-          players: selectedParty.players || []
-        },
-        players: selectedParty.players || [],
-        // Ajouter des participants initialisés
-        participants: [
-          // Participants pour les joueurs
-          ...(selectedParty.players || []).map(player => {
-            const maxHp = player.maxHp || 10;
-            return {
-              id: `pc-${player.id}`,
-              name: player.name,
-              initiative: Math.floor(Math.random() * 20) + 1,
-              ac: player.ac || 10,
-              currentHp: player.currentHp || maxHp,
-              maxHp: maxHp,
-              isPC: true,
-              conditions: [],
-              notes: `${player.characterClass} niveau ${player.level}`,
-              dndBeyondId: player.dndBeyondId
-            };
-          }),
-          // Participants pour les monstres
-          ...selectedMonsters.flatMap(({ monster, quantity }) =>
-            Array.from({ length: quantity }, (_, index) => {
-              const maxHp = monster.hp || 10;
-              return {
-                id: `monster-${monster.id}-${index}`,
-                name: monster.name,
-                originalName: monster.originalName,
-                initiative: Math.floor(Math.random() * 20) + 1,
-                ac: monster.ac || 10,
-                currentHp: maxHp,
-                maxHp: maxHp,
-                isPC: false,
-                conditions: [],
-                notes: "",
-                type: monster.type,
-                size: monster.size,
-                image: monster.image
-              };
-            })
-          )
-        ],
+        party: selectedParty,
+        players: selectedParty!.players,
+        participants: activeParticipants,
         round: 1,
         currentTurn: 0,
         isActive: false
       };
 
-      // Stocker les données complètes en sessionStorage
       sessionStorage.setItem('current_encounter', JSON.stringify(completeEncounterData));
-      console.log("Données de rencontre stockées dans sessionStorage");
-
-      // Rediriger vers la page d'affrontement
-      console.log("Tentative de navigation vers /encounter-tracker?source=session");
-
-      try {
-        navigate('/encounter-tracker?source=session');
-        console.log("Navigation avec React Router réussie");
-      } catch (error) {
-        console.error("Erreur avec React Router, utilisation de window.location:", error);
-        window.location.href = '/encounter-tracker?source=session';
-      }
+      navigate('/encounter-tracker?source=session');
 
       toast({
         title: "Rencontre lancée",
-        description: "Préparez-vous au combat !",
+        description: "Initiatives définies. Place au combat !",
         variant: "default"
       });
-    } catch (error) {
-      console.error("Erreur lors du lancement de la rencontre:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de lancer la rencontre: " + (error instanceof Error ? error.message : "Erreur inconnue"),
-        variant: "destructive"
-      });
+
+    } catch (err) {
+      console.error("Erreur post-modal:", err);
+      toast({ title: "Erreur", description: "Problème lors du lancement", variant: "destructive" });
     }
   };
 
@@ -460,7 +477,7 @@ const EncounterBuilder: React.FC = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {/* Liste des rencontres */}
-      <div className="md:col-span-1 glass-panel rounded-xl p-4 h-fit sticky top-24">
+      <div className="md:col-span-1 parchment-panel rounded-xl p-4 h-fit sticky top-24">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-gray-800">Rencontres</h2>
           <div className="flex items-center gap-2">
@@ -509,22 +526,50 @@ const EncounterBuilder: React.FC = () => {
                   </div>
                 </div>
                 <button
-                  onClick={(e) => {
+                  onClick={async (e) => {
                     e.stopPropagation();
-                    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette rencontre ?")) {
-                      deleteEncounter(encounter.id)
-                        .then(() => {
-                          if (selectedEncounter?.id === encounter.id) {
-                            resetForm();
-                          }
-                          toast({ title: "Succès", description: "Rencontre supprimée." });
-                        })
-                        .catch(err => {
-                          console.error("Erreur suppression:", err);
+                    e.preventDefault();
+
+                    console.log(`[EncounterBuilder] Clic sur suppression pour rencontre ID: ${encounter.id}`);
+
+                    const confirmed = window.confirm("Êtes-vous sûr de vouloir supprimer cette rencontre ?");
+                    console.log(`[EncounterBuilder] Confirmation: ${confirmed}`);
+
+                    if (!confirmed) {
+                      console.log("[EncounterBuilder] Suppression annulée par l'utilisateur");
+                      return;
+                    }
+
+                    try {
+                      console.log(`[EncounterBuilder] Début suppression de la rencontre ID: ${encounter.id}`);
+                      const success = await deleteEncounter(encounter.id);
+
+                      console.log(`[EncounterBuilder] Suppression terminée, succès: ${success}`);
+
+                      if (success) {
+                        // Si la rencontre supprimée était sélectionnée, réinitialiser le formulaire
+                        if (selectedEncounter?.id === encounter.id) {
+                          console.log("[EncounterBuilder] Rencontre supprimée était sélectionnée, réinitialisation du formulaire");
+                          resetForm();
+                        }
+
+                        toast({
+                          title: "Succès",
+                          description: "Rencontre supprimée avec succès."
                         });
+                      }
+                    } catch (err) {
+                      console.error("[EncounterBuilder] Erreur lors de la suppression:", err);
+                      toast({
+                        title: "Erreur",
+                        description: "Impossible de supprimer la rencontre.",
+                        variant: "destructive"
+                      });
                     }
                   }}
-                  className="text-red-500 hover:text-red-700"
+                  className="text-red-500 hover:text-red-700 relative z-10 pointer-events-auto"
+                  type="button"
+                  aria-label="Supprimer la rencontre"
                 >
                   <FaTrash />
                 </button>
@@ -536,7 +581,7 @@ const EncounterBuilder: React.FC = () => {
 
       {/* Formulaire de création/édition */}
       {/* Formulaire de création/édition */}
-      <div className="md:col-span-2 glass-panel rounded-xl p-6">
+      <div className="md:col-span-2 parchment-panel rounded-xl p-6">
 
         <EncounterHeader
           isEditing={isEditing}
@@ -680,7 +725,7 @@ const EncounterBuilder: React.FC = () => {
         <div className="fixed inset-0 z-10 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen p-4">
             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowMonsterBrowser(false)}></div>
-            <div className="relative glass-card rounded-xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
+            <div className="relative parchment-card rounded-xl max-w-5xl w-full max-h-[90vh] overflow-y-auto flex flex-col shadow-2xl">
               <div className="p-4 border-b border-glass-border/20 flex justify-between items-center bg-primary/5">
                 <h2 className="text-xl font-bold font-cinzel">Sélectionner un monstre</h2>
                 <Button
@@ -699,6 +744,14 @@ const EncounterBuilder: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Modal d'initiative */}
+      <InitiativeModal
+        open={showInitiativeModal}
+        onOpenChange={setShowInitiativeModal}
+        participants={preparedParticipants}
+        onConfirm={handleStartEncounterWithInitiative}
+      />
     </div>
   );
 };

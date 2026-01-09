@@ -58,11 +58,11 @@ const Header: React.FC = () => {
   const NavItems = () => (
     <>
       <Button
-        variant={isActive('/') ? 'default' : 'ghost'}
+        variant="ghost"
         size="sm"
         asChild
         onClick={closeMenu}
-        className="w-full justify-start md:w-auto"
+        className={`w-full justify-start md:w-auto ${isActive('/') ? 'text-primary font-semibold bg-accent' : 'text-muted-foreground'}`}
       >
         <Link to="/" className="flex items-center">
           <Home className="mr-2 h-4 w-4" /> Accueil
@@ -144,8 +144,8 @@ const Header: React.FC = () => {
   );
 
   return (
-    <header className="glass-panel sticky top-0 z-50 border-b-0">
-      <div className="w-full max-w-[1920px] mx-auto px-4 py-3">
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm">
+      <div className="w-full px-2 mx-auto py-3">
         <div className="flex justify-between items-center">
           {/* Logo et titre */}
           <div className="flex items-center space-x-2">

@@ -18,14 +18,20 @@ export const getAideDDMonsterSlug = (name: string): string => {
 
 // Fonction pour obtenir l'URL de l'image du monstre
 export const getMonsterImageUrl = (monster: Monster): string => {
-    // 1. Essayer le mapping manuel
-    if (MANUAL_IMAGE_SLUGS[monster.name]) {
-        return `https://www.aidedd.org/dnd/images/${MANUAL_IMAGE_SLUGS[monster.name]}.jpg`;
+    // 1. Priorité absolue : l'image définie dans l'objet monstre
+    if (monster.image && monster.image.trim() !== '') {
+        const img = monster.image.trim();
+        // Si c'est une URL absolue (http, https) ou une Data URI (data:, blob:)
+        if (img.match(/^(http|https|data|blob|file):/i)) {
+            return img;
+        }
+        // Sinon, on assume que c'est un nom de fichier sur AideDD
+        return `https://www.aidedd.org/dnd/images/${img}`;
     }
 
-    // 2. Essayer monster.image (nom de fichier explicite)
-    if (monster.image) {
-        return `https://www.aidedd.org/dnd/images/${monster.image}`;
+    // 2. Mapping manuel (si pas d'image définie)
+    if (MANUAL_IMAGE_SLUGS[monster.name]) {
+        return `https://www.aidedd.org/dnd/images/${MANUAL_IMAGE_SLUGS[monster.name]}.jpg`;
     }
 
     // 3. Essayer avec originalName si différent du nom

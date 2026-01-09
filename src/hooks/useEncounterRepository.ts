@@ -132,16 +132,26 @@ export const useEncounterRepository = () => {
         }
     };
 
-    const deleteEncounter = async (id: string) => {
+    const deleteEncounter = async (id: string): Promise<boolean> => {
         try {
+            console.log(`[useEncounterRepository] Début suppression rencontre ID: ${id}`);
+
             if (isAuthenticated) {
+                console.log("[useEncounterRepository] Mode authentifié - suppression Firestore");
                 await deleteFirestoreEncounter(id);
+                // Mettre à jour immédiatement l'état local pour un feedback instantané
+                setEncounters(prev => prev.filter(e => e.id !== id));
+                console.log("[useEncounterRepository] Suppression Firestore réussie");
             } else {
+                console.log("[useEncounterRepository] Mode local - suppression LocalStorage");
                 deleteLocalEncounter(id);
                 setEncounters(prev => prev.filter(e => e.id !== id));
+                console.log("[useEncounterRepository] Suppression locale réussie");
             }
+
+            return true;
         } catch (err) {
-            console.error("Erreur deleteEncounter:", err);
+            console.error("[useEncounterRepository] Erreur deleteEncounter:", err);
             toast({ title: "Erreur", description: "Impossible de supprimer la rencontre.", variant: "destructive" });
             throw err;
         }

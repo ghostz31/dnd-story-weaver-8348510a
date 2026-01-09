@@ -54,6 +54,7 @@ export interface Monster {
   challengeRating?: number;
   xp: number;
   type: string;
+  subtype?: string;
   size: string;
   source: string;
   custom?: boolean;
@@ -75,6 +76,19 @@ export interface Monster {
   int?: number;
   wis?: number;
   cha?: number;
+  url?: string;
+  traits?: MonsterTrait[];
+  actions?: MonsterAction[];
+  reactions?: MonsterAction[];
+  legendaryActions?: MonsterAction[];
+  savingThrows?: string;
+  skills?: string;
+  senses?: string;
+  languages?: string;
+  damageResistances?: string;
+  damageVulnerabilities?: string;
+  damageImmunities?: string;
+  conditionImmunities?: string;
 }
 
 export interface EncounterMonster {
@@ -206,6 +220,7 @@ export const monsterSizes = [
 export interface MonsterAction {
   name: string;
   desc: string;
+  description?: string; // Legacy/Compat
   attack_bonus?: number;
   damage_dice?: string;
   damage_bonus?: number;
@@ -214,6 +229,7 @@ export interface MonsterAction {
 export interface MonsterTrait {
   name: string;
   desc: string;
+  description?: string; // Legacy/Compat
 }
 
 export interface EncounterParticipant {
@@ -247,7 +263,20 @@ export interface EncounterParticipant {
   hasUsedBonusAction?: boolean;
   hasUsedReaction?: boolean;
   remainingMovement?: number;
-  image?: string; // Add image field explicitly if missed
+  image?: string;
+  level?: number;
+  xp?: number;
+  reactions?: MonsterAction[];
+  legendaryActionsList?: MonsterAction[];
+  savingThrows?: string;
+  skills?: string;
+  damageVulnerabilities?: string;
+  damageResistances?: string;
+  damageImmunities?: string;
+  conditionImmunities?: string;
+  senses?: string;
+  languages?: string;
+  challengeRating?: number;
 }
 
 export interface Spell {

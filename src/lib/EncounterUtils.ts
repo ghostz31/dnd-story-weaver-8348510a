@@ -1,3 +1,4 @@
+import React from 'react';
 import { Monster, Party, Encounter, EncounterMonster, EncounterParticipant, UrlMapping, MonsterNameMapping } from './types';
 import { v4 as uuidv4 } from 'uuid';
 import { EncounterSchema } from './schemas';
@@ -5,6 +6,9 @@ import {
     ArrowDown, Users, EyeOff, Smile, Droplets, Anchor, Link, Clock, Brain, Ghost, Eye,
     ShieldX, Square, Skull, Zap, Heart
 } from 'lucide-react';
+
+export const calculateModifier = (score: number): number => Math.floor((score - 10) / 2);
+
 
 // Interface pour la version API locale des rencontres qui utilise Party comme objet complet
 export interface LocalEncounter extends Omit<Encounter, 'monsters'> {
@@ -63,6 +67,7 @@ export const transformLocalEncounters = (localEncounters: Encounter[], localPart
  * @param monstersEntry Liste brute des monstres (peut contenir des objets mal formés)
  * @returns Liste nettoyée de EncounterMonster
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const validateEncounterMonsters = (monstersEntry: any[]): EncounterMonster[] => {
     if (!monstersEntry || !Array.isArray(monstersEntry)) {
         return [];
@@ -72,15 +77,17 @@ export const validateEncounterMonsters = (monstersEntry: any[]): EncounterMonste
         // Vérifier si monsterEntry est valide
         if (!monsterEntry || !monsterEntry.monster) {
             // Créer un monstre par défaut pour éviter les erreurs
+            const defaultMonster: Monster = {
+                id: `default-${Math.random().toString(36).substring(7)}`,
+                name: "Monstre inconnu",
+                xp: 0,
+                type: "Inconnu",
+                size: "M",
+                source: "Default",
+                str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10
+            };
             return {
-                monster: {
-                    id: `default-${Math.random().toString(36).substring(7)}`,
-                    name: "Monstre inconnu",
-                    xp: 0,
-                    type: "Inconnu",
-                    size: "M",
-                    source: "Default"
-                },
+                monster: defaultMonster,
                 quantity: 1
             };
         }
@@ -103,13 +110,15 @@ export const validateEncounterMonsters = (monstersEntry: any[]): EncounterMonste
             }
         }
 
+        const validatedMonster: Monster = {
+            ...monster, // ✅ Preserve ALL monster properties (actions, traits, stats, etc.)
+            name: monsterName,
+            originalName: originalName,
+            xp: xp || 0
+        };
+
         return {
-            monster: {
-                ...monster,
-                name: monsterName,
-                originalName: originalName,
-                xp: xp || 0
-            },
+            monster: validatedMonster,
             quantity: quantity || 1
         };
     });
@@ -129,7 +138,7 @@ export type Condition = typeof CONDITIONS[number];
 
 // Fonction pour obtenir les informations d'une condition
 export const getConditionInfo = (conditionName: string) => {
-    const conditionMap: Record<string, { icon: any; color: string }> = {
+    const conditionMap: Record<string, { icon: React.ElementType; color: string }> = {
         'À terre': { icon: ArrowDown, color: 'text-orange-600 border-orange-600' },
         'Assourdi': { icon: Users, color: 'text-gray-600 border-gray-600' },
         'Aveuglé': { icon: EyeOff, color: 'text-red-600 border-red-600' },
@@ -155,8 +164,23 @@ export const getConditionInfo = (conditionName: string) => {
     return conditionMap[conditionName] || { icon: Square, color: 'text-gray-500 border-gray-500' };
 };
 
+// Fonction pour calculer l'XP à partir du CR
+export const calculateXPFromCR = (cr: number | string): number => {
+    const crValue = typeof cr === 'string' ? parseFloat(cr) : cr;
+    const xpTable: Record<string, number> = {
+        '0': 10, '0.125': 25, '0.25': 50, '0.5': 100,
+        '1': 200, '2': 450, '3': 700, '4': 1100, '5': 1800,
+        '6': 2300, '7': 2900, '8': 3900, '9': 5000, '10': 5900,
+        '11': 7200, '12': 8400, '13': 10000, '14': 11500, '15': 13000,
+        '16': 15000, '17': 18000, '18': 20000, '19': 22000, '20': 25000,
+        '21': 33000, '22': 41000, '23': 50000, '24': 62000, '25': 75000,
+        '26': 90000, '27': 105000, '28': 120000, '29': 135000, '30': 155000
+    };
+    return xpTable[crValue.toString()] || 0;
+};
+
 // Fonction pour extraire la valeur numérique des PV (ex: "50 (10d8)" -> 50)
-export const extractNumericHP = (hpValue: any): number => {
+export const extractNumericHP = (hpValue: string | number): number => {
     if (typeof hpValue === 'number') {
         return hpValue;
     }
@@ -206,19 +230,35 @@ export const estimateDexModifier = (participant: EncounterParticipant): number =
 
 // Calculer la vitesse de déplacement en cases (1 case = 1,5 mètre)
 export const calculateMovementSpeed = (participant: EncounterParticipant): number => {
-    if (!participant.speed || participant.speed.length === 0) {
+    if (!participant.speed) {
         // Valeur par défaut : 6 cases (9 mètres)
         return 6;
     }
 
-    // Essayer de trouver la vitesse de base dans le format "X m" ou "X ft"
-    const speedText = participant.speed[0];
-    const speedMatch = speedText.match(/(\d+)\s*(?:m|ft)/);
+    // Handle speed as array
+    if (Array.isArray(participant.speed)) {
+        if (participant.speed.length === 0) {
+            return 6;
+        }
 
-    if (speedMatch && speedMatch[1]) {
-        const speedInMeters = parseInt(speedMatch[1], 10);
-        // Convertir en cases (arrondir au plus proche)
-        return Math.round(speedInMeters / 1.5);
+        // Essayer de trouver la vitesse de base dans le format "X m" ou "X ft"
+        const speedText = participant.speed[0];
+        if (typeof speedText === 'string') {
+            const speedMatch = speedText.match(/(\d+)\s*(?:m|ft)/);
+            if (speedMatch && speedMatch[1]) {
+                const speedInMeters = parseInt(speedMatch[1], 10);
+                // Convertir en cases (arrondir au plus proche)
+                return Math.round(speedInMeters / 1.5);
+            }
+        }
+    }
+
+    // Handle speed as object { walk, fly, swim, climb }
+    if (typeof participant.speed === 'object' && 'walk' in participant.speed) {
+        const walkSpeed = (participant.speed as any).walk;
+        if (typeof walkSpeed === 'number') {
+            return Math.round(walkSpeed / 1.5);
+        }
     }
 
     // Si aucune information, retourner une valeur par défaut
@@ -285,7 +325,7 @@ export const getAideDDMonsterSlug = (name: string, urlMap: UrlMapping = {}): str
     slug = slug.replace(/'(\w)/g, '-$1');
 
     // Traitement spécial pour les apostrophes
-    slug = slug.replace(/([a-z])\'([a-z])/g, '$1-$2');
+    slug = slug.replace(/([a-z])'([a-z])/g, '$1-$2');
 
     // Remplacer les espaces par des tirets
     slug = slug.replace(/ /g, '-');
@@ -300,40 +340,41 @@ export const getAideDDMonsterSlug = (name: string, urlMap: UrlMapping = {}): str
 };
 
 // Création d'un monstre générique quand aucune information n'est trouvée
-export const createGenericMonster = (name: string): any => {
+export const createGenericMonster = (name: string): Monster => {
     return {
+        id: `generic-${Date.now()}`, // Added ID to satisfy Monster interface
         name,
         type: "Inconnu",
         size: "M",
         alignment: "non aligné",
-        ac: "12",
-        hp: "30 (4d8+12)",
-        speed: "9 m",
-        abilities: {
-            str: 10,
-            dex: 10,
-            con: 10,
-            int: 10,
-            wis: 10,
-            cha: 10
-        },
+        ac: 12, // Changed to number
+        hp: 30, // Changed to number, assuming flat value. If string needed for display, Monster interface expects number for hp usually. Checking interface... it says hp?: number.
+        xp: 200,
+        source: "Générique", // Added source
+        speed: { walk: 9 }, // Changed to object matching interface
         str: 10,
         dex: 10,
         con: 10,
         int: 10,
         wis: 10,
         cha: 10,
-        cr: "1",
-        xp: 200,
-        traits: [],
-        actions: [
-            {
-                name: "Attaque de base",
-                description: "Attaque au corps à corps avec une arme : +2 au toucher, allonge 1,50 m, une cible. Touché : 4 (1d6+1) dégâts."
-            }
-        ],
-        legendaryActions: [],
-        isLegendary: false
+        cr: 1, // Changed to number
+        // traits: [], // Monster interface has traits? Interface check: traits not in Monster interface shown in types.ts (lines 49-78). Wait, EncounterParticipant has traits. Monster doesn't shown traits in the snippet.
+        // Checking types.ts content again. Monster interface (lines 49-78) does NOT have traits or actions or legendaryActions.
+        // However, the code previously assigned them. This implies the interface might be incomplete or the usage here was loose.
+        // I will adhere to the visible Monster interface or extend it if needed. 
+        // Warning: createGenericMonster was returning an object with traits/actions. If I strict type it to Monster, I might lose those properties if they aren't in the interface.
+        // Let's re-read types.ts. Line 49: Monster interface. It ends at line 78.
+        // It has NO traits, actions, legendaryActions.
+        // BUT EncounterParticipant (line 219) DOES have actions/traits.
+        // The previous code returned an object with traits/actions.
+        // If I change return type to Monster, I validly return basic stats.
+        // But validation might fail if downstream components expect actions on "Monster" (which they shouldn't if they use the type properly).
+        // Let's assume for now I should strictly stick to the Monster Type.
+        // But wait, "hp" in generic was "30 (4d8+12)" (string), but Monster interface says hp?: number. 
+        // So the previous code was violating the interface if it was indeed a "Monster". 
+        // It's likely this "createGenericMonster" was creating something used as a participant or hydrated monster.
+        // I will fix the types to match the defined Monster interface for now, and rely on Enrichment to add actions if needed.
     };
 };
 
@@ -391,7 +432,7 @@ export const normalizeEncounterForEditing = (
 
     // 4. Normalisation des autres champs
     const name = encounter.name || "Nouvelle Rencontre";
-    const environment = (encounter as any).environment || '';
+    const environment = encounter.environment || '';
 
     return {
         party,
@@ -400,4 +441,151 @@ export const normalizeEncounterForEditing = (
         environment,
         isValid: true
     };
+};
+/**
+ * Constantes pour le calcul de difficulte (DMG p. 82)
+ */
+export const XP_THRESHOLDS_BY_LEVEL: Record<number, [number, number, number, number]> = {
+    1: [25, 50, 75, 100],
+    2: [50, 100, 150, 200],
+    3: [75, 150, 225, 400],
+    4: [125, 250, 375, 500],
+    5: [250, 500, 750, 1100],
+    6: [300, 600, 900, 1400],
+    7: [350, 750, 1100, 1700],
+    8: [450, 900, 1400, 2100],
+    9: [550, 1100, 1600, 2400],
+    10: [600, 1200, 1900, 2800],
+    11: [800, 1600, 2400, 3600],
+    12: [1000, 2000, 3000, 4500],
+    13: [1100, 2200, 3400, 5100],
+    14: [1250, 2500, 3800, 5700],
+    15: [1400, 2800, 4300, 6400],
+    16: [1600, 3200, 4800, 7200],
+    17: [2000, 3900, 5900, 8800],
+    18: [2100, 4200, 6300, 9500],
+    19: [2400, 4900, 7300, 10900],
+    20: [2800, 5700, 8500, 12700]
+};
+
+export const ENCOUNTER_MULTIPLIERS = {
+    1: 1,
+    2: 1.5,
+    3: 2,
+    7: 2.5,
+    11: 3,
+    15: 4
+};
+
+/**
+ * Calcule les seuils d'XP du groupe pour les 4 niveaux de difficulté
+ */
+export const calculatePartyXPThresholds = (party: Party): { easy: number, medium: number, hard: number, deadly: number } => {
+    const thresholds = { easy: 0, medium: 0, hard: 0, deadly: 0 };
+
+    // Si pas de joueurs ou niveaux non définis, on peut assumer niveau 1 par défaut ou retourner 0
+    // Ici on suppose que les joueurs ont un champ 'level' (à vérifier dans le type Player)
+    // S'il n'existe pas, on assume niveau 1 pour l'instant.
+
+    // Note: Le type Player n'a pas été inspecté complètement, on va assumer qu'il faut peut-être l'adapter
+    // ou utiliser une valeur par défaut de 1 si le champ manque.
+
+    const players = party.players || [];
+    if (players.length === 0) return thresholds;
+
+    players.forEach(player => {
+        // Le champ level est désormais dans le type Player (ajouté dans types.ts)
+        const level = player.level || 1;
+        const validLevel = Math.max(1, Math.min(20, level));
+        const [easy, medium, hard, deadly] = XP_THRESHOLDS_BY_LEVEL[validLevel];
+
+        thresholds.easy += easy;
+        thresholds.medium += medium;
+        thresholds.hard += hard;
+        thresholds.deadly += deadly;
+    });
+
+    return thresholds;
+};
+
+/**
+ * Calcule l'XP ajusté de la rencontre en fonction du nombre de monstres
+ */
+export const calculateEncounterAdjustedXP = (monsters: EncounterMonster[], partySize: number = 4): number => {
+    let rawXP = 0;
+    let monsterCount = 0;
+
+    monsters.forEach(entry => {
+        rawXP += (entry.monster.xp || 0) * entry.quantity;
+        monsterCount += entry.quantity;
+    });
+
+    if (monsterCount === 0) return 0;
+
+    // Déterminer le multiplicateur
+    let multiplier = 1;
+    if (monsterCount === 1) multiplier = 1;
+    else if (monsterCount === 2) multiplier = 1.5;
+    else if (monsterCount >= 3 && monsterCount <= 6) multiplier = 2;
+    else if (monsterCount >= 7 && monsterCount <= 10) multiplier = 2.5;
+    else if (monsterCount >= 11 && monsterCount <= 14) multiplier = 3;
+    else multiplier = 4;
+
+    // Ajustement pour petits groupes (<3) ou grands groupes (>5)
+    if (partySize < 3) {
+        // Augmenter le multiplicateur d'un cran
+        if (multiplier === 1) multiplier = 1.5;
+        else if (multiplier === 1.5) multiplier = 2;
+        else if (multiplier === 2) multiplier = 2.5;
+        else if (multiplier === 2.5) multiplier = 3;
+        else multiplier = 4;
+    } else if (partySize > 5) {
+        // Diminuer le multiplicateur d'un cran
+        if (multiplier === 4) multiplier = 3;
+        else if (multiplier === 3) multiplier = 2.5;
+        else if (multiplier === 2.5) multiplier = 2;
+        else if (multiplier === 2) multiplier = 1.5;
+        else multiplier = 1;
+    }
+
+    return Math.floor(rawXP * multiplier);
+};
+
+/**
+ * Détermine la difficulté de la rencontre
+ */
+export const getEncounterDifficulty = (
+    adjustedXP: number,
+    thresholds: { easy: number, medium: number, hard: number, deadly: number }
+): { label: string, color: string, percentage: number } => {
+    if (adjustedXP === 0) return { label: 'Aucune', color: 'bg-gray-400', percentage: 0 };
+
+    if (adjustedXP < thresholds.easy) {
+        const percent = Math.min(100, Math.floor((adjustedXP / thresholds.easy) * 25));
+        return { label: 'Trivial', color: 'bg-gray-400', percentage: percent };
+    }
+    if (adjustedXP < thresholds.medium) {
+        // Entre Easy (25%) et Medium (50%)
+        const range = thresholds.medium - thresholds.easy;
+        const progress = adjustedXP - thresholds.easy;
+        const percent = 25 + Math.floor((progress / range) * 25);
+        return { label: 'Facile', color: 'bg-green-500', percentage: percent };
+    }
+    if (adjustedXP < thresholds.hard) {
+        // Entre Medium (50%) et Hard (75%)
+        const range = thresholds.hard - thresholds.medium;
+        const progress = adjustedXP - thresholds.medium;
+        const percent = 50 + Math.floor((progress / range) * 25);
+        return { label: 'Moyen', color: 'bg-yellow-500', percentage: percent };
+    }
+    if (adjustedXP < thresholds.deadly) {
+        // Entre Hard (75%) et Deadly (100%)
+        const range = thresholds.deadly - thresholds.hard;
+        const progress = adjustedXP - thresholds.hard;
+        const percent = 75 + Math.floor((progress / range) * 25);
+        return { label: 'Difficile', color: 'bg-orange-500', percentage: percent };
+    }
+
+    // Au dessus de Deadly
+    return { label: 'Mortel', color: 'bg-red-600', percentage: 100 };
 };

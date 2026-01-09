@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { EncounterParticipant } from '@/lib/types';
 import { CONDITIONS, getConditionInfo, extractNumericHP } from '@/lib/EncounterUtils';
 import { getMonsterImageUrl } from '@/lib/monsterUtils';
+import { getHPBarColor } from '@/lib/hpColorUtils';
 
 interface TrackerTableProps {
     participants: EncounterParticipant[];
@@ -76,11 +77,11 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
 
     return (
         <div className="w-full">
-            <Table className="table-fixed w-full">
+            <Table className="w-full">
                 <TableHeader>
                     <TableRow>
                         <TableHead className="w-[50px]">Tour</TableHead>
-                        <TableHead className="w-auto">Nom</TableHead>
+                        <TableHead className="min-w-[200px]">Nom</TableHead>
                         <TableHead className="w-[80px]">Init</TableHead>
                         <TableHead className="w-[60px]">CA</TableHead>
                         <TableHead className="w-[100px]">PV</TableHead>
@@ -105,9 +106,8 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                     className={`
                     border-b transition-colors data-[state=selected]:bg-muted
                     cursor-pointer
-                    ${isCurrentTurn ? 'bg-blue-100/50 hover:bg-blue-100' : 'hover:bg-gray-50'}
+                    ${isCurrentTurn ? 'bg-blue-100 hover:bg-blue-200 border-l-4 border-blue-600 shadow-sm' : 'hover:bg-gray-50'}
                     ${isSelected && !isCurrentTurn ? 'bg-amber-50 border-l-4 border-amber-400' : ''}
-                    ${isSelected && isCurrentTurn ? 'border-l-4 border-blue-600' : ''}
                   `}
                                     onClick={() => onSelect(participant.id)}
                                 >
@@ -165,9 +165,9 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                             </div>
 
                                             {/* Nom et détails */}
-                                            <div className="min-w-0 flex-1">
+                                            <div className="flex-1">
                                                 <div className="font-medium text-sm">
-                                                    <div className="truncate" title={participant.name}>
+                                                    <div className="whitespace-nowrap" title={participant.name}>
                                                         {participant.name}
                                                     </div>
                                                     {participant.isPC && (
@@ -192,7 +192,7 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                 />
                                             ) : (
                                                 <span
-                                                    className="cursor-pointer hover:underline min-w-[30px] text-center"
+                                                    className="cursor-pointer hover:underline min-w-[30px] text-center text-2xl font-extrabold"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         onOpenInitiativeEditor(participant);
@@ -233,15 +233,15 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                             {/* Affichage principal des PV */}
                                             <div className="flex items-center space-x-1">
                                                 <div
-                                                    className="font-medium text-xs cursor-pointer"
+                                                    className="font-bold text-sm cursor-pointer font-mono"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         onToggleHpModifier(showHpModifier === participant.id ? null : participant.id);
                                                         if (showHpModifier !== participant.id) onSetHpModifier(1);
                                                     }}
-                                                    title={`${participant.currentHp}/${extractNumericHP(participant.maxHp)} PV - Cliquer pour modifier`}
+                                                    title={`${extractNumericHP(participant.currentHp)}/${extractNumericHP(participant.maxHp)} PV - Cliquer pour modifier`}
                                                 >
-                                                    {participant.currentHp}/{extractNumericHP(participant.maxHp)}
+                                                    <span className="font-extrabold">{extractNumericHP(participant.currentHp)}</span>/{extractNumericHP(participant.maxHp)}
                                                 </div>
                                             </div>
 
@@ -281,9 +281,9 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
 
                                             {/* Barre de progression */}
                                             <Progress
-                                                value={(participant.currentHp / extractNumericHP(participant.maxHp)) * 100}
-                                                className="h-1"
-                                                indicatorClassName={participant.currentHp <= 0 ? 'bg-gray-500' : participant.currentHp < extractNumericHP(participant.maxHp) / 2 ? 'bg-red-500' : 'bg-green-500'}
+                                                value={(extractNumericHP(participant.currentHp) / extractNumericHP(participant.maxHp)) * 100}
+                                                className="h-2"
+                                                indicatorClassName={getHPBarColor(extractNumericHP(participant.currentHp), extractNumericHP(participant.maxHp))}
                                             />
                                         </div>
                                     </TableCell>

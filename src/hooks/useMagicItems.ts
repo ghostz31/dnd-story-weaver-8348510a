@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { MagicItem } from '../lib/types';
-import { MAGIC_ITEMS } from '../lib/magicItemsData';
 
 export const useMagicItems = () => {
     const [items, setItems] = useState<MagicItem[]>([]);
@@ -10,9 +9,20 @@ export const useMagicItems = () => {
     const loadItems = async () => {
         setLoading(true);
         try {
-            // Simulation d'un délai réseau pour le réalisme
-            await new Promise(resolve => setTimeout(resolve, 300));
-            setItems(MAGIC_ITEMS);
+            const response = await fetch('/data/aidedd-complete/magic-items.json');
+            if (response.ok) {
+                const data = await response.json();
+                setItems(data);
+            } else {
+                // Fallback attempt to temp file if complete file isn't ready involved
+                const tempResponse = await fetch('/data/aidedd-complete/magic_items_temp.json');
+                if (tempResponse.ok) {
+                    const tempData = await tempResponse.json();
+                    setItems(tempData);
+                } else {
+                    throw new Error("Impossible de charger les objets magiques");
+                }
+            }
         } catch (err: any) {
             console.error("Erreur chargement objets magiques:", err);
             setError("Impossible de charger les objets magiques");

@@ -47,11 +47,11 @@ function App() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-background text-foreground font-inter">
       <Header />
       <GlobalCommandPalette />
 
-      <main className="w-full mx-auto px-4 py-6">
+      <main className="w-full mx-auto py-6">
         <ErrorBoundary>
           <Routes>
             {/* Routes publiques */}
@@ -107,7 +107,7 @@ function App() {
         </ErrorBoundary>
       </main>
 
-      <footer className="bg-gray-800 text-white p-4 mt-8">
+      <footer className="border-t border-border bg-card/50 text-muted-foreground p-6 mt-12">
         <div className="container mx-auto text-center">
           <p>Outil pour maîtres de jeu</p>
           {!isAuthenticated && (

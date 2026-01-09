@@ -124,22 +124,20 @@ async function fetchSpellDetails(name, url) {
         if (h1) extractedName = h1.textContent.trim();
 
         // 2. Niveau et École
-        const typeElement = document.querySelector('.type');
+        const typeElement = document.querySelector('.ecole');
         const typeText = typeElement ? typeElement.textContent : '';
-        // Format attendu: "Niveau 3 évocation" ou "Tour de magie évocation"
+        // Format attendu: "niveau 4 - abjuration" ou "niveau 0 - enchantement"
 
         let level = 0;
         let school = '';
         let ritual = false;
 
-        if (typeText.toLowerCase().includes('tour de magie')) {
-            level = 0;
-        } else {
-            const levelMatch = typeText.match(/Niveau (\d+)/i);
-            if (levelMatch) level = parseInt(levelMatch[1]);
+        const levelMatch = typeText.match(/niveau (\d+)/i);
+        if (levelMatch) {
+            level = parseInt(levelMatch[1]);
         }
 
-        if (typeText.includes('(rituel)')) ritual = true;
+        if (typeText.includes('(rituel)') || typeText.toLowerCase().includes('rituel')) ritual = true;
 
         // Détection de l'école
         for (const [fr, en] of Object.entries(SCHOOL_MAP)) {

@@ -628,45 +628,64 @@ export const saveEncounter = async (encounterData: Omit<Encounter, 'id' | 'creat
     // Vérifier si les participants contiennent des données cycliques et les nettoyer
     const cleanParticipants = participants ? participants.map(participant => {
       // Créer une copie sans propriétés problématiques pour Firestore
-      const { actions, traits, ...cleanParticipant } = participant;
+      const { actions, traits, reactions, legendaryActionsList, ...cleanParticipant } = participant;
 
-      // Convertir les actions et traits en format sérialisable si nécessaires
+      // Convertir les actions, traits, reactions et legendaryActions en format sérialisable
       return {
         ...cleanParticipant,
         actions: actions ? actions.map(a => ({
           name: a.name || '',
-          description: a.description || a.desc || ''
+          desc: a.desc || a.description || ''
         })) : [],
         traits: traits ? traits.map(t => ({
           name: t.name || '',
-          description: t.description || t.desc || ''
+          desc: t.desc || t.description || ''
+        })) : [],
+        reactions: reactions ? reactions.map(r => ({
+          name: r.name || '',
+          desc: r.desc || r.description || ''
+        })) : [],
+        legendaryActionsList: legendaryActionsList ? legendaryActionsList.map(l => ({
+          name: l.name || '',
+          desc: l.desc || l.description || ''
         })) : []
       };
     }) : [];
 
     // Nettoyer et préparer les monstres
     const cleanMonsters = monsters ? monsters.map(({ monster, quantity }) => {
-      // Extraire les propriétés nécessaires du monstre
-      const { id, name, originalName, cr, xp, type, size, ac, hp, str, dex, con, int, wis, cha } = monster;
+      // Preserve ALL monster properties (actions, traits, reactions, etc.)
+      // Only clean potential circular references in nested objects
+      const cleanedMonster = { ...monster };
+
+      // Clean actions/traits/reactions if they exist to ensure Firestore compatibility
+      if (cleanedMonster.actions) {
+        cleanedMonster.actions = cleanedMonster.actions.map((a: any) => ({
+          name: a.name || '',
+          desc: a.desc || a.description || ''
+        }));
+      }
+      if (cleanedMonster.traits) {
+        cleanedMonster.traits = cleanedMonster.traits.map((t: any) => ({
+          name: t.name || '',
+          desc: t.desc || t.description || ''
+        }));
+      }
+      if (cleanedMonster.reactions) {
+        cleanedMonster.reactions = cleanedMonster.reactions.map((r: any) => ({
+          name: r.name || '',
+          desc: r.desc || r.description || ''
+        }));
+      }
+      if (cleanedMonster.legendaryActions) {
+        cleanedMonster.legendaryActions = cleanedMonster.legendaryActions.map((l: any) => ({
+          name: l.name || '',
+          desc: l.desc || l.description || ''
+        }));
+      }
 
       return {
-        monster: {
-          id,
-          name,
-          originalName,
-          cr,
-          xp,
-          type,
-          size,
-          ac,
-          hp,
-          str,
-          dex,
-          con,
-          int,
-          wis,
-          cha
-        },
+        monster: cleanedMonster,
         quantity
       };
     }) : [];
@@ -771,45 +790,64 @@ export const updateFirestoreEncounter = async (
     // Vérifier si les participants contiennent des données cycliques et les nettoyer
     const cleanParticipants = participants ? participants.map(participant => {
       // Créer une copie sans propriétés problématiques pour Firestore
-      const { actions, traits, ...cleanParticipant } = participant;
+      const { actions, traits, reactions, legendaryActionsList, ...cleanParticipant } = participant;
 
-      // Convertir les actions et traits en format sérialisable si nécessaires
+      // Convertir les actions, traits, reactions et legendaryActions en format sérialisable
       return {
         ...cleanParticipant,
         actions: actions ? actions.map(a => ({
           name: a.name || '',
-          description: a.description || a.desc || ''
+          desc: a.desc || a.description || ''
         })) : [],
         traits: traits ? traits.map(t => ({
           name: t.name || '',
-          description: t.description || t.desc || ''
+          desc: t.desc || t.description || ''
+        })) : [],
+        reactions: reactions ? reactions.map(r => ({
+          name: r.name || '',
+          desc: r.desc || r.description || ''
+        })) : [],
+        legendaryActionsList: legendaryActionsList ? legendaryActionsList.map(l => ({
+          name: l.name || '',
+          desc: l.desc || l.description || ''
         })) : []
       };
     }) : undefined;
 
     // Nettoyer et préparer les monstres
     const cleanMonsters = monsters ? monsters.map(({ monster, quantity }) => {
-      // Extraire les propriétés nécessaires du monstre
-      const { id, name, originalName, cr, xp, type, size, ac, hp, str, dex, con, int, wis, cha } = monster;
+      // Preserve ALL monster properties (actions, traits, reactions, etc.)
+      // Only clean potential circular references in nested objects
+      const cleanedMonster = { ...monster };
+
+      // Clean actions/traits/reactions if they exist to ensure Firestore compatibility
+      if (cleanedMonster.actions) {
+        cleanedMonster.actions = cleanedMonster.actions.map((a: any) => ({
+          name: a.name || '',
+          desc: a.desc || a.description || ''
+        }));
+      }
+      if (cleanedMonster.traits) {
+        cleanedMonster.traits = cleanedMonster.traits.map((t: any) => ({
+          name: t.name || '',
+          desc: t.desc || t.description || ''
+        }));
+      }
+      if (cleanedMonster.reactions) {
+        cleanedMonster.reactions = cleanedMonster.reactions.map((r: any) => ({
+          name: r.name || '',
+          desc: r.desc || r.description || ''
+        }));
+      }
+      if (cleanedMonster.legendaryActions) {
+        cleanedMonster.legendaryActions = cleanedMonster.legendaryActions.map((l: any) => ({
+          name: l.name || '',
+          desc: l.desc || l.description || ''
+        }));
+      }
 
       return {
-        monster: {
-          id,
-          name,
-          originalName,
-          cr,
-          xp,
-          type,
-          size,
-          ac,
-          hp,
-          str,
-          dex,
-          con,
-          int,
-          wis,
-          cha
-        },
+        monster: cleanedMonster,
         quantity
       };
     }) : undefined;

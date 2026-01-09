@@ -13,11 +13,12 @@ export const UserSchema = z.object({
 });
 
 export const MonsterSchema = z.object({
+    // Base fields
     id: z.string(),
-    name: z.string(),
+    name: z.string().min(1, "Le nom est requis"),
     originalName: z.string().optional(),
     cr: z.number().optional(),
-    challengeRating: z.number().optional(), // AideDD alias
+    challengeRating: z.number().optional(),
     xp: z.number().default(0),
     type: z.string().default("Inconnu"),
     size: z.string().default("M"),
@@ -35,12 +36,42 @@ export const MonsterSchema = z.object({
         swim: z.number().optional(),
         climb: z.number().optional(),
     }).optional(),
+    // Ability Scores
     str: z.number().optional(),
     dex: z.number().optional(),
     con: z.number().optional(),
     int: z.number().optional(),
     wis: z.number().optional(),
     cha: z.number().optional(),
+    // Details
+    savingThrows: z.string().optional(),
+    skills: z.string().optional(),
+    senses: z.string().optional(),
+    languages: z.string().optional(),
+    damageResistances: z.string().optional(),
+    damageImmunities: z.string().optional(),
+    conditionImmunities: z.string().optional(),
+    damageVulnerabilities: z.string().optional(),
+    // Deep structures
+    traits: z.array(z.object({
+        name: z.string(),
+        desc: z.string()
+    })).optional(),
+    actions: z.array(z.object({
+        name: z.string(),
+        desc: z.string(),
+        attack_bonus: z.number().optional(),
+        damage_dice: z.string().optional(),
+        damage_bonus: z.number().optional()
+    })).optional(),
+    reactions: z.array(z.object({
+        name: z.string(),
+        desc: z.string()
+    })).optional(),
+    legendaryActions: z.array(z.object({
+        name: z.string(),
+        desc: z.string()
+    })).optional(),
 });
 
 export const PlayerSchema = z.object({
@@ -110,7 +141,46 @@ export const EncounterParticipantSchema = z.object({
     legendaryActions: z.object({
         current: z.number(),
         max: z.number()
-    }).optional()
+    }).optional(),
+
+    // Données complètes du monstre pour l'affichage (StatBlock)
+    actions: z.array(z.object({
+        name: z.string(),
+        desc: z.string(),
+        description: z.string().optional(),
+        attack_bonus: z.number().optional(),
+        damage_dice: z.string().optional(),
+        damage_bonus: z.number().optional()
+    })).optional(),
+    traits: z.array(z.object({
+        name: z.string(),
+        desc: z.string(),
+        description: z.string().optional()
+    })).optional(),
+    reactions: z.array(z.object({
+        name: z.string(),
+        desc: z.string(),
+        description: z.string().optional()
+    })).optional(),
+    legendaryActionsList: z.array(z.object({
+        name: z.string(),
+        desc: z.string(),
+        description: z.string().optional()
+    })).optional(),
+
+    // Stats étendues
+    image: z.string().optional(),
+    xp: z.number().optional(),
+    cr: z.union([z.string(), z.number()]).optional(),
+    savingThrows: z.string().optional(),
+    skills: z.string().optional(),
+    damageVulnerabilities: z.string().optional(),
+    damageResistances: z.string().optional(),
+    damageImmunities: z.string().optional(),
+    conditionImmunities: z.string().optional(),
+    senses: z.string().optional(),
+    languages: z.string().optional(),
+    challengeRating: z.number().optional(),
 });
 
 export const EncounterSchema = z.object({

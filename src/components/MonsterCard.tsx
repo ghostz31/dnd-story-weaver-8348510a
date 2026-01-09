@@ -378,7 +378,7 @@ export function MonsterCard({ monster, onSelect, isSelected = false }: MonsterCa
   }
 
   return (
-    <div className={`glass-card h-full flex flex-col group relative overflow-hidden rounded-xl ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-transparent' : ''}`}>
+    <div className={`parchment-card h-full flex flex-col group relative overflow-hidden rounded-xl ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-transparent' : ''}`}>
       {/* Image de fond avec dégradé */}
       <div className="relative h-48 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />

@@ -22,3 +22,14 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Debug and temporary files
+*_dump.*
+*_temp.*
+*_html.txt
+test-*.js
+chevalier_*
+dump_*
+find_chevalier.cjs
+check_public_monsters.cjs
+

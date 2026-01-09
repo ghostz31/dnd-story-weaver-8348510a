@@ -1,3 +1,4 @@
+/* eslint-disable */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -6,87 +7,102 @@
 
 @layer base {
   :root {
-    /* Premium "Mystic" Palette - Deep Purple/Gold/Teal */
-    --background: 260 20% 98%;
-    /* Very light lavender/cream tint */
-    --foreground: 260 40% 10%;
-    /* Deep dark purple-black */
+    /* Theme: Parchment & Ink (Classic D&D Vibe) */
 
-    /* Glass Vars */
-    --glass: 260 30% 98%;
-    --glass-foreground: 260 40% 10%;
-    --glass-border: 260 20% 100%;
+    /* Backgrounds: Warm Paper Tones */
+    --background: 40 20% 97%;
+    /* #FDFBF7 (Very light parchment) */
+    --card: 40 20% 95%;
+    /* #F9F6F0 (Slightly darker paper) */
+    --popover: 40 20% 97%;
 
-    --card: 260 20% 98%;
-    --card-foreground: 260 40% 10%;
+    /* Foreground: Ink Tones */
+    --foreground: 220 10% 15%;
+    /* #222429 (Soft Charcoal Ink) */
+    --card-foreground: 220 10% 15%;
+    --popover-foreground: 220 10% 15%;
+    --muted-foreground: 220 10% 40%;
 
-    --popover: 260 20% 98%;
-    --popover-foreground: 260 40% 10%;
+    /* Primary Accent: Dragon Red / Ruby */
+    --primary: 350 75% 45%;
+    /* #C91C30 (Deep Ruby) */
+    --primary-foreground: 40 20% 97%;
+    /* Paper white on red */
+    --primary-glow: 350 80% 60%;
 
-    --primary: 270 70% 50%;
-    /* Mystic Indigo/Purple */
-    --primary-foreground: 260 20% 98%;
-    --primary-glow: 270 80% 70%;
-    /* Lighter purple for glows */
+    /* Secondary Accent: Aged Gold / Brass */
+    --secondary: 45 80% 45%;
+    /* #CF9F0E (Aged Gold) */
+    --secondary-foreground: 220 10% 15%;
+    /* Ink on gold */
 
-    --secondary: 180 80% 40%;
-    /* Ethereal Teal */
-    --secondary-foreground: 260 20% 98%;
+    /* UI Elements */
+    --muted: 40 10% 90%;
+    /* Faint paper line */
+    --accent: 40 30% 90%;
+    /* Hover state (darker paper) */
+    --accent-foreground: 220 10% 10%;
 
-    --muted: 260 10% 90%;
-    --muted-foreground: 260 20% 40%;
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 40 20% 97%;
 
-    --accent: 45 100% 50%;
-    /* Gold remains for highlights */
-    --accent-foreground: 260 40% 10%;
+    --border: 40 10% 80%;
+    /* Pencil outline */
+    --input: 40 10% 85%;
+    --ring: 350 75% 45%;
+    /* Focus ring same as primary */
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 260 20% 98%;
+    --radius: 0.5rem;
+    /* Sharper corners for a "book" feel */
 
-    --border: 260 20% 88%;
-    --input: 260 20% 88%;
-    --ring: 270 70% 50%;
-
-    --radius: 1rem;
+    /* Glass Vars (Cleaned up for Sharpness) */
+    --glass: 40 20% 98%;
+    --glass-foreground: 220 10% 15%;
+    --glass-border: 40 10% 85%;
   }
 
   .dark {
-    --background: 260 40% 5%;
-    /* Deep Void Purple */
-    --foreground: 260 20% 97%;
+    /* Theme: Deep Dungeon (Stone & Torchlight) */
 
-    --glass: 260 40% 10%;
-    --glass-foreground: 260 20% 97%;
-    --glass-border: 260 30% 20%;
+    /* Backgrounds: Dark Stone */
+    --background: 220 15% 10%;
+    /* #15171C (Dark cold stone) */
+    --card: 220 15% 13%;
+    /* #1C1F26 */
+    --popover: 220 15% 10%;
 
-    --card: 260 40% 8%;
-    --card-foreground: 260 20% 97%;
+    /* Foreground: Parchment Text (Light Grey/Beige) */
+    --foreground: 40 10% 90%;
+    --card-foreground: 40 10% 90%;
+    --popover-foreground: 40 10% 90%;
+    --muted-foreground: 220 10% 60%;
 
-    --popover: 260 40% 8%;
-    --popover-foreground: 260 20% 97%;
+    /* Primary Accent: Torch Fire / Ember */
+    --primary: 20 80% 55%;
+    /* #E86C2C (Orange Fire) */
+    --primary-foreground: 220 15% 10%;
+    --primary-glow: 20 90% 60%;
 
-    --primary: 270 80% 60%;
-    /* Bright Mystic Purple */
-    --primary-foreground: 260 20% 97%;
-    --primary-glow: 270 90% 50%;
+    /* Secondary Accent: Steel / Cold Magic */
+    --secondary: 200 60% 50%;
+    /* #3399CC (Steel Blue) */
+    --secondary-foreground: 40 10% 95%;
 
-    --secondary: 180 80% 50%;
-    /* Bright Teal */
-    --secondary-foreground: 260 40% 5%;
+    /* UI Elements */
+    --muted: 220 15% 20%;
+    --accent: 220 15% 20%;
+    --accent-foreground: 40 10% 95%;
 
-    --muted: 260 30% 15%;
-    --muted-foreground: 260 20% 65%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 40 10% 90%;
 
-    --accent: 45 100% 50%;
-    /* Gold */
-    --accent-foreground: 260 40% 10%;
+    --border: 220 15% 25%;
+    --input: 220 15% 25%;
+    --ring: 20 80% 55%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 43 13% 97%;
-
-    --border: 260 30% 18%;
-    --input: 260 30% 18%;
-    --ring: 270 80% 60%;
+    --glass: 220 15% 12%;
+    --glass-foreground: 40 10% 90%;
+    --glass-border: 220 15% 25%;
   }
 }
 
@@ -96,7 +112,8 @@
   }
 
   body {
-    @apply ethereal-bg text-foreground font-inter antialiased;
+    @apply bg-background text-foreground font-inter antialiased;
+    /* texture grain overlay can be added here if we had an asset */
   }
 
   .font-cinzel {
@@ -110,66 +127,32 @@
 
 @layer components {
 
-  /* Subtle Ethereal Background + Spotlight */
-  .ethereal-bg {
-    background-color: hsl(var(--background));
-    background-image:
-      radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), hsla(45, 100%, 50%, 0.15) 0px, transparent 250px),
-      radial-gradient(at 0% 0%, hsla(350, 80%, 60%, 0.03) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, hsla(45, 100%, 50%, 0.05) 0px, transparent 50%);
-    background-attachment: fixed;
+  /* Panels & Cards */
+  .parchment-panel {
+    @apply bg-card border border-border shadow-sm;
   }
 
-  /* Glassmorphism Utility */
-  .glass-panel {
-    @apply bg-glass/60 backdrop-blur-md border border-glass-border/30;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+  .parchment-card {
+    @apply bg-card text-card-foreground border border-border shadow-md transition-all duration-200;
   }
 
-  .glass-card {
-    @apply bg-glass/40 backdrop-blur-sm border border-glass-border/20 transition-all duration-300;
+  .parchment-card:hover {
+    @apply shadow-lg -translate-y-[1px] border-primary/40;
   }
 
-  .glass-card:hover {
-    @apply bg-glass/60 -translate-y-1 shadow-glow border-primary/20;
+  /* Utility to make text feel like ink */
+  .text-ink {
+    color: hsl(var(--foreground));
   }
 
-  .text-shadow-sm {
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  .text-ink-muted {
+    color: hsl(var(--muted-foreground));
   }
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: hsl(var(--muted));
-}
-
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--primary));
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--primary) / 0.8);
-}
-
-/* Animation classes */
+/* Animations - Keeping them crisp */
 .animate-fade-in {
-  animation: fadeIn 0.6s ease-out;
-}
-
-.animate-slide-up {
-  animation: slideUp 0.8s ease-out;
+  animation: fadeIn 0.4s ease-out;
 }
 
 @keyframes fadeIn {
@@ -182,14 +165,20 @@
   }
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
+/* Scrollbar Integration */
+::-webkit-scrollbar {
+  width: 8px;
+}
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--secondary));
 }

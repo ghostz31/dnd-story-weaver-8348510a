@@ -1,15 +1,12 @@
-/**
- * Adaptateur de données pour normaliser les fiches de monstres dans l'application
- * Ce fichier contient des fonctions pour transformer les données brutes des monstres
- * en un format complet et cohérent qui correspond à la structure d'AideDD.
- */
+import { Monster, MonsterTrait, MonsterAction } from './types';
 
 /**
  * Adapte les données d'un monstre pour les rendre complètes et cohérentes avec le format AideDD
  * @param monsterData Les données brutes du monstre
  * @returns Les données adaptées et normalisées
  */
-export function adaptMonsterDataFormat(monsterData: any): any {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function adaptMonsterDataFormat(monsterData: any): Monster | null {
   if (!monsterData) return null;
 
   // Créer une copie pour ne pas modifier l'original
@@ -26,7 +23,7 @@ export function adaptMonsterDataFormat(monsterData: any): any {
           adaptedMonster.savingThrows = savingThrowsMatch[1].trim();
         }
       }
-      
+
       // Compétences
       if (!adaptedMonster.skills) {
         const skillsMatch = adaptedMonster.fullHtml.match(/<strong>Compétences<\/strong>([^<]+)<br>/);
@@ -34,7 +31,7 @@ export function adaptMonsterDataFormat(monsterData: any): any {
           adaptedMonster.skills = skillsMatch[1].trim();
         }
       }
-      
+
       // Résistances aux dégâts
       if (!adaptedMonster.damageResistances) {
         const resistancesMatch = adaptedMonster.fullHtml.match(/<strong>Résistances aux dégâts<\/strong>([^<]+)<br>/);
@@ -42,7 +39,7 @@ export function adaptMonsterDataFormat(monsterData: any): any {
           adaptedMonster.damageResistances = resistancesMatch[1].trim();
         }
       }
-      
+
       // Immunités aux dégâts
       if (!adaptedMonster.damageImmunities) {
         const immunitiesMatch = adaptedMonster.fullHtml.match(/<strong>Immunités aux dégâts<\/strong>([^<]+)<br>/);
@@ -50,7 +47,7 @@ export function adaptMonsterDataFormat(monsterData: any): any {
           adaptedMonster.damageImmunities = immunitiesMatch[1].trim();
         }
       }
-      
+
       // Immunités aux états
       if (!adaptedMonster.conditionImmunities) {
         const conditionsMatch = adaptedMonster.fullHtml.match(/<strong>Immunités aux états<\/strong>([^<]+)<br>/);
@@ -58,7 +55,7 @@ export function adaptMonsterDataFormat(monsterData: any): any {
           adaptedMonster.conditionImmunities = conditionsMatch[1].trim();
         }
       }
-      
+
       // Sens
       if (!adaptedMonster.senses) {
         const sensesMatch = adaptedMonster.fullHtml.match(/<strong>Sens<\/strong>([^<]+)<br>/);
@@ -66,7 +63,7 @@ export function adaptMonsterDataFormat(monsterData: any): any {
           adaptedMonster.senses = sensesMatch[1].trim();
         }
       }
-      
+
       // Langues
       if (!adaptedMonster.languages) {
         const languagesMatch = adaptedMonster.fullHtml.match(/<strong>Langues<\/strong>([^<]+)<br>/);
@@ -83,7 +80,7 @@ export function adaptMonsterDataFormat(monsterData: any): any {
           adaptedMonster.xp = parseInt(crMatch[2].trim().replace(/[^\d]/g, ''), 10);
         }
       }
-      
+
       // Traits et capacités
       if (!adaptedMonster.traits || adaptedMonster.traits.length === 0) {
         const traitsSection = adaptedMonster.fullHtml.match(/<\/div><div><svg>.*?<\/svg><\/div>(.*?)<div class='rub'>Actions<\/div>/s);
@@ -97,7 +94,7 @@ export function adaptMonsterDataFormat(monsterData: any): any {
           }
         }
       }
-      
+
       // Actions
       if (!adaptedMonster.actions || adaptedMonster.actions.length === 0) {
         const actionsSection = adaptedMonster.fullHtml.match(/<div class='rub'>Actions<\/div>(.*?)(?=<\/div><\/div>|<div class='rub'>)/s);
@@ -111,7 +108,7 @@ export function adaptMonsterDataFormat(monsterData: any): any {
           }
         }
       }
-      
+
       // Actions légendaires
       if (!adaptedMonster.legendaryActions || adaptedMonster.legendaryActions.length === 0) {
         const legendarySection = adaptedMonster.fullHtml.match(/<div class='rub'>Actions légendaires<\/div>(.*?)(?=<\/div><\/div>)/s);
@@ -202,7 +199,7 @@ export function adaptMonsterDataFormat(monsterData: any): any {
     adaptedMonster.url = `https://www.aidedd.org/dnd/monstres.php?vf=${slug}`;
   }
 
-  return adaptedMonster;
+  return adaptedMonster as Monster;
 }
 
 /**

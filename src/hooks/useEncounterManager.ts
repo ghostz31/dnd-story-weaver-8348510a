@@ -118,11 +118,8 @@ export const useEncounterManager = () => {
                                 currentTurn: parsed.currentTurn || 0,
                                 round: parsed.round || 1
                             });
-                            // Load real monster data
-                            setTimeout(async () => {
-                                const monsters = parsed.participants.filter((p: any) => !p.isPC);
-                                for (const m of monsters) await loadRealMonsterData(m.id);
-                            }, 100);
+                            // Trust session data - do not force reload
+                            // The useEffect for defaults will catch any default-only monsters if needed
                             toast({ title: "Rencontre chargée", description: `${parsed.name} chargée.` });
                             return;
                         }
@@ -142,18 +139,26 @@ export const useEncounterManager = () => {
         loadData();
     }, [encounterId]);
 
-    // Auto-load monster data on add
+    // Auto-load monster data on add OR if data is missing (Heal corrupted data)
     useEffect(() => {
         const monsterParticipants = encounter.participants.filter(p => !p.isPC);
         if (monsterParticipants.length > 0) {
-            const defaults = monsterParticipants.filter(p => p.maxHp === 10 && p.ac === 10);
-            if (defaults.length > 0) {
-                setTimeout(async () => {
-                    for (const p of defaults) await loadRealMonsterData(p.id);
-                }, 200);
+            // Check for defaults OR missing actions (corrupted save)
+            // Note: Check for empty arrays too, as Zod/Serialization might have left them as []
+            const needsUpdate = monsterParticipants.filter(p =>
+                (p.maxHp === 10 && p.ac === 10) ||
+                ((!p.actions || p.actions.length === 0) && (!p.traits || p.traits.length === 0) && p.name !== 'Monstre')
+            );
+
+            if (needsUpdate.length > 0) {
+                console.log("Healing/Loading monster data for:", needsUpdate.map(p => p.name));
+                const loadData = async () => {
+                    for (const p of needsUpdate) await loadRealMonsterData(p.id);
+                };
+                loadData();
             }
         }
-    }, [encounter.participants.length]);
+    }, [encounter.participants.length, encounter.participants]); // Added dependency on participants content deep check effectively
 
     // D&D Beyond Sync
     useDnDBeyondLive({
@@ -247,14 +252,34 @@ export const useEncounterManager = () => {
                 const snap = await getDoc(docRef);
                 if (snap.exists()) {
                     const data = snap.data() as EncounterType;
+
+                    console.log("[loadSavedEncounter] Firestore data loaded:", {
+                        hasParticipants: !!data.participants && data.participants.length > 0,
+                        participantsCount: data.participants?.length || 0,
+                        hasMonsters: !!data.monsters,
+                        hasParty: !!data.party
+                    });
+
+                    // Log first participant details if available
+                    if (data.participants && data.participants.length > 0) {
+                        const firstMonster = data.participants.find(p => !p.isPC);
+                        if (firstMonster) {
+                            console.log("[loadSavedEncounter] First monster participant sample:", {
+                                name: firstMonster.name,
+                                hasActions: !!firstMonster.actions && firstMonster.actions.length > 0,
+                                hasTraits: !!firstMonster.traits && firstMonster.traits.length > 0,
+                                hasReactions: !!firstMonster.reactions && firstMonster.reactions.length > 0,
+                                hasLegendary: !!firstMonster.legendaryActionsList && firstMonster.legendaryActionsList.length > 0,
+                                actionsCount: firstMonster.actions?.length || 0,
+                                traitsCount: firstMonster.traits?.length || 0
+                            });
+                        }
+                    }
+
                     let participants = data.participants || [];
+                    // Only recreate participants if none exist AND we have source data
                     if (participants.length === 0 && data.monsters && data.party) {
-                        // init from monsters/party (omitted for brevity, assume logic copied or handle basics)
-                        // Actually, logic is critical. I'll include a simplified version or assume data is good.
-                        // The original code had huge logic here.
-                        // For refactoring safety, I should copy it.
-                        // But for brevity in this step, I'll copy the core logic.
-                        // Re-implementing init logic:
+                        console.log("[loadSavedEncounter] No participants found, creating from monsters and party");
                         const playerParticipants = (data.party.players || []).map(player => ({
                             id: `pc-${player.id}`,
                             name: player.name,
@@ -267,6 +292,7 @@ export const useEncounterManager = () => {
                             notes: `${player.characterClass} niveau ${player.level}`,
                             initiativeModifier: player.initiative,
                             dndBeyondId: player.dndBeyondId,
+                            level: player.level,
                             // Extended
                             str: player.str, dex: player.dex, con: player.con, int: player.int, wis: player.wis, cha: player.cha, speed: player.speed
                         } as EncounterParticipant));
@@ -288,6 +314,8 @@ export const useEncounterManager = () => {
                             } as EncounterParticipant))
                         );
                         participants = [...playerParticipants, ...monsterParticipants];
+                    } else if (participants.length > 0) {
+                        console.log("[loadSavedEncounter] Using existing participants with full data");
                     }
                     setEncounter({
                         name: data.name,
@@ -323,7 +351,8 @@ export const useEncounterManager = () => {
                             conditions: [],
                             notes: `${player.characterClass} niveau ${player.level}`,
                             initiativeModifier: player.initiative,
-                            dndBeyondId: player.dndBeyondId
+                            dndBeyondId: player.dndBeyondId,
+                            level: player.level
                         } as EncounterParticipant));
 
                         const monsterParticipants = data.monsters.flatMap(({ monster, quantity }: any) =>
@@ -379,6 +408,12 @@ export const useEncounterManager = () => {
         if (!p || p.isPC) return;
 
         const details = await findMonsterDetails(p.name);
+        console.log(`[loadRealMonsterData] Got details for ${p.name}:`, {
+            hasActions: !!details?.actions && details.actions.length > 0,
+            hasTraits: !!details?.traits && details.traits.length > 0,
+            hasReactions: !!details?.reactions && details.reactions.length > 0,
+            hasLegendary: !!details?.legendaryActions && details.legendaryActions.length > 0,
+        });
         if (details && details.hp) {
             let realMaxHp = 10;
             if (typeof details.hp === 'string') {
@@ -402,8 +437,24 @@ export const useEncounterManager = () => {
                     currentHp: part.currentHp === 10 ? realMaxHp : part.currentHp,
                     ac: realAC,
                     str: details.str, dex: details.dex, con: details.con, int: details.int, wis: details.wis, cha: details.cha,
+                    // Extended details for StatBlock
+                    speed: details.speed,
+                    savingThrows: details.savingThrows,
+                    skills: details.skills,
+                    damageResistances: details.damageResistances,
+                    damageImmunities: details.damageImmunities,
+                    damageVulnerabilities: details.damageVulnerabilities,
+                    conditionImmunities: details.conditionImmunities,
+                    senses: details.senses,
+                    languages: details.languages,
+                    challengeRating: details.challengeRating || details.cr,
+                    xp: details.xp,
+                    // Lists
                     actions: details.actions || [],
-                    traits: details.traits || []
+                    traits: details.traits || [],
+                    reactions: details.reactions || [],
+                    legendaryActionsList: details.legendaryActions || [],
+                    image: details.image // Copy image url
                 } : part)
             }));
         }
@@ -522,8 +573,22 @@ export const useEncounterManager = () => {
                     ...part,
                     ac: details.ac || part.ac, maxHp: details.hp || part.maxHp,
                     str: details.str, dex: details.dex, con: details.con, int: details.int, wis: details.wis, cha: details.cha,
+                    speed: details.speed,
+                    savingThrows: details.savingThrows,
+                    skills: details.skills,
+                    damageResistances: details.damageResistances,
+                    damageImmunities: details.damageImmunities,
+                    damageVulnerabilities: details.damageVulnerabilities,
+                    conditionImmunities: details.conditionImmunities,
+                    senses: details.senses,
+                    languages: details.languages,
+                    challengeRating: details.challengeRating || details.cr,
+                    xp: details.xp,
                     actions: details.actions || [],
-                    traits: details.traits || []
+                    traits: details.traits || [],
+                    reactions: details.reactions || [],
+                    legendaryActionsList: details.legendaryActions || [],
+                    image: details.image
                 } : part)
             }));
         } else {
@@ -577,6 +642,7 @@ export const useEncounterManager = () => {
             conditions: [],
             notes: '',
             initiativeModifier: 0, // default
+            level: 1,
             // default monster props to satisfy interface
             cr: 0, type: 'Humanoïde', size: 'M',
             str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10
@@ -589,6 +655,29 @@ export const useEncounterManager = () => {
             ...prev,
             participants: prev.participants.map(p => p.id === id ? { ...p, ...updates } : p)
         }));
+    };
+
+    const moveParticipant = (id: string, direction: 'up' | 'down') => {
+        const index = sortedParticipants.findIndex(p => p.id === id);
+        if (index === -1) return;
+
+        const targetIndex = direction === 'up' ? index - 1 : index + 1;
+        if (targetIndex < 0 || targetIndex >= sortedParticipants.length) return;
+
+        const target = sortedParticipants[targetIndex];
+        const current = sortedParticipants[index];
+
+        // Swap initiatives
+        const newInitiativeCurrent = target.initiative;
+        const newInitiativeTarget = current.initiative;
+
+        const updated = encounter.participants.map(p => {
+            if (p.id === current.id) return { ...p, initiative: newInitiativeCurrent };
+            if (p.id === target.id) return { ...p, initiative: newInitiativeTarget };
+            return p;
+        });
+
+        setEncounter(prev => ({ ...prev, participants: updated }));
     };
 
     return {
@@ -621,7 +710,8 @@ export const useEncounterManager = () => {
             loadSavedEncounter,
             loadRealMonsterData,
             loadMonsterOnDemand,
-            openCreatureFrame
+            openCreatureFrame,
+            moveParticipant
         }
     };
 };

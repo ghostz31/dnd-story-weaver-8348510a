@@ -47,15 +47,23 @@ export const useMonsters = () => {
         return 155000;
     };
 
+    const [customMonsters, setCustomMonsters] = useState<Monster[]>([]);
+
     const loadLocalMonsters = async () => {
-        if (monsters.length > 0) return;
         setLoading(true);
         try {
+            // Load custom monsters
+            const storedCustom = localStorage.getItem('custom_monsters');
+            const custom: Monster[] = storedCustom ? JSON.parse(storedCustom) : [];
+            setCustomMonsters(custom);
+
             console.log("Chargement des monstres depuis l'index...");
             const monstersIndex = await loadMonstersIndex();
 
+            let baseMonsters: Monster[] = [];
+
             if (monstersIndex && monstersIndex.length > 0) {
-                const formattedMonsters = monstersIndex.map((monster: any) => ({
+                baseMonsters = monstersIndex.map((monster: any) => ({
                     id: monster.id || generateUniqueId(),
                     name: monster.name,
                     originalName: monster.originalName,
@@ -71,14 +79,12 @@ export const useMonsters = () => {
                     hp: 10,
                     image: monster.image
                 }));
-                setMonsters(formattedMonsters);
-                localStorage.setItem('dnd_monsters', JSON.stringify(formattedMonsters));
             } else {
                 console.warn("Index vide, fallback JSON complet...");
                 const response = await fetch('/data/aidedd-monsters-all.json');
                 if (response.ok) {
                     const data = await response.json();
-                    const formatted = data.map((m: any) => ({
+                    baseMonsters = data.map((m: any) => ({
                         id: m.id || generateUniqueId(),
                         name: m.name,
                         cr: m.cr,
@@ -92,38 +98,62 @@ export const useMonsters = () => {
                         ac: m.ac || 10,
                         hp: m.hp || 10
                     }));
-                    setMonsters(formatted);
-                    localStorage.setItem('dnd_monsters', JSON.stringify(formatted));
                 } else {
-                    throw new Error("Impossible de charger les données");
+                    // Fallback to static list if fetch fails
+                    baseMonsters = getMonsters();
                 }
             }
+
+            // Merge base and custom
+            setMonsters([...custom, ...baseMonsters]);
+
         } catch (err: any) {
             console.error("Erreur hook useMonsters:", err);
             setError(err.message);
-            // Fallback ultime
             setMonsters(getMonsters());
         } finally {
             setLoading(false);
         }
     };
 
-    useEffect(() => {
-        if (!isAuthenticated) {
-            loadLocalMonsters();
+    const saveCustomMonster = (monster: Monster) => {
+        const storedCustom = localStorage.getItem('custom_monsters');
+        let custom: Monster[] = storedCustom ? JSON.parse(storedCustom) : [];
+
+        const existingIndex = custom.findIndex(m => m.id === monster.id);
+
+        if (existingIndex >= 0) {
+            // Update existing
+            custom[existingIndex] = { ...monster, custom: true, source: 'Custom' };
         } else {
-            // Logique Firestore (simplifiée)
-            const unsubscribe = subscribeToMonsters((fetched) => {
-                if (fetched && fetched.length > 0) {
-                    setMonsters(fetched);
-                    setLoading(false);
-                } else {
-                    loadLocalMonsters();
-                }
-            });
-            return () => unsubscribe();
+            // Add new
+            if (custom.length >= 10) {
+                throw new Error("Limite de 10 monstres personnalisés atteinte.");
+            }
+            custom.push({ ...monster, id: monster.id || generateUniqueId(), custom: true, source: 'Custom' });
         }
+
+        localStorage.setItem('custom_monsters', JSON.stringify(custom));
+        setCustomMonsters(custom);
+        loadLocalMonsters(); // Reload to merge lists
+    };
+
+    const deleteCustomMonster = (monsterId: string) => {
+        const storedCustom = localStorage.getItem('custom_monsters');
+        if (!storedCustom) return;
+
+        let custom: Monster[] = JSON.parse(storedCustom);
+        custom = custom.filter(m => m.id !== monsterId);
+
+        localStorage.setItem('custom_monsters', JSON.stringify(custom));
+        setCustomMonsters(custom);
+        loadLocalMonsters();
+    };
+
+    useEffect(() => {
+        // Simplified: Always load local + custom for now, assuming offline/local-first for this task
+        loadLocalMonsters();
     }, [isAuthenticated]);
 
-    return { monsters, loading, error, refresh: loadLocalMonsters };
+    return { monsters, loading, error, refresh: loadLocalMonsters, saveCustomMonster, deleteCustomMonster };
 };
