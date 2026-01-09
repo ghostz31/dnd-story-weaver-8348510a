@@ -402,8 +402,8 @@ export const useEncounterManager = () => {
                             name: player.name,
                             initiative: Math.floor(Math.random() * 20) + 1,
                             ac: player.ac || 10,
-                            currentHp: player.currentHp || player.maxHp || 10,
-                            maxHp: player.maxHp || 10,
+                            currentHp: extractNumericHP(player.currentHp || player.maxHp || 10),
+                            maxHp: extractNumericHP(player.maxHp || 10),
                             isPC: true,
                             conditions: [],
                             notes: '',
@@ -422,8 +422,8 @@ export const useEncounterManager = () => {
                                 name: monster.name,
                                 initiative: Math.floor(Math.random() * 20) + 1,
                                 ac: monster.ac || 10,
-                                currentHp: monster.hp || 10,
-                                maxHp: monster.hp || 10,
+                                currentHp: extractNumericHP(monster.hp || 10),
+                                maxHp: extractNumericHP(monster.hp || 10),
                                 isPC: false,
                                 conditions: [],
                                 notes: "",
@@ -437,7 +437,11 @@ export const useEncounterManager = () => {
 
                     setEncounter({
                         name: data.name,
-                        participants,
+                        participants: participants.map((p: any) => ({
+                            ...p,
+                            currentHp: extractNumericHP(p.currentHp),
+                            maxHp: extractNumericHP(p.maxHp)
+                        })),
                         currentTurn: data.currentTurn || 0,
                         round: data.round || 1,
                         party: data.party ? { id: data.party.id, name: data.party.name } : undefined
@@ -525,7 +529,26 @@ export const useEncounterManager = () => {
     const updateHp = (id: string, amount: number) => {
         setEncounter(prev => ({
             ...prev,
-            participants: prev.participants.map(p => p.id === id ? { ...p, currentHp: Math.max(0, p.currentHp + amount) } : p)
+            participants: prev.participants.map(p => {
+                if (p.id !== id) return p;
+
+                const currentNumeric = typeof p.currentHp === 'string'
+                    ? extractNumericHP(p.currentHp)
+                    : p.currentHp;
+
+                // Allow going above maxHp (healing beyond max) as requested
+                // Only clamp to 0 for lower bound? User said "inflict and heal damage (even beyond its maximum life)".
+                // Usually D&D doesn't go below 0 (unconscious), but maybe they want to track negative?
+                // "inflict and heal... even beyond max" suggests unlimited upper bound.
+                // Standard behavior is max(0, newHp).
+
+                const newHp = Math.max(0, currentNumeric + amount);
+
+                return {
+                    ...p,
+                    currentHp: newHp
+                };
+            })
         }));
     };
 
