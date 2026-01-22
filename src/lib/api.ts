@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid';
 import { createMonsterDataIframe } from '../createMonsterDataIframe';
 
 // Local Storage Keys
-const MONSTERS_KEY = 'dnd_monsters';
+const MONSTERS_KEY = 'dnd_monsters_v2';
 const PARTIES_KEY = 'dnd_parties';
 const ENCOUNTERS_KEY = 'dnd_encounters';
 
@@ -104,7 +104,7 @@ export const fetchMonstersFromAPI = async (): Promise<Monster[]> => {
 export function getMonsters(): Monster[] {
   try {
     // Vérifier d'abord s'il y a des monstres en localStorage
-    const storedMonsters = localStorage.getItem('dnd_monsters');
+    const storedMonsters = localStorage.getItem(MONSTERS_KEY);
     if (storedMonsters) {
       const parsedMonsters = JSON.parse(storedMonsters);
       if (Array.isArray(parsedMonsters) && parsedMonsters.length > 0) {
@@ -154,7 +154,7 @@ export function getMonsters(): Monster[] {
 export async function getMonstersAsync(): Promise<Monster[]> {
   try {
     // Vérifier d'abord s'il y a des monstres en localStorage
-    const storedMonsters = localStorage.getItem('dnd_monsters');
+    const storedMonsters = localStorage.getItem(MONSTERS_KEY);
     if (storedMonsters) {
       const parsedMonsters = JSON.parse(storedMonsters);
       if (Array.isArray(parsedMonsters) && parsedMonsters.length > 0) {
@@ -189,7 +189,7 @@ export async function getMonstersAsync(): Promise<Monster[]> {
       }));
 
       // Sauvegarder dans localStorage pour les prochaines visites
-      localStorage.setItem('dnd_monsters', JSON.stringify(formattedMonsters));
+      localStorage.setItem(MONSTERS_KEY, JSON.stringify(formattedMonsters));
       return formattedMonsters;
     }
 
@@ -215,7 +215,7 @@ export async function getMonstersAsync(): Promise<Monster[]> {
         }));
 
         // Sauvegarder dans localStorage pour les prochaines visites
-        localStorage.setItem('dnd_monsters', JSON.stringify(monsters));
+        localStorage.setItem(MONSTERS_KEY, JSON.stringify(monsters));
         return monsters;
       }
     }

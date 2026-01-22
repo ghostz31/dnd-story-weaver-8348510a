@@ -131,7 +131,19 @@ export function adaptMonsterDataFormat(monsterData: any): Monster | null {
 
   // Normaliser les caractéristiques principales
   adaptedMonster.name = adaptedMonster.name || "Monstre inconnu";
-  adaptedMonster.cr = typeof adaptedMonster.cr === 'string' ? parseFloat(adaptedMonster.cr) : (adaptedMonster.cr || 0);
+  // Helper to parse CR
+  const parseCR = (crVal: string | number): number => {
+    if (typeof crVal === 'number') return crVal;
+    if (!crVal) return 0;
+    const clean = crVal.toString().trim();
+    if (clean.includes('/')) {
+      const [num, den] = clean.split('/');
+      return parseFloat(num) / parseFloat(den);
+    }
+    return parseFloat(clean);
+  };
+
+  adaptedMonster.cr = parseCR(adaptedMonster.cr);
   adaptedMonster.xp = adaptedMonster.xp || calculateXPFromCR(adaptedMonster.cr);
   adaptedMonster.type = adaptedMonster.type || "Inconnu";
   adaptedMonster.size = adaptedMonster.size || "M";
