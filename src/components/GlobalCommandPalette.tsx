@@ -28,7 +28,7 @@ export function GlobalCommandPalette() {
     // Load spells
     const [spells, setSpells] = useState<any[]>([]);
     useEffect(() => {
-        fetch('/spells.json')
+        fetch('/data/spells-complete.json')
             .then(r => r.json())
             .then(setSpells)
             .catch(() => setSpells([]));
