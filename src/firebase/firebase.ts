@@ -13,6 +13,16 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
+// DEBUG: Log Firebase config at initialization
+console.log('[Firebase] Configuration:', {
+  apiKey: firebaseConfig.apiKey ? '✓ Set' : '✗ MISSING',
+  authDomain: firebaseConfig.authDomain,
+  projectId: firebaseConfig.projectId,
+  storageBucket: firebaseConfig.storageBucket ? '✓ Set' : '✗ MISSING',
+  messagingSenderId: firebaseConfig.messagingSenderId ? '✓ Set' : '✗ MISSING',
+  appId: firebaseConfig.appId ? '✓ Set' : '✗ MISSING'
+});
+
 // N'oubliez pas d'activer l'authentification par email/mot de passe dans 
 // Firebase Console > Authentication > Sign-in method
 

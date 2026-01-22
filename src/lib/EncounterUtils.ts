@@ -1,5 +1,5 @@
 import React from 'react';
-import { Monster, Party, Encounter, EncounterMonster, EncounterParticipant, UrlMapping, MonsterNameMapping } from './types';
+import { Monster, Party, Encounter, EncounterMonster, EncounterParticipant, UrlMapping, MonsterNameMapping, EncounterCondition } from './types';
 import { v4 as uuidv4 } from 'uuid';
 import { EncounterSchema } from './schemas';
 import {
@@ -136,32 +136,59 @@ export const CONDITIONS = [
 
 export type Condition = typeof CONDITIONS[number];
 
+/**
+ * Format Challenge Rating for display (converts decimals to fractions)
+ */
+export const formatCR = (cr: number | string | undefined): string => {
+    if (cr === undefined || cr === null) return '—';
+    const numCR = typeof cr === 'string' ? parseFloat(cr) : cr;
+    if (isNaN(numCR)) return String(cr);
+    if (numCR === 0) return '0';
+    if (numCR === 0.125) return '1/8';
+    if (numCR === 0.25) return '1/4';
+    if (numCR === 0.5) return '1/2';
+    return String(numCR);
+};
+
 // Fonction pour obtenir les informations d'une condition
-export const getConditionInfo = (conditionName: string) => {
-    const conditionMap: Record<string, { icon: React.ElementType; color: string }> = {
-        'À terre': { icon: ArrowDown, color: 'text-orange-600 border-orange-600' },
-        'Assourdi': { icon: Users, color: 'text-gray-600 border-gray-600' },
-        'Aveuglé': { icon: EyeOff, color: 'text-red-600 border-red-600' },
-        'Charmé': { icon: Smile, color: 'text-pink-600 border-pink-600' },
-        'Empoisonné': { icon: Droplets, color: 'text-green-600 border-green-600' },
-        'Empoigné': { icon: Anchor, color: 'text-brown-600 border-brown-600' },
-        'Entravé': { icon: Link, color: 'text-gray-800 border-gray-800' },
-        'Épuisé': { icon: Clock, color: 'text-yellow-600 border-yellow-600' },
-        'Étourdi': { icon: Brain, color: 'text-purple-600 border-purple-600' },
-        'Inconscient': { icon: Ghost, color: 'text-gray-500 border-gray-500' },
-        'Invisible': { icon: Eye, color: 'text-blue-400 border-blue-400' },
-        'Neutralisé': { icon: ShieldX, color: 'text-red-800 border-red-800' },
-        'Pétrifié': { icon: Square, color: 'text-gray-700 border-gray-700' },
-        'Effrayé': { icon: Skull, color: 'text-red-700 border-red-700' },
-        'Paralysé': { icon: Zap, color: 'text-blue-600 border-blue-600' },
-        'Concentré': { icon: Brain, color: 'text-indigo-600 border-indigo-600' },
-        'Béni': { icon: Heart, color: 'text-yellow-500 border-yellow-500' },
-        'Maudit': { icon: Skull, color: 'text-purple-700 border-purple-700' },
-        'Ralenti': { icon: Clock, color: 'text-blue-500 border-blue-500' },
-        'Hâté': { icon: Zap, color: 'text-green-500 border-green-500' }
+export const getConditionInfo = (condition: string | EncounterCondition) => {
+    const conditionName = typeof condition === 'string' ? condition : condition.name;
+    const conditionMap: Record<string, { icon: React.ElementType; color: string; description: string }> = {
+        'À terre': { icon: ArrowDown, color: 'text-orange-600 border-orange-600', description: 'Désavantage aux attaques. Attaques à distance avec désavantage, mêlée avec avantage.' },
+        'Assourdi': { icon: Users, color: 'text-gray-600 border-gray-600', description: 'Ne peut pas entendre. Échec automatique aux tests basés sur l\'ouïe.' },
+        'Aveuglé': { icon: EyeOff, color: 'text-red-600 border-red-600', description: 'Ne peut pas voir. Désavantage aux attaques, attaques contre avec avantage.' },
+        'Charmé': { icon: Smile, color: 'text-pink-600 border-pink-600', description: 'Ne peut pas attaquer le charmeur. Celui-ci a avantage aux interactions sociales.' },
+        'Empoisonné': { icon: Droplets, color: 'text-green-600 border-green-600', description: 'Désavantage aux jets d\'attaque et de caractéristique.' },
+        'Empoigné': { icon: Anchor, color: 'text-brown-600 border-brown-600', description: 'Vitesse réduite à 0. Fin si l\'empoigneur est neutralisé ou éloigné.' },
+        'Entravé': { icon: Link, color: 'text-gray-800 border-gray-800', description: 'Vitesse 0, désavantage aux attaques et jets de Dex, avantage contre.' },
+        'Épuisé': { icon: Clock, color: 'text-yellow-600 border-yellow-600', description: 'Niveaux cumulatifs. 1: désavantage carac. 6: mort.' },
+        'Étourdi': { icon: Brain, color: 'text-purple-600 border-purple-600', description: 'Neutralisé, ne peut pas bouger, parle difficilement. Échec auto Dex/For.' },
+        'Inconscient': { icon: Ghost, color: 'text-gray-500 border-gray-500', description: 'Neutralisé, lâche tout, tombe. Attaques avec avantage, coup critique à 1,5m.' },
+        'Invisible': { icon: Eye, color: 'text-blue-400 border-blue-400', description: 'Impossible à voir. Avantage aux attaques, désavantage contre.' },
+        'Neutralisé': { icon: ShieldX, color: 'text-red-800 border-red-800', description: 'Ne peut effectuer aucune action ni réaction.' },
+        'Pétrifié': { icon: Square, color: 'text-gray-700 border-gray-700', description: 'Transformé en pierre. Poids x10, ne vieillit plus, résistance à tout.' },
+        'Effrayé': { icon: Skull, color: 'text-red-700 border-red-700', description: 'Désavantage tant que la source est visible. Ne peut s\'en approcher.' },
+        'Paralysé': { icon: Zap, color: 'text-blue-600 border-blue-600', description: 'Neutralisé, ne peut pas bouger/parler. Échec auto Dex/For, coup critique à 1,5m.' },
+        'Concentré': { icon: Brain, color: 'text-indigo-600 border-indigo-600', description: 'Maintient un sort. Jet de Con sur dégâts (DD 10 ou dégâts/2).' },
+        'Béni': { icon: Heart, color: 'text-yellow-500 border-yellow-500', description: '+1d4 aux jets d\'attaque et de sauvegarde.' },
+        'Maudit': { icon: Skull, color: 'text-purple-700 border-purple-700', description: 'Effet variable selon la malédiction appliquée.' },
+        'Ralenti': { icon: Clock, color: 'text-blue-500 border-blue-500', description: 'Vitesse /2, -2 CA et Dex, pas de réaction, 1 action ou bonus.' },
+        'Hâté': { icon: Zap, color: 'text-green-500 border-green-500', description: 'Vitesse x2, +2 CA, avantage Dex, action supplémentaire.' }
     };
 
-    return conditionMap[conditionName] || { icon: Square, color: 'text-gray-500 border-gray-500' };
+    return conditionMap[conditionName] || { icon: Square, color: 'text-gray-500 border-gray-500', description: 'Condition inconnue.' };
+};
+
+// Helper: Ensure conditions are Condition objects (migration)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const migrateConditions = (conditions: any[]): EncounterCondition[] => {
+    if (!conditions) return [];
+    return conditions.map(c => {
+        if (typeof c === 'string') {
+            return { id: uuidv4(), name: c, duration: -1 };
+        }
+        return c;
+    });
 };
 
 // Fonction pour calculer l'XP à partir du CR

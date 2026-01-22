@@ -5,6 +5,7 @@ import { Shield, Image as ImageIcon, Skull, Zap, Eye, MessagesSquare, ScrollText
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { getAideDDMonsterSlug } from '../lib/utils';
+import { formatCR } from '../lib/monsterUtils';
 import { EncounterMonster } from '../lib/types';
 
 // Traduire les tailles
@@ -400,7 +401,7 @@ export function MonsterCard({ monster, onSelect, isSelected = false }: MonsterCa
         {/* Badge CR */}
         <div className="absolute top-2 right-2 z-20">
           <Badge className="bg-black/50 backdrop-blur-md border border-white/20 text-white font-bold hover:bg-primary/80 transition-colors">
-            CR {monster.cr}
+            CR {formatCR(monster.cr)}
           </Badge>
         </div>
       </div>

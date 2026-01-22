@@ -6,7 +6,7 @@ import { db } from '../firebase/firebase';
 import { useAuth } from '../auth/AuthContext';
 import { useToast } from './use-toast';
 import { Encounter as EncounterType, EncounterParticipant, UrlMapping, MonsterNameMapping } from '../lib/types';
-import { updateFirestoreEncounter, updatePlayer } from '../lib/firebaseApi';
+import { updateFirestoreEncounter, updatePlayer, subscribeToParties } from '../lib/firebaseApi';
 import { useDnDBeyondLive } from '../hooks/useDnDBeyondLive';
 import {
     extractNumericHP,
@@ -20,6 +20,9 @@ import {
 } from '../lib/EncounterUtils';
 // fetchMonsterFromAideDD aliased as getMonsterFromAideDD in component
 import { fetchMonsterFromAideDD as getMonsterFromAideDD } from '../lib/api';
+// NEW Import
+import { CombatLogEntry, EncounterCondition } from '../lib/types';
+import { migrateConditions } from '../lib/EncounterUtils';
 
 export const useEncounterManager = () => {
     const { encounterId } = useParams<{ encounterId?: string }>();
@@ -34,11 +37,13 @@ export const useEncounterManager = () => {
         currentTurn: number;
         round: number;
         party?: { id: string; name: string };
+        combatLog: CombatLogEntry[]; // NEW
     }>({
         name: 'Rencontre',
         participants: [],
         currentTurn: 0,
-        round: 1
+        round: 1,
+        combatLog: []
     });
 
     const [isLoadingEncounter, setIsLoadingEncounter] = useState(false);
@@ -118,7 +123,8 @@ export const useEncounterManager = () => {
                                 name: parsed.name || "Rencontre",
                                 participants: parsed.participants,
                                 currentTurn: parsed.currentTurn || 0,
-                                round: parsed.round || 1
+                                round: parsed.round || 1,
+                                combatLog: parsed.combatLog || []
                             });
                             // Trust session data - do not force reload
                             // The useEffect for defaults will catch any default-only monsters if needed
@@ -174,6 +180,73 @@ export const useEncounterManager = () => {
         enabled: true
     });
 
+    // Real-time Party Synchronization
+    // Subscribe to party changes and update player participants automatically
+    useEffect(() => {
+        if (!isAuthenticated || !encounter.party?.id) return;
+
+        console.log(`[PartySync] Subscribing to party ${encounter.party.id} for real-time updates`);
+
+        const unsubscribe = subscribeToParties(
+            (parties) => {
+                const currentParty = parties.find(p => p.id === encounter.party?.id);
+                if (!currentParty) {
+                    console.log('[PartySync] Party not found in subscription');
+                    return;
+                }
+
+                console.log('[PartySync] Party updated, syncing player stats...');
+
+                // Update player participants with latest party data
+                setEncounter(prev => ({
+                    ...prev,
+                    participants: prev.participants.map(p => {
+                        if (!p.isPC) return p;
+
+                        // Find matching player in updated party
+                        const player = currentParty.players.find(pl =>
+                            pl.id === p.id.replace('pc-', '') || pl.name === p.name
+                        );
+
+                        if (player) {
+                            console.log(`[PartySync] Updating ${p.name} with latest stats`);
+                            return {
+                                ...p,
+                                // Sync all player stats
+                                ac: player.ac || p.ac,
+                                maxHp: player.maxHp || p.maxHp,
+                                str: player.str,
+                                dex: player.dex,
+                                con: player.con,
+                                int: player.int,
+                                wis: player.wis,
+                                cha: player.cha,
+                                speed: player.speed,
+                                race: player.race || p.race,
+                                class: player.characterClass || p.class,
+                                level: player.level || p.level,
+                                proficiencies: player.proficiencies || p.proficiencies,
+                                dndBeyondId: player.dndBeyondId || p.dndBeyondId,
+                                // Preserve existing local state if not synced (or sync if available)
+                                conditions: p.conditions || [],
+                                tempHp: p.tempHp || 0
+                            };
+                        }
+                        return p;
+                    })
+                }));
+            },
+            (error) => {
+                console.error('[PartySync] Subscription error:', error);
+            }
+        );
+
+        return () => {
+            console.log('[PartySync] Unsubscribing from party updates');
+            unsubscribe();
+        };
+    }, [isAuthenticated, encounter.party?.id]);
+
     // --- Auto-Save Mechanism (Retention Strategy) ---
     const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -188,6 +261,7 @@ export const useEncounterManager = () => {
                 currentTurn: encounter.currentTurn,
                 round: encounter.round,
                 party: encounter.party,
+                combatLog: encounter.combatLog, // Save log
                 updatedAt: new Date().toISOString()
             };
 
@@ -227,7 +301,8 @@ export const useEncounterManager = () => {
                         name: encounter.name,
                         participants: encounter.participants,
                         currentTurn: encounter.currentTurn,
-                        round: encounter.round
+                        round: encounter.round,
+                        combatLog: encounter.combatLog
                     });
                     // Optional: Subtle toast or indicator? Maybe too noisy.
                     console.log("Auto-saved to Cloud");
@@ -306,7 +381,7 @@ export const useEncounterManager = () => {
                                     };
                                 }
                             }
-                            return p;
+                            return { ...p, conditions: migrateConditions(p.conditions) };
                         });
                     }
 
@@ -359,7 +434,8 @@ export const useEncounterManager = () => {
                         participants,
                         currentTurn: data.currentTurn || 0,
                         round: data.round || 1,
-                        party: syncedParty
+                        party: syncedParty,
+                        combatLog: data.combatLog || []
                     });
                     toast({ title: "Chargée", description: "Rencontre chargée et synchronisée." });
                 } else {
@@ -404,7 +480,7 @@ export const useEncounterManager = () => {
                                     };
                                 }
                             }
-                            return p;
+                            return { ...p, conditions: migrateConditions(p.conditions) };
                         });
                     }
                     if (participants.length === 0 && data.monsters && data.party) {
@@ -458,7 +534,8 @@ export const useEncounterManager = () => {
                         })),
                         currentTurn: data.currentTurn || 0,
                         round: data.round || 1,
-                        party: data.party ? { id: data.party.id, name: data.party.name } : undefined
+                        party: data.party ? { id: data.party.id, name: data.party.name } : undefined,
+                        combatLog: data.combatLog || []
                     });
                     toast({ title: "Chargée", description: "Rencontre locale chargée." });
                 } else {
@@ -540,30 +617,84 @@ export const useEncounterManager = () => {
     };
 
     // Actions implementation
-    const updateHp = (id: string, amount: number) => {
+    const addLogEntry = (type: CombatLogEntry['type'], message: string, sourceId?: string, targetId?: string) => {
+        const entry: CombatLogEntry = {
+            id: uuid(),
+            timestamp: Date.now(),
+            type,
+            message,
+            sourceId,
+            targetId
+        };
         setEncounter(prev => ({
             ...prev,
-            participants: prev.participants.map(p => {
-                if (p.id !== id) return p;
-
-                const currentNumeric = typeof p.currentHp === 'string'
-                    ? extractNumericHP(p.currentHp)
-                    : p.currentHp;
-
-                // Allow going above maxHp (healing beyond max) as requested
-                // Only clamp to 0 for lower bound? User said "inflict and heal damage (even beyond its maximum life)".
-                // Usually D&D doesn't go below 0 (unconscious), but maybe they want to track negative?
-                // "inflict and heal... even beyond max" suggests unlimited upper bound.
-                // Standard behavior is max(0, newHp).
-
-                const newHp = Math.max(0, currentNumeric + amount);
-
-                return {
-                    ...p,
-                    currentHp: newHp
-                };
-            })
+            combatLog: [entry, ...prev.combatLog].slice(0, 100) // Limit to 100 entries
         }));
+    };
+
+    const updateHp = (id: string, amount: number) => {
+        setEncounter(prev => {
+            const participant = prev.participants.find(p => p.id === id);
+            if (!participant) return prev;
+
+            const currentNumeric = typeof participant.currentHp === 'string'
+                ? extractNumericHP(participant.currentHp)
+                : participant.currentHp;
+
+            let newHp = currentNumeric;
+            let newTempHp = participant.tempHp || 0;
+            const isHeal = amount > 0;
+            const isDamage = amount < 0;
+
+            if (isDamage) {
+                const damage = Math.abs(amount);
+                if (newTempHp > 0) {
+                    const absorbed = Math.min(newTempHp, damage);
+                    newTempHp -= absorbed;
+                    const remainingDamage = damage - absorbed;
+                    if (remainingDamage > 0) {
+                        newHp = Math.max(0, currentNumeric - remainingDamage);
+                    }
+                } else {
+                    newHp = Math.max(0, currentNumeric - damage);
+                }
+                // Check for Death Saves trigger logic if desired? Or just let UI handle it.
+            } else if (isHeal) {
+                const maxNumeric = typeof participant.maxHp === 'string'
+                    ? extractNumericHP(participant.maxHp)
+                    : participant.maxHp;
+                newHp = Math.min(maxNumeric, currentNumeric + amount);
+            }
+
+            // Log it
+            const msg = isHeal
+                ? `${participant.name} soigne de ${amount} PV.`
+                : `${participant.name} subit ${Math.abs(amount)} dégâts.`;
+
+            // We need to return the new state, but we can't easily call addLogEntry here as it sets state too.
+            // We must update both in one go.
+            const entry: CombatLogEntry = {
+                id: uuid(),
+                timestamp: Date.now(),
+                type: isHeal ? 'heal' : 'damage',
+                message: msg,
+                targetId: id
+            };
+
+            return {
+                ...prev,
+                combatLog: [entry, ...prev.combatLog].slice(0, 100),
+                participants: prev.participants.map(p => {
+                    if (p.id !== id) return p;
+                    return {
+                        ...p,
+                        currentHp: newHp,
+                        tempHp: newTempHp
+                    };
+                })
+
+            };
+        });
     };
 
     const nextTurn = () => {
@@ -584,15 +715,57 @@ export const useEncounterManager = () => {
         } while (sortedParticipants[nextIndex].currentHp <= 0);
 
         const nextId = sortedParticipants[nextIndex].id;
-        // reset actions for next
-        setEncounter(prev => ({
-            ...prev,
-            currentTurn: nextIndex,
-            round: newRound,
-            participants: prev.participants.map(p => p.id === nextId ? {
-                ...p, hasUsedAction: false, hasUsedBonusAction: false, hasUsedReaction: false, remainingMovement: calculateMovementSpeed(p)
-            } : p)
-        }));
+
+        // Log turn change
+        const turnMsg = `Tour de ${sortedParticipants[nextIndex].name} (Round ${newRound})`;
+
+        setEncounter(prev => {
+            // Handle Condition Duration Decrement on Turn Start
+            const participantWithDecrementedConditions = sortedParticipants[nextIndex];
+            // Logic: Check existing participant in state, not sorted (which might be stale).
+            // Actually, we should map over all.
+            const updatedParticipants = prev.participants.map(p => {
+                if (p.id === nextId) {
+                    // Found the one starting turn
+                    // Decrement conditions
+                    const newConditions = p.conditions.map(c => {
+                        if (c.duration > 0) return { ...c, duration: c.duration - 1 };
+                        return c;
+                    }).filter(c => c.duration !== 0); // Remove expired
+
+                    // Report expired?
+                    const expired = p.conditions.filter(c => c.duration > 0).filter(c => c.duration - 1 === 0);
+                    // We can't log easily inside map, but this simple logic handles removal.
+
+                    return {
+                        ...p,
+                        hasUsedAction: false,
+                        hasUsedBonusAction: false,
+                        hasUsedReaction: false,
+                        remainingMovement: calculateMovementSpeed(p),
+                        conditions: newConditions
+                    };
+                }
+                return p;
+            });
+
+            const entry: CombatLogEntry = {
+                id: uuid(),
+                timestamp: Date.now(),
+                type: 'turn',
+                message: turnMsg,
+                sourceId: nextId
+            };
+
+            return {
+                ...prev,
+                currentTurn: nextIndex,
+                round: newRound,
+                participants: updatedParticipants,
+                combatLog: [entry, ...prev.combatLog].slice(0, 100)
+            };
+        });
+
         setSelectedParticipantId(null);
         // Iframe logic
         const active = sortedParticipants[nextIndex];
@@ -720,7 +893,8 @@ export const useEncounterManager = () => {
                 name: encounter.name,
                 participants: encounter.participants,
                 currentTurn: encounter.currentTurn,
-                round: encounter.round
+                round: encounter.round,
+                combatLog: encounter.combatLog
             });
             toast({ title: "Sauvegardé", description: "Etat sauvegardé." });
         } catch (e) {

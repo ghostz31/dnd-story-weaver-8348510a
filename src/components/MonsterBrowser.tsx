@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Monster, monsterCategories, monsterTypes, monsterSizes } from '../lib/types';
 import { FaSync, FaSearch, FaPlus, FaInfoCircle, FaPen, FaCopy, FaTrash } from 'react-icons/fa';
 import { useAuth } from '../auth/AuthContext';
@@ -9,6 +9,7 @@ import { X } from 'lucide-react';
 import { getAideDDMonsterSlug, getMonsterImageUrl } from '../lib/monsterUtils';
 import { useMonsters } from '../hooks/useMonsters';
 import FilterPanel from '@/components/ui/FilterPanel';
+import { formatCR } from '@/lib/EncounterUtils';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -117,29 +118,33 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
     });
   };
 
-  useEffect(() => {
+  // Mémoïser le filtrage et le tri des monstres
+  const sortedAndFilteredMonsters = useMemo(() => {
     const filtered = applyFiltersToMonsters(monsters);
     // Trier: custom d'abord, puis par nom alphabétique
-    const sorted = filtered.sort((a, b) => {
+    return filtered.sort((a, b) => {
       // Custom monsters first
       if (a.custom && !b.custom) return -1;
       if (!a.custom && b.custom) return 1;
       // Then alphabetically by name
       return a.name.localeCompare(b.name);
     });
-    setFilteredMonsters(sorted);
-    setVisibleCount(50);
   }, [searchQuery, crMin, crMax, selectedType, selectedSize, selectedCategory, selectedAlignment, isCustom, monsters]);
 
-  const handleRefreshMonsters = async () => {
+  useEffect(() => {
+    setFilteredMonsters(sortedAndFilteredMonsters);
+    setVisibleCount(50);
+  }, [sortedAndFilteredMonsters]);
+
+  const handleRefreshMonsters = useCallback(async () => {
     await refresh();
     toast({
       title: "Rafraîchissement",
       description: "Liste des monstres mise à jour",
     });
-  };
+  }, [refresh]);
 
-  const fetchMonsterDetails = async (monster: Monster) => {
+  const fetchMonsterDetails = useCallback(async (monster: Monster) => {
     // Si c'est un monstre custom, on l'a déjà en local avec toutes les infos
     if (monster.custom) {
       setSelectedMonster(monster);
@@ -165,9 +170,9 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
       setIsEditing(false);
       setIsCreating(false);
     }
-  };
+  }, []);
 
-  const handleSelectMonster = async (monster: Monster) => {
+  const handleSelectMonster = useCallback(async (monster: Monster) => {
     if (isSelectable && onSelectMonster) {
       let monsterToAdd = monster;
       // If monster seems incomplete (missing stats or actions), try to fetch details
@@ -188,9 +193,9 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
     } else {
       fetchMonsterDetails(monster);
     }
-  };
+  }, [isSelectable, onSelectMonster, fetchMonsterDetails]);
 
-  const resetFilters = () => {
+  const resetFilters = useCallback(() => {
     setSearchQuery('');
     setCrMin(undefined);
     setCrMax(undefined);
@@ -198,10 +203,9 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
     setSelectedCategory('all');
     setSelectedSize('all');
     setSelectedAlignment('all');
-
     setIsCustom(false);
     refresh();
-  };
+  }, [refresh]);
 
   const activeFiltersCount = useMemo(() => {
     let count = 0;
@@ -534,7 +538,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                         </td>
                         <td className="px-4 py-2">
                           <Badge variant="outline" className="font-mono bg-white/40 border-border/50">
-                            {monster.cr}
+                            {formatCR(monster.cr)}
                           </Badge>
                         </td>
                         <td className="px-4 py-2">

@@ -116,6 +116,7 @@ export interface Encounter {
   isActive?: boolean;
   createdAt: string;
   updatedAt: string;
+  combatLog?: CombatLogEntry[];
 }
 
 // Tables de difficulté par niveau (DMG)
@@ -233,6 +234,22 @@ export interface MonsterTrait {
   description?: string; // Legacy/Compat
 }
 
+export interface EncounterCondition {
+  id: string;
+  name: string;
+  duration: number; // -1 for infinite (until dispelled)
+  source?: string;
+}
+
+export interface CombatLogEntry {
+  id: string;
+  timestamp: number;
+  type: 'info' | 'damage' | 'heal' | 'condition' | 'turn' | 'death-save';
+  message: string;
+  sourceId?: string;
+  targetId?: string;
+}
+
 export interface EncounterParticipant {
   id: string;
   name: string;
@@ -241,8 +258,14 @@ export interface EncounterParticipant {
   ac: number;
   currentHp: number;
   maxHp: number;
+  tempHp?: number; // Temporary Hit Points
+  deathSaves?: {
+    successes: number;
+    failures: number;
+  };
   isPC: boolean;
-  conditions: string[];
+  conditions: EncounterCondition[]; // Changed from string[]
+  concentration?: { spellName: string; startRound: number }; // Concentration tracking
   notes: string;
   cr?: string | number;
   type?: string;
@@ -311,6 +334,7 @@ export interface MagicItem {
   type: string;
   rarity: string;
   attunement?: boolean;
+  attunementDetails?: string;
   description?: string;
   source?: string;
 }

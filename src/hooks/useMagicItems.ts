@@ -9,7 +9,7 @@ export const useMagicItems = () => {
     const loadItems = async () => {
         setLoading(true);
         try {
-            const response = await fetch('/data/aidedd-complete/magic-items.json');
+            const response = await fetch('/data/items-complete.json');
             if (response.ok) {
                 const data = await response.json();
                 setItems(data);

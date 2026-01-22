@@ -1,0 +1,4223 @@
+[
+  {
+    "name": "Abothid",
+    "originalName": "Abothid",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/abothid/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Akyishigal",
+    "originalName": "Akyishigal",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/akyishigal/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ala",
+    "originalName": "Ala",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ala/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Algorith",
+    "originalName": "Algorith",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/algorith/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Alquam",
+    "originalName": "Alquam",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/alquam/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Alséide",
+    "originalName": "Alséide",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/alseide/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Alséide gardienne des bocages",
+    "originalName": "Alséide gardienne des bocages",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/alseide-gardienne-des-bocages/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Amanite myconide",
+    "originalName": "Amanite myconide",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/amanite-myconide/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Amphibe",
+    "originalName": "Amphibe",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/amphibe/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Amphiptère",
+    "originalName": "Amphiptère",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/amphiptere/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Andrenjinyi",
+    "originalName": "Andrenjinyi",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/andrenjinyi/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Angatra",
+    "originalName": "Angatra",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/angatra/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ange enchaîné",
+    "originalName": "Ange enchaîné",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ange-enchaine/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ange fidèle",
+    "originalName": "Ange fidèle",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ange-fidele/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Anubien",
+    "originalName": "Anubien",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/anubien/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Apau perape",
+    "originalName": "Apau perape",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/apau-perape/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Apparition putride",
+    "originalName": "Apparition putride",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/apparition-putride/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Araignée à lignes rouges",
+    "originalName": "Araignée à lignes rouges",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/araignee-a-lignes-rouges/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Araignée de Leng",
+    "originalName": "Araignée de Leng",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/araignee-de-leng/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Araignée des sables",
+    "originalName": "Araignée des sables",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/araignee-des-sables/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Araignée j'ba fofi",
+    "originalName": "Araignée j'ba fofi",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/araignee-j-ba-fofi/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Araignée marchespectre",
+    "originalName": "Araignée marchespectre",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/araignee-marchespectre/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Araignée voleuse",
+    "originalName": "Araignée voleuse",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/araignee-voleuse/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Arbeyach",
+    "originalName": "Arbeyach",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/arbeyach/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Arbre feuilledragon",
+    "originalName": "Arbre feuilledragon",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/arbre-feuilledragon/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Arbre pare-fées",
+    "originalName": "Arbre pare-fées",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/arbre-pare-fees/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Archer vétéran elfique",
+    "originalName": "Archer vétéran elfique",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/archer-veteran-elfique/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Aridni",
+    "originalName": "Aridni",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/aridni/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Asanbosam",
+    "originalName": "Asanbosam",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/asanbosam/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Assoiffeur gris",
+    "originalName": "Assoiffeur gris",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/assoiffeur-gris/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Automate bibliothécaire",
+    "originalName": "Automate bibliothécaire",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/automate-bibliothecaire/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Autruche de guerre",
+    "originalName": "Autruche de guerre",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/autruche-de-guerre/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Avatar de Borée",
+    "originalName": "Avatar de Borée",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/avatar-de-boree/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Bagiennik",
+    "originalName": "Bagiennik",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/bagiennik/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Beauté abominable",
+    "originalName": "Beauté abominable",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/beaute-abominable/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Behtu",
+    "originalName": "Behtu",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/behtu/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Béli",
+    "originalName": "Béli",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/beli/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Belle noyée",
+    "originalName": "Belle noyée",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/belle-noyee/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Béreginyas",
+    "originalName": "Béreginyas",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/bereginyas/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Berstuc",
+    "originalName": "Berstuc",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/berstuc/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Bête d'ombre",
+    "originalName": "Bête d'ombre",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/bete-d-ombre/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Blemmye",
+    "originalName": "Blemmye",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/blemmye/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Boloti",
+    "originalName": "Boloti",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/boloti/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Bondisseur aquatique",
+    "originalName": "Bondisseur aquatique",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/bondisseur-aquatique/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Boucca",
+    "originalName": "Boucca",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/boucca/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Bouda",
+    "originalName": "Bouda",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/bouda/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Bouffon macabre",
+    "originalName": "Bouffon macabre",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/bouffon-macabre/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Bouraq",
+    "originalName": "Bouraq",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/bouraq/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Cactide",
+    "originalName": "Cactide",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/cactide/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Camazotz",
+    "originalName": "Camazotz",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/camazotz/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Cambium",
+    "originalName": "Cambium",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/cambium/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Canitaupe",
+    "originalName": "Canitaupe",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/canitaupe/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Canitaupe juggernaut",
+    "originalName": "Canitaupe juggernaut",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/canitaupe-juggernaut/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Capitaine bandit",
+    "originalName": "Capitaine bandit",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/capitaine-bandit/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Capitaine du guet",
+    "originalName": "Capitaine du guet",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/capitaine-du-guet/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Cavalier de Baba-Yaga, Jour éclatant",
+    "originalName": "Cavalier de Baba-Yaga, Jour éclatant",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/cavalier-de-baba-yaga-jour-eclatant/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Cavalier de Baba-Yaga, Nuit noire",
+    "originalName": "Cavalier de Baba-Yaga, Nuit noire",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/cavalier-de-baba-yaga-nuit-noire/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Cavalier de Baba-Yaga, Soleil rouge",
+    "originalName": "Cavalier de Baba-Yaga, Soleil rouge",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/cavalier-de-baba-yaga-soleil-rouge/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Cerbère",
+    "originalName": "Cerbère",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/cerbere/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Chapeau rouge",
+    "originalName": "Chapeau rouge",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/chapeau-rouge/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Chat du temple de Bastet",
+    "originalName": "Chat du temple de Bastet",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/chat-du-temple-de-bastet/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Chauve-souris de peau",
+    "originalName": "Chauve-souris de peau",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/chauve-souris-de-peau/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Chef du culte de l'Ordre d'émeraude",
+    "originalName": "Chef du culte de l'Ordre d'émeraude",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/chef-du-culte-de-l-ordre-d-emeraude/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Chélicère",
+    "originalName": "Chélicère",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/chelicere/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Chernomoï",
+    "originalName": "Chernomoï",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/chernomoi/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Cheval de guerre céleste",
+    "originalName": "Cheval de guerre céleste",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/cheval-de-guerre-celeste/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Cheval de guerre lourd",
+    "originalName": "Cheval de guerre lourd",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/cheval-de-guerre-lourd/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Chevalier fantôme",
+    "originalName": "Chevalier fantôme",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/chevalier-fantome/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Chevreuil",
+    "originalName": "Chevreuil",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/chevreuil/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Chien du temple",
+    "originalName": "Chien du temple",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/chien-du-temple/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Chien-anguille",
+    "originalName": "Chien-anguille",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/chien-anguille/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Chiot mastodonte",
+    "originalName": "Chiot mastodonte",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/chiot-mastodonte/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Chort",
+    "originalName": "Chort",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/chort/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Chronomentaire",
+    "originalName": "Chronomentaire",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/chronomentaire/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Cikavak",
+    "originalName": "Cikavak",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/cikavak/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Claquepiège",
+    "originalName": "Claquepiège",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/claquepiege/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Clurichaun",
+    "originalName": "Clurichaun",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/clurichaun/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Colonne possédée",
+    "originalName": "Colonne possédée",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/colonne-possedee/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Commandant des chevaliers noirs",
+    "originalName": "Commandant des chevaliers noirs",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/commandant-des-chevaliers-noirs/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Conglomérat osseux",
+    "originalName": "Conglomérat osseux",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/conglomerat-osseux/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Coquicape",
+    "originalName": "Coquicape",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/coquicape/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Couveteux",
+    "originalName": "Couveteux",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/couveteux/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Crabe garrotteur",
+    "originalName": "Crabe garrotteur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/crabe-garrotteur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Crabe osseux",
+    "originalName": "Crabe osseux",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/crabe-osseux/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Croco de verre",
+    "originalName": "Croco de verre",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/croco-de-verre/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Cynome",
+    "originalName": "Cynome",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/cynome/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dau",
+    "originalName": "Dau",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dau/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Demoiselle glacée",
+    "originalName": "Demoiselle glacée",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/demoiselle-glacee/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Démon de sève",
+    "originalName": "Démon de sève",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/demon-de-seve/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Derro, antipaladin des ombres",
+    "originalName": "Derro, antipaladin des ombres",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/derro-antipaladin-des-ombres/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dévoreur arcanique",
+    "originalName": "Dévoreur arcanique",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/devoreur-arcanique/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dévoreur d'âmes",
+    "originalName": "Dévoreur d'âmes",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/devoreur-d-ames/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Diable automate",
+    "originalName": "Diable automate",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/diable-automate/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Diable cristallin",
+    "originalName": "Diable cristallin",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/diable-cristallin/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Diable d'encre",
+    "originalName": "Diable d'encre",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/diable-d-encre/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Diable de sel",
+    "originalName": "Diable de sel",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/diable-de-sel/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Diable des chaînes",
+    "originalName": "Diable des chaînes",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/diable-des-chaines/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Diable doré",
+    "originalName": "Diable doré",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/diable-dore/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Diable lunaire",
+    "originalName": "Diable lunaire",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/diable-lunaire/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Diaspaad",
+    "originalName": "Diaspaad",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/diaspaad/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dipsa",
+    "originalName": "Dipsa",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dipsa/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dissimortuum",
+    "originalName": "Dissimortuum",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dissimortuum/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Domovoï",
+    "originalName": "Domovoï",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/domovoi/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Doppelrat",
+    "originalName": "Doppelrat",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/doppelrat/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Doppleganger",
+    "originalName": "Doppleganger",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/doppleganger/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dorreq",
+    "originalName": "Dorreq",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dorreq/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon blanc, vénérable",
+    "originalName": "Dragon blanc, vénérable",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-blanc-venerable/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon bleu, vénérable",
+    "originalName": "Dragon bleu, vénérable",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-bleu-venerable/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon d'airain, vénérable",
+    "originalName": "Dragon d'airain, vénérable",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-d-airain-venerable/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon d'argent, vénérable",
+    "originalName": "Dragon d'argent, vénérable",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-d-argent-venerable/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon d'or, vénérable",
+    "originalName": "Dragon d'or, vénérable",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-d-or-venerable/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon de bronze, vénérable",
+    "originalName": "Dragon de bronze, vénérable",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-de-bronze-venerable/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon de cuivre, vénérable",
+    "originalName": "Dragon de cuivre, vénérable",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-de-cuivre-venerable/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon de flammes, adulte",
+    "originalName": "Dragon de flammes, adulte",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-de-flammes-adulte/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon de flammes, dragonnet",
+    "originalName": "Dragon de flammes, dragonnet",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-de-flammes-dragonnet/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon de flammes, jeune",
+    "originalName": "Dragon de flammes, jeune",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-de-flammes-jeune/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon de flammes, vénérable",
+    "originalName": "Dragon de flammes, vénérable",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-de-flammes-venerable/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon de mithral, adulte",
+    "originalName": "Dragon de mithral, adulte",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-de-mithral-adulte/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon de mithral, jeune",
+    "originalName": "Dragon de mithral, jeune",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-de-mithral-jeune/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon de mithral, vénérable",
+    "originalName": "Dragon de mithral, vénérable",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-de-mithral-venerable/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon des cavernes, adulte",
+    "originalName": "Dragon des cavernes, adulte",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-des-cavernes-adulte/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon des cavernes, dragonnet",
+    "originalName": "Dragon des cavernes, dragonnet",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-des-cavernes-dragonnet/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon des cavernes, jeune",
+    "originalName": "Dragon des cavernes, jeune",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-des-cavernes-jeune/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon du vent, adulte",
+    "originalName": "Dragon du vent, adulte",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-du-vent-adulte/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon du vent, dragonnet",
+    "originalName": "Dragon du vent, dragonnet",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-du-vent-dragonnet/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon du vent, jeune",
+    "originalName": "Dragon du vent, jeune",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-du-vent-jeune/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon du vent, vénérable",
+    "originalName": "Dragon du vent, vénérable",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-du-vent-venerable/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon du vide, adulte",
+    "originalName": "Dragon du vide, adulte",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-du-vide-adulte/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon du vide, dragonnet",
+    "originalName": "Dragon du vide, dragonnet",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-du-vide-dragonnet/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon du vide, jeune",
+    "originalName": "Dragon du vide, jeune",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-du-vide-jeune/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon du vide, vénérable",
+    "originalName": "Dragon du vide, vénérable",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-du-vide-venerable/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon marin, adulte",
+    "originalName": "Dragon marin, adulte",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-marin-adulte/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon marin, dragonnet",
+    "originalName": "Dragon marin, dragonnet",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-marin-dragonnet/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon marin, jeune",
+    "originalName": "Dragon marin, jeune",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-marin-jeune/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon marin, vénérable",
+    "originalName": "Dragon marin, vénérable",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-marin-venerable/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon murène",
+    "originalName": "Dragon murène",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-murene/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon noir, vénérable",
+    "originalName": "Dragon noir, vénérable",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-noir-venerable/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon rouge, vénérable",
+    "originalName": "Dragon rouge, vénérable",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-rouge-venerable/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragon vert, vénérable",
+    "originalName": "Dragon vert, vénérable",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragon-vert-venerable/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dragonette lanterne",
+    "originalName": "Dragonette lanterne",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dragonette-lanterne/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Drake de cendres",
+    "originalName": "Drake de cendres",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/drake-de-cendres/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Drake de corail",
+    "originalName": "Drake de corail",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/drake-de-corail/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Drake de papier",
+    "originalName": "Drake de papier",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/drake-de-papier/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Drake de rouille",
+    "originalName": "Drake de rouille",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/drake-de-rouille/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Drake des ombres, ancien",
+    "originalName": "Drake des ombres, ancien",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/drake-des-ombres-ancien/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Drake des profondeurs",
+    "originalName": "Drake des profondeurs",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/drake-des-profondeurs/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Drake des tavernes",
+    "originalName": "Drake des tavernes",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/drake-des-tavernes/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Drake pourpre",
+    "originalName": "Drake pourpre",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/drake-pourpre/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Drake stellaire",
+    "originalName": "Drake stellaire",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/drake-stellaire/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Drakon",
+    "originalName": "Drakon",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/drakon/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dref",
+    "originalName": "Dref",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dref/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Drow, prêtresse",
+    "originalName": "Drow, prêtresse",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/drow-pretresse/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dryade épine-du-crépuscule",
+    "originalName": "Dryade épine-du-crépuscule",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dryade-epine-du-crepuscule/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Dullahan",
+    "originalName": "Dullahan",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/dullahan/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Eala",
+    "originalName": "Eala",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/eala/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ecclésiastique",
+    "originalName": "Ecclésiastique",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ecclesiastique/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Edimmu",
+    "originalName": "Edimmu",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/edimmu/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Einherjar",
+    "originalName": "Einherjar",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/einherjar/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Eleinomae",
+    "originalName": "Eleinomae",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/eleinomae/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Empoigneur arboricole",
+    "originalName": "Empoigneur arboricole",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/empoigneur-arboricole/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Enfant des bruyères",
+    "originalName": "Enfant des bruyères",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/enfant-des-bruyeres/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Erina, défenseur",
+    "originalName": "Erina, défenseur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/erina-defenseur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Erina, écornifleur",
+    "originalName": "Erina, écornifleur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/erina-ecornifleur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Esclave putresprit",
+    "originalName": "Esclave putresprit",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/esclave-putresprit/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Esprit du feu",
+    "originalName": "Esprit du feu",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/esprit-du-feu/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Étincelle",
+    "originalName": "Étincelle",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/etincelle/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Fanatique de secte",
+    "originalName": "Fanatique de secte",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/fanatique-de-secte/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Fanatique du scorpion",
+    "originalName": "Fanatique du scorpion",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/fanatique-du-scorpion/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Fangeux",
+    "originalName": "Fangeux",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/fangeux/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Far darrig",
+    "originalName": "Far darrig",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/far-darrig/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Fée des ombres",
+    "originalName": "Fée des ombres",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/fee-des-ombres/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Fée des ombres, chasseur forestier",
+    "originalName": "Fée des ombres, chasseur forestier",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/fee-des-ombres-chasseur-forestier/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Fée des ombres, duelliste",
+    "originalName": "Fée des ombres, duelliste",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/fee-des-ombres-duelliste/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Fée des ombres, enchanteresse",
+    "originalName": "Fée des ombres, enchanteresse",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/fee-des-ombres-enchanteresse/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Fée des ombres, gardien",
+    "originalName": "Fée des ombres, gardien",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/fee-des-ombres-gardien/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Felforgé",
+    "originalName": "Felforgé",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/felforge/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Férocien",
+    "originalName": "Férocien",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ferocien/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Fext",
+    "originalName": "Fext",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/fext/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Fils de Fenris",
+    "originalName": "Fils de Fenris",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/fils-de-fenris/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Forgepeur",
+    "originalName": "Forgepeur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/forgepeur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Fourmi géante",
+    "originalName": "Fourmi géante",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/fourmi-geante/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Fourmi géante, Reine",
+    "originalName": "Fourmi géante, Reine",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/fourmi-geante-reine/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Fraughashar",
+    "originalName": "Fraughashar",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/fraughashar/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Garde animé",
+    "originalName": "Garde animé",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/garde-anime/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Gardien spectral",
+    "originalName": "Gardien spectral",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/gardien-spectral/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Gbahali (Postosuchus)",
+    "originalName": "Gbahali (Postosuchus)",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/gbahali-postosuchus/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Géant du désert",
+    "originalName": "Géant du désert",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/geant-du-desert/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Géant jotun",
+    "originalName": "Géant jotun",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/geant-jotun/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Géant obèse",
+    "originalName": "Géant obèse",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/geant-obese/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Géant thursir",
+    "originalName": "Géant thursir",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/geant-thursir/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Génie al-Aeshma",
+    "originalName": "Génie al-Aeshma",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/genie-al-aeshma/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Gerridé",
+    "originalName": "Gerridé",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/gerride/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Gnoll, chef de meute",
+    "originalName": "Gnoll, chef de meute",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/gnoll-chef-de-meute/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Gnoll, Vif ravageur",
+    "originalName": "Gnoll, Vif ravageur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/gnoll-vif-ravageur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Gnome des profondeurs (svirfneblin)",
+    "originalName": "Gnome des profondeurs (svirfneblin)",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/gnome-des-profondeurs-svirfneblin/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Gnome, Prince asservi aux démons",
+    "originalName": "Gnome, Prince asservi aux démons",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/gnome-prince-asservi-aux-demons/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Gobelin blanc",
+    "originalName": "Gobelin blanc",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/gobelin-blanc/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Gobelin blanc, chaman",
+    "originalName": "Gobelin blanc, chaman",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/gobelin-blanc-chaman/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Gobelin poussiéreux",
+    "originalName": "Gobelin poussiéreux",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/gobelin-poussiereux/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Gobelin, chaman",
+    "originalName": "Gobelin, chaman",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/gobelin-chaman/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Gobelours, chef barbare",
+    "originalName": "Gobelours, chef barbare",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/gobelours-chef-barbare/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Golem à vapeur",
+    "originalName": "Golem à vapeur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/golem-a-vapeur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Golem de sel",
+    "originalName": "Golem de sel",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/golem-de-sel/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Golem oculaire",
+    "originalName": "Golem oculaire",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/golem-oculaire/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Golem smaragdin",
+    "originalName": "Golem smaragdin",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/golem-smaragdin/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Golem trésor",
+    "originalName": "Golem trésor",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/golem-tresor/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Goule darakhule",
+    "originalName": "Goule darakhule",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/goule-darakhule/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Goule de fer",
+    "originalName": "Goule de fer",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/goule-de-fer/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Goule impériale",
+    "originalName": "Goule impériale",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/goule-imperiale/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Goule mendiante",
+    "originalName": "Goule mendiante",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/goule-mendiante/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Goule poudre d'os",
+    "originalName": "Goule poudre d'os",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/goule-poudre-d-os/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Goule, Empereur",
+    "originalName": "Goule, Empereur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/goule-empereur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Grand veneur",
+    "originalName": "Grand veneur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/grand-veneur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Gremlin azza",
+    "originalName": "Gremlin azza",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/gremlin-azza/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Gremlin rhumé",
+    "originalName": "Gremlin rhumé",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/gremlin-rhume/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Guenaude aquatique",
+    "originalName": "Guenaude aquatique",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/guenaude-aquatique/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Guenaude des sables",
+    "originalName": "Guenaude des sables",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/guenaude-des-sables/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Guenaude miroir",
+    "originalName": "Guenaude miroir",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/guenaude-miroir/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Guenaude rouge",
+    "originalName": "Guenaude rouge",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/guenaude-rouge/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Guenaude sanglante",
+    "originalName": "Guenaude sanglante",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/guenaude-sanglante/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Gug",
+    "originalName": "Gug",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/gug/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Habitant de Leng",
+    "originalName": "Habitant de Leng",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/habitant-de-leng/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Harpie chouette",
+    "originalName": "Harpie chouette",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/harpie-chouette/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Haugbui",
+    "originalName": "Haugbui",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/haugbui/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Héraut des ténèbres",
+    "originalName": "Héraut des ténèbres",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/heraut-des-tenebres/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Héraut du sang",
+    "originalName": "Héraut du sang",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/heraut-du-sang/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Hibou",
+    "originalName": "Hibou",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/hibou/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Hibou géant",
+    "originalName": "Hibou géant",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/hibou-geant/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Hibours",
+    "originalName": "Hibours",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/hibours/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Hobgobelin, sergent",
+    "originalName": "Hobgobelin, sergent",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/hobgobelin-sergent/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Homme-cafard, escarmoucheur",
+    "originalName": "Homme-cafard, escarmoucheur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/homme-cafard-escarmoucheur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Homme-cafard, seigneur",
+    "originalName": "Homme-cafard, seigneur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/homme-cafard-seigneur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Homme-chèvre",
+    "originalName": "Homme-chèvre",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/homme-chevre/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Homme-corbeau, combattant",
+    "originalName": "Homme-corbeau, combattant",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/homme-corbeau-combattant/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Homme-corbeau, croasseur funeste",
+    "originalName": "Homme-corbeau, croasseur funeste",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/homme-corbeau-croasseur-funeste/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Homme-corbeau, éclaireur",
+    "originalName": "Homme-corbeau, éclaireur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/homme-corbeau-eclaireur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Homme-lémurien",
+    "originalName": "Homme-lémurien",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/homme-lemurien/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Homme-lémurien, fourrure grise",
+    "originalName": "Homme-lémurien, fourrure grise",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/homme-lemurien-fourrure-grise/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Homme-lézard, champion",
+    "originalName": "Homme-lézard, champion",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/homme-lezard-champion/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Homme-ours",
+    "originalName": "Homme-ours",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/homme-ours/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Homme-rat",
+    "originalName": "Homme-rat",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/homme-rat/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Homme-rat, roublard",
+    "originalName": "Homme-rat, roublard",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/homme-rat-roublard/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Horakh",
+    "originalName": "Horakh",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/horakh/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Hraesvelgr",
+    "originalName": "Hraesvelgr",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/hraesvelgr/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Hundun",
+    "originalName": "Hundun",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/hundun/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ia'Affrat",
+    "originalName": "Ia'Affrat",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ia-affrat/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Idole divine",
+    "originalName": "Idole divine",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/idole-divine/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Isonade",
+    "originalName": "Isonade",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/isonade/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Jaculus",
+    "originalName": "Jaculus",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/jaculus/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Kalke",
+    "originalName": "Kalke",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/kalke/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Kikimore",
+    "originalName": "Kikimore",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/kikimore/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Kishi",
+    "originalName": "Kishi",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/kishi/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Kobold, Alchimiste",
+    "originalName": "Kobold, Alchimiste",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/kobold-alchimiste/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Kobold, Chef",
+    "originalName": "Kobold, Chef",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/kobold-chef/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Kobold, Forgepiège",
+    "originalName": "Kobold, Forgepiège",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/kobold-forgepiege/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Kobold, saigneur",
+    "originalName": "Kobold, saigneur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/kobold-saigneur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Kongamato",
+    "originalName": "Kongamato",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/kongamato/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Koralk",
+    "originalName": "Koralk",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/koralk/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Koschei",
+    "originalName": "Koschei",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/koschei/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Kot bayun",
+    "originalName": "Kot bayun",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/kot-bayun/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Larve de krake",
+    "originalName": "Larve de krake",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/larve-de-krake/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Larve des roches",
+    "originalName": "Larve des roches",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/larve-des-roches/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Larve stellaire de Cthulhu",
+    "originalName": "Larve stellaire de Cthulhu",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/larve-stellaire-de-cthulhu/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Léchy",
+    "originalName": "Léchy",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/lechy/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Lente tempête",
+    "originalName": "Lente tempête",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/lente-tempete/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Liche canine",
+    "originalName": "Liche canine",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/liche-canine/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Likho",
+    "originalName": "Likho",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/likho/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Limon des sarcophages",
+    "originalName": "Limon des sarcophages",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/limon-des-sarcophages/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Linceul",
+    "originalName": "Linceul",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/linceul/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Lindwurm",
+    "originalName": "Lindwurm",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/lindwurm/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Liosalfar",
+    "originalName": "Liosalfar",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/liosalfar/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Locus élémentaire",
+    "originalName": "Locus élémentaire",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/locus-elementaire/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Lorelei",
+    "originalName": "Lorelei",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/lorelei/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Loxoda",
+    "originalName": "Loxoda",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/loxoda/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Lynx vaporeux",
+    "originalName": "Lynx vaporeux",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/lynx-vaporeux/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mahoru",
+    "originalName": "Mahoru",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mahoru/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Malakbel",
+    "originalName": "Malakbel",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/malakbel/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mallqui",
+    "originalName": "Mallqui",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mallqui/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Malphas (Corbeau de tempête)",
+    "originalName": "Malphas (Corbeau de tempête)",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/malphas-corbeau-de-tempete/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mammon",
+    "originalName": "Mammon",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mammon/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mamura",
+    "originalName": "Mamura",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mamura/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mangedestin",
+    "originalName": "Mangedestin",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mangedestin/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mangepoussière (Yakat-shi)",
+    "originalName": "Mangepoussière (Yakat-shi)",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mangepoussiere-yakat-shi/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mangerêve",
+    "originalName": "Mangerêve",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mangereve/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Manteau vide",
+    "originalName": "Manteau vide",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/manteau-vide/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Maraudeur des forêts",
+    "originalName": "Maraudeur des forêts",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/maraudeur-des-forets/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Marchand de sable",
+    "originalName": "Marchand de sable",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/marchand-de-sable/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Marcheflèche",
+    "originalName": "Marcheflèche",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/marchefleche/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Marionnette des lianes",
+    "originalName": "Marionnette des lianes",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/marionnette-des-lianes/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mastiff",
+    "originalName": "Mastiff",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mastiff/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mavka",
+    "originalName": "Mavka",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mavka/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mbielu",
+    "originalName": "Mbielu",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mbielu/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mécanique, Abomination",
+    "originalName": "Mécanique, Abomination",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mecanique-abomination/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mécanique, Araignée tisseuse",
+    "originalName": "Mécanique, Araignée tisseuse",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mecanique-araignee-tisseuse/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mécanique, Chasseur",
+    "originalName": "Mécanique, Chasseur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mecanique-chasseur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mécanique, Chien",
+    "originalName": "Mécanique, Chien",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mecanique-chien/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mécanique, Gendarme",
+    "originalName": "Mécanique, Gendarme",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mecanique-gendarme/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mécanique, Myrmidon",
+    "originalName": "Mécanique, Myrmidon",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mecanique-myrmidon/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mécanique, Scarabée",
+    "originalName": "Mécanique, Scarabée",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mecanique-scarabee/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mèche vivante",
+    "originalName": "Mèche vivante",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/meche-vivante/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mechuiti",
+    "originalName": "Mechuiti",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mechuiti/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Médazur à défenses",
+    "originalName": "Médazur à défenses",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/medazur-a-defenses/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mélasse",
+    "originalName": "Mélasse",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/melasse/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Membre de secte",
+    "originalName": "Membre de secte",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/membre-de-secte/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Méphite de glace",
+    "originalName": "Méphite de glace",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mephite-de-glace/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Méphite de magma",
+    "originalName": "Méphite de magma",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mephite-de-magma/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Méphite de poussière",
+    "originalName": "Méphite de poussière",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mephite-de-poussiere/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Méphite de vapeur",
+    "originalName": "Méphite de vapeur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mephite-de-vapeur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mi-go",
+    "originalName": "Mi-go",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mi-go/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Millitaure",
+    "originalName": "Millitaure",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/millitaure/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mimique carte",
+    "originalName": "Mimique carte",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mimique-carte/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mimique des dunes",
+    "originalName": "Mimique des dunes",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mimique-des-dunes/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mirageur",
+    "originalName": "Mirageur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mirageur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mngwa",
+    "originalName": "Mngwa",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mngwa/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Molosse infernal",
+    "originalName": "Molosse infernal",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/molosse-infernal/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Molosse nocturne",
+    "originalName": "Molosse nocturne",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/molosse-nocturne/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Momie auguste",
+    "originalName": "Momie auguste",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/momie-auguste/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Momie venimeuse",
+    "originalName": "Momie venimeuse",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/momie-venimeuse/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Monolithique, Champion",
+    "originalName": "Monolithique, Champion",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/monolithique-champion/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Monolithique, Valet",
+    "originalName": "Monolithique, Valet",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/monolithique-valet/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Montagne de cadavres",
+    "originalName": "Montagne de cadavres",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/montagne-de-cadavres/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Morphoï",
+    "originalName": "Morphoï",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/morphoi/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mort follet",
+    "originalName": "Mort follet",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mort-follet/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Mousse luminescente des cavernes",
+    "originalName": "Mousse luminescente des cavernes",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/mousse-luminescente-des-cavernes/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Myling",
+    "originalName": "Myling",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/myling/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nain, Loup ravageur",
+    "originalName": "Nain, Loup ravageur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/nain-loup-ravageur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nain, Mage des anneaux",
+    "originalName": "Nain, Mage des anneaux",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/nain-mage-des-anneaux/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Naïna",
+    "originalName": "Naïna",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/naina/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nécrophage masqué",
+    "originalName": "Nécrophage masqué",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/necrophage-masque/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nécrophore",
+    "originalName": "Nécrophore",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/necrophore/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ngobou",
+    "originalName": "Ngobou",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ngobou/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nichny",
+    "originalName": "Nichny",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/nichny/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nihileth",
+    "originalName": "Nihileth",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/nihileth/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nkosi",
+    "originalName": "Nkosi",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/nkosi/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nkosi, Chef de meute",
+    "originalName": "Nkosi, Chef de meute",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/nkosi-chef-de-meute/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Noctegarm",
+    "originalName": "Noctegarm",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/noctegarm/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Noctin",
+    "originalName": "Noctin",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/noctin/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nuée d'esprits lupins",
+    "originalName": "Nuée d'esprits lupins",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/nuee-d-esprits-lupins/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nuée d'yeux",
+    "originalName": "Nuée d'yeux",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/nuee-d-yeux/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nuée de chauve-souris",
+    "originalName": "Nuée de chauve-souris",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/nuee-de-chauve-souris/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nuée de danseflammes",
+    "originalName": "Nuée de danseflammes",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/nuee-de-danseflammes/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nuée de papillons de mort",
+    "originalName": "Nuée de papillons de mort",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/nuee-de-papillons-de-mort/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nuée de papillons de mort, Grande",
+    "originalName": "Nuée de papillons de mort, Grande",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/nuee-de-papillons-de-mort-grande/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nuée de rôdeurs des quais",
+    "originalName": "Nuée de rôdeurs des quais",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/nuee-de-rodeurs-des-quais/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nuée de scarabées manavores",
+    "originalName": "Nuée de scarabées manavores",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/nuee-de-scarabees-manavores/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nuée de scarabées mécaniques",
+    "originalName": "Nuée de scarabées mécaniques",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/nuee-de-scarabees-mecaniques/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nuée de scarabées prismatiques",
+    "originalName": "Nuée de scarabées prismatiques",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/nuee-de-scarabees-prismatiques/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nuée de sluaghs",
+    "originalName": "Nuée de sluaghs",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/nuee-de-sluaghs/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Nuée osseuse",
+    "originalName": "Nuée osseuse",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/nuee-osseuse/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ogre, Chef corrompu",
+    "originalName": "Ogre, Chef corrompu",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ogre-chef-corrompu/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Oiseau de feu",
+    "originalName": "Oiseau de feu",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/oiseau-de-feu/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Oni (Ogre mage)",
+    "originalName": "Oni (Ogre mage)",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/oni-ogre-mage/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Orc, chaman",
+    "originalName": "Orc, chaman",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/orc-chaman/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Orobas",
+    "originalName": "Orobas",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/orobas/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ostinato",
+    "originalName": "Ostinato",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ostinato/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ovasis",
+    "originalName": "Ovasis",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ovasis/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Parasite arcanique",
+    "originalName": "Parasite arcanique",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/parasite-arcanique/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Pavenuée",
+    "originalName": "Pavenuée",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/pavenuee/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Piège caustique",
+    "originalName": "Piège caustique",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/piege-caustique/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Pombero",
+    "originalName": "Pombero",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/pombero/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Pourceau des failles",
+    "originalName": "Pourceau des failles",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/pourceau-des-failles/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Primate blanc",
+    "originalName": "Primate blanc",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/primate-blanc/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Profanateur maudit",
+    "originalName": "Profanateur maudit",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/profanateur-maudit/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Profond",
+    "originalName": "Profond",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/profond/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Profond, Archimandrite",
+    "originalName": "Profond, Archimandrite",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/profond-archimandrite/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Profond, Prêtre hybride",
+    "originalName": "Profond, Prêtre hybride",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/profond-pretre-hybride/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Psoglav",
+    "originalName": "Psoglav",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/psoglav/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Punaise de feu géante",
+    "originalName": "Punaise de feu géante",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/punaise-de-feu-geante/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Qorgeth",
+    "originalName": "Qorgeth",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/qorgeth/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Qwyllion",
+    "originalName": "Qwyllion",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/qwyllion/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ramag",
+    "originalName": "Ramag",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ramag/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ratatosk",
+    "originalName": "Ratatosk",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ratatosk/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ravageur trollien",
+    "originalName": "Ravageur trollien",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ravageur-trollien/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ravenala",
+    "originalName": "Ravenala",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ravenala/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Reine de la Nuit et de la Magie",
+    "originalName": "Reine de la Nuit et de la Magie",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/reine-de-la-nuit-et-de-la-magie/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Reine des neiges",
+    "originalName": "Reine des neiges",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/reine-des-neiges/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Reine des sorcières",
+    "originalName": "Reine des sorcières",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/reine-des-sorcieres/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Rejeton d'Akyishigal",
+    "originalName": "Rejeton d'Akyishigal",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/rejeton-d-akyishigal/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Rejeton d'Arbeyach",
+    "originalName": "Rejeton d'Arbeyach",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/rejeton-d-arbeyach/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Rôdeur des quais",
+    "originalName": "Rôdeur des quais",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/rodeur-des-quais/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Rôdeur moussu",
+    "originalName": "Rôdeur moussu",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/rodeur-moussu/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Roi Baigné de Lune",
+    "originalName": "Roi Baigné de Lune",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/roi-baigne-de-lune/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Roi des Ours",
+    "originalName": "Roi des Ours",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/roi-des-ours/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Roi des rats",
+    "originalName": "Roi des rats",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/roi-des-rats/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Roi des Rivières",
+    "originalName": "Roi des Rivières",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/roi-des-rivieres/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Roussalka",
+    "originalName": "Roussalka",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/roussalka/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Rübezahl",
+    "originalName": "Rübezahl",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/rubezahl/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Saccageur relevé",
+    "originalName": "Saccageur relevé",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/saccageur-releve/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Sahuagin, prêtresse de Mikala",
+    "originalName": "Sahuagin, prêtresse de Mikala",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/sahuagin-pretresse-de-mikala/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Sarcoptère",
+    "originalName": "Sarcoptère",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/sarcoptere/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Saule étrangleur",
+    "originalName": "Saule étrangleur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/saule-etrangleur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Scheznyki",
+    "originalName": "Scheznyki",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/scheznyki/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Scorpion nocturne",
+    "originalName": "Scorpion nocturne",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/scorpion-nocturne/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Scorpion stygien à large queue",
+    "originalName": "Scorpion stygien à large queue",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/scorpion-stygien-a-large-queue/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Seigneur des bandits",
+    "originalName": "Seigneur des bandits",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/seigneur-des-bandits/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Seigneur des lianes",
+    "originalName": "Seigneur des lianes",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/seigneur-des-lianes/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Sélang",
+    "originalName": "Sélang",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/selang/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Serpent de mer",
+    "originalName": "Serpent de mer",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/serpent-de-mer/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Serpopard",
+    "originalName": "Serpopard",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/serpopard/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Shabti",
+    "originalName": "Shabti",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/shabti/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Shadhavar",
+    "originalName": "Shadhavar",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/shadhavar/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Shoggoth",
+    "originalName": "Shoggoth",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/shoggoth/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Silhouette de sable",
+    "originalName": "Silhouette de sable",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/silhouette-de-sable/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Sorcelueur",
+    "originalName": "Sorcelueur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/sorcelueur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Sorcière de l'écheveau",
+    "originalName": "Sorcière de l'écheveau",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/sorciere-de-l-echeveau/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Sphinx, Androsphinx",
+    "originalName": "Sphinx, Androsphinx",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/sphinx-androsphinx/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Sphinx, Gynosphinx",
+    "originalName": "Sphinx, Gynosphinx",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/sphinx-gynosphinx/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Sphinx, Gypsosphinx",
+    "originalName": "Sphinx, Gypsosphinx",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/sphinx-gypsosphinx/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Spinosaure",
+    "originalName": "Spinosaure",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/spinosaure/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Spinosaure, jeune",
+    "originalName": "Spinosaure, jeune",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/spinosaure-jeune/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Squelette cheval de guerre",
+    "originalName": "Squelette cheval de guerre",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/squelette-cheval-de-guerre/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Squelette de troll des lianes",
+    "originalName": "Squelette de troll des lianes",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/squelette-de-troll-des-lianes/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Squelette en mâchoires de requin",
+    "originalName": "Squelette en mâchoires de requin",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/squelette-en-machoires-de-requin/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Squelette minotaure",
+    "originalName": "Squelette minotaure",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/squelette-minotaure/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Stryx",
+    "originalName": "Stryx",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/stryx/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Stuhac",
+    "originalName": "Stuhac",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/stuhac/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Subek",
+    "originalName": "Subek",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/subek/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Succube/Incube",
+    "originalName": "Succube/Incube",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/succube-incube/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Sutureuse",
+    "originalName": "Sutureuse",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/sutureuse/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Sylvanien pleureur",
+    "originalName": "Sylvanien pleureur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/sylvanien-pleureur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Tapis étrangleur",
+    "originalName": "Tapis étrangleur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/tapis-etrangleur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Templier mécaforgé",
+    "originalName": "Templier mécaforgé",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/templier-mecaforge/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Terreur des roches",
+    "originalName": "Terreur des roches",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/terreur-des-roches/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Thuellai",
+    "originalName": "Thuellai",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/thuellai/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Titan antique",
+    "originalName": "Titan antique",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/titan-antique/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Titan dégénéré",
+    "originalName": "Titan dégénéré",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/titan-degenere/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Titanoboa",
+    "originalName": "Titanoboa",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/titanoboa/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Tophet",
+    "originalName": "Tophet",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/tophet/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Tosculi, Archer pillard d'élite",
+    "originalName": "Tosculi, Archer pillard d'élite",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/tosculi-archer-pillard-d-elite/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Tosculi, Combattant",
+    "originalName": "Tosculi, Combattant",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/tosculi-combattant/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Tosculi, Faux-bourdon",
+    "originalName": "Tosculi, Faux-bourdon",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/tosculi-faux-bourdon/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Tosculie, Reine du nid",
+    "originalName": "Tosculie, Reine du nid",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/tosculie-reine-du-nid/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Totivillus",
+    "originalName": "Totivillus",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/totivillus/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Troll lacustre",
+    "originalName": "Troll lacustre",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/troll-lacustre/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ukavac",
+    "originalName": "Ukavac",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ukavac/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Uraeus",
+    "originalName": "Uraeus",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/uraeus/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Urochar (Guetteur étrangleur)",
+    "originalName": "Urochar (Guetteur étrangleur)",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/urochar-guetteur-etrangleur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ushabti",
+    "originalName": "Ushabti",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ushabti/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ushabti, Imy-ut",
+    "originalName": "Ushabti, Imy-ut",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ushabti-imy-ut/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Vagabond éonique",
+    "originalName": "Vagabond éonique",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/vagabond-eonique/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Valkyrie",
+    "originalName": "Valkyrie",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/valkyrie/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Vampire umbral",
+    "originalName": "Vampire umbral",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/vampire-umbral/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Vampire, Sorcier",
+    "originalName": "Vampire, Sorcier",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/vampire-sorcier/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Vase corruptrice",
+    "originalName": "Vase corruptrice",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/vase-corruptrice/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Vent putrefacteur",
+    "originalName": "Vent putrefacteur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/vent-putrefacteur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ver givré, adulte",
+    "originalName": "Ver givré, adulte",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ver-givre-adulte/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ver givré, larve",
+    "originalName": "Ver givré, larve",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ver-givre-larve/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ver pêcheur",
+    "originalName": "Ver pêcheur",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ver-pecheur/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ver sathaq",
+    "originalName": "Ver sathaq",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ver-sathaq/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Verminhantée",
+    "originalName": "Verminhantée",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/verminhantee/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Vésiculose",
+    "originalName": "Vésiculose",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/vesiculose/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Vétéran demi-dragon rouge",
+    "originalName": "Vétéran demi-dragon rouge",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/veteran-demi-dragon-rouge/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Vidien",
+    "originalName": "Vidien",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/vidien/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Vil barbier (Siabhre)",
+    "originalName": "Vil barbier (Siabhre)",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/vil-barbier-siabhre/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Vila",
+    "originalName": "Vila",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/vila/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Vipère de Zanskaran",
+    "originalName": "Vipère de Zanskaran",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/vipere-de-zanskaran/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Vipère du marais",
+    "originalName": "Vipère du marais",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/vipere-du-marais/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Voile-de-givre",
+    "originalName": "Voile-de-givre",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/voile-de-givre/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Vouivre",
+    "originalName": "Vouivre",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/vouivre/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Wampus féline",
+    "originalName": "Wampus féline",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/wampus-feline/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Wyrm des sables",
+    "originalName": "Wyrm des sables",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/wyrm-des-sables/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Xanka",
+    "originalName": "Xanka",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/xanka/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Xhkarsh",
+    "originalName": "Xhkarsh",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/xhkarsh/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Ychen bannog",
+    "originalName": "Ychen bannog",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/ychen-bannog/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Zaratan",
+    "originalName": "Zaratan",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/zaratan/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Zimwi",
+    "originalName": "Zimwi",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/zimwi/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Zmey",
+    "originalName": "Zmey",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/zmey/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Zmey, Bébécéphale",
+    "originalName": "Zmey, Bébécéphale",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/zmey-bebecephale/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  },
+  {
+    "name": "Zombi nihilethique",
+    "originalName": "Zombi nihilethique",
+    "source": "5e-DRS",
+    "sourceUrl": "https://2014.5e-drs.fr/bestiaire/zombi-nihilethique/",
+    "traits": [],
+    "actions": [],
+    "legendaryActions": []
+  }
+]

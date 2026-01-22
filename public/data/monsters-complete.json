@@ -1,0 +1,8021 @@
+[
+  {
+    "id": "aarakocra",
+    "name": "Aarakocra",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "aarakocra.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "aboleth",
+    "name": "Aboleth",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "aboleth.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "acolyte",
+    "name": "Acolyte",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "aigle",
+    "name": "Aigle",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "aigle.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "aigle-geant",
+    "name": "Aigle géant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "allosaure",
+    "name": "Allosaure",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "ame-en-peine",
+    "name": "Âme en peine",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "ame-en-peine.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "androsphinx",
+    "name": "Androsphinx",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "androsphinx.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "ankheg",
+    "name": "Ankheg",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "ankheg.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "ankylosaure",
+    "name": "Ankylosaure",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "ankylosaure.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "araignee",
+    "name": "Araignée",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "araignee.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "araignee-de-phase",
+    "name": "Araignée de phase",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "araignee-de-phase.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "araignee-geante",
+    "name": "Araignée géante",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "araignee-geante.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "araignee-loup-geante",
+    "name": "Araignée-loup géante",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "arbre-eveille",
+    "name": "Arbre éveillé",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "arbuste-eveille",
+    "name": "Arbuste éveillé",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "arcanaloth",
+    "name": "Arcanaloth",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "arcanaloth.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "archimage",
+    "name": "Archimage",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "archimage.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "armure-animee",
+    "name": "Armure animée",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "armure-animee.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "assassin",
+    "name": "Assassin",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "azer",
+    "name": "Azer",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "azer.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "babelien",
+    "name": "Babélien",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "babelien.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "babouin",
+    "name": "Babouin",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "balor",
+    "name": "Balor",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "balor.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "bandit",
+    "name": "Bandit",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "bandit-capitaine",
+    "name": "Bandit, capitaine",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "bandit-capitaine.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "banshie",
+    "name": "Banshie",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "banshie.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "barlgura",
+    "name": "Barlgura",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "barlgura.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "basilic",
+    "name": "Basilic",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "basilic.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "bec-de-hache",
+    "name": "Bec de hache",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "bec-de-hache.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "behir",
+    "name": "Béhir",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "behir.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "belette",
+    "name": "Belette",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "belette-geante",
+    "name": "Belette géante",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "berserker",
+    "name": "Berserker",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "bete-eclipsante",
+    "name": "Bête éclipsante",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "bete-eclipsante.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "blaireau",
+    "name": "Blaireau",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "blaireau.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "blaireau-geant",
+    "name": "Blaireau géant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "bleme",
+    "name": "Blême",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "bleme.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "brutacien",
+    "name": "Brutacien",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "brutacien.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "bulette",
+    "name": "Bulette",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "bulette.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "cambion",
+    "name": "Cambion",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "cambion.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "centaure",
+    "name": "Centaure",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "centaure.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "cerf",
+    "name": "Cerf",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "chacal",
+    "name": "Chacal",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "chameau",
+    "name": "Chameau",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "charognard-rampant",
+    "name": "Charognard rampant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "charognard-rampant.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "chasme",
+    "name": "Chasme",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "chasme.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "chat",
+    "name": "Chat",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "chauve-souris",
+    "name": "Chauve-souris",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "chauve-souris-geante",
+    "name": "Chauve-souris géante",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "cheval-de-guerre",
+    "name": "Cheval de guerre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "cheval-de-selle",
+    "name": "Cheval de selle",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "cheval-de-selle.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "cheval-de-trait",
+    "name": "Cheval de trait",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "chevalier",
+    "name": "Chevalier",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "chevalier-de-la-mort",
+    "name": "Chevalier de la mort",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "chevalier-de-la-mort.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "chevre",
+    "name": "Chèvre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "chevre-geante",
+    "name": "Chèvre géante",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "chien-de-chasse-infernal",
+    "name": "Chien de chasse infernal",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "chien-de-chasse-infernal.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "chien-du-trepas",
+    "name": "Chien du trépas",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "chien-du-trepas.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "chien-esquiveur",
+    "name": "Chien esquiveur",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "chien-esquiveur.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "chimere",
+    "name": "Chimère",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "chimere.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "chouette",
+    "name": "Chouette",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "chouette.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "chouette-geante",
+    "name": "Chouette géante",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "chuul",
+    "name": "Chuul",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "chuul.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "cockatrice",
+    "name": "Cockatrice",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "cockatrice.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "corbeau",
+    "name": "Corbeau",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "corbeau.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "couatl",
+    "name": "Couatl",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "couatl.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "crabe",
+    "name": "Crabe",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "crabe-geant",
+    "name": "Crabe géant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "cranefeu",
+    "name": "Crânefeu",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "cranefeu.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "crapaud-geant",
+    "name": "Crapaud géant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "criard",
+    "name": "Criard",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "criard.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "crocodile",
+    "name": "Crocodile",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "crocodile.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "crocodile-geant",
+    "name": "Crocodile géant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "cube-gelatineux",
+    "name": "Cube gélatineux",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "cube-gelatineux.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "cultiste",
+    "name": "Cultiste",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "cyclope",
+    "name": "Cyclope",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "cyclope.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dao",
+    "name": "Dao",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dao.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "demi-dragon-rouge-veteran",
+    "name": "Demi-dragon rouge, vétéran",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "demi-dragon-rouge-veteran.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "demi-liche",
+    "name": "Demi-liche",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "demi-liche.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "demi-ogre",
+    "name": "Demi-ogre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "demi-ogre.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "demon-des-ombres",
+    "name": "Démon des ombres",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "demon-des-ombres.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "destrier-noir",
+    "name": "Destrier noir",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "destrier-noir.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "deva",
+    "name": "Déva",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "deva.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "devoreur-d-intellect",
+    "name": "Dévoreur d'intellect",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "devoreur-d-intellect.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "diable-a-chaines",
+    "name": "Diable à chaînes",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "diable-a-chaines.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "diable-barbele",
+    "name": "Diable barbelé",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "diable-barbele.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "diable-barbu",
+    "name": "Diable barbu",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "diable-barbu.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "diable-cornu",
+    "name": "Diable cornu",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "diable-cornu.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "diable-epineux",
+    "name": "Diable épineux",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "diable-epineux.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "diable-gele",
+    "name": "Diable gelé",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "diable-gele.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "diable-osseux",
+    "name": "Diable osseux",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "diable-osseux.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "diablotin",
+    "name": "Diablotin",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "diablotin.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "diantrefosse",
+    "name": "Diantrefosse",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "diantrefosse.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "djinn",
+    "name": "Djinn",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "djinn.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "doppelganger",
+    "name": "Doppelganger",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "doppelganger.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dracoliche-bleue-adulte",
+    "name": "Dracoliche bleue, adulte",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dracoliche-bleue-adulte.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-blanc-adulte",
+    "name": "Dragon blanc, adulte",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-blanc-adulte.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-blanc-ancien",
+    "name": "Dragon blanc, ancien",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-blanc-ancien.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-blanc-dragonnet",
+    "name": "Dragon blanc, dragonnet",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-blanc-jeune",
+    "name": "Dragon blanc, jeune",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-blanc-jeune.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-bleu-adulte",
+    "name": "Dragon bleu, adulte",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-bleu-adulte.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-bleu-ancien",
+    "name": "Dragon bleu, ancien",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-bleu-ancien.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-bleu-dragonnet",
+    "name": "Dragon bleu, dragonnet",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-bleu-jeune",
+    "name": "Dragon bleu, jeune",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-bleu-jeune.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-d-airain-adulte",
+    "name": "Dragon d'airain, adulte",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-d-airain-adulte.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-d-airain-ancien",
+    "name": "Dragon d'airain, ancien",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-d-airain-ancien.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-d-airain-dragonnet",
+    "name": "Dragon d'airain, dragonnet",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-d-airain-jeune",
+    "name": "Dragon d'airain, jeune",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-d-airain-jeune.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-d-argent-adulte",
+    "name": "Dragon d'argent, adulte",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-d-argent-adulte.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-d-argent-ancien",
+    "name": "Dragon d'argent, ancien",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-d-argent-ancien.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-d-argent-dragonnet",
+    "name": "Dragon d'argent, dragonnet",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-d-argent-jeune",
+    "name": "Dragon d'argent, jeune",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-d-argent-jeune.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-d-ombre-rouge-jeune",
+    "name": "Dragon d'ombre rouge, jeune",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-d-or-adulte",
+    "name": "Dragon d'or, adulte",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-d-or-adulte.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-d-or-ancien",
+    "name": "Dragon d'or, ancien",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-d-or-ancien.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-d-or-dragonnet",
+    "name": "Dragon d'or, dragonnet",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-d-or-jeune",
+    "name": "Dragon d'or, jeune",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-d-or-jeune.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-de-bronze-adulte",
+    "name": "Dragon de bronze, adulte",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-de-bronze-adulte.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-de-bronze-ancien",
+    "name": "Dragon de bronze, ancien",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-de-bronze-ancien.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-de-bronze-dragonnet",
+    "name": "Dragon de bronze, dragonnet",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-de-bronze-jeune",
+    "name": "Dragon de bronze, jeune",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-de-bronze-jeune.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-de-cuivre-adulte",
+    "name": "Dragon de cuivre, adulte",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-de-cuivre-adulte.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-de-cuivre-ancien",
+    "name": "Dragon de cuivre, ancien",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-de-cuivre-ancien.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-de-cuivre-dragonnet",
+    "name": "Dragon de cuivre, dragonnet",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-de-cuivre-jeune",
+    "name": "Dragon de cuivre, jeune",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-de-cuivre-jeune.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-feerique",
+    "name": "Dragon féerique",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-feerique.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-noir-adulte",
+    "name": "Dragon noir, adulte",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-noir-adulte.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-noir-ancien",
+    "name": "Dragon noir, ancien",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-noir-ancien.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-noir-dragonnet",
+    "name": "Dragon noir, dragonnet",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-noir-jeune",
+    "name": "Dragon noir, jeune",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-noir-jeune.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-rouge-adulte",
+    "name": "Dragon rouge, adulte",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-rouge-adulte.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-rouge-ancien",
+    "name": "Dragon rouge, ancien",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-rouge-ancien.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-rouge-dragonnet",
+    "name": "Dragon rouge, dragonnet",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-rouge-jeune",
+    "name": "Dragon rouge, jeune",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-rouge-jeune.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-vert-adulte",
+    "name": "Dragon vert, adulte",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-vert-adulte.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-vert-ancien",
+    "name": "Dragon vert, ancien",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-vert-ancien.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-vert-dragonnet",
+    "name": "Dragon vert, dragonnet",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-vert-jeune",
+    "name": "Dragon vert, jeune",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-vert-jeune.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dragon-tortue",
+    "name": "Dragon-tortue",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dragon-tortue.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dretch",
+    "name": "Dretch",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dretch.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "drider",
+    "name": "Drider",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "drider.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "drow",
+    "name": "Drow",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "drow.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "drow-guerrier-d-elite",
+    "name": "Drow, guerrier d'élite",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "drow-mage",
+    "name": "Drow, mage",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "drow-mage.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "drow-pretresse-de-lolth",
+    "name": "Drow, prêtresse de Lolth",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "drow-pretresse-de-lolth.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "druide",
+    "name": "Druide",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "druide.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "dryade",
+    "name": "Dryade",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "dryade.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "duergar",
+    "name": "Duergar",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "duergar.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "duodrone",
+    "name": "Duodrone",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "duodrone.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "eclaireur",
+    "name": "Éclaireur",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "eclaireur.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "efrit",
+    "name": "Éfrit",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "efrit.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "elan",
+    "name": "Élan",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "elan-geant",
+    "name": "Élan géant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "elementaire-de-l-air",
+    "name": "Élémentaire de l'air",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "elementaire-de-l-air.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "elementaire-de-l-eau",
+    "name": "Élémentaire de l'eau",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "elementaire-de-l-eau.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "elementaire-de-la-terre",
+    "name": "Élémentaire de la terre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "elementaire-de-la-terre.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "elementaire-du-feu",
+    "name": "Élémentaire du feu",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "elementaire-du-feu.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "elephant",
+    "name": "Éléphant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "empyreen",
+    "name": "Empyréen",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "empyreen.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "enlaceur",
+    "name": "Enlaceur",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "enlaceur.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "epaulard",
+    "name": "Épaulard",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "epee-volante",
+    "name": "Épée volante",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "epee-volante.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "epouvantail",
+    "name": "Épouvantail",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "epouvantail.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "erinye",
+    "name": "Érinye",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "erinye.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "espion",
+    "name": "Espion",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "esprit-follet",
+    "name": "Esprit follet",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "esprit-follet.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "ettercap",
+    "name": "Ettercap",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "ettercap.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "ettin",
+    "name": "Ettin",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "ettin.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "fanatique",
+    "name": "Fanatique",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "fanatique.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "fantome",
+    "name": "Fantôme",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "fantome.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "faucon",
+    "name": "Faucon",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "faucon.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "faucon-de-sang",
+    "name": "Faucon de sang",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "feu-follet",
+    "name": "Feu follet",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "feu-follet.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "flagelleur-mental",
+    "name": "Flagelleur mental",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "flagelleur-mental.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "flumph",
+    "name": "Flumph",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "flumph.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "fomorien",
+    "name": "Fomorien",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "fomorien.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "galeb-duhr",
+    "name": "Galeb duhr",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "galeb-duhr.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "garde",
+    "name": "Garde",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "gardien-anime",
+    "name": "Gardien animé",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "gardien-anime.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "gargouille",
+    "name": "Gargouille",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "gargouille.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "garou-chacal",
+    "name": "Garou-chacal",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "garou-chacal.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "geant-des-collines",
+    "name": "Géant des collines",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "geant-des-collines.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "geant-des-nuages",
+    "name": "Géant des nuages",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "geant-des-nuages.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "geant-des-pierres",
+    "name": "Géant des pierres",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "geant-des-pierres.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "geant-des-tempetes",
+    "name": "Géant des tempêtes",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "geant-des-tempetes.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "geant-du-feu",
+    "name": "Géant du feu",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "geant-du-feu.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "geant-du-givre",
+    "name": "Géant du givre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "geant-du-givre.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "gelee-ocre",
+    "name": "Gelée ocre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "gelee-ocre.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "githyanki-chevalier",
+    "name": "Githyanki, chevalier",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "githyanki-chevalier.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "githyanki-guerrier",
+    "name": "Githyanki, guerrier",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "githyanki-guerrier.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "githzerai-moine",
+    "name": "Githzerai, moine",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "githzerai-moine.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "githzerai-zerth",
+    "name": "Githzerai, zerth",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "githzerai-zerth.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "glabrezu",
+    "name": "Glabrezu",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "glabrezu.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "gladiateur",
+    "name": "Gladiateur",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "gnoll",
+    "name": "Gnoll",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "gnoll.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "gnoll-croc-de-yeenoghu",
+    "name": "Gnoll, croc de Yeenoghu",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "gnoll-seigneur-de-meute",
+    "name": "Gnoll, seigneur de meute",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "gnome-des-profondeurs-svirfnebelin",
+    "name": "Gnome des profondeurs (svirfnebelin)",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "gnome-des-profondeurs-svirfnebelin.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "gobelin",
+    "name": "Gobelin",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "gobelin.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "gobelin-chef",
+    "name": "Gobelin, chef",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "gobelin-chef.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "gobelours",
+    "name": "Gobelours",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "gobelours.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "gobelours-chef",
+    "name": "Gobelours, chef",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "gobelours-chef.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "golem-d-argile",
+    "name": "Golem d'argile",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "golem-d-argile.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "golem-de-chair",
+    "name": "Golem de chair",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "golem-de-chair.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "golem-de-fer",
+    "name": "Golem de fer",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "golem-de-fer.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "golem-de-pierre",
+    "name": "Golem de pierre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "golem-de-pierre.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "gorgone",
+    "name": "Gorgone",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "gorgone.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "goristro",
+    "name": "Goristro",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "goristro.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "goule",
+    "name": "Goule",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "goule.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "grand-singe",
+    "name": "Grand singe",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "grell",
+    "name": "Grell",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "grell.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "grenouille",
+    "name": "Grenouille",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "grenouille.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "grenouille-geante",
+    "name": "Grenouille géante",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "grick",
+    "name": "Grick",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "grick.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "grick-dominant",
+    "name": "Grick dominant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "griffe-rampante",
+    "name": "Griffe rampante",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "griffe-rampante.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "griffon",
+    "name": "Griffon",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "griffon.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "guenaude-marine",
+    "name": "Guenaude marine",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "guenaude-marine.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "guenaude-nocturne",
+    "name": "Guenaude nocturne",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "guenaude-nocturne.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "guenaude-verte",
+    "name": "Guenaude verte",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "guenaude-verte.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "guepe-geante",
+    "name": "Guêpe géante",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "guerrier-tribal",
+    "name": "Guerrier tribal",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "gynosphinx",
+    "name": "Gynosphinx",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "gynosphinx.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "harpie",
+    "name": "Harpie",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "harpie.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "hezrou",
+    "name": "Hezrou",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "hezrou.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "hippocampe",
+    "name": "Hippocampe",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "hippocampe-geant",
+    "name": "Hippocampe géant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "hippogriffe",
+    "name": "Hippogriffe",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "hippogriffe.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "hobgobelin",
+    "name": "Hobgobelin",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "hobgobelin.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "hobgobelin-capitaine",
+    "name": "Hobgobelin, capitaine",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "hobgobelin-seigneur-de-guerre",
+    "name": "Hobgobelin, seigneur de guerre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "hobgobelin-seigneur-de-guerre.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "homme-lezard",
+    "name": "Homme-lézard",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "homme-lezard.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "homme-lezard-chaman",
+    "name": "Homme-lézard, chaman",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "homme-poisson",
+    "name": "Homme-poisson",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "homme-poisson.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "homoncule",
+    "name": "Homoncule",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "homoncule.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "horreur-casquee",
+    "name": "Horreur casquée",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "horreur-casquee.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "horreur-crochue",
+    "name": "Horreur crochue",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "horreur-crochue.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "hydre",
+    "name": "Hydre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "hydre.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "hyene",
+    "name": "Hyène",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "hyene.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "hyene-geante",
+    "name": "Hyène géante",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "kenku",
+    "name": "Kenku",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "kenku.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "kobold",
+    "name": "Kobold",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "kobold.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "kobold-aile",
+    "name": "Kobold ailé",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "kobold-aile.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "kraken",
+    "name": "Kraken",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "kraken.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "kuo-toa",
+    "name": "Kuo-toa",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "kuo-toa.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "kuo-toa-archipretre",
+    "name": "Kuo-toa, archiprêtre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "kuo-toa-archipretre.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "kuo-toa-fouet",
+    "name": "Kuo-toa, fouet",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "kuo-toa-fouet.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "lamie",
+    "name": "Lamie",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "lamie.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "lemure",
+    "name": "Lémure",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "lemure.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "lezard",
+    "name": "Lézard",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "lezard-geant",
+    "name": "Lézard géant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "liche",
+    "name": "Liche",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "liche.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "licorne",
+    "name": "Licorne",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "licorne.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "lierreux",
+    "name": "Lierreux",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "lierreux.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "lion",
+    "name": "Lion",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "loup",
+    "name": "Loup",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "loup.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "loup-arctique",
+    "name": "Loup arctique",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "loup-arctique.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "loup-sanguinaire",
+    "name": "Loup sanguinaire",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "loup-sanguinaire.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "loup-garou",
+    "name": "Loup-garou",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "loup-garou.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "mage",
+    "name": "Mage",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "magmatique",
+    "name": "Magmatique",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "magmatique.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "malfrat",
+    "name": "Malfrat",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "malfrat.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "mammouth",
+    "name": "Mammouth",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "mane",
+    "name": "Mâne",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "mane.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "mante-obscure",
+    "name": "Mante obscure",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "mante-obscure.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "manteleur",
+    "name": "Manteleur",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "manteleur.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "manticore",
+    "name": "Manticore",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "manticore.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "maride",
+    "name": "Maride",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "maride.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "marilith",
+    "name": "Marilith",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "marilith.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "mastodonte-des-ombres",
+    "name": "Mastodonte des ombres",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "mastodonte-des-ombres.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "meduse",
+    "name": "Méduse",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "meduse.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "mephite-boueux",
+    "name": "Méphite boueux",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "mephite-boueux.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "mephite-fumant",
+    "name": "Méphite fumant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "mephite-fumant.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "mephite-gele",
+    "name": "Méphite gelé",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "mephite-gele.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "mephite-magmatique",
+    "name": "Méphite magmatique",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "mephite-magmatique.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "mephite-poussiereux",
+    "name": "Méphite poussiéreux",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "mephite-poussiereux.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "mephite-vaporeux",
+    "name": "Méphite vaporeux",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "mephite-vaporeux.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "merrow",
+    "name": "Merrow",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "merrow.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "mezzoloth",
+    "name": "Mezzoloth",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "mezzoloth.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "mille-pattes-geant",
+    "name": "Mille-pattes géant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "mimique",
+    "name": "Mimique",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "mimique.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "minotaure",
+    "name": "Minotaure",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "minotaure.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "moisissure-violette",
+    "name": "Moisissure violette",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "moisissure-violette.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "molosse",
+    "name": "Molosse",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "molosse.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "momie",
+    "name": "Momie",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "momie.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "monodrone",
+    "name": "Monodrone",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "monodrone.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "mule",
+    "name": "Mule",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "myconide-adulte",
+    "name": "Myconide, adulte",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "myconide-adulte.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "myconide-pousse",
+    "name": "Myconide, pousse",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "myconide-souverain",
+    "name": "Myconide, souverain",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "naga-corrupteur",
+    "name": "Naga corrupteur",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "naga-corrupteur.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "naga-gardien",
+    "name": "Naga gardien",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "naga-gardien.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "naga-osseux",
+    "name": "Naga osseux",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "naga-osseux.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "nalfeshnie",
+    "name": "Nalfeshnie",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "nalfeshnie.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "necrophage",
+    "name": "Nécrophage",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "necrophage.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "nielleux",
+    "name": "Nielleux",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "nielleux.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "noble",
+    "name": "Noble",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "noble.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "nothic",
+    "name": "Nothic",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "nothic.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "nuee-d-insectes",
+    "name": "Nuée d'insectes",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "nuee-de-chauves-souris",
+    "name": "Nuée de chauves-souris",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "nuee-de-chauves-souris.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "nuee-de-corbeaux",
+    "name": "Nuée de corbeaux",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "nuee-de-piranhas",
+    "name": "Nuée de piranhas",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "nuee-de-rats",
+    "name": "Nuée de rats",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "nuee-de-serpents-venimeux",
+    "name": "Nuée de serpents venimeux",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "nycaloth",
+    "name": "Nycaloth",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "nycaloth.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "ogre",
+    "name": "Ogre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "ogre.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "ombre",
+    "name": "Ombre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "ombre.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "oni",
+    "name": "Oni",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "oni.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "orc",
+    "name": "Orc",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "orc.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "orc-chef-de-guerre",
+    "name": "Orc, chef de guerre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "orc-chef-de-guerre.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "orc-oeil-de-gruumsh",
+    "name": "Orc, Oeil de Gruumsh",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "orog",
+    "name": "Orog",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "orog.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "otyugh",
+    "name": "Otyugh",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "otyugh.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "ours-brun",
+    "name": "Ours brun",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "ours-noir",
+    "name": "Ours noir",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "ours-polaire",
+    "name": "Ours polaire",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "ours-garou",
+    "name": "Ours-garou",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "ours-garou.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "ours-hibou",
+    "name": "Ours-hibou",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "ours-hibou.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "oxydeur",
+    "name": "Oxydeur",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "oxydeur.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "panthere",
+    "name": "Panthère",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "pegase",
+    "name": "Pégase",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "pegase.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "pentadrone",
+    "name": "Pentadrone",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "pentadrone.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "perceur",
+    "name": "Perceur",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "perceur.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "peryton",
+    "name": "Péryton",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "peryton.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "pieuvre",
+    "name": "Pieuvre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "pieuvre-geante",
+    "name": "Pieuvre géante",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "pieuvre-geante.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "piranha",
+    "name": "Piranha",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "piranha.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "pixie",
+    "name": "Pixie",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "pixie.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "planetar",
+    "name": "Planétar",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "planetar.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "plesiosaure",
+    "name": "Plésiosaure",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "plesiosaure.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "poney",
+    "name": "Poney",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "pouding-noir",
+    "name": "Pouding noir",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "pouding-noir.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "pretre",
+    "name": "Prêtre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "pseudodragon",
+    "name": "Pseudodragon",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "pseudodragon.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "pteranodon",
+    "name": "Ptéranodon",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "quadrone",
+    "name": "Quadrone",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "quadrone.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "quaggoth",
+    "name": "Quaggoth",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "quaggoth.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "quaggoth-serviteur-des-spores",
+    "name": "Quaggoth, serviteur des spores",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "quasit",
+    "name": "Quasit",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "quasit.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "rakshasa",
+    "name": "Rakshasa",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "rakshasa.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "rat",
+    "name": "Rat",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "rat.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "rat-geant",
+    "name": "Rat géant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "rat-garou",
+    "name": "Rat-garou",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "rat-garou.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "remorhaz",
+    "name": "Remorhaz",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "remorhaz.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "remorhaz-jeune",
+    "name": "Remorhaz, jeune",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "requin-de-recif",
+    "name": "Requin de récif",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "requin-geant",
+    "name": "Requin géant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "requin-chasseur",
+    "name": "Requin-chasseur",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "resinieux",
+    "name": "Résinieux",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "resinieux.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "revenant",
+    "name": "Revenant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "rhinoceros",
+    "name": "Rhinocéros",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "roc",
+    "name": "Roc",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "roc.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "roi-reine-lezard",
+    "name": "Roi/reine lézard",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "roturier",
+    "name": "Roturier",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "sahuagin",
+    "name": "Sahuagin",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "sahuagin.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "sahuagin-baron",
+    "name": "Sahuagin, baron",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "sahuagin-baron.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "sahuagin-pretresse",
+    "name": "Sahuagin, prêtresse",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "salamandre",
+    "name": "Salamandre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "salamandre.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "sanglier",
+    "name": "Sanglier",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "sanglier-geant",
+    "name": "Sanglier géant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "sanglier-garou",
+    "name": "Sanglier-garou",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "sanglier-garou.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "satyre",
+    "name": "Satyre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "satyre.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "scarabee-de-feu-geant",
+    "name": "Scarabée de feu géant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "scarabee-de-feu-geant.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "scorpion",
+    "name": "Scorpion",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "scorpion-geant",
+    "name": "Scorpion géant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "seigneur-momie",
+    "name": "Seigneur momie",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "seigneur-momie.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "sentinelle-d-eau",
+    "name": "Sentinelle d'eau",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "sentinelle-d-eau.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "serpent-constricteur",
+    "name": "Serpent constricteur",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "serpent-constricteur-geant",
+    "name": "Serpent constricteur géant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "serpent-de-feu",
+    "name": "Serpent de feu",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "serpent-de-feu.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "serpent-venimeux",
+    "name": "Serpent venimeux",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "serpent-venimeux-geant",
+    "name": "Serpent venimeux géant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "serpent-volant",
+    "name": "Serpent volant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "serpent-volant.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "singe-geant",
+    "name": "Singe géant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "slaad-bleu",
+    "name": "Slaad bleu",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "slaad-bleu.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "slaad-funeste",
+    "name": "Slaad funeste",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "slaad-funeste.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "slaad-gris",
+    "name": "Slaad gris",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "slaad-gris.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "slaad-rouge",
+    "name": "Slaad rouge",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "slaad-rouge.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "slaad-vert",
+    "name": "Slaad vert",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "slaad-vert.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "slaad-tetard",
+    "name": "Slaad, têtard",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "solar",
+    "name": "Solar",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "solar.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "spectateur",
+    "name": "Spectateur",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "spectateur.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "spectre",
+    "name": "Spectre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "spectre.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "spore-gazeuse",
+    "name": "Spore gazeuse",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "squelette",
+    "name": "Squelette",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "squelette.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "squelette-de-cheval-de-guerre",
+    "name": "Squelette de cheval de guerre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "squelette-de-minotaure",
+    "name": "Squelette de minotaure",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "squelette-de-minotaure.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "strige",
+    "name": "Strige",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "strige.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "succube",
+    "name": "Succube",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "succube.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "sylvanien",
+    "name": "Sylvanien",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "sylvanien.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "tapis-etouffant",
+    "name": "Tapis étouffant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "tapis-etouffant.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "tarasque",
+    "name": "Tarasque",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "tarasque.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "tertre-errant",
+    "name": "Tertre errant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "tertre-errant.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "thri-kreen",
+    "name": "Thri-kreen",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "thri-kreen.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "tigre",
+    "name": "Tigre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "tigre-a-dents-de-sabre",
+    "name": "Tigre à dents de sabre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "tigre-garou",
+    "name": "Tigre-garou",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "tigre-garou.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "torve",
+    "name": "Torve",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "torve.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "traqueur-invisible",
+    "name": "Traqueur invisible",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "traqueur-invisible.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "triceratops",
+    "name": "Tricératops",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "triceratops.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "tridrone",
+    "name": "Tridrone",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "tridrone.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "troglodyte",
+    "name": "Troglodyte",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "troglodyte.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "troll",
+    "name": "Troll",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "troll.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "tyramort",
+    "name": "Tyramort",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "tyramort.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "tyrannoeil",
+    "name": "Tyrannoeil",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "tyrannoeil.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "tyrannosaure",
+    "name": "Tyrannosaure",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "tyrannosaure.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "ultroloth",
+    "name": "Ultroloth",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "ultroloth.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "vampire",
+    "name": "Vampire",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "vampire.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "vampirien",
+    "name": "Vampirien",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "vampirien.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "vase-grise",
+    "name": "Vase grise",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "vase-grise.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "vautour",
+    "name": "Vautour",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "vautour-geant",
+    "name": "Vautour géant",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "ver-pourpre",
+    "name": "Ver pourpre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "ver-pourpre.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "veteran",
+    "name": "Vétéran",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "vrock",
+    "name": "Vrock",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "vrock.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "wiverne",
+    "name": "Wiverne",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "wiverne.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "worg",
+    "name": "Worg",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "worg.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "xorn",
+    "name": "Xorn",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "xorn.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "yeti",
+    "name": "Yéti",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "yeti.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "yeti-abominable",
+    "name": "Yéti abominable",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "yeti-abominable.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "yochlol",
+    "name": "Yochlol",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "yochlol.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "yuan-ti-abomination",
+    "name": "Yuan-ti, abomination",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "yuan-ti-abomination.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "yuan-ti-malison",
+    "name": "Yuan-ti, malison",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "yuan-ti-malison.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "yuan-ti-sang-pur",
+    "name": "Yuan-ti, sang-pur",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "yuan-ti-sang-pur.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "zombi",
+    "name": "Zombi",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "zombi.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "zombi-ogre",
+    "name": "Zombi ogre",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "zombi-ogre.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  },
+  {
+    "id": "zombi-tyrannoeil",
+    "name": "Zombi tyrannoeil",
+    "originalName": null,
+    "cr": 0,
+    "xp": 10,
+    "type": "Monstruosité",
+    "size": "M",
+    "source": "AideDD",
+    "ac": 10,
+    "hp": 10,
+    "alignment": "non-aligné",
+    "image": "zombi-tyrannoeil.jpg",
+    "speed": {
+      "walk": 30
+    },
+    "environment": [],
+    "legendary": false
+  }
+]

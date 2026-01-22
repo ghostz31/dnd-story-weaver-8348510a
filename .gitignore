@@ -38,3 +38,6 @@ dump_*
 find_chevalier.cjs
 check_public_monsters.cjs
 
+
+# Local Netlify folder
+.netlify

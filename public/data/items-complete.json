@@ -1,0 +1,2909 @@
+[
+  {
+    "id": "amulette-d-antidetection",
+    "name": "Amulette d'antidétection",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "amulette-de-bonne-sante",
+    "name": "Amulette de bonne santé",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "amulette-de-cicatrisation",
+    "name": "Amulette de cicatrisation",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "amulette-de-protection-contre-le-poison",
+    "name": "Amulette de protection contre le poison",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "amulette-de-sante",
+    "name": "Amulette de santé",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "amulette-de-sombre-eclat",
+    "name": "Amulette de sombre éclat",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "amulette-des-plans",
+    "name": "Amulette des plans",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "amulette-mecanique",
+    "name": "Amulette mécanique",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-d-action-libre",
+    "name": "Anneau d'action libre",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-d-esquive-totale",
+    "name": "Anneau d'esquive totale",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-d-influence-sur-les-animaux",
+    "name": "Anneau d'influence sur les animaux",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-d-invisibilite",
+    "name": "Anneau d'invisibilité",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-de-barriere-mentale",
+    "name": "Anneau de barrière mentale",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-de-chaleur-constante",
+    "name": "Anneau de chaleur constante",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-de-controle-des-elementaires",
+    "name": "Anneau de contrôle des élémentaires",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-de-convocation-de-djinn",
+    "name": "Anneau de convocation de djinn",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-de-feu-d-etoiles",
+    "name": "Anneau de feu d'étoiles",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-de-feuille-morte",
+    "name": "Anneau de feuille morte",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-de-marche-sur-l-eau",
+    "name": "Anneau de marche sur l'eau",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-de-nage",
+    "name": "Anneau de nage",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-de-protection",
+    "name": "Anneau de protection",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-de-rayons-x",
+    "name": "Anneau de rayons X",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-de-regeneration",
+    "name": "Anneau de régénération",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-de-renvoi-des-sorts",
+    "name": "Anneau de renvoi des sorts",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-de-resistance",
+    "name": "Anneau de résistance",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-de-resistance-au-poison",
+    "name": "Anneau de résistance au poison",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-de-saut",
+    "name": "Anneau de saut",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-de-stockage-de-sort",
+    "name": "Anneau de stockage de sort",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-de-telekinesie",
+    "name": "Anneau de télékinésie",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-de-triple-souhait",
+    "name": "Anneau de triple souhait",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "anneau-du-belier",
+    "name": "Anneau du bélier",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "arc-du-serment",
+    "name": "Arc du serment",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "arme-1-2-ou-3",
+    "name": "Arme +1, +2 ou +3",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "arme-vicieuse",
+    "name": "Arme vicieuse",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "arme-vigilante",
+    "name": "Arme vigilante",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "armure-1-2-ou-3",
+    "name": "Armure +1, +2 ou +3",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "armure-d-adamantium",
+    "name": "Armure d'adamantium",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "armure-d-ecailles-de-dragon",
+    "name": "Armure d'écailles de dragon",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "armure-d-invulnerabilite",
+    "name": "Armure d'invulnérabilité",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "armure-de-cuir-cloute-enchantee",
+    "name": "Armure de cuir clouté enchantée",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "armure-de-matelot",
+    "name": "Armure de matelot",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "armure-de-mithral",
+    "name": "Armure de mithral",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "armure-de-resistance",
+    "name": "Armure de résistance",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "armure-de-vulnerabilite",
+    "name": "Armure de vulnérabilité",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "armure-demoniaque",
+    "name": "Armure démoniaque",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "armure-fumante",
+    "name": "Armure fumante",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "armure-rapide",
+    "name": "Armure rapide",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "armure-rutilante",
+    "name": "Armure rutilante",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baguette-d-eclairs",
+    "name": "Baguette d'éclairs",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baguette-d-orcus",
+    "name": "Baguette d'Orcus",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baguette-de-boules-de-feu",
+    "name": "Baguette de boules de feu",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baguette-de-chef-d-orchestre",
+    "name": "Baguette de chef d'orchestre",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baguette-de-detection-de-l-ennemi",
+    "name": "Baguette de détection de l'ennemi",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baguette-de-detection-de-la-magie",
+    "name": "Baguette de détection de la magie",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baguette-de-metamorphose",
+    "name": "Baguette de métamorphose",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baguette-de-paralysie",
+    "name": "Baguette de paralysie",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baguette-de-peur",
+    "name": "Baguette de peur",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baguette-de-projectiles-magiques",
+    "name": "Baguette de projectiles magiques",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baguette-de-pyrotechnicien",
+    "name": "Baguette de pyrotechnicien",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baguette-de-toile-d-araignee",
+    "name": "Baguette de toile d'araignée",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baguette-des-entraves",
+    "name": "Baguette des entraves",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baguette-des-merveilles",
+    "name": "Baguette des merveilles",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baguette-des-secrets",
+    "name": "Baguette des secrets",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baguette-du-grincheux",
+    "name": "Baguette du grincheux",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baguette-du-jovial",
+    "name": "Baguette du jovial",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baguette-du-mage-de-guerre-1-2-ou-3",
+    "name": "Baguette du mage de guerre +1, +2 ou +3",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "balai-volant",
+    "name": "Balai volant",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bandeau-d-intelligence",
+    "name": "Bandeau d'intelligence",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bateau-pliable",
+    "name": "Bateau pliable",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baton-d-envoutement",
+    "name": "Bâton d'envoûtement",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baton-de-feu",
+    "name": "Bâton de feu",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baton-de-fletrissement",
+    "name": "Bâton de flétrissement",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baton-de-givre",
+    "name": "Bâton de givre",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baton-de-grand-essaim",
+    "name": "Bâton de grand essaim",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baton-de-guerison",
+    "name": "Bâton de guérison",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baton-de-la-vipere",
+    "name": "Bâton de la vipère",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baton-de-surpuissance",
+    "name": "Bâton de surpuissance",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baton-de-tonnerre-et-de-foudre",
+    "name": "Bâton de tonnerre et de foudre",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baton-des-chants-d-oiseaux",
+    "name": "Bâton des chants d'oiseaux",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baton-des-forets",
+    "name": "Bâton des forêts",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baton-du-python",
+    "name": "Bâton du python",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baton-du-thaumaturge",
+    "name": "Bâton du thaumaturge",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baton-floral",
+    "name": "Bâton floral",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baton-orne",
+    "name": "Bâton orné",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baton-percussif",
+    "name": "Bâton percussif",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "baume-de-keoghtom",
+    "name": "Baume de Keoghtom",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bottes-ailees",
+    "name": "Bottes ailées",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bottes-d-empreintes-factices",
+    "name": "Bottes d'empreintes factices",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bottes-de-levitation",
+    "name": "Bottes de lévitation",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bottes-de-rapidite",
+    "name": "Bottes de rapidité",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bottes-de-sept-lieues",
+    "name": "Bottes de sept lieues",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bottes-des-terres-gelees",
+    "name": "Bottes des terres gelées",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bottes-elfiques",
+    "name": "Bottes elfiques",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bouclier-1-2-ou-3",
+    "name": "Bouclier +1, +2 ou +3",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bouclier-anime",
+    "name": "Bouclier animé",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bouclier-antiprojectiles",
+    "name": "Bouclier antiprojectiles",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bouclier-d-attraction-des-projectiles",
+    "name": "Bouclier d'attraction des projectiles",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bouclier-expressif",
+    "name": "Bouclier expressif",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bouclier-gardesort",
+    "name": "Bouclier gardesort",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bouclier-sentinelle",
+    "name": "Bouclier sentinelle",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "boule-de-cristal",
+    "name": "Boule de cristal",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bourse-a-epices-magique-d-heward",
+    "name": "Bourse à épices magique d'Heward",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bouteille-de-l-efrit",
+    "name": "Bouteille de l'éfrit",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bouteille-fumigene",
+    "name": "Bouteille fumigène",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bracelets-d-archer",
+    "name": "Bracelets d'archer",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "bracelets-de-defense",
+    "name": "Bracelets de défense",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "brasero-de-controle-des-elementaires-du-feu",
+    "name": "Brasero de contrôle des élémentaires du feu",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "broche-de-defense",
+    "name": "Broche de défense",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cadenas-sournois",
+    "name": "Cadenas sournois",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "canne-de-veteran",
+    "name": "Canne de vétéran",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cape-a-la-mode",
+    "name": "Cape à la mode",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cape-d-invisibilite",
+    "name": "Cape d'invisibilité",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cape-de-deplacement",
+    "name": "Cape de déplacement",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cape-de-l-arachnide",
+    "name": "Cape de l'arachnide",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cape-de-la-chauve-souris",
+    "name": "Cape de la chauve-souris",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cape-de-la-raie-manta",
+    "name": "Cape de la raie manta",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cape-de-protection",
+    "name": "Cape de protection",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cape-de-vol",
+    "name": "Cape de vol",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cape-du-prestidigitateur",
+    "name": "Cape du prestidigitateur",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cape-elfique",
+    "name": "Cape elfique",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cape-virevoltante",
+    "name": "Cape virevoltante",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "capuchon-de-respiration-aquatique",
+    "name": "Capuchon de respiration aquatique",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "carafe-intarissable",
+    "name": "Carafe intarissable",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "carillon-d-ouverture",
+    "name": "Carillon d'ouverture",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "carquois-d-ehlonna",
+    "name": "Carquois d'Ehlonna",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cartes-d-illusion",
+    "name": "Cartes d'illusion",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cartes-merveilleuses",
+    "name": "Cartes merveilleuses",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "ceinturon-de-force-de-geant",
+    "name": "Ceinturon de force de géant",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "ceinturon-des-nains",
+    "name": "Ceinturon des nains",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "chandelle-des-profondeurs",
+    "name": "Chandelle des profondeurs",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "chapeau-de-deguisement",
+    "name": "Chapeau de déguisement",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "chapeau-de-magicien",
+    "name": "Chapeau de magicien",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "chapeau-de-vermine",
+    "name": "Chapeau de vermine",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "chaussons-de-pattes-d-araignee",
+    "name": "Chaussons de pattes d'araignée",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "chope-de-sobriete",
+    "name": "Chope de sobriété",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cierge-d-invocation",
+    "name": "Cierge d'invocation",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cimeterre-de-rapidite",
+    "name": "Cimeterre de rapidité",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cle-mysterieuse",
+    "name": "Clé mystérieuse",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "colle-universelle",
+    "name": "Colle universelle",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "collier-d-adaptation",
+    "name": "Collier d'adaptation",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "collier-de-boules-de-feu",
+    "name": "Collier de boules de feu",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "collier-de-perles-de-priere",
+    "name": "Collier de perles de prière",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cor-de-devastation",
+    "name": "Cor de dévastation",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cor-du-valhalla",
+    "name": "Cor du Valhalla",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "corde-d-enchevetrement",
+    "name": "Corde d'enchevêtrement",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "corde-d-escalade",
+    "name": "Corde d'escalade",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "corde-reparable",
+    "name": "Corde réparable",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "corne-d-alarme-silencieuse",
+    "name": "Corne d'alarme silencieuse",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cornet-acoustique",
+    "name": "Cornet acoustique",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cruche-alchimique",
+    "name": "Cruche alchimique",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cube-de-force",
+    "name": "Cube de force",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "cube-des-plans",
+    "name": "Cube des plans",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "dague-venimeuse",
+    "name": "Dague venimeuse",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "de-de-charlatan",
+    "name": "Dé de charlatan",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "deluge",
+    "name": "Déluge",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "diademe-de-destruction",
+    "name": "Diadème de destruction",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "elixir-de-jouvence",
+    "name": "Élixir de jouvence",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "elixir-de-sante",
+    "name": "Élixir de santé",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "encensoir-de-controle-des-elementaires-de-l-air",
+    "name": "Encensoir de contrôle des élémentaires de l'air",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "epee-aceree",
+    "name": "Épée acérée",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "epee-ardente",
+    "name": "Épée ardente",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "epee-dansante",
+    "name": "Épée dansante",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "epee-de-kas",
+    "name": "Épée de Kas",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "epee-de-lumiere-lunaire",
+    "name": "Épée de lumière lunaire",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "epee-de-reponse",
+    "name": "Épée de réponse",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "epee-mordante",
+    "name": "Épée mordante",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "epee-radieuse",
+    "name": "Épée radieuse",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "epee-vengeresse",
+    "name": "Épée vengeresse",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "epee-voleuse-de-vie",
+    "name": "Épée voleuse de vie",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "epee-vorpale",
+    "name": "Épée vorpale",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "eventail-enchante",
+    "name": "Éventail enchanté",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "fer-gele",
+    "name": "Fer gelé",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "fers-de-rapidite",
+    "name": "Fers de rapidité",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "fers-de-zephyr",
+    "name": "Fers de zéphyr",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "figurine-merveilleuse",
+    "name": "Figurine merveilleuse",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "flasque-de-fer",
+    "name": "Flasque de fer",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "fleche-incassable",
+    "name": "Flèche incassable",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "fleche-tueuse",
+    "name": "Flèche tueuse",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "flute-des-egouts",
+    "name": "Flûte des égouts",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "flute-terrifiante",
+    "name": "Flûte terrifiante",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "forteresse-instantanee-de-daern",
+    "name": "Forteresse instantanée de Daern",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "gantelets-de-puissance-d-ogre",
+    "name": "Gantelets de puissance d'ogre",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "gants-de-chapardeur",
+    "name": "Gants de chapardeur",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "gants-de-nage-et-d-escalade",
+    "name": "Gants de nage et d'escalade",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "gants-piegeurs-de-projectiles",
+    "name": "Gants piégeurs de projectiles",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "gardienne",
+    "name": "Gardienne",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "gemme-d-illumination",
+    "name": "Gemme d'illumination",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "gemme-de-vision",
+    "name": "Gemme de vision",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "gemme-elementaire",
+    "name": "Gemme élémentaire",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "globe-flottant",
+    "name": "Globe flottant",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "grimoire-resistant",
+    "name": "Grimoire résistant",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "hache-des-seigneurs-nains",
+    "name": "Hache des seigneurs nains",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "hache-du-berserker",
+    "name": "Hache du berserker",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "harnois-ethere",
+    "name": "Harnois éthéré",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "harnois-nain",
+    "name": "Harnois nain",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "havresac-magique-d-hevard",
+    "name": "Havresac magique d'Hévard",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "heaume-de-comprehension-des-langues",
+    "name": "Heaume de compréhension des langues",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "heaume-de-telepathie",
+    "name": "Heaume de télépathie",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "heaume-de-teleportation",
+    "name": "Heaume de téléportation",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "heaume-effrayant",
+    "name": "Heaume effrayant",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "heaume-scintillant",
+    "name": "Heaume scintillant",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "huile-d-affutage",
+    "name": "Huile d'affûtage",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "huile-d-insaisissabilite",
+    "name": "Huile d'insaisissabilité",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "huile-etheree",
+    "name": "Huile éthérée",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "instrument-a-illusions",
+    "name": "Instrument à illusions",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "instrument-a-message",
+    "name": "Instrument à message",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "instrument-de-barde",
+    "name": "Instrument de barde",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "jatte-de-controle-des-elementaires-de-l-eau",
+    "name": "Jatte de contrôle des élémentaires de l'eau",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "javeline-de-foudre",
+    "name": "Javeline de foudre",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "lame-porte-bonheur",
+    "name": "Lame porte-bonheur",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "lamelune",
+    "name": "Lamelune",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "lanterne-de-revelation",
+    "name": "Lanterne de révélation",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "les-chapitres-interdits",
+    "name": "Les Chapitres interdits",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "les-chapitres-sacres",
+    "name": "Les Chapitres sacrés",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "liens-de-fer-de-bilarro",
+    "name": "Liens de fer de Bilarro",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "lunettes-de-nuit",
+    "name": "Lunettes de nuit",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "mailles-efrit",
+    "name": "Mailles éfrit",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "mailles-elfiques",
+    "name": "Mailles elfiques",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "manteau-de-resistance-aux-sorts",
+    "name": "Manteau de résistance aux sorts",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "manuel-d-exercices-physiques",
+    "name": "Manuel d'exercices physiques",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "manuel-de-vitalite",
+    "name": "Manuel de vitalité",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "manuel-de-vivacite",
+    "name": "Manuel de vivacité",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "manuel-des-golems",
+    "name": "Manuel des golems",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "marteau-de-lancer-nain",
+    "name": "Marteau de lancer nain",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "marteau-de-tonnerre",
+    "name": "Marteau de tonnerre",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "masse-d-aneantissement",
+    "name": "Masse d'anéantissement",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "masse-destructrice",
+    "name": "Masse destructrice",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "masse-terrifiante",
+    "name": "Masse terrifiante",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "medaillon-des-pensees",
+    "name": "Médaillon des pensées",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "menottes-dimensionnelles",
+    "name": "Menottes dimensionnelles",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "miroir-d-emprisonnement",
+    "name": "Miroir d'emprisonnement",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "munition-1-2-ou-3",
+    "name": "Munition +1, +2 ou +3",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "munition-percutante",
+    "name": "Munition percutante",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "noir-rasoir",
+    "name": "Noir rasoir",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "oeil-artificiel",
+    "name": "Oeil artificiel",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "oeil-et-main-de-vecna",
+    "name": "Oeil et Main de Vecna",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "orbe-boussole",
+    "name": "Orbe boussole",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "orbe-des-dragons",
+    "name": "Orbe des dragons",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "orbe-horloge",
+    "name": "Orbe horloge",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "parchemin-de-protection",
+    "name": "Parchemin de protection",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "parchemin-de-sort",
+    "name": "Parchemin de sort",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "parfum-envoutant",
+    "name": "Parfum envoûtant",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "perche-de-pecheur",
+    "name": "Perche de pêcheur",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "perche-retractable",
+    "name": "Perche rétractable",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "perle-de-force",
+    "name": "Perle de force",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "perle-de-pouvoir",
+    "name": "Perle de pouvoir",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "perle-desalterante",
+    "name": "Perle désaltérante",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "perle-nutritive",
+    "name": "Perle nutritive",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "philtre-d-amour",
+    "name": "Philtre d'amour",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "pierre-de-controle-des-elementaires-de-la-terre",
+    "name": "Pierre de contrôle des élémentaires de la terre",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "pierre-de-ioun",
+    "name": "Pierre de Ioun",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "pierre-porte-bonheur",
+    "name": "Pierre porte-bonheur",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "pierres-de-communication-a-distance",
+    "name": "Pierres de communication à distance",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "pigments-merveilleux-de-nolzur",
+    "name": "Pigments merveilleux de Nolzur",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "pipe-des-monstres-de-fumee",
+    "name": "Pipe des monstres de fumée",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "plume-de-quaal",
+    "name": "Plume de Quaal",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "pot-d-eveil",
+    "name": "Pot d'éveil",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "potion-d-agrandissement",
+    "name": "Potion d'agrandissement",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "potion-d-amitie-avec-les-animaux",
+    "name": "Potion d'amitié avec les animaux",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "potion-d-escalade",
+    "name": "Potion d'escalade",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "potion-d-heroisme",
+    "name": "Potion d'héroïsme",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "potion-d-invisibilite",
+    "name": "Potion d'invisibilité",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "potion-d-invulnerabilite",
+    "name": "Potion d'invulnérabilité",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "potion-de-clairvoyance",
+    "name": "Potion de clairvoyance",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "potion-de-diminution",
+    "name": "Potion de diminution",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "potion-de-force-de-geant",
+    "name": "Potion de force de géant",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "potion-de-forme-gazeuse",
+    "name": "Potion de forme gazeuse",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "potion-de-guerison",
+    "name": "Potion de guérison",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "potion-de-lecture-des-pensees",
+    "name": "Potion de lecture des pensées",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "potion-de-poison",
+    "name": "Potion de poison",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "potion-de-resistance",
+    "name": "Potion de résistance",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "potion-de-respiration-aquatique",
+    "name": "Potion de respiration aquatique",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "potion-de-souffle-enflamme",
+    "name": "Potion de souffle enflammé",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "potion-de-vitalite",
+    "name": "Potion de vitalité",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "potion-de-vitesse",
+    "name": "Potion de vitesse",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "potion-de-vol",
+    "name": "Potion de vol",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "poudre-a-eternuer",
+    "name": "Poudre à éternuer",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "poupee-qui-parle",
+    "name": "Poupée qui parle",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "poussiere-de-disparition",
+    "name": "Poussière de disparition",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "poussiere-dessiccative",
+    "name": "Poussière dessiccative",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "puits-des-mondes",
+    "name": "Puits des mondes",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "puits-portable",
+    "name": "Puits portable",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "regard-charmeur",
+    "name": "Regard charmeur",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "robe-aux-etoiles",
+    "name": "Robe aux étoiles",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "robe-de-camelot",
+    "name": "Robe de camelot",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "robe-de-l-archimage",
+    "name": "Robe de l'archimage",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "robe-de-vision-totale",
+    "name": "Robe de vision totale",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "robe-prismatique",
+    "name": "Robe prismatique",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "rubis-du-mage-de-guerre",
+    "name": "Rubis du mage de guerre",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "sac-a-malices",
+    "name": "Sac à malices",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "sac-de-haricots",
+    "name": "Sac de haricots",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "sac-devoreur",
+    "name": "Sac dévoreur",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "sac-sans-fond",
+    "name": "Sac sans fond",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "scarabee-de-protection",
+    "name": "Scarabée de protection",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "sceptre-d-absorption",
+    "name": "Sceptre d'absorption",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "sceptre-de-puissance-seigneuriale",
+    "name": "Sceptre de puissance seigneuriale",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "sceptre-de-resurrection",
+    "name": "Sceptre de résurrection",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "sceptre-de-securite",
+    "name": "Sceptre de sécurité",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "sceptre-de-suzerainete",
+    "name": "Sceptre de suzeraineté",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "sceptre-de-vigilance",
+    "name": "Sceptre de vigilance",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "sceptre-du-gardien-des-pactes",
+    "name": "Sceptre du gardien des pactes",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "sceptre-inamovible",
+    "name": "Sceptre inamovible",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "sceptre-tentacule",
+    "name": "Sceptre tentacule",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "selle-du-cavalier",
+    "name": "Selle du cavalier",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "solvant-universel",
+    "name": "Solvant universel",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "sphere-d-annihilation",
+    "name": "Sphère d'annihilation",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "submersible-de-kwalish",
+    "name": "Submersible de Kwalish",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "talisman-de-la-sphere",
+    "name": "Talisman de la sphère",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "talisman-du-bien-ultime",
+    "name": "Talisman du bien ultime",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "talisman-du-mal-absolu",
+    "name": "Talisman du mal absolu",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "tapis-volant",
+    "name": "Tapis volant",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "tome-de-la-langue-nouee",
+    "name": "Tome de la langue nouée",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "traite-d-autorite-et-d-influence",
+    "name": "Traité d'autorité et d'influence",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "traite-de-comprehension",
+    "name": "Traité de compréhension",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "traite-de-perspicacite",
+    "name": "Traité de perspicacité",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "trident-de-domination-aquatique",
+    "name": "Trident de domination aquatique",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "tueuse-de-dragons",
+    "name": "Tueuse de dragons",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "tueuse-de-geants",
+    "name": "Tueuse de géants",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "vengeresse-sacree",
+    "name": "Vengeresse sacrée",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "vetements-raccommodeurs",
+    "name": "Vêtements raccommodeurs",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "voleuse-des-neuf-vies",
+    "name": "Voleuse des neuf vies",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "yeux-de-lynx",
+    "name": "Yeux de lynx",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  },
+  {
+    "id": "yeux-grossissants",
+    "name": "Yeux grossissants",
+    "type": "item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "",
+    "source": "AideDD"
+  }
+]

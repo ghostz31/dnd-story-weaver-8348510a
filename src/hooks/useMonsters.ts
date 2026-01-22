@@ -227,10 +227,12 @@ export const useMonsters = () => {
         loadLocalMonsters();
     }, [isAuthenticated]);
 
-    const recoverLostMonsters = async () => {
+    const recoverLostMonsters = async (): Promise<number> => {
+        console.log('[recoverLostMonsters] Starting recovery process...');
         let recoveryCount = 0;
         const storedCustom = localStorage.getItem('custom_monsters');
         let custom: Monster[] = storedCustom ? JSON.parse(storedCustom) : [];
+        const initialCount = custom.length;
 
         const encsToScan: any[] = [];
 
@@ -239,50 +241,70 @@ export const useMonsters = () => {
         if (storedEncounters) {
             try {
                 const localEncs = JSON.parse(storedEncounters);
-                if (Array.isArray(localEncs)) encsToScan.push(...localEncs);
+                if (Array.isArray(localEncs)) {
+                    console.log(`[recoverLostMonsters] Found ${localEncs.length} encounters in localStorage`);
+                    encsToScan.push(...localEncs);
+                }
             } catch (e) {
-                console.error("Manual recovery local error:", e);
+                console.error("[recoverLostMonsters] Error parsing local encounters:", e);
             }
         }
 
         // 2. Scan Cloud if authenticated
-        // We use require('../lib/firebaseApi').getEncounters() dynamically or moving import up?
-        // Better to have import up top but for now let's assume we added the import. 
-        // Wait, replace_file_content replaces a block. I should ensure import is present.
-        // But for this block, let's implement the logic assuming imports are there or I will add them in a separate step?
-        // Actually, I can use a multi_replace to add the import and change this function.
-        // Or just assume I'll do two steps. I'll do two steps for safety: Import first, then function.
-        // But wait, the previous tool output for useMonsters showed lines 1-288.
-        // I will do the function body change here, then add the import.
-
         if (isAuthenticated) {
             try {
-                // Dynamic import to avoid circular dependencies or massive refactors if typical import fails? 
-                // No, standard import is better. I will add the import in a second call.
-                // For now, I'll use a placeholder or assume the import is added.
-                // Actually, I can't use 'getEncounters' if not imported. 
-                // I will add the import in the next step.
+                console.log('[recoverLostMonsters] Fetching encounters from Firebase...');
+                const cloudEncounters = await getEncounters();
+                console.log(`[recoverLostMonsters] Found ${cloudEncounters.length} encounters in Firebase`);
+                encsToScan.push(...cloudEncounters);
             } catch (e) {
-                console.error("Cloud recovery likely failed due to missing import or network", e);
+                console.error("[recoverLostMonsters] Error fetching cloud encounters:", e);
             }
         }
 
-        // Actually, let's write the FULL function assuming I'll fix imports.
-        // But wait, I need the import to call it. 
-        // I will use the `import` statement in the same `replace` if I can? 
-        // No, imports are at top of file.
-        // I'll stick to modifying the function body to use `getEncounters`, and I will add the import in a subsequent `replace_file_content` call or I can double check if I can just use a specific pattern.
+        // 3. Scan all encounters for custom monsters
+        console.log(`[recoverLostMonsters] Scanning ${encsToScan.length} total encounters...`);
 
-        // Let's change strategy: I will modify the function to be async and call `getEncounters`.
-        return 0; // Temporary placeholder to avoid compile error while I fix imports?
+        encsToScan.forEach((encounter, index) => {
+            if (!encounter.monsters || !Array.isArray(encounter.monsters)) {
+                return;
+            }
+
+            encounter.monsters.forEach((em: any) => {
+                const monster = em.monster;
+                if (!monster) return;
+
+                // Check if this is a custom monster
+                if (monster.custom || monster.source === 'Custom') {
+                    // Check if this monster already exists in custom list
+                    const exists = custom.find(c => c.id === monster.id || c.name === monster.name);
+
+                    if (!exists) {
+                        console.log(`[recoverLostMonsters] Recovered custom monster: ${monster.name} from encounter ${index}`);
+                        custom.push({
+                            ...monster,
+                            custom: true,
+                            source: 'Custom'
+                        });
+                        recoveryCount++;
+                    }
+                }
+            });
+        });
+
+        // 4. Save recovered monsters if any were found
+        if (recoveryCount > 0) {
+            localStorage.setItem('custom_monsters', JSON.stringify(custom));
+            console.log(`[recoverLostMonsters] Recovery complete: ${recoveryCount} monsters recovered (${initialCount} -> ${custom.length})`);
+
+            // Reload monsters to update the UI
+            loadLocalMonsters();
+        } else {
+            console.log('[recoverLostMonsters] No lost monsters found');
+        }
+
+        return recoveryCount;
     };
-
-    // WAIT. I should probably use `multi_replace_file_content` to do both at once?
-    // The user has `multi_replace_file_content`.
-    // I will use `multi_replace_file_content` to add the import AND update the function.
-
-    // Let's prepare the tool call.
-    // ... logic below ...
 
 
     return { monsters, loading, error, refresh: loadLocalMonsters, saveCustomMonster, deleteCustomMonster, recoverLostMonsters };

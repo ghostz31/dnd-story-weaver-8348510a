@@ -24,6 +24,8 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
     const [selectedAttunement, setSelectedAttunement] = useState<string>('all');
     const [selectedSource, setSelectedSource] = useState<string>('all');
     const [selectedItem, setSelectedItem] = useState<MagicItem | null>(null);
+    const [quickFilterType, setQuickFilterType] = useState<string | null>(null);
+    const [quickFilterRarity, setQuickFilterRarity] = useState<string | null>(null);
 
     // Extraction des valeurs uniques pour les filtres
     const uniqueRarities = useMemo(() => {
@@ -58,6 +60,20 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
                 return false;
             }
 
+            // Quick Filter Type
+            if (quickFilterType) {
+                const itemType = item.type.toLowerCase();
+                const filterType = quickFilterType.toLowerCase();
+                if (!itemType.startsWith(filterType)) {
+                    return false;
+                }
+            }
+
+            // Quick Filter Rarity
+            if (quickFilterRarity && item.rarity !== quickFilterRarity) {
+                return false;
+            }
+
             // Filtre Rareté
             if (selectedRarity !== 'all' && item.rarity !== selectedRarity) {
                 return false;
@@ -88,7 +104,7 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
 
             return true;
         });
-    }, [items, searchQuery, selectedRarity, selectedType, selectedAttunement, selectedSource]);
+    }, [items, searchQuery, selectedRarity, selectedType, selectedAttunement, selectedSource, quickFilterType, quickFilterRarity]);
 
     const getRarityColor = (rarity: string) => {
         switch (rarity.toLowerCase()) {
@@ -107,8 +123,10 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
         if (selectedType !== 'all') count++;
         if (selectedAttunement !== 'all') count++;
         if (selectedSource !== 'all') count++;
+        if (quickFilterType) count++;
+        if (quickFilterRarity) count++;
         return count;
-    }, [selectedRarity, selectedType, selectedAttunement, selectedSource]);
+    }, [selectedRarity, selectedType, selectedAttunement, selectedSource, quickFilterType, quickFilterRarity]);
 
     const resetFilters = () => {
         setSearchQuery('');
@@ -116,6 +134,8 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
         setSelectedType('all');
         setSelectedAttunement('all');
         setSelectedSource('all');
+        setQuickFilterType(null);
+        setQuickFilterRarity(null);
     };
 
     return (
@@ -141,6 +161,65 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
                                 <X className="h-4 w-4" />
                             </Button>
                         )}
+                    </div>
+                </div>
+
+                {/* Quick Filters */}
+                <div className="parchment-panel p-3 rounded-xl space-y-3">
+                    {/* Item Type Quick Filters */}
+                    <div className="space-y-2">
+                        <Label className="text-xs font-cinzel font-bold text-muted-foreground">Filtres rapides - Type</Label>
+                        <div className="flex flex-wrap gap-2">
+                            {[
+                                { label: 'Armes', value: 'Arme' },
+                                { label: 'Armures', value: 'Armure' },
+                                { label: 'Potions', value: 'Potion' },
+                                { label: 'Parchemins', value: 'Parchemin' },
+                                { label: 'Anneaux', value: 'Anneau' },
+                                { label: 'Baguettes', value: 'Baguette' },
+                                { label: 'Bâtons', value: 'Bâton' },
+                                { label: 'Sceptres', value: 'Sceptre' },
+                                { label: 'Objets merveilleux', value: 'Objet merveilleux' },
+                            ].map(({ label, value }) => (
+                                <Badge
+                                    key={value}
+                                    variant={quickFilterType === value ? 'default' : 'outline'}
+                                    className={`cursor-pointer transition-all hover:scale-105 ${quickFilterType === value
+                                        ? 'bg-primary text-primary-foreground shadow-md'
+                                        : 'bg-white/50 hover:bg-primary/10'
+                                        }`}
+                                    onClick={() => setQuickFilterType(quickFilterType === value ? null : value)}
+                                >
+                                    {label}
+                                </Badge>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Rarity Quick Filters */}
+                    <div className="space-y-2">
+                        <Label className="text-xs font-cinzel font-bold text-muted-foreground">Filtres rapides - Rareté</Label>
+                        <div className="flex flex-wrap gap-2">
+                            {[
+                                { label: 'Commun', value: 'commun', color: 'bg-gray-200 text-gray-800 hover:bg-gray-300' },
+                                { label: 'Peu commun', value: 'peu commun', color: 'bg-green-100 text-green-800 hover:bg-green-200' },
+                                { label: 'Rare', value: 'rare', color: 'bg-blue-100 text-blue-800 hover:bg-blue-200' },
+                                { label: 'Très rare', value: 'très rare', color: 'bg-purple-100 text-purple-800 hover:bg-purple-200' },
+                                { label: 'Légendaire', value: 'légendaire', color: 'bg-orange-100 text-orange-800 hover:bg-orange-200' },
+                            ].map(({ label, value, color }) => (
+                                <Badge
+                                    key={value}
+                                    variant="outline"
+                                    className={`cursor-pointer transition-all hover:scale-105 ${quickFilterRarity === value
+                                        ? `${color} shadow-md ring-2 ring-offset-1 ring-current`
+                                        : `${color} opacity-60`
+                                        }`}
+                                    onClick={() => setQuickFilterRarity(quickFilterRarity === value ? null : value)}
+                                >
+                                    {label}
+                                </Badge>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
@@ -236,7 +315,11 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
                                         </Badge>
                                     </div>
                                     <CardDescription className="text-xs font-serif">
-                                        {item.type} {item.attunement && "• Harmonisation requise"}
+                                        {item.type} {item.attunement && (
+                                            item.attunementDetails
+                                                ? `• ${item.attunementDetails}`
+                                                : "• Harmonisation requise"
+                                        )}
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-4 pt-2">
@@ -286,7 +369,10 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
                                 {selectedItem.attunement && (
                                     <div className="text-sm font-medium text-amber-700 bg-amber-50 p-2 rounded border border-amber-200 flex items-center gap-2">
                                         <Filter className="h-4 w-4" />
-                                        Nécessite une harmonisation
+                                        {selectedItem.attunementDetails
+                                            ? `Harmonisation : ${selectedItem.attunementDetails}`
+                                            : "Nécessite une harmonisation"
+                                        }
                                     </div>
                                 )}
 

@@ -1,0 +1,116 @@
+{
+  "timestamp": "2026-01-22T11:02:59.673Z",
+  "monsters": {
+    "duplicates": [],
+    "unique": []
+  },
+  "spells": {
+    "duplicates": [],
+    "unique": []
+  },
+  "magicItems": {
+    "duplicates": [],
+    "unique": [
+      {
+        "name": "Ailes de vol",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/ailes-de-vol/",
+        "source": "5e-drs"
+      },
+      {
+        "name": "Amulette antidote",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/amulette-antidote/",
+        "source": "5e-drs"
+      },
+      {
+        "name": "Amulette d'antidétection",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/amulette-d-antidetection/",
+        "source": "5e-drs"
+      },
+      {
+        "name": "Amulette de bonne santé",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/amulette-de-bonne-sante/",
+        "source": "5e-drs"
+      },
+      {
+        "name": "Amulette de cicatrisation",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/amulette-de-cicatrisation/",
+        "source": "5e-drs"
+      },
+      {
+        "name": "Amulette de santé",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/amulette-de-sante/",
+        "source": "5e-drs"
+      },
+      {
+        "name": "Amulette des plans",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/amulette-des-plans/",
+        "source": "5e-drs"
+      },
+      {
+        "name": "Anneau d'action libre",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/anneau-d-action-libre/",
+        "source": "5e-drs"
+      },
+      {
+        "name": "Anneau d'influence animale",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/anneau-d-influence-animale/",
+        "source": "5e-drs"
+      },
+      {
+        "name": "Anneau d'invisibilité",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/anneau-d-invisibilite/",
+        "source": "5e-drs"
+      },
+      {
+        "name": "Anneau de chaleur",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/anneau-de-chaleur/",
+        "source": "5e-drs"
+      },
+      {
+        "name": "Anneau de convocation de djinn",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/anneau-de-convocation-de-djinn/",
+        "source": "5e-drs"
+      },
+      {
+        "name": "Anneau de dérobade",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/anneau-de-derobade/",
+        "source": "5e-drs"
+      },
+      {
+        "name": "Anneau de feu d'étoile",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/anneau-de-feu-d-etoile/",
+        "source": "5e-drs"
+      },
+      {
+        "name": "Anneau de légèreté",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/anneau-de-legerete/",
+        "source": "5e-drs"
+      },
+      {
+        "name": "Anneau de lune",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/anneau-de-lune/",
+        "source": "5e-drs"
+      },
+      {
+        "name": "Anneau de maîtrise élémentaire",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/anneau-de-maitrise-elementaire/",
+        "source": "5e-drs"
+      },
+      {
+        "name": "Anneau de marche sur l'eau",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/anneau-de-marche-sur-l-eau/",
+        "source": "5e-drs"
+      },
+      {
+        "name": "Anneau de nage",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/anneau-de-nage/",
+        "source": "5e-drs"
+      },
+      {
+        "name": "Anneau de protection",
+        "url": "https://2014.5e-drs.fr/liste-objets-magiques/anneau-de-protection/",
+        "source": "5e-drs"
+      }
+    ]
+  }
+}

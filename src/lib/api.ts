@@ -10,6 +10,44 @@ const ENCOUNTERS_KEY = 'dnd_encounters';
 // API AideDD ou DnD 5e API
 const API_URL = 'https://www.dnd5eapi.co/api';
 
+// Cache en mémoire pour les détails complets des monstres (lazy loading)
+const monsterDetailsCache = new Map<string, any>();
+
+// Fonction pour obtenir les détails complets d'un monstre (avec cache)
+export async function getMonsterDetails(monsterId: string, monsterName: string): Promise<any> {
+  // 1. Vérifier le cache
+  const cacheKey = monsterId || monsterName.toLowerCase();
+  if (monsterDetailsCache.has(cacheKey)) {
+    console.log(`[Cache Hit] Détails de ${monsterName} récupérés depuis le cache`);
+    return monsterDetailsCache.get(cacheKey);
+  }
+
+  console.log(`[Cache Miss] Chargement des détails pour ${monsterName}...`);
+
+  // 2. Charger les détails complets
+  try {
+    const details = await fetchMonsterFromAideDD(monsterName);
+
+    // 3. Mettre en cache
+    if (details) {
+      monsterDetailsCache.set(cacheKey, details);
+      console.log(`[Cache] Détails de ${monsterName} mis en cache`);
+    }
+
+    return details;
+  } catch (error) {
+    console.error(`Erreur lors du chargement des détails pour ${monsterName}:`, error);
+    return null;
+  }
+}
+
+// Fonction pour vider le cache (utile pour les tests ou le rafraîchissement)
+export function clearMonsterDetailsCache(): void {
+  monsterDetailsCache.clear();
+  console.log('[Cache] Cache des détails de monstres vidé');
+}
+
+
 // ====== Monsters ======
 
 // Récupérer les monstres depuis l'API
@@ -156,7 +194,7 @@ export async function getMonstersAsync(): Promise<Monster[]> {
     }
 
     // S'il n'y a pas de monstres dans l'index, essayer le fichier JSON complet
-    const response = await fetch('/data/aidedd-monsters-all.json');
+    const response = await fetch('/data/monsters-complete.json');
     if (response.ok) {
       const monstersData = await response.json();
       if (Array.isArray(monstersData) && monstersData.length > 0) {
@@ -808,7 +846,11 @@ export const fetchMonsterFromAideDD = async (monsterName: string): Promise<any> 
 
         // Si le monstre a des données complètes (pas de type "Inconnu"), le retourner directement
         if (matchedMonster.type !== "Inconnu" && matchedMonster.hp !== 10 && matchedMonster.ac !== 10) {
-          return matchedMonster;
+          // Ensure image field is set from imageUrl if not already present
+          return {
+            ...matchedMonster,
+            image: matchedMonster.image || matchedMonster.imageUrl || undefined
+          };
         }
       }
 
@@ -851,7 +893,10 @@ export const fetchMonsterFromAideDD = async (monsterName: string): Promise<any> 
 
       if (matchedMonster) {
         console.log(`Monstre trouvé dans le JSON local (fallback): ${matchedMonster.name}`);
-        return matchedMonster;
+        return {
+          ...matchedMonster,
+          image: matchedMonster.image || matchedMonster.imageUrl || undefined
+        };
       }
 
       // Si pas de correspondance exacte, essayer une correspondance partielle
@@ -862,7 +907,10 @@ export const fetchMonsterFromAideDD = async (monsterName: string): Promise<any> 
 
       if (partialMatch) {
         console.log(`Correspondance partielle trouvée dans le JSON local (fallback): ${partialMatch.name}`);
-        return partialMatch;
+        return {
+          ...partialMatch,
+          image: partialMatch.image || partialMatch.imageUrl || undefined
+        };
       }
 
       // Si toujours pas de résultat, générer des données génériques
@@ -916,6 +964,8 @@ export function adaptAideDDData(aideddData: any): any {
     alignment: aideddData.alignment || "non-aligné",
     ac: aideddData.ac || 10,
     hp: aideddData.hp || 10,
+    // Image - check both imageUrl and image fields
+    image: aideddData.image || aideddData.imageUrl || undefined,
     // Inclure toutes les autres propriétés disponibles
     abilities: aideddData.abilities,
     actions: aideddData.actions,

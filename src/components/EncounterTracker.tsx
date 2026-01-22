@@ -13,11 +13,13 @@ import { useAuth } from '../auth/AuthContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import TrackerTable from './encounter/TrackerTable';
 import TurnControls from './encounter/TurnControls';
+import CombatLog from './encounter/CombatLog';
 import { HpEditor, InitiativeEditor, NotesEditor } from './encounter/StatEditors';
 import { useEncounterManager } from '../hooks/useEncounterManager';
 import { getConditionInfo, extractNumericHP, calculateXPFromCR } from '@/lib/EncounterUtils';
-import { EncounterParticipant, EncounterMonster } from '../lib/types';
+import { EncounterParticipant, EncounterMonster, EncounterCondition } from '../lib/types';
 import ActiveCombatantDisplay from './ActiveCombatantDisplay';
+import { v4 as uuidv4 } from 'uuid';
 import { useToast } from '../hooks/use-toast';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import EncounterDifficultyGauge from './EncounterDifficultyGauge';
@@ -115,12 +117,27 @@ const EncounterTracker: React.FC = () => {
     setEditingParticipant(null);
   };
 
-  const toggleCondition = (participantId: string, condition: string) => {
+  const toggleCondition = (participantId: string, conditionName: string) => {
     const p = encounter.participants.find(part => part.id === participantId);
     if (!p) return;
-    const newConditions = p.conditions.includes(condition)
-      ? p.conditions.filter(c => c !== condition)
-      : [...p.conditions, condition];
+
+    const exists = p.conditions.some(c => (typeof c === 'string' ? c : c.name) === conditionName);
+
+    let newConditions: EncounterCondition[];
+
+    if (exists) {
+      newConditions = p.conditions.filter(c => (typeof c === 'string' ? c : c.name) !== conditionName) as EncounterCondition[];
+    } else {
+      const newCondition: EncounterCondition = {
+        id: uuidv4(),
+        name: conditionName,
+        duration: -1
+      };
+      // Handle migration if mixed
+      const currentConditions = p.conditions.map(c => typeof c === 'string' ? { id: uuidv4(), name: c, duration: -1 } : c);
+      newConditions = [...currentConditions, newCondition];
+    }
+
     actions.updateParticipant(participantId, { conditions: newConditions });
   };
 
@@ -295,12 +312,16 @@ const EncounterTracker: React.FC = () => {
               <div className="text-sm font-semibold text-blue-800">Conditions:</div>
               <div className="flex flex-wrap gap-1 mt-1">
                 {sortedParticipants[encounter.currentTurn]?.conditions.map(condition => {
-                  const conditionInfo = getConditionInfo(condition);
+                  const conditionName = typeof condition === 'string' ? condition : condition.name;
+                  const conditionInfo = getConditionInfo(conditionName);
                   const IconComponent = conditionInfo.icon;
                   return (
-                    <Badge key={condition} variant="outline" className={`flex items-center gap-1 ${conditionInfo.color}`}>
+                    <Badge key={typeof condition === 'string' ? condition : condition.id} variant="outline" className={`flex items-center gap-1 ${conditionInfo.color}`}>
                       <IconComponent className="h-3 w-3" />
-                      {condition}
+                      {conditionName}
+                      {typeof condition !== 'string' && condition.duration > 0 && (
+                        <span className="ml-1 text-[10px] bg-blue-200 px-1 rounded">{condition.duration}</span>
+                      )}
                     </Badge>
                   );
                 })}
@@ -356,6 +377,7 @@ const EncounterTracker: React.FC = () => {
                   onOpenNotes={openNotesEditor}
                   onRemove={actions.removeParticipant}
                   onOpenCreatureFrame={actions.openCreatureFrame}
+                  onSetTempHp={(id, val) => actions.updateParticipant(id, { tempHp: val })}
                 />
               )}
 
@@ -471,9 +493,9 @@ const EncounterTracker: React.FC = () => {
           </Card>
         </div>
 
-        <div className="lg:col-span-4 sticky top-24 h-[calc(100vh-140px)]">
+        <div className="lg:col-span-4 sticky top-24 h-[calc(100vh-140px)] flex flex-col gap-2">
           {/* Vue du combattant actif (Monstre Iframe ou Joueur Stats) */}
-          <div className="h-full">
+          <div className="flex-1 min-h-0">
             {sortedParticipants.length > 0 ? (
               <ActiveCombatantDisplay
                 participant={
@@ -493,6 +515,11 @@ const EncounterTracker: React.FC = () => {
                 </div>
               </Card>
             )}
+          </div>
+
+          {/* Combat Log */}
+          <div className="h-1/3 min-h-[200px]">
+            <CombatLog logs={encounter.combatLog || []} />
           </div>
         </div>
       </div>

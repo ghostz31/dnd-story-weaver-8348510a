@@ -10,6 +10,7 @@ interface HpData {
     name: string;
     currentHp: number;
     maxHp: number;
+    tempHp?: number;
 }
 
 interface InitiativeData {
@@ -66,6 +67,18 @@ export const HpEditor: React.FC<{
                             value={data.maxHp}
                             onChange={(e) => onDataChange({ ...data, maxHp: parseInt(e.target.value, 10) || 0 })}
                             className="col-span-3"
+                        />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="tempHp" className="text-right">
+                            PV Temporaires
+                        </Label>
+                        <Input
+                            id="tempHp"
+                            type="number"
+                            value={data.tempHp || 0}
+                            onChange={(e) => onDataChange({ ...data, tempHp: parseInt(e.target.value, 10) || 0 })}
+                            className="col-span-3 border-blue-200"
                         />
                     </div>
                 </div>

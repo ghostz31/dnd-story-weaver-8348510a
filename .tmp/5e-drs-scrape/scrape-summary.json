@@ -1,0 +1,38 @@
+{
+    "source": "5e-drs.fr",
+    "scrapeDate": "2026-01-22",
+    "data": {
+        "magicItems": {
+            "count": 305,
+            "sample": [
+                "Ailes de vol",
+                "Amulette antidote",
+                "Anneau de protection",
+                "Baguette de boules de feu"
+            ],
+            "range": "A-V (Ailes de vol to Voleuse de vies)"
+        },
+        "spells": {
+            "count": 366,
+            "sample": [
+                "Agrandir/rétrécir",
+                "Aide",
+                "Boule de feu",
+                "Zone de vérité"
+            ],
+            "range": "A-Z (Agrandir/rétrécir to Zone de vérité)"
+        },
+        "monsters": {
+            "count": 752,
+            "sample": [
+                "Aboleth",
+                "Acolyte",
+                "Dragon",
+                "Hydre",
+                "Tarasque"
+            ],
+            "range": "A-Z (Aboleth to end)"
+        }
+    },
+    "totalItems": 1423
+}

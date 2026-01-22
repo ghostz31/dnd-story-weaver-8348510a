@@ -113,7 +113,11 @@ const MonsterDisplay: React.FC<{ participant: EncounterParticipant; onUpdate?: (
                         </div>
                         <div className="flex items-center gap-2">
                             <Heart className="h-4 w-4 text-red-500" />
-                            <span className="font-semibold">PV:</span> {participant.currentHp}/{typeof participant.maxHp === 'object' ? JSON.stringify(participant.maxHp) : participant.maxHp}
+                            <span className="font-semibold">PV:</span>
+                            <span>
+                                {participant.currentHp}/{typeof participant.maxHp === 'object' ? JSON.stringify(participant.maxHp) : participant.maxHp}
+                                {participant.tempHp ? <span className="text-blue-500 ml-1">(+{participant.tempHp})</span> : ''}
+                            </span>
                         </div>
                     </div>
                     {monsterData.actions && monsterData.actions.length > 0 && (
@@ -235,7 +239,11 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                         </div>
                         <div className="flex items-center gap-2">
                             <Heart className="h-4 w-4 text-red-500" />
-                            <span className="font-semibold">PV:</span> {participant.currentHp}/{participant.maxHp}
+                            <span className="font-semibold">PV:</span>
+                            <span>
+                                {participant.currentHp}/{participant.maxHp}
+                                {participant.tempHp ? <span className="text-blue-500 ml-1">(+{participant.tempHp})</span> : ''}
+                            </span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Zap className="h-4 w-4 text-yellow-500" />
@@ -397,25 +405,42 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                     <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm border border-blue-100">
                         <Heart className="w-8 h-8 text-red-500 mb-2" />
                         {isEditing ? (
-                            <div className="flex items-center gap-1">
-                                <Input
-                                    type="number"
-                                    value={editData.currentHp as number}
-                                    onChange={(e) => handleChange('currentHp', parseInt(e.target.value) || 0)}
-                                    className="text-center font-bold text-lg h-10 w-16"
-                                />
-                                <span className="text-xl">/</span>
-                                <Input
-                                    type="number"
-                                    value={editData.maxHp as number}
-                                    onChange={(e) => handleChange('maxHp', parseInt(e.target.value) || 1)}
-                                    className="text-center font-bold text-lg h-10 w-16"
-                                />
+                            <div className="flex flex-col gap-1 items-center">
+                                <div className="flex items-center gap-1">
+                                    <Input
+                                        type="number"
+                                        value={editData.currentHp as number}
+                                        onChange={(e) => handleChange('currentHp', parseInt(e.target.value) || 0)}
+                                        className="text-center font-bold text-lg h-10 w-16"
+                                    />
+                                    <span className="text-xl">/</span>
+                                    <Input
+                                        type="number"
+                                        value={editData.maxHp as number}
+                                        onChange={(e) => handleChange('maxHp', parseInt(e.target.value) || 1)}
+                                        className="text-center font-bold text-lg h-10 w-16"
+                                    />
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <Label className="text-xs text-blue-500">Temp</Label>
+                                    <Input
+                                        type="number"
+                                        value={editData.tempHp || 0}
+                                        onChange={(e) => handleChange('tempHp', parseInt(e.target.value) || 0)}
+                                        className="text-center text-sm h-8 w-16 border-blue-200"
+                                        placeholder="0"
+                                    />
+                                </div>
                             </div>
                         ) : (
-                            <span className="text-2xl font-bold text-gray-800">
-                                {participant.currentHp} <span className="text-gray-400 text-lg">/ {participant.maxHp}</span>
-                            </span>
+                            <div className="flex flex-col items-center">
+                                <span className="text-2xl font-bold text-gray-800">
+                                    {participant.currentHp} <span className="text-gray-400 text-lg">/ {participant.maxHp}</span>
+                                </span>
+                                {participant.tempHp && participant.tempHp > 0 && (
+                                    <span className="text-sm font-bold text-blue-500">+{participant.tempHp} Temp</span>
+                                )}
+                            </div>
                         )}
                         <span className="text-xs text-gray-500 uppercase tracking-wider mt-1">PV</span>
                     </div>
@@ -433,7 +458,51 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                         )}
                         <span className="text-xs text-gray-500 uppercase tracking-wider mt-1">Initiative</span>
                     </div>
-                </div>
+                </div >
+
+                {/* Death Saves Checkboxes */}
+                {participant.currentHp <= 0 && (
+                    <div className="mb-6 bg-stone-100 p-4 rounded-lg border border-stone-300">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Shield className="h-4 w-4 text-stone-600" />
+                            <h4 className="text-sm font-bold text-stone-700">Jets de Mort</h4>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium text-green-700">Succès</span>
+                                <div className="flex gap-1">
+                                    {[1, 2, 3].map(i => (
+                                        <div
+                                            key={i}
+                                            className={`w-4 h-4 rounded-full border border-green-500 cursor-pointer ${participant.deathSaves?.successes && participant.deathSaves.successes >= i ? 'bg-green-500' : 'bg-white'}`}
+                                            onClick={() => {
+                                                const current = participant.deathSaves?.successes || 0;
+                                                const newVal = current >= i ? i - 1 : i;
+                                                onUpdate?.({ deathSaves: { ...participant.deathSaves!, successes: newVal, failures: participant.deathSaves?.failures || 0 } });
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium text-red-700">Échecs</span>
+                                <div className="flex gap-1">
+                                    {[1, 2, 3].map(i => (
+                                        <div
+                                            key={i}
+                                            className={`w-4 h-4 rounded-full border border-red-500 cursor-pointer ${participant.deathSaves?.failures && participant.deathSaves.failures >= i ? 'bg-red-500' : 'bg-white'}`}
+                                            onClick={() => {
+                                                const current = participant.deathSaves?.failures || 0;
+                                                const newVal = current >= i ? i - 1 : i;
+                                                onUpdate?.({ deathSaves: { ...participant.deathSaves!, failures: newVal, successes: participant.deathSaves?.successes || 0 } });
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Caractéristiques */}
                 {/* Caractéristiques - Toujours afficher pour les joueurs */}
@@ -509,28 +578,37 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                 </div>
 
                 {/* Vitesse et Conditions existantes */}
-                {participant.speed && participant.speed.length > 0 && !isEditing && (
-                    <div className="flex gap-2 mt-4">
-                        {participant.speed.map((s: string, i: number) => (
-                            <Badge key={i} variant="outline" className="bg-white">
-                                🦶 {s}
-                            </Badge>
-                        ))}
-                    </div>
-                )}
-
-                {participant.conditions && participant.conditions.length > 0 && (
-                    <div className="mt-4 bg-white p-4 rounded-lg shadow-sm border border-red-100">
-                        <h4 className="text-sm font-semibold text-gray-700 mb-2">Conditions</h4>
-                        <div className="flex flex-wrap gap-2">
-                            {participant.conditions.map((condition: string, idx: number) => (
-                                <Badge key={idx} variant="destructive">{condition}</Badge>
+                {
+                    participant.speed && participant.speed.length > 0 && !isEditing && (
+                        <div className="flex gap-2 mt-4">
+                            {participant.speed.map((s: string, i: number) => (
+                                <Badge key={i} variant="outline" className="bg-white">
+                                    🦶 {s}
+                                </Badge>
                             ))}
                         </div>
-                    </div>
-                )}
-            </CardContent>
-        </Card>
+                    )
+                }
+
+                {
+                    participant.conditions && participant.conditions.length > 0 && (
+                        <div className="mt-4 bg-white p-4 rounded-lg shadow-sm border border-red-100">
+                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Conditions</h4>
+                            <div className="flex flex-wrap gap-2">
+                                {participant.conditions.map((condition, idx) => (
+                                    <Badge key={idx} variant="destructive" className="flex gap-1 items-center">
+                                        {typeof condition === 'string' ? condition : condition.name}
+                                        {typeof condition !== 'string' && condition.duration > 0 && (
+                                            <span className="text-[10px] bg-red-800/50 px-1 rounded">{condition.duration} trs</span>
+                                        )}
+                                    </Badge>
+                                ))}
+                            </div>
+                        </div>
+                    )
+                }
+            </CardContent >
+        </Card >
     );
 }
 

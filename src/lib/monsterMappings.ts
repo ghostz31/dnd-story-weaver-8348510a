@@ -1,5 +1,9 @@
 export const MANUAL_IMAGE_SLUGS: Record<string, string> = {
     // A
+    'Aarakocra': 'aarakocra',
+    'Aboleth': 'aboleth',
+    'Androsphinx': 'androsphinx',
+    'Ankheg': 'ankheg',
     'Aigle': 'eagle',
     'Aigle géant': 'giant-eagle',
     'Acolyte': 'acolyte',
@@ -12,6 +16,7 @@ export const MANUAL_IMAGE_SLUGS: Record<string, string> = {
     'Araignée-loup géante': 'giant-wolf-spider',
     'Arbre éveillé': 'awakened-tree',
     'Arbuste éveillé': 'awakened-shrub',
+    'Arcanaloth': 'arcanaloth',
     'Archimage': 'archmage',
     'Armure animée': 'animated-armor',
     'Assassin': 'assassin',

@@ -137,6 +137,11 @@ export function adaptMonsterDataFormat(monsterData: any): Monster | null {
   adaptedMonster.size = adaptedMonster.size || "M";
   adaptedMonster.alignment = adaptedMonster.alignment || "non aligné";
 
+  // Map imageUrl to image for consistency with display logic
+  if (adaptedMonster.imageUrl && !adaptedMonster.image) {
+    adaptedMonster.image = adaptedMonster.imageUrl;
+  }
+
   // Normaliser AC et HP
   if (typeof adaptedMonster.ac === 'string') {
     // Essayer d'extraire la valeur numérique (ex: "18 (armure naturelle)" -> 18)

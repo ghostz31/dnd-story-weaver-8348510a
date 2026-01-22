@@ -29,7 +29,7 @@ const SpellBrowser: React.FC<SpellBrowserProps> = ({ onSelectSpell, className = 
     useEffect(() => {
         const loadSpells = async () => {
             try {
-                const response = await fetch('/data/aidedd-complete/spells.json');
+                const response = await fetch('/data/spells-complete.json');
                 if (response.ok) {
                     const data = await response.json();
                     setSpells(data);

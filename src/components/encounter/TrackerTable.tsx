@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { EncounterParticipant } from '@/lib/types';
 import { CONDITIONS, getConditionInfo, extractNumericHP } from '@/lib/EncounterUtils';
 import { getMonsterImageUrl } from '@/lib/monsterUtils';
@@ -36,6 +37,7 @@ interface TrackerTableProps {
     onOpenNotes: (participant: EncounterParticipant) => void;
     onRemove: (id: string) => void;
     onOpenCreatureFrame: (id: string) => void;
+    onSetTempHp?: (id: string, value: number) => void;
 }
 
 const TrackerTable: React.FC<TrackerTableProps> = ({
@@ -55,7 +57,8 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
     onToggleCondition,
     onOpenNotes,
     onRemove,
-    onOpenCreatureFrame
+    onOpenCreatureFrame,
+    onSetTempHp
 }) => {
 
     const getStatusBadge = (participant: EncounterParticipant) => {
@@ -123,43 +126,53 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                             {/* Image ou Icône */}
                                             <div className="flex-shrink-0 w-[60px] h-[60px] rounded-full overflow-hidden bg-gray-100 border border-gray-200 flex items-center justify-center shadow-sm">
                                                 {(() => {
-                                                    // Pour les joueurs, utiliser l'image si elle existe, sinon icône
+                                                    // Déterminer l'URL de l'image
+                                                    let imageUrl: string | undefined;
+
                                                     if (participant.isPC) {
-                                                        return participant.image ? (
-                                                            <img
-                                                                src={participant.image}
-                                                                alt={participant.name}
-                                                                className="w-full h-full object-cover"
-                                                                onError={(e) => {
-                                                                    (e.target as HTMLImageElement).style.display = 'none';
-                                                                    (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
-                                                                }}
-                                                            />
-                                                        ) : (
-                                                            <div className="flex items-center justify-center w-full h-full">
-                                                                <User className="h-4 w-4 text-gray-400" />
-                                                            </div>
+                                                        imageUrl = participant.image;
+                                                    } else {
+                                                        // Pour les monstres, utiliser le helper du bestiaire
+                                                        imageUrl = getMonsterImageUrl(participant as any);
+                                                    }
+
+                                                    // Si on a une URL d'image, l'afficher avec fallback
+                                                    if (imageUrl) {
+                                                        return (
+                                                            <>
+                                                                <img
+                                                                    src={imageUrl}
+                                                                    alt={participant.name}
+                                                                    className="w-full h-full object-cover"
+                                                                    onError={(e) => {
+                                                                        const img = e.target as HTMLImageElement;
+                                                                        img.style.display = 'none';
+                                                                        const fallback = img.nextElementSibling as HTMLElement;
+                                                                        if (fallback) {
+                                                                            fallback.style.display = 'flex';
+                                                                        }
+                                                                    }}
+                                                                />
+                                                                <div className="hidden items-center justify-center w-full h-full">
+                                                                    {participant.isPC ? (
+                                                                        <User className="h-6 w-6 text-gray-400" />
+                                                                    ) : (
+                                                                        <Ghost className="h-6 w-6 text-gray-400" />
+                                                                    )}
+                                                                </div>
+                                                            </>
                                                         );
                                                     }
 
-                                                    // Pour les monstres, utiliser le helper du bestiaire
-                                                    const imageUrl = getMonsterImageUrl(participant as any);
-
+                                                    // Pas d'image disponible, afficher l'icône directement
                                                     return (
-                                                        <>
-                                                            <img
-                                                                src={imageUrl}
-                                                                alt={participant.name}
-                                                                className="w-full h-full object-cover"
-                                                                onError={(e) => {
-                                                                    (e.target as HTMLImageElement).style.display = 'none';
-                                                                    (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
-                                                                }}
-                                                            />
-                                                            <div className="hidden flex items-center justify-center w-full h-full">
-                                                                <Ghost className="h-4 w-4 text-gray-400" />
-                                                            </div>
-                                                        </>
+                                                        <div className="flex items-center justify-center w-full h-full">
+                                                            {participant.isPC ? (
+                                                                <User className="h-6 w-6 text-gray-400" />
+                                                            ) : (
+                                                                <Ghost className="h-6 w-6 text-gray-400" />
+                                                            )}
+                                                        </div>
                                                     );
                                                 })()}
                                             </div>
@@ -167,8 +180,13 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                             {/* Nom et détails */}
                                             <div className="flex-1">
                                                 <div className="font-medium text-sm">
-                                                    <div className="whitespace-nowrap" title={participant.name}>
+                                                    <div className="whitespace-nowrap flex items-center gap-1" title={participant.name}>
                                                         {participant.name}
+                                                        {participant.concentration && (
+                                                            <span className="text-indigo-500 flex items-center gap-0.5" title={`Concentration: ${participant.concentration.spellName}`}>
+                                                                <Brain className="h-3 w-3 animate-pulse" />
+                                                            </span>
+                                                        )}
                                                     </div>
                                                     {participant.isPC && (
                                                         <Badge variant="outline" className="text-xs">PC</Badge>
@@ -242,6 +260,9 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                     title={`${extractNumericHP(participant.currentHp)}/${extractNumericHP(participant.maxHp)} PV - Cliquer pour modifier`}
                                                 >
                                                     <span className="font-extrabold">{extractNumericHP(participant.currentHp)}</span>/{extractNumericHP(participant.maxHp)}
+                                                    {participant.tempHp && participant.tempHp > 0 && (
+                                                        <span className="text-xs text-blue-500 ml-1">+{participant.tempHp}</span>
+                                                    )}
                                                 </div>
                                             </div>
 
@@ -276,6 +297,18 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                     >
                                                         <Minus className="h-3 w-3" />
                                                     </button>
+                                                    {onSetTempHp && (
+                                                        <button
+                                                            onClick={() => {
+                                                                onSetTempHp(participant.id, hpModifierValue);
+                                                                onToggleHpModifier(null);
+                                                            }}
+                                                            className="flex items-center justify-center w-6 h-6 bg-blue-500 hover:bg-blue-600 text-white rounded"
+                                                            title={`Ajouter ${hpModifierValue} PV Temporaires`}
+                                                        >
+                                                            <Zap className="h-3 w-3" />
+                                                        </button>
+                                                    )}
                                                 </div>
                                             )}
 
@@ -298,22 +331,35 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                             {participant.conditions.length > 0 && (
                                                 <div className="flex flex-wrap gap-1">
                                                     {participant.conditions.map(condition => {
-                                                        const conditionInfo = getConditionInfo(condition);
+                                                        const conditionName = typeof condition === 'string' ? condition : condition.name;
+                                                        const conditionInfo = getConditionInfo(conditionName);
                                                         const IconComponent = conditionInfo.icon;
                                                         return (
-                                                            <Badge
-                                                                key={condition}
-                                                                variant="outline"
-                                                                className={`cursor-pointer text-xs flex items-center gap-1 ${conditionInfo.color} hover:opacity-75`}
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    onToggleCondition(participant.id, condition);
-                                                                }}
-                                                                title={`Cliquer pour retirer la condition "${condition}"`}
-                                                            >
-                                                                <IconComponent className="h-3 w-3" />
-                                                                {condition}
-                                                            </Badge>
+                                                            <TooltipProvider>
+                                                                <Tooltip>
+                                                                    <TooltipTrigger asChild>
+                                                                        <Badge
+                                                                            key={typeof condition === 'string' ? condition : condition.id}
+                                                                            variant="outline"
+                                                                            className={`cursor-pointer text-xs flex items-center gap-1 ${conditionInfo.color} hover:opacity-75`}
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                onToggleCondition(participant.id, conditionName);
+                                                                            }}
+                                                                        >
+                                                                            <IconComponent className="h-3 w-3" />
+                                                                            {conditionName}
+                                                                            {typeof condition !== 'string' && condition.duration > 0 && (
+                                                                                <span className="ml-1 text-[10px] bg-gray-200 px-1 rounded">{condition.duration}</span>
+                                                                            )}
+                                                                        </Badge>
+                                                                    </TooltipTrigger>
+                                                                    <TooltipContent side="top" className="max-w-xs text-xs">
+                                                                        <p className="font-bold">{conditionName}</p>
+                                                                        <p>{conditionInfo.description}</p>
+                                                                    </TooltipContent>
+                                                                </Tooltip>
+                                                            </TooltipProvider>
                                                         );
                                                     })}
                                                 </div>
@@ -332,7 +378,7 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                     defaultValue=""
                                                 >
                                                     <option value="" disabled>+ Ajouter condition</option>
-                                                    {CONDITIONS.filter(condition => !participant.conditions.includes(condition)).map(condition => {
+                                                    {CONDITIONS.filter(conditionName => !participant.conditions.some(c => (typeof c === 'string' ? c : c.name) === conditionName)).map(condition => {
                                                         return (
                                                             <option key={condition} value={condition}>
                                                                 {condition}
