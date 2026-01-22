@@ -139,24 +139,24 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
     };
 
     return (
-        <div className={`w-full h-full flex flex-col gap-4 ${className}`}>
+        <div className={`w-full h-full flex flex-col gap-3 ${className}`}>
             {/* Barre de recherche et filtres */}
-            <div className="flex flex-col gap-4">
-                <div className="parchment-panel p-3 rounded-xl flex gap-2 items-center">
+            <div className="flex flex-col gap-3">
+                <div className="parchment-panel p-2 md:p-3 rounded-xl flex gap-2 items-center">
                     <div className="flex gap-2 relative flex-1">
-                        <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Search className="absolute left-3 top-3 md:top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
-                            placeholder="Rechercher un objet magique..."
+                            placeholder="Rechercher un objet..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-9 bg-white/50"
+                            className="pl-9 bg-white/50 h-11 md:h-10 text-base"
                         />
                         {(searchQuery) && (
                             <Button
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => setSearchQuery('')}
-                                className="absolute right-1 top-1 h-8 w-8 text-muted-foreground hover:text-foreground"
+                                className="absolute right-1 top-1.5 md:top-1 h-8 w-8 text-muted-foreground hover:text-foreground touch-target"
                             >
                                 <X className="h-4 w-4" />
                             </Button>
@@ -165,11 +165,11 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
                 </div>
 
                 {/* Quick Filters */}
-                <div className="parchment-panel p-3 rounded-xl space-y-3">
-                    {/* Item Type Quick Filters */}
+                <div className="parchment-panel p-2 md:p-3 rounded-xl space-y-3">
+                    {/* Item Type Quick Filters - Horizontal scroll on mobile */}
                     <div className="space-y-2">
-                        <Label className="text-xs font-cinzel font-bold text-muted-foreground">Filtres rapides - Type</Label>
-                        <div className="flex flex-wrap gap-2">
+                        <Label className="text-xs font-cinzel font-bold text-muted-foreground">Type</Label>
+                        <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1 -mb-1">
                             {[
                                 { label: 'Armes', value: 'Arme' },
                                 { label: 'Armures', value: 'Armure' },
@@ -179,12 +179,12 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
                                 { label: 'Baguettes', value: 'Baguette' },
                                 { label: 'Bâtons', value: 'Bâton' },
                                 { label: 'Sceptres', value: 'Sceptre' },
-                                { label: 'Objets merveilleux', value: 'Objet merveilleux' },
+                                { label: 'Merveilleux', value: 'Objet merveilleux' },
                             ].map(({ label, value }) => (
                                 <Badge
                                     key={value}
                                     variant={quickFilterType === value ? 'default' : 'outline'}
-                                    className={`cursor-pointer transition-all hover:scale-105 ${quickFilterType === value
+                                    className={`cursor-pointer transition-all whitespace-nowrap flex-shrink-0 touch-target active:scale-95 ${quickFilterType === value
                                         ? 'bg-primary text-primary-foreground shadow-md'
                                         : 'bg-white/50 hover:bg-primary/10'
                                         }`}
@@ -196,21 +196,21 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
                         </div>
                     </div>
 
-                    {/* Rarity Quick Filters */}
+                    {/* Rarity Quick Filters - Horizontal scroll on mobile */}
                     <div className="space-y-2">
-                        <Label className="text-xs font-cinzel font-bold text-muted-foreground">Filtres rapides - Rareté</Label>
-                        <div className="flex flex-wrap gap-2">
+                        <Label className="text-xs font-cinzel font-bold text-muted-foreground">Rareté</Label>
+                        <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1 -mb-1">
                             {[
-                                { label: 'Commun', value: 'commun', color: 'bg-gray-200 text-gray-800 hover:bg-gray-300' },
-                                { label: 'Peu commun', value: 'peu commun', color: 'bg-green-100 text-green-800 hover:bg-green-200' },
-                                { label: 'Rare', value: 'rare', color: 'bg-blue-100 text-blue-800 hover:bg-blue-200' },
-                                { label: 'Très rare', value: 'très rare', color: 'bg-purple-100 text-purple-800 hover:bg-purple-200' },
-                                { label: 'Légendaire', value: 'légendaire', color: 'bg-orange-100 text-orange-800 hover:bg-orange-200' },
+                                { label: 'Commun', value: 'commun', color: 'bg-gray-200 text-gray-800' },
+                                { label: 'Peu commun', value: 'peu commun', color: 'bg-green-100 text-green-800' },
+                                { label: 'Rare', value: 'rare', color: 'bg-blue-100 text-blue-800' },
+                                { label: 'Très rare', value: 'très rare', color: 'bg-purple-100 text-purple-800' },
+                                { label: 'Légendaire', value: 'légendaire', color: 'bg-orange-100 text-orange-800' },
                             ].map(({ label, value, color }) => (
                                 <Badge
                                     key={value}
                                     variant="outline"
-                                    className={`cursor-pointer transition-all hover:scale-105 ${quickFilterRarity === value
+                                    className={`cursor-pointer transition-all whitespace-nowrap flex-shrink-0 touch-target active:scale-95 ${quickFilterRarity === value
                                         ? `${color} shadow-md ring-2 ring-offset-1 ring-current`
                                         : `${color} opacity-60`
                                         }`}
@@ -338,28 +338,28 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
                 </ScrollArea>
             </div>
 
-            {/* Modal Détail */}
+            {/* Modal Détail - Fullscreen on mobile */}
             {selectedItem && (
                 <div
-                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 cursor-pointer"
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end md:items-center justify-center md:p-4"
                     onClick={() => setSelectedItem(null)}
                 >
                     <Card
-                        className="parchment-panel w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl animate-in fade-in zoom-in-95 duration-200 border-none cursor-default"
+                        className="parchment-panel w-full md:max-w-3xl h-full md:h-auto md:max-h-[90vh] overflow-hidden flex flex-col shadow-2xl animate-in slide-in-from-bottom md:fade-in md:zoom-in-95 duration-200 border-none cursor-default md:rounded-xl rounded-none"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <CardHeader className="bg-primary/5 border-b border-border/20">
+                        <CardHeader className="bg-primary/5 border-b border-border/20 p-4">
                             <div className="flex justify-between items-start">
-                                <div>
-                                    <CardTitle className="text-2xl font-cinzel text-primary">{selectedItem.name}</CardTitle>
-                                    <div className="flex gap-2 mt-2">
+                                <div className="min-w-0 flex-1">
+                                    <CardTitle className="text-xl md:text-2xl font-cinzel text-primary truncate">{selectedItem.name}</CardTitle>
+                                    <div className="flex gap-2 mt-2 flex-wrap">
                                         <Badge variant="outline" className={getRarityColor(selectedItem.rarity)}>
                                             {selectedItem.rarity}
                                         </Badge>
-                                        <Badge variant="secondary" className='bg-background/50'>{selectedItem.type}</Badge>
+                                        <Badge variant="secondary" className='bg-background/50 text-xs'>{selectedItem.type}</Badge>
                                     </div>
                                 </div>
-                                <Button variant="ghost" size="icon" onClick={() => setSelectedItem(null)} className="hover:bg-destructive/10 hover:text-destructive">
+                                <Button variant="ghost" size="icon" onClick={() => setSelectedItem(null)} className="hover:bg-destructive/10 hover:text-destructive touch-target flex-shrink-0">
                                     <X className="h-5 w-5" />
                                 </Button>
                             </div>
@@ -387,14 +387,14 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
                                 )}
                             </div>
                         </div>
-                        <div className="p-4 border-t border-border/20 bg-parchment-light flex justify-end gap-2">
+                        <div className="p-4 border-t border-border/20 bg-parchment-light flex justify-end gap-2" style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}>
                             {onSelectItem ? (
                                 <Button onClick={() => {
                                     onSelectItem(selectedItem);
                                     setSelectedItem(null);
-                                }} className="font-cinzel">Ajouter</Button>
+                                }} className="font-cinzel touch-target">Ajouter</Button>
                             ) : (
-                                <Button variant="outline" onClick={() => setSelectedItem(null)}>Fermer</Button>
+                                <Button variant="outline" onClick={() => setSelectedItem(null)} className="touch-target">Fermer</Button>
                             )}
                         </div>
                     </Card>

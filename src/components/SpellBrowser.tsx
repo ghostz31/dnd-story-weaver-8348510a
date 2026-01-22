@@ -112,17 +112,17 @@ const SpellBrowser: React.FC<SpellBrowserProps> = ({ onSelectSpell, className = 
     };
 
     return (
-        <div className={`p-4 h-full flex flex-col ${className}`}>
+        <div className={`p-2 md:p-4 h-full flex flex-col ${className}`}>
             {/* Barre de recherche et filtres */}
-            <div className="flex flex-col gap-4 mb-4">
-                <div className="parchment-panel p-3 rounded-xl flex gap-2 items-center">
+            <div className="flex flex-col gap-3 mb-4">
+                <div className="parchment-panel p-2 md:p-3 rounded-xl flex gap-2 items-center">
                     <div className="relative flex-1">
-                        <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Search className="absolute left-3 top-3 md:top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
                             placeholder="Rechercher un sort..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-9 bg-white/50"
+                            className="pl-9 bg-white/50 h-11 md:h-10 text-base"
                         />
                     </div>
                 </div>
@@ -203,22 +203,22 @@ const SpellBrowser: React.FC<SpellBrowserProps> = ({ onSelectSpell, className = 
                             {filteredSpells.map(spell => (
                                 <div
                                     key={spell.name}
-                                    className="parchment-card flex items-center justify-between p-3 cursor-pointer hover:border-primary/50 transition-colors"
+                                    className="parchment-card flex items-center justify-between p-3 cursor-pointer hover:border-primary/50 transition-colors active:bg-primary/5 interactive-tap touch-target"
                                     onClick={() => {
                                         setSelectedSpell(spell);
                                         onSelectSpell && onSelectSpell(spell);
                                     }}
                                 >
-                                    <div className="flex flex-col gap-0.5">
-                                        <div className="font-medium text-foreground flex items-center gap-2 font-cinzel">
+                                    <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+                                        <div className="font-medium text-foreground flex items-center gap-2 font-cinzel truncate">
                                             {spell.name}
-                                            {spell.ritual && <Badge variant="secondary" className="text-[10px] h-4 px-1 bg-secondary/20 text-secondary-foreground border-secondary/30">R</Badge>}
+                                            {spell.ritual && <Badge variant="secondary" className="text-[10px] h-4 px-1 bg-secondary/20 text-secondary-foreground border-secondary/30 flex-shrink-0">R</Badge>}
                                         </div>
                                         <div className="text-xs text-muted-foreground">
-                                            {spell.level === 0 ? 'Tour de magie' : `Niveau ${spell.level}`} • {spell.school}
+                                            {spell.level === 0 ? 'Tour de magie' : `Niv. ${spell.level}`} • {spell.school}
                                         </div>
                                     </div>
-                                    <div className="text-xs font-mono text-muted-foreground/70 bg-muted/50 px-2 py-1 rounded">
+                                    <div className="text-xs font-mono text-muted-foreground/70 bg-muted/50 px-2 py-1 rounded ml-2 flex-shrink-0 hidden sm:block">
                                         {spell.components}
                                     </div>
                                 </div>
@@ -234,11 +234,11 @@ const SpellBrowser: React.FC<SpellBrowserProps> = ({ onSelectSpell, className = 
                 )}
             </div>
 
-            {/* Modal Détail */}
+            {/* Modal Détail - Fullscreen on mobile */}
             {
                 selectedSpell && !onSelectSpell && (
-                    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setSelectedSpell(null)}>
-                        <div className="w-full max-w-2xl max-h-[90vh] h-[600px]" onClick={e => e.stopPropagation()}>
+                    <div className="fixed inset-0 bg-black/60 z-50 flex items-end md:items-center justify-center md:p-4 backdrop-blur-sm" onClick={() => setSelectedSpell(null)}>
+                        <div className="w-full md:max-w-2xl h-full md:h-auto md:max-h-[90vh]" onClick={e => e.stopPropagation()}>
                             <SpellCard spell={selectedSpell} />
                         </div>
                     </div>

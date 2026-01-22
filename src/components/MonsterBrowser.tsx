@@ -302,66 +302,69 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
   return (
     <div className="w-full">
       {/* Barre de recherche et header */}
-      <div className="flex flex-col gap-4 mb-4">
-        <div className="parchment-panel p-3 rounded-xl flex gap-2 items-center">
+      <div className="flex flex-col gap-3 mb-4">
+        <div className="parchment-panel p-2 md:p-3 rounded-xl flex flex-col sm:flex-row gap-2 sm:items-center">
           <div className="relative flex-1">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Rechercher un monstre..."
-              className="pl-10 pr-4 py-2 border border-border/50 bg-white/50 rounded-md w-full focus:ring-primary/50 focus:border-primary/50 placeholder:text-muted-foreground/70 text-foreground"
+              className="pl-10 pr-4 py-2.5 md:py-2 border border-border/50 bg-white/50 rounded-md w-full focus:ring-primary/50 focus:border-primary/50 placeholder:text-muted-foreground/70 text-foreground text-base"
             />
             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
           </div>
-          <Button
-            onClick={handleCreateMonster}
-            className="bg-primary hover:bg-primary/90 text-white font-cinzel whitespace-nowrap"
-          >
-            <FaPlus className="mr-2" /> Créer
-          </Button>
-          <Button
-            onClick={async () => {
-              try {
-                const recoveryFn = (useMonsters() as any).recoverLostMonsters;
-                const count = await recoveryFn();
-                if (count > 0) {
+          <div className="flex gap-2">
+            <Button
+              onClick={handleCreateMonster}
+              className="flex-1 sm:flex-none bg-primary hover:bg-primary/90 text-white font-cinzel whitespace-nowrap touch-target"
+            >
+              <FaPlus className="mr-1 md:mr-2" /> <span className="hidden sm:inline">Créer</span>
+            </Button>
+            <Button
+              onClick={async () => {
+                try {
+                  const recoveryFn = (useMonsters() as any).recoverLostMonsters;
+                  const count = await recoveryFn();
+                  if (count > 0) {
+                    toast({
+                      title: "Récupération terminée",
+                      description: `${count} monstres ont été restaurés (Cloud & Local).`,
+                    });
+                    refresh();
+                  } else {
+                    toast({
+                      title: "Aucun monstre trouvé",
+                      description: "Aucun monstre perdu n'a été trouvé.",
+                    });
+                  }
+                } catch (e) {
+                  console.error(e);
                   toast({
-                    title: "Récupération terminée",
-                    description: `${count} monstres ont été restaurés (Cloud & Local).`,
-                  });
-                  refresh();
-                } else {
-                  toast({
-                    title: "Aucun monstre trouvé",
-                    description: "Aucun monstre perdu n'a été trouvé.",
+                    title: "Erreur",
+                    description: "Erreur lors de la récupération.",
+                    variant: "destructive"
                   });
                 }
-              } catch (e) {
-                console.error(e);
-                toast({
-                  title: "Erreur",
-                  description: "Erreur lors de la récupération.",
-                  variant: "destructive"
-                });
-              }
-            }}
-            variant="outline"
-            className="whitespace-nowrap bg-white/50"
-            title="Tenter de récupérer les monstres perdus depuis les rencontres"
-          >
-            Récupérer
-          </Button>
-          <Button
-            onClick={handleRefreshMonsters}
-            disabled={loading}
-            variant="outline"
-            size="icon"
-            className="flex-shrink-0"
-            title="Actualiser la liste"
-          >
-            <FaSync className={`${loading ? 'animate-spin' : ''}`} />
-          </Button>
+              }}
+              variant="outline"
+              className="flex-1 sm:flex-none whitespace-nowrap bg-white/50 touch-target text-xs sm:text-sm"
+              title="Tenter de récupérer les monstres perdus depuis les rencontres"
+            >
+              <span className="hidden sm:inline">Récupérer</span>
+              <FaSync className="sm:hidden" />
+            </Button>
+            <Button
+              onClick={handleRefreshMonsters}
+              disabled={loading}
+              variant="outline"
+              size="icon"
+              className="flex-shrink-0 touch-target h-10 w-10"
+              title="Actualiser la liste"
+            >
+              <FaSync className={`${loading ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
         </div>
 
         <FilterPanel
@@ -491,102 +494,151 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
 
           <div className="overflow-y-auto pb-4 custom-scrollbar">
             {filteredMonsters.length > 0 ? (
-              <div className="parchment-card rounded-xl overflow-hidden shadow-lg border border-border">
-                <table className="min-w-full divide-y divide-border/20">
-                  <thead className="bg-primary/5">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">Nom</th>
-                      <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">Type</th>
-                      <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">Taille</th>
-                      <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">FP</th>
-                      <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">XP</th>
-                      <th className="px-4 py-3 text-center text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/20 bg-transparent text-foreground">
-                    {filteredMonsters.slice(0, visibleCount).map((monster) => (
-                      <tr key={monster.id} className="hover:bg-primary/5 transition-colors cursor-pointer group" onClick={() => handleSelectMonster(monster)}>
-                        <td className="px-4 py-2">
-                          <div className="flex items-center">
-                            <div className="flex-shrink-0 h-[36px] w-[36px] bg-secondary/10 rounded-lg overflow-hidden border border-border/30 relative">
-                              <img
-                                src={getMonsterImageUrl(monster)}
-                                alt={monster.name}
-                                loading="lazy"
-                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement;
-                                  target.style.display = 'none';
-                                  target.parentElement!.classList.add('flex', 'items-center', 'justify-center', 'bg-secondary/20');
-                                  target.parentElement!.innerHTML = '<span class="text-xs text-secondary-foreground font-bold">' + monster.name.charAt(0).toUpperCase() + '</span>';
-                                }}
-                              />
-                            </div>
-                            <div className="ml-3">
-                              <div className="text-sm font-bold text-foreground group-hover:text-primary transition-colors flex items-center gap-2">
-                                {monster.name}
-                                {monster.custom && <Badge variant="outline" className="text-[10px] h-4 px-1 border-primary/40 text-primary">Custom</Badge>}
+              <>
+                {/* Mobile Card View */}
+                <div className="md:hidden space-y-2">
+                  {filteredMonsters.slice(0, visibleCount).map((monster) => (
+                    <div
+                      key={monster.id}
+                      className="mobile-card flex items-center gap-3 p-3 active:bg-primary/5 interactive-tap"
+                      onClick={() => handleSelectMonster(monster)}
+                    >
+                      <div className="h-12 w-12 flex-shrink-0 bg-secondary/10 rounded-lg overflow-hidden border border-border/30">
+                        <img
+                          src={getMonsterImageUrl(monster)}
+                          alt={monster.name}
+                          loading="lazy"
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            target.parentElement!.classList.add('flex', 'items-center', 'justify-center', 'bg-secondary/20');
+                            target.parentElement!.innerHTML = '<span class="text-lg text-secondary-foreground font-bold">' + monster.name.charAt(0).toUpperCase() + '</span>';
+                          }}
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-foreground truncate">{monster.name}</span>
+                          {monster.custom && <Badge variant="outline" className="text-[10px] h-4 px-1 border-primary/40 text-primary flex-shrink-0">Custom</Badge>}
+                        </div>
+                        <div className="text-xs text-muted-foreground truncate">
+                          {monster.type} • {monster.size} • FP {formatCR(monster.cr)}
+                        </div>
+                      </div>
+                      <div className="flex-shrink-0">
+                        {isSelectable ? (
+                          <Button size="sm" className="h-9 w-9 p-0 touch-target" onClick={(e) => { e.stopPropagation(); handleSelectMonster(monster); }}>
+                            <FaPlus size={14} />
+                          </Button>
+                        ) : (
+                          <Badge variant="outline" className="font-mono bg-white/40 border-border/50">
+                            FP {formatCR(monster.cr)}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop Table View */}
+                <div className="hidden md:block parchment-card rounded-xl overflow-hidden shadow-lg border border-border">
+                  <table className="min-w-full divide-y divide-border/20">
+                    <thead className="bg-primary/5">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">Nom</th>
+                        <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">Type</th>
+                        <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">Taille</th>
+                        <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">FP</th>
+                        <th className="px-4 py-3 text-left text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">XP</th>
+                        <th className="px-4 py-3 text-center text-xs font-bold font-cinzel text-muted-foreground uppercase tracking-wider">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/20 bg-transparent text-foreground">
+                      {filteredMonsters.slice(0, visibleCount).map((monster) => (
+                        <tr key={monster.id} className="hover:bg-primary/5 transition-colors cursor-pointer group" onClick={() => handleSelectMonster(monster)}>
+                          <td className="px-4 py-2">
+                            <div className="flex items-center">
+                              <div className="flex-shrink-0 h-[36px] w-[36px] bg-secondary/10 rounded-lg overflow-hidden border border-border/30 relative">
+                                <img
+                                  src={getMonsterImageUrl(monster)}
+                                  alt={monster.name}
+                                  loading="lazy"
+                                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    target.parentElement!.classList.add('flex', 'items-center', 'justify-center', 'bg-secondary/20');
+                                    target.parentElement!.innerHTML = '<span class="text-xs text-secondary-foreground font-bold">' + monster.name.charAt(0).toUpperCase() + '</span>';
+                                  }}
+                                />
+                              </div>
+                              <div className="ml-3">
+                                <div className="text-sm font-bold text-foreground group-hover:text-primary transition-colors flex items-center gap-2">
+                                  {monster.name}
+                                  {monster.custom && <Badge variant="outline" className="text-[10px] h-4 px-1 border-primary/40 text-primary">Custom</Badge>}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-2">
-                          <span className="text-sm text-muted-foreground">{monster.type || "Inconnu"}</span>
-                        </td>
-                        <td className="px-4 py-2">
-                          <span className="text-sm text-muted-foreground">{monster.size || "M"}</span>
-                        </td>
-                        <td className="px-4 py-2">
-                          <Badge variant="outline" className="font-mono bg-white/40 border-border/50">
-                            {formatCR(monster.cr)}
-                          </Badge>
-                        </td>
-                        <td className="px-4 py-2">
-                          <span className="text-sm text-muted-foreground">{monster.xp}</span>
-                        </td>
-                        <td className="px-4 py-2 text-sm text-right space-x-2">
-                          {isSelectable && (
+                          </td>
+                          <td className="px-4 py-2">
+                            <span className="text-sm text-muted-foreground">{monster.type || "Inconnu"}</span>
+                          </td>
+                          <td className="px-4 py-2">
+                            <span className="text-sm text-muted-foreground">{monster.size || "M"}</span>
+                          </td>
+                          <td className="px-4 py-2">
+                            <Badge variant="outline" className="font-mono bg-white/40 border-border/50">
+                              {formatCR(monster.cr)}
+                            </Badge>
+                          </td>
+                          <td className="px-4 py-2">
+                            <span className="text-sm text-muted-foreground">{monster.xp}</span>
+                          </td>
+                          <td className="px-4 py-2 text-sm text-right space-x-2">
+                            {isSelectable && (
+                              <Button
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleSelectMonster(monster);
+                                }}
+                                className="h-7 px-2"
+                              >
+                                <FaPlus className="mr-1" size={10} /> Ajouter
+                              </Button>
+                            )}
                             <Button
+                              variant="ghost"
                               size="sm"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleSelectMonster(monster);
+                                fetchMonsterDetails(monster);
                               }}
-                              className="h-7 px-2"
+                              className="h-7 px-2 hover:bg-white/40"
                             >
-                              <FaPlus className="mr-1" size={10} /> Ajouter
+                              <FaInfoCircle className="mr-1" size={12} /> Détails
                             </Button>
-                          )}
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              fetchMonsterDetails(monster);
-                            }}
-                            className="h-7 px-2 hover:bg-white/40"
-                          >
-                            <FaInfoCircle className="mr-1" size={12} /> Détails
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                    {filteredMonsters.length > visibleCount && (
-                      <tr>
-                        <td colSpan={6} className="text-center py-4">
-                          <Button
-                            variant="ghost"
-                            onClick={() => setVisibleCount(prev => prev + 50)}
-                            className="w-full text-muted-foreground hover:text-primary"
-                          >
-                            Charger plus... ({filteredMonsters.length - visibleCount} restants)
-                          </Button>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Load More Button - Both Views */}
+                {filteredMonsters.length > visibleCount && (
+                  <div className="text-center py-4">
+                    <Button
+                      variant="ghost"
+                      onClick={() => setVisibleCount(prev => prev + 50)}
+                      className="w-full text-muted-foreground hover:text-primary touch-target"
+                    >
+                      Charger plus... ({filteredMonsters.length - visibleCount} restants)
+                    </Button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="parchment-card p-8 text-center rounded-xl border border-dashed border-border/50 text-muted-foreground">
                 <p>Aucun monstre trouvé. La crypte est vide...</p>
@@ -596,10 +648,10 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
         </>
       )}
 
-      {/* Modal / Overlay for Details or Editor */}
+      {/* Modal / Overlay for Details or Editor - Fullscreen on mobile */}
       {(selectedMonster || isEditing) && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 cursor-pointer"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center md:p-4 z-50"
           onClick={() => {
             setSelectedMonster(null);
             setIsEditing(false);
@@ -607,19 +659,19 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
           }}
         >
           <div
-            className="parchment-panel w-full max-w-4xl h-[90vh] flex flex-col rounded-xl overflow-hidden shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 cursor-default"
+            className="parchment-panel w-full md:max-w-4xl h-full md:h-[90vh] flex flex-col md:rounded-xl overflow-hidden shadow-2xl relative animate-in slide-in-from-bottom md:fade-in md:zoom-in-95 duration-200 cursor-default"
             onClick={(e) => e.stopPropagation()}
           >
 
             {/* Header */}
-            <div className="flex justify-between items-center p-4 border-b border-border/20 bg-primary/5">
-              <h2 className="text-xl font-cinzel font-bold px-2">
+            <div className="flex justify-between items-center p-3 md:p-4 border-b border-border/20 bg-primary/5">
+              <h2 className="text-lg md:text-xl font-cinzel font-bold px-2 truncate">
                 {isEditing
-                  ? (isCreating ? "Création de monstre" : `Modification de ${selectedMonster?.name}`)
+                  ? (isCreating ? "Création" : `Modif. ${selectedMonster?.name}`)
                   : selectedMonster?.name
                 }
               </h2>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
                 {!isEditing && selectedMonster && (
                   <>
                     <Button
@@ -627,8 +679,10 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                       size="sm"
                       onClick={() => handleDuplicateMonster(selectedMonster)}
                       title="Dupliquer et modifier"
+                      className="touch-target"
                     >
-                      <FaCopy className="mr-2" /> Dupliquer
+                      <FaCopy className="md:mr-2" />
+                      <span className="hidden md:inline">Dupliquer</span>
                     </Button>
                     {selectedMonster.custom && (
                       <>
