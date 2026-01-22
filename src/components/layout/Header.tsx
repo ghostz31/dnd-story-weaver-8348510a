@@ -55,103 +55,104 @@ const Header: React.FC = () => {
 
   const closeMenu = () => setIsOpen(false);
 
-  const NavItems = () => (
+  const NavItems = ({ mobile = false }: { mobile?: boolean }) => (
     <>
       <Button
         variant="ghost"
-        size="sm"
+        size={mobile ? "lg" : "sm"}
         asChild
         onClick={closeMenu}
-        className={`w-full justify-start md:w-auto ${isActive('/') ? 'text-primary font-semibold bg-accent' : 'text-muted-foreground'}`}
+        className={`w-full justify-start md:w-auto touch-target interactive-tap ${isActive('/') ? 'text-primary font-semibold bg-accent' : 'text-muted-foreground'
+          } ${mobile ? 'h-12 text-base' : ''}`}
       >
         <Link to="/" className="flex items-center">
-          <Home className="mr-2 h-4 w-4" /> Accueil
+          <Home className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Accueil
         </Link>
       </Button>
 
       <Button
         variant={isActive('/parties') ? 'default' : 'ghost'}
-        size="sm"
+        size={mobile ? "lg" : "sm"}
         asChild
         onClick={closeMenu}
-        className="w-full justify-start md:w-auto"
+        className={`w-full justify-start md:w-auto touch-target interactive-tap ${mobile ? 'h-12 text-base' : ''}`}
       >
         <Link to="/parties" className="flex items-center">
-          <Users className="mr-2 h-4 w-4" /> Groupes
+          <Users className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Groupes
         </Link>
       </Button>
 
       <Button
         variant={isActive('/monsters') ? 'default' : 'ghost'}
-        size="sm"
+        size={mobile ? "lg" : "sm"}
         asChild
         onClick={closeMenu}
-        className="w-full justify-start md:w-auto"
+        className={`w-full justify-start md:w-auto touch-target interactive-tap ${mobile ? 'h-12 text-base' : ''}`}
       >
         <Link to="/monsters" className="flex items-center">
-          <Book className="mr-2 h-4 w-4" /> Bestiaire
+          <Book className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Bestiaire
         </Link>
       </Button>
 
       <Button
         variant={isActive('/grimoire') ? 'default' : 'ghost'}
-        size="sm"
+        size={mobile ? "lg" : "sm"}
         asChild
         onClick={closeMenu}
-        className="w-full justify-start md:w-auto"
+        className={`w-full justify-start md:w-auto touch-target interactive-tap ${mobile ? 'h-12 text-base' : ''}`}
       >
         <Link to="/grimoire" className="flex items-center">
-          <Scroll className="mr-2 h-4 w-4" /> Grimoire
+          <Scroll className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Grimoire
         </Link>
       </Button>
 
       <Button
         variant={isActive('/items') ? 'default' : 'ghost'}
-        size="sm"
+        size={mobile ? "lg" : "sm"}
         asChild
         onClick={closeMenu}
-        className="w-full justify-start md:w-auto"
+        className={`w-full justify-start md:w-auto touch-target interactive-tap ${mobile ? 'h-12 text-base' : ''}`}
       >
         <Link to="/items" className="flex items-center">
-          <Gem className="mr-2 h-4 w-4" /> Objets
+          <Gem className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Objets
         </Link>
       </Button>
 
       <Button
         variant={isActive('/encounters') || isActive('/custom') ? 'default' : 'ghost'}
-        size="sm"
+        size={mobile ? "lg" : "sm"}
         asChild
         onClick={closeMenu}
-        className="w-full justify-start md:w-auto"
+        className={`w-full justify-start md:w-auto touch-target interactive-tap ${mobile ? 'h-12 text-base' : ''}`}
       >
         <Link to="/encounters" className="flex items-center">
-          <PenTool className="mr-2 h-4 w-4" /> Rencontres
+          <PenTool className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Rencontres
         </Link>
       </Button>
 
       <Button
         variant={isActive('/history') ? 'default' : 'ghost'}
-        size="sm"
+        size={mobile ? "lg" : "sm"}
         asChild
         onClick={closeMenu}
-        className="w-full justify-start md:w-auto"
+        className={`w-full justify-start md:w-auto touch-target interactive-tap ${mobile ? 'h-12 text-base' : ''}`}
       >
         <Link to="/history" className="flex items-center">
-          <History className="mr-2 h-4 w-4" /> Historique
+          <History className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Historique
         </Link>
       </Button>
     </>
   );
 
   return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm">
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
       <div className="w-full px-2 mx-auto py-3">
         <div className="flex justify-between items-center">
           {/* Logo et titre */}
           <div className="flex items-center space-x-2">
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
+                <Button variant="ghost" size="icon" className="md:hidden touch-target h-11 w-11">
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
@@ -162,8 +163,8 @@ const Header: React.FC = () => {
                     Trame
                   </SheetTitle>
                 </SheetHeader>
-                <div className="flex flex-col gap-2 mt-6">
-                  <NavItems />
+                <div className="flex flex-col gap-1 mt-6">
+                  <NavItems mobile />
                 </div>
               </SheetContent>
             </Sheet>

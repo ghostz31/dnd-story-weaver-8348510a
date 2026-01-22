@@ -48,11 +48,11 @@ function App() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-inter">
+    <div className="min-h-screen-mobile bg-background text-foreground font-inter">
       <Header />
       <GlobalCommandPalette />
 
-      <main className="w-full mx-auto py-6">
+      <main className="w-full mx-auto py-4 px-2 md:py-6 md:px-4">
         <ErrorBoundary>
           <Routes>
             {/* Routes publiques */}
@@ -108,12 +108,12 @@ function App() {
         </ErrorBoundary>
       </main>
 
-      <footer className="border-t border-border bg-card/50 text-muted-foreground p-6 mt-12">
+      <footer className="border-t border-border bg-card/50 text-muted-foreground p-4 md:p-6 mt-8 md:mt-12" style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}>
         <div className="container mx-auto text-center">
-          <p>Outil pour maîtres de jeu</p>
+          <p className="text-sm md:text-base">Outil pour maîtres de jeu</p>
           {!isAuthenticated && (
-            <p className="text-sm mt-2">
-              <a href="/auth" className="text-blue-300 hover:underline">Connectez-vous</a> pour sauvegarder vos rencontres et groupes
+            <p className="text-xs md:text-sm mt-2">
+              <a href="/auth" className="text-primary hover:underline touch-target inline-flex items-center justify-center">Connectez-vous</a> pour sauvegarder vos rencontres et groupes
             </p>
           )}
         </div>

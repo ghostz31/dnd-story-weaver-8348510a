@@ -176,9 +176,10 @@ const EncounterTracker: React.FC = () => {
 
   return (
     <div className="w-full px-2 mx-auto py-2">
-      <div className="flex justify-between items-center mb-2">
-        <div>
-          <h1 className="text-2xl font-bold">
+      {/* Header - Responsive */}
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2 mb-3">
+        <div className="min-w-0">
+          <h1 className="text-lg md:text-2xl font-bold truncate">
             {encounter.name}
             {encounter.participants.length > 0 && (
               <Badge className="ml-2 bg-blue-600">
@@ -223,14 +224,16 @@ const EncounterTracker: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex gap-2">
+        {/* Action buttons - horizontal scroll on mobile */}
+        <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1 -mb-1">
           <Button
             variant="outline"
             size="sm"
             onClick={actions.rollInitiativeForAll}
+            className="touch-target whitespace-nowrap flex-shrink-0"
           >
             <Dice4 className="h-4 w-4 mr-1" />
-            Lancer l'initiative
+            <span className="hidden sm:inline">Lancer l'</span>initiative
           </Button>
 
           {encounter.participants.length > 0 && (
@@ -240,9 +243,10 @@ const EncounterTracker: React.FC = () => {
                 size="sm"
                 onClick={actions.previousTurn}
                 disabled={encounter.participants.length === 0}
+                className="touch-target whitespace-nowrap flex-shrink-0"
               >
-                <ChevronLeft className="h-4 w-4 mr-1" />
-                Tour précédent
+                <ChevronLeft className="h-4 w-4" />
+                <span className="hidden sm:inline ml-1">Précédent</span>
               </Button>
 
               <Button
@@ -250,9 +254,10 @@ const EncounterTracker: React.FC = () => {
                 size="sm"
                 onClick={actions.nextTurn}
                 disabled={encounter.participants.length === 0}
+                className="touch-target whitespace-nowrap flex-shrink-0"
               >
-                <ChevronRight className="h-4 w-4 mr-1" />
-                Tour suivant
+                <span className="hidden sm:inline mr-1">Suivant</span>
+                <ChevronRight className="h-4 w-4" />
               </Button>
             </>
           )}
@@ -263,9 +268,10 @@ const EncounterTracker: React.FC = () => {
               size="sm"
               onClick={actions.saveCurrentEncounterState}
               disabled={isSaving}
+              className="touch-target whitespace-nowrap flex-shrink-0"
             >
-              <Save className="h-4 w-4 mr-1" />
-              {isSaving ? "Sauvegarde..." : "Sauvegarder"}
+              <Save className="h-4 w-4" />
+              <span className="hidden sm:inline ml-1">{isSaving ? "Sauvegarde..." : "Sauvegarder"}</span>
             </Button>
           )}
 
@@ -273,43 +279,44 @@ const EncounterTracker: React.FC = () => {
             variant="outline"
             size="sm"
             onClick={actions.resetEncounter}
+            className="touch-target whitespace-nowrap flex-shrink-0"
           >
-            <RotateCcw className="h-4 w-4 mr-1" />
-            Réinitialiser
+            <RotateCcw className="h-4 w-4" />
+            <span className="hidden sm:inline ml-1">Réinitialiser</span>
           </Button>
         </div>
       </div>
 
-      {/* Résumé du tour actuel */}
+      {/* Résumé du tour actuel - Responsive */}
       {encounter.participants.length > 0 && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-bold text-blue-800">
+        <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-2 md:p-3 mb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div className="min-w-0">
+              <h2 className="text-lg md:text-xl font-bold text-blue-800 dark:text-blue-200 truncate">
                 Tour de {sortedParticipants[encounter.currentTurn]?.name || "?"}
               </h2>
-              <p className="text-sm text-blue-700">
-                {sortedParticipants[encounter.currentTurn]?.isPC ? "Personnage joueur" : "Monstre"} •
-                Initiative: {sortedParticipants[encounter.currentTurn]?.initiative || "?"} •
+              <p className="text-xs md:text-sm text-blue-700 dark:text-blue-300">
+                {sortedParticipants[encounter.currentTurn]?.isPC ? "PJ" : "Monstre"} •
+                Init: {sortedParticipants[encounter.currentTurn]?.initiative || "?"} •
                 CA: {sortedParticipants[encounter.currentTurn]?.ac || "?"} •
                 PV: {sortedParticipants[encounter.currentTurn]?.currentHp || 0}/{extractNumericHP(sortedParticipants[encounter.currentTurn]?.maxHp) || 0}
               </p>
             </div>
 
-            <div className="flex flex-col items-end">
-              <div className="text-sm font-semibold text-blue-800">Actions disponibles</div>
-              <div className="flex gap-2 mt-1">
-                <Badge variant={sortedParticipants[encounter.currentTurn]?.hasUsedAction ? "outline" : "default"}>
+            <div className="flex flex-col items-start sm:items-end">
+              <div className="text-xs font-semibold text-blue-800 dark:text-blue-200 hidden sm:block">Actions disponibles</div>
+              <div className="flex gap-1.5 mt-1 flex-wrap">
+                <Badge variant={sortedParticipants[encounter.currentTurn]?.hasUsedAction ? "outline" : "default"} className="text-xs">
                   Action
                 </Badge>
-                <Badge variant={sortedParticipants[encounter.currentTurn]?.hasUsedBonusAction ? "outline" : "secondary"}>
+                <Badge variant={sortedParticipants[encounter.currentTurn]?.hasUsedBonusAction ? "outline" : "secondary"} className="text-xs">
                   Bonus
                 </Badge>
-                <Badge variant={sortedParticipants[encounter.currentTurn]?.hasUsedReaction ? "outline" : "destructive"}>
+                <Badge variant={sortedParticipants[encounter.currentTurn]?.hasUsedReaction ? "outline" : "destructive"} className="text-xs">
                   Réaction
                 </Badge>
-                <Badge variant="outline" className="bg-blue-100">
-                  Mouvement: {sortedParticipants[encounter.currentTurn]?.remainingMovement || 0}
+                <Badge variant="outline" className="bg-blue-100 dark:bg-blue-900 text-xs">
+                  Mvt: {sortedParticipants[encounter.currentTurn]?.remainingMovement || 0}
                 </Badge>
               </div>
             </div>
@@ -349,7 +356,8 @@ const EncounterTracker: React.FC = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 mb-2">
+      {/* Main Grid - Stacked on mobile */}
+      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-3 mb-2">
         <div className="lg:col-span-8">
           <Card className="parchment-card shadow-lg border-primary/10 border-0">
             <CardHeader>
@@ -511,7 +519,8 @@ const EncounterTracker: React.FC = () => {
           </Card>
         </div>
 
-        <div className="lg:col-span-4 sticky top-24 h-[calc(100vh-140px)] flex flex-col gap-2">
+        {/* Sidebar - Full width on mobile, shown below table */}
+        <div className="lg:col-span-4 lg:sticky lg:top-24 lg:h-[calc(100vh-140px)] flex flex-col gap-3">
           {/* Vue du combattant actif (Monstre Iframe ou Joueur Stats) */}
           <div className="flex-1 min-h-0">
             {sortedParticipants.length > 0 ? (
@@ -535,8 +544,8 @@ const EncounterTracker: React.FC = () => {
             )}
           </div>
 
-          {/* Combat Log */}
-          <div className="h-1/3 min-h-[200px]">
+          {/* Combat Log - Collapsible on mobile */}
+          <div className="lg:h-1/3 lg:min-h-[200px] hidden lg:block">
             <CombatLog logs={encounter.combatLog || []} />
           </div>
         </div>
@@ -589,11 +598,11 @@ const EncounterTracker: React.FC = () => {
         />
       )}
 
-      {/* Boutons flottants pour la sauvegarde */}
-      <div className="fixed bottom-4 right-4 flex flex-col gap-2">
+      {/* Boutons flottants pour la sauvegarde - avec safe area */}
+      <div className="fixed bottom-4 right-4 flex flex-col gap-2" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
         <Button
           size="icon"
-          className="rounded-full h-12 w-12 shadow-lg"
+          className="rounded-full h-14 w-14 shadow-lg touch-target"
           onClick={actions.saveCurrentEncounterState}
           disabled={isSaving}
         >
@@ -607,7 +616,7 @@ const EncounterTracker: React.FC = () => {
         <Button
           variant="outline"
           size="icon"
-          className="rounded-full h-12 w-12 shadow-lg"
+          className="rounded-full h-14 w-14 shadow-lg touch-target bg-background"
           onClick={() => window.history.back()}
         >
           <Calendar className="h-6 w-6" />

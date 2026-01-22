@@ -56,25 +56,25 @@ const IndexPage: React.FC = () => {
               <PenTool className="h-24 w-24 text-primary relative z-10 mx-auto mb-6 drop-shadow-glow" />
             </motion.div>
 
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 font-cinzel text-center text-foreground drop-shadow-sm">
+            <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold mb-4 md:mb-6 font-cinzel text-center text-foreground drop-shadow-sm">
               Trame
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-10 text-center max-w-2xl mx-auto font-light leading-relaxed">
+            <p className="text-base sm:text-xl md:text-2xl text-muted-foreground mb-6 md:mb-10 text-center max-w-2xl mx-auto font-light leading-relaxed px-4">
               Tissez des <span className="text-primary font-medium">légendes inoubliables</span>. Créez des rencontres épiques et équilibrées pour vos aventures D&D.
             </p>
 
             {!isAuthenticated ? (
-              <div className="flex flex-col sm:flex-row justify-center gap-6">
-                <Button size="lg" className="rounded-full px-8 text-lg font-cinzel shadow-glow hover:shadow-glow-lg transition-all" asChild>
+              <div className="flex flex-col gap-3 sm:flex-row justify-center sm:gap-6 px-4">
+                <Button size="lg" className="w-full sm:w-auto rounded-full px-6 sm:px-8 text-base sm:text-lg font-cinzel shadow-glow hover:shadow-glow-lg transition-all touch-target" asChild>
                   <Link to="/auth?mode=register">Commencer l'Aventure</Link>
                 </Button>
-                <Button size="lg" variant="outline" className="rounded-full px-8 text-lg border-primary/50 hover:bg-primary/5 backdrop-blur-sm" asChild>
+                <Button size="lg" variant="outline" className="w-full sm:w-auto rounded-full px-6 sm:px-8 text-base sm:text-lg border-primary/50 hover:bg-primary/5 backdrop-blur-sm touch-target" asChild>
                   <Link to="/auth?mode=login">Se connecter</Link>
                 </Button>
               </div>
             ) : (
-              <div className="flex justify-center">
-                <Button size="lg" className="rounded-full px-10 py-8 text-xl shadow-glow hover:shadow-glow-lg hover:scale-105 transition-all font-cinzel" asChild>
+              <div className="flex justify-center px-4">
+                <Button size="lg" className="w-full sm:w-auto rounded-full px-6 sm:px-10 py-6 sm:py-8 text-lg sm:text-xl shadow-glow hover:shadow-glow-lg hover:scale-105 transition-all font-cinzel touch-target" asChild>
                   <Link to="/encounters">
                     <Sword className="mr-2 h-6 w-6" />
                     Créer une Rencontre
@@ -86,24 +86,24 @@ const IndexPage: React.FC = () => {
         </section>
 
         {/* Section des fonctionnalités */}
-        <section className="py-16 mx-4 lg:mx-8 mb-12 relative z-10">
-          <div className="container mx-auto px-4">
-            <h2 className="text-4xl font-bold mb-16 text-center font-cinzel text-foreground">Fonctionnalités Magiques</h2>
+        <section className="py-10 md:py-16 mx-2 md:mx-4 lg:mx-8 mb-8 md:mb-12 relative z-10">
+          <div className="container mx-auto px-2 md:px-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 md:mb-16 text-center font-cinzel text-foreground">Fonctionnalités Magiques</h2>
 
             <motion.div
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8"
               variants={container}
               initial="hidden"
               whileInView="show"
               viewport={{ once: true }}
             >
               <motion.div variants={item}>
-                <div className="glass-card h-full p-8 rounded-xl hover:shadow-glow transition-all duration-300 border border-glass-border/30 group flex flex-col">
-                  <div className="p-4 bg-primary/10 w-fit rounded-2xl mb-6 group-hover:bg-primary/20 transition-colors">
-                    <Sword className="h-8 w-8 text-primary" />
+                <div className="glass-card h-full p-4 sm:p-6 md:p-8 rounded-xl hover:shadow-glow transition-all duration-300 border border-glass-border/30 group flex flex-col interactive-tap">
+                  <div className="p-3 md:p-4 bg-primary/10 w-fit rounded-2xl mb-4 md:mb-6 group-hover:bg-primary/20 transition-colors">
+                    <Sword className="h-6 w-6 md:h-8 md:w-8 text-primary" />
                   </div>
-                  <h3 className="text-2xl font-cinzel font-bold mb-3">Générateur de Rencontres</h3>
-                  <p className="text-muted-foreground mb-6 flex-grow">
+                  <h3 className="text-xl md:text-2xl font-cinzel font-bold mb-2 md:mb-3">Générateur de Rencontres</h3>
+                  <p className="text-sm md:text-base text-muted-foreground mb-4 md:mb-6 flex-grow">
                     Choisissez parmi des centaines de monstres du SRD 5e, ajustez automatiquement la difficulté, et obtenez des statistiques détaillées.
                   </p>
                   <Button variant="ghost" className="w-full justify-between hover:bg-primary/5 group-hover:text-primary transition-colors mt-auto" asChild>
@@ -116,12 +116,12 @@ const IndexPage: React.FC = () => {
               </motion.div>
 
               <motion.div variants={item}>
-                <div className="glass-card h-full p-8 rounded-xl hover:shadow-glow transition-all duration-300 border border-glass-border/30 group flex flex-col">
-                  <div className="p-4 bg-primary/10 w-fit rounded-2xl mb-6 group-hover:bg-primary/20 transition-colors">
-                    <Users className="h-8 w-8 text-primary" />
+                <div className="glass-card h-full p-4 sm:p-6 md:p-8 rounded-xl hover:shadow-glow transition-all duration-300 border border-glass-border/30 group flex flex-col interactive-tap">
+                  <div className="p-3 md:p-4 bg-primary/10 w-fit rounded-2xl mb-4 md:mb-6 group-hover:bg-primary/20 transition-colors">
+                    <Users className="h-6 w-6 md:h-8 md:w-8 text-primary" />
                   </div>
-                  <h3 className="text-2xl font-cinzel font-bold mb-3">Gestion de Groupe</h3>
-                  <p className="text-muted-foreground mb-6 flex-grow">
+                  <h3 className="text-xl md:text-2xl font-cinzel font-bold mb-2 md:mb-3">Gestion de Groupe</h3>
+                  <p className="text-sm md:text-base text-muted-foreground mb-4 md:mb-6 flex-grow">
                     Créez et gérez plusieurs groupes d'aventuriers. Suivez leurs niveaux, classes et progression pour des défis toujours adaptés.
                   </p>
                   <Button variant="ghost" className="w-full justify-between hover:bg-primary/5 group-hover:text-primary transition-colors mt-auto" asChild>
@@ -134,12 +134,12 @@ const IndexPage: React.FC = () => {
               </motion.div>
 
               <motion.div variants={item}>
-                <div className="glass-card h-full p-8 rounded-xl hover:shadow-glow transition-all duration-300 border border-glass-border/30 group flex flex-col">
-                  <div className="p-4 bg-primary/10 w-fit rounded-2xl mb-6 group-hover:bg-primary/20 transition-colors">
-                    <History className="h-8 w-8 text-primary" />
+                <div className="glass-card h-full p-4 sm:p-6 md:p-8 rounded-xl hover:shadow-glow transition-all duration-300 border border-glass-border/30 group flex flex-col interactive-tap">
+                  <div className="p-3 md:p-4 bg-primary/10 w-fit rounded-2xl mb-4 md:mb-6 group-hover:bg-primary/20 transition-colors">
+                    <History className="h-6 w-6 md:h-8 md:w-8 text-primary" />
                   </div>
-                  <h3 className="text-2xl font-cinzel font-bold mb-3">Grimoire d'Histoire</h3>
-                  <p className="text-muted-foreground mb-6 flex-grow">
+                  <h3 className="text-xl md:text-2xl font-cinzel font-bold mb-2 md:mb-3">Grimoire d'Histoire</h3>
+                  <p className="text-sm md:text-base text-muted-foreground mb-4 md:mb-6 flex-grow">
                     Un registre éternel de vos batailles passées. Dupliquez, modifiez et revivez vos plus grands moments.
                   </p>
                   <Button variant="ghost" className="w-full justify-between hover:bg-primary/5 group-hover:text-primary transition-colors mt-auto" asChild>
