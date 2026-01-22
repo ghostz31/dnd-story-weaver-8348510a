@@ -150,30 +150,109 @@ export const formatCR = (cr: number | string | undefined): string => {
     return String(numCR);
 };
 
+// Interface pour les infos de condition
+export interface ConditionInfo {
+    icon: React.ElementType;
+    color: string;
+    description: string;
+    timing?: 'start' | 'end';
+}
+
 // Fonction pour obtenir les informations d'une condition
-export const getConditionInfo = (condition: string | EncounterCondition) => {
+export const getConditionInfo = (condition: string | EncounterCondition): ConditionInfo => {
     const conditionName = typeof condition === 'string' ? condition : condition.name;
-    const conditionMap: Record<string, { icon: React.ElementType; color: string; description: string }> = {
-        'À terre': { icon: ArrowDown, color: 'text-orange-600 border-orange-600', description: 'Désavantage aux attaques. Attaques à distance avec désavantage, mêlée avec avantage.' },
-        'Assourdi': { icon: Users, color: 'text-gray-600 border-gray-600', description: 'Ne peut pas entendre. Échec automatique aux tests basés sur l\'ouïe.' },
-        'Aveuglé': { icon: EyeOff, color: 'text-red-600 border-red-600', description: 'Ne peut pas voir. Désavantage aux attaques, attaques contre avec avantage.' },
-        'Charmé': { icon: Smile, color: 'text-pink-600 border-pink-600', description: 'Ne peut pas attaquer le charmeur. Celui-ci a avantage aux interactions sociales.' },
-        'Empoisonné': { icon: Droplets, color: 'text-green-600 border-green-600', description: 'Désavantage aux jets d\'attaque et de caractéristique.' },
-        'Empoigné': { icon: Anchor, color: 'text-brown-600 border-brown-600', description: 'Vitesse réduite à 0. Fin si l\'empoigneur est neutralisé ou éloigné.' },
-        'Entravé': { icon: Link, color: 'text-gray-800 border-gray-800', description: 'Vitesse 0, désavantage aux attaques et jets de Dex, avantage contre.' },
-        'Épuisé': { icon: Clock, color: 'text-yellow-600 border-yellow-600', description: 'Niveaux cumulatifs. 1: désavantage carac. 6: mort.' },
-        'Étourdi': { icon: Brain, color: 'text-purple-600 border-purple-600', description: 'Neutralisé, ne peut pas bouger, parle difficilement. Échec auto Dex/For.' },
-        'Inconscient': { icon: Ghost, color: 'text-gray-500 border-gray-500', description: 'Neutralisé, lâche tout, tombe. Attaques avec avantage, coup critique à 1,5m.' },
-        'Invisible': { icon: Eye, color: 'text-blue-400 border-blue-400', description: 'Impossible à voir. Avantage aux attaques, désavantage contre.' },
-        'Neutralisé': { icon: ShieldX, color: 'text-red-800 border-red-800', description: 'Ne peut effectuer aucune action ni réaction.' },
-        'Pétrifié': { icon: Square, color: 'text-gray-700 border-gray-700', description: 'Transformé en pierre. Poids x10, ne vieillit plus, résistance à tout.' },
-        'Effrayé': { icon: Skull, color: 'text-red-700 border-red-700', description: 'Désavantage tant que la source est visible. Ne peut s\'en approcher.' },
-        'Paralysé': { icon: Zap, color: 'text-blue-600 border-blue-600', description: 'Neutralisé, ne peut pas bouger/parler. Échec auto Dex/For, coup critique à 1,5m.' },
-        'Concentré': { icon: Brain, color: 'text-indigo-600 border-indigo-600', description: 'Maintient un sort. Jet de Con sur dégâts (DD 10 ou dégâts/2).' },
+
+    // Définitions strictes basées sur le SRD 5.1
+    const conditionMap: Record<string, ConditionInfo> = {
+        'À terre': {
+            icon: ArrowDown,
+            color: 'text-orange-600 border-orange-600',
+            description: '• La seule option de mouvement est de ramper (coûte double mouvement), à moins de se relever.\n• Désavantage aux jets d\'attaque.\n• Jets d\'attaque contre la créature : Avantage si l\'attaquant est à 1,5m, sinon Désavantage.'
+        },
+        'Assourdi': {
+            icon: Users,
+            color: 'text-gray-600 border-gray-600',
+            description: '• Une créature assourdie n\'entend pas et rate automatiquement tout jet de caractéristique qui nécessite l\'ouïe.'
+        },
+        'Aveuglé': {
+            icon: EyeOff,
+            color: 'text-red-600 border-red-600',
+            description: '• Une créature aveuglée ne voit pas et rate automatiquement tout jet de caractéristique qui nécessite la vue.\n• Les jets d\'attaque contre la créature ont un avantage, et les siens ont un désavantage.'
+        },
+        'Charmé': {
+            icon: Smile,
+            color: 'text-pink-600 border-pink-600',
+            description: '• Une créature charmée ne peut pas attaquer le charmeur ou le cibler avec des capacités ou des effets magiques nuisibles.\n• Le charmeur a un avantage à ses jets de caractéristique pour interagir socialement avec la créature.'
+        },
+        'Empoisonné': {
+            icon: Droplets,
+            color: 'text-green-600 border-green-600',
+            description: '• Une créature empoisonnée a un désavantage aux jets d\'attaque et aux jets de caractéristique.',
+            timing: 'end'
+        },
+        'Empoigné': { // Correspond à "Agrippé" sur AideDD
+            icon: Anchor,
+            color: 'text-brown-600 border-brown-600',
+            description: '• La vitesse d\'une créature agrippée passe à 0, et elle ne peut bénéficier d\'aucun bonus à sa vitesse.\n• L\'état prend fin si l\'empoigneur est incapable d\'agir.\n• L\'état se termine si un effet met la créature hors de portée (ex: violentée par une onde de choc).'
+        },
+        'Entravé': {
+            icon: Link,
+            color: 'text-gray-800 border-gray-800',
+            description: '• La vitesse d\'une créature entravée passe à 0.\n• Les jets d\'attaque contre la créature ont un avantage, et les siens ont un désavantage.\n• La créature a un désavantage à ses jets de sauvegarde de Dextérité.'
+        },
+        'Épuisé': {
+            icon: Clock,
+            color: 'text-yellow-600 border-yellow-600',
+            description: 'Niveau 1: Désavantage caractéristique.\nNiveau 2: Vitesse /2.\nNiveau 3: Désavantage attaque/JdS.\nNiveau 4: PV max /2.\nNiveau 5: Vitesse 0.\nNiveau 6: Mort.'
+        },
+        'Étourdi': {
+            icon: Brain,
+            color: 'text-purple-600 border-purple-600',
+            description: '• La créature est incapable d\'agir, ne peut plus bouger et parle de manière hésitante.\n• La créature rate automatiquement ses jets de sauvegarde de Force et de Dextérité.\n• Les jets d\'attaque contre la créature ont un avantage.',
+            timing: 'end'
+        },
+        'Inconscient': {
+            icon: Ghost,
+            color: 'text-gray-500 border-gray-500',
+            description: '• Incapable d\'agir, ne peut plus bouger ni parler, inconsciente.\n• Lâche ce qu\'elle tenait et tombe à terre.\n• Rate automatiquement JdS Force et Dextérité.\n• Attaques contre elle ont l\'Avantage.\n• Toute attaque qui touche à 1,5m est un Critique.'
+        },
+        'Invisible': {
+            icon: Eye,
+            color: 'text-blue-400 border-blue-400',
+            description: '• Impossible à voir sans magie/sens particulier. Considérée dans une zone à visibilité nulle.\n• Les jets d\'attaque contre la créature ont un désavantage, et les siens ont un avantage.'
+        },
+        'Neutralisé': { // Correspond à "Incapable d'agir"
+            icon: ShieldX,
+            color: 'text-red-800 border-red-800',
+            description: '• Une créature incapable d\'agir ne peut effectuer aucune action ni aucune réaction.'
+        },
+        'Pétrifié': {
+            icon: Square,
+            color: 'text-gray-700 border-gray-700',
+            description: '• Transformée en substance solide. Poids x10. Vieillissement cesse.\n• Incapable d\'agir, immobile, inconsciente.\n• Attaques contre elle ont Avantage.\n• Rate auto JdS Force/Dex.\n• Résistance tous dégâts. Immunité poison/maladie.'
+        },
+        'Effrayé': {
+            icon: Skull,
+            color: 'text-red-700 border-red-700',
+            description: '• Désavantage aux jets de caractéristique et d\'attaque tant que la source de peur est visible.\n• La créature ne peut se rapprocher volontairement de la source.',
+            timing: 'end'
+        },
+        'Paralysé': {
+            icon: Zap,
+            color: 'text-blue-600 border-blue-600',
+            description: '• Incapable d\'agir, ne peut plus bouger ni parler.\n• Rate automatiquement ses jets de sauvegarde de Force et de Dextérité.\n• Les jets d\'attaque contre la créature ont un avantage.\n• Toute attaque qui touche à 1,5m est un Critique.',
+            timing: 'end'
+        },
+        'Concentré': {
+            icon: Brain,
+            color: 'text-indigo-600 border-indigo-600',
+            description: '• La créature maintient un sort.\n• Doit faire un JdS Constitution (DD 10 ou moitiés des dégâts) si elle subit des dégâts.\n• Perd la concentration si Incapable d\'agir ou mort.'
+        },
+        // Conditions Custom (Textes inchangés car non SRD stricts ou déjà précis)
         'Béni': { icon: Heart, color: 'text-yellow-500 border-yellow-500', description: '+1d4 aux jets d\'attaque et de sauvegarde.' },
-        'Maudit': { icon: Skull, color: 'text-purple-700 border-purple-700', description: 'Effet variable selon la malédiction appliquée.' },
-        'Ralenti': { icon: Clock, color: 'text-blue-500 border-blue-500', description: 'Vitesse /2, -2 CA et Dex, pas de réaction, 1 action ou bonus.' },
-        'Hâté': { icon: Zap, color: 'text-green-500 border-green-500', description: 'Vitesse x2, +2 CA, avantage Dex, action supplémentaire.' }
+        'Maudit': { icon: Skull, color: 'text-purple-700 border-purple-700', description: 'Malédiction active (voir description du sort).' },
+        'Ralenti': { icon: Clock, color: 'text-blue-500 border-blue-500', description: '• Vitesse /2.\n• -2 CA et JdS Dex.\n• Pas de réaction.\n• Une seule action ou action bonus.\n• Chance de retarder les sorts.' },
+        'Hâté': { icon: Zap, color: 'text-green-500 border-green-500', description: '• Vitesse x2, +2 CA.\n• Avantage JdS Dextérité.\n• Une action supplémentaire (Attaquer/Foncer/Se désengager...)' }
     };
 
     return conditionMap[conditionName] || { icon: Square, color: 'text-gray-500 border-gray-500', description: 'Condition inconnue.' };

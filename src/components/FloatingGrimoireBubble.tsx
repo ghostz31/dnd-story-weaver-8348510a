@@ -78,15 +78,15 @@ const FloatingGrimoireBubble: React.FC<FloatingGrimoireBubbleProps> = ({ onOpen 
     const particlesRef = useRef<Particle[]>([]);
     const hueRef = useRef(0);
 
-    // Initialize directly at target (Bottom-Right)
-    const initialX = typeof window !== 'undefined' ? window.innerWidth - 80 : 0;
+    // Initialize directly at target (Bottom-Left)
+    const initialX = 16;
     const initialY = typeof window !== 'undefined' ? window.innerHeight - 150 : 0;
 
     const x = useMotionValue(initialX);
     const y = useMotionValue(initialY);
 
     // Track previous position to calculate velocity/movement
-    const lastPos = useRef({ x: initialX, y: initialY });
+    const lastPos = useRef({ x: 16, y: initialY });
 
     // --- Particle System Loop ---
     const loop = useCallback(() => {
@@ -189,7 +189,7 @@ const FloatingGrimoireBubble: React.FC<FloatingGrimoireBubbleProps> = ({ onOpen 
         controls.start({
             x: targetX,
             y: targetY,
-            transition: { type: "spring", stiffness: 300, damping: 20 }
+            transition: { type: "spring", stiffness: 180, damping: 24, mass: 1 }
         }).then(() => {
             // Trigger burst when snap finishes (roughly) or starts? 
             // User asked for burst on impact. The animation finishes AT impact.
@@ -224,11 +224,11 @@ const FloatingGrimoireBubble: React.FC<FloatingGrimoireBubbleProps> = ({ onOpen 
             >
                 <motion.div
                     animate={{
-                        scale: isHovered || isDragging ? 1.1 : 1,
-                        opacity: isDragging ? 1 : (isHovered ? 1 : 0.6), // 0.6 opacity at idle
+                        scale: isHovered || isDragging ? 1.15 : 1,
+                        opacity: isDragging ? 1 : (isHovered ? 1 : 0.7),
                     }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    className="flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-indigo-600 to-purple-700 shadow-lg border-2 border-white/20 text-white backdrop-blur-sm"
+                    transition={{ type: "spring", stiffness: 200, damping: 25, mass: 0.8 }}
+                    className="flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-indigo-600 to-purple-700 shadow-lg border-2 border-white/20 text-white backdrop-blur-sm will-change-transform"
                 >
                     <BookOpen className="w-6 h-6" />
                 </motion.div>
@@ -237,10 +237,11 @@ const FloatingGrimoireBubble: React.FC<FloatingGrimoireBubbleProps> = ({ onOpen 
                 <AnimatePresence>
                     {isHovered && !isDragging && (
                         <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 5 }}
-                            className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1 bg-black/80 text-white text-xs rounded whitespace-nowrap"
+                            initial={{ opacity: 0, x: 10, scale: 0.9 }}
+                            animate={{ opacity: 1, x: 0, scale: 1 }}
+                            exit={{ opacity: 0, x: 5, scale: 0.95 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                            className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-black/85 text-white text-xs rounded-lg whitespace-nowrap shadow-xl backdrop-blur-md will-change-transform"
                         >
                             Grimoire
                         </motion.div>

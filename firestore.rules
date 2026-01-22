@@ -13,12 +13,14 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
     
-    // === Données utilisateur ===
-    // Permet à un utilisateur authentifié d'accéder uniquement à ses propres données
+    // === Données utilisateur (Strictement Privé) ===
+    // /!\ CRITIQUE : Seul l'utilisateur propriétaire peut lire ou écrire ses données.
+    // Cela protège l'email, les préférences, et surtout les liens D&D Beyond.
     match /users/{userId} {
       allow read, write: if isOwner(userId);
       
-      // Sous-collections de l'utilisateur
+      // Sous-collections de l'utilisateur (Héritent de la protection, mais explicité pour clarté)
+      // Les liens D&D Beyond sont souvent dans 'participants' au sein des encounters ou parties.
       match /parties/{partyId} {
         allow read, write: if isOwner(userId);
       }
@@ -30,16 +32,22 @@ service cloud.firestore {
       match /monsters/{monsterId} {
         allow read, write: if isOwner(userId);
       }
+
+      // Règle "catch-all" pour toutes autres sous-collections futures de l'utilisateur
+      match /{document=**} {
+        allow read, write: if isOwner(userId);
+      }
     }
     
-    // === Collection globale de monstres (lecture seule pour les authentifiés) ===
+    // === Collection globale de monstres (Lecture publique authentifiée, Écriture Admin) ===
+    // Ces données ne contiennent PAS d'infos utilisateurs privées.
     match /monsters/{monsterId} {
       allow read: if isAuthenticated();
-      // Écriture restreinte aux admins uniquement (à configurer via Custom Claims)
+      // Écriture restreinte aux admins uniquement
       allow write: if isAuthenticated() && request.auth.token.admin == true;
     }
     
-    // === Bloquer tout accès non défini ===
+    // === Bloquer tout accès par défaut ===
     match /{document=**} {
       allow read, write: if false;
     }

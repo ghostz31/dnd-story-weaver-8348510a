@@ -26,6 +26,7 @@ import {
 import { Party, Player } from '../lib/types';
 import UsageStats from './UsageStats';
 import { useAuth } from '../auth/AuthContext';
+import { calculateDndBeyondAC } from '../lib/dndBeyondUtils';
 
 // Classes de personnages D&D
 const CHARACTER_CLASSES = [
@@ -263,21 +264,8 @@ const PartyEditor: React.FC = () => {
         currentHp = character.currentHitPoints || maxHp;
       }
 
-      // 6. Extraire la CA
-      // D&D Beyond fournit souvent la CA calculée dans des champs différents selon l'équipement
-      // On essaie de trouver le meilleur candidat
-      let ac = 10;
-
-      // Logique simplifiée : chercher la meilleure CA disponible
-      // Idéalement, il faudrait recalculer à partir de l'équipement, mais c'est complexe
-      // On cherche souvent une propriété "armorClass" explicite si disponible
-      if (character.overrideStats && character.overrideStats[0]?.name === "Armor Class") {
-        ac = character.overrideStats[0].value;
-      } else {
-        // Estimation basique: 10 + Dex Mod
-        const dexMod = Math.floor((dex - 10) / 2);
-        ac = 10 + dexMod;
-      }
+      // 6. Extraire la CA avec la nouvelle utilitaire
+      const ac = calculateDndBeyondAC(character, { dex, con, wis });
 
       // 7. Extraire la vitesse
       const speedList: string[] = [];

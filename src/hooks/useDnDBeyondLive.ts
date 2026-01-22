@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { EncounterParticipant } from '../lib/types';
 import { toast } from '@/hooks/use-toast';
+import { calculateDndBeyondAC } from '@/lib/dndBeyondUtils';
 
 interface UseDnDBeyondLiveProps {
     participants: EncounterParticipant[];
-    onUpdateHp: (id: string, newCurrentHp: number, newMaxHp: number) => void;
+    onUpdateHp: (id: string, updates: Partial<EncounterParticipant>) => void; // Changed signature to generic update
     enabled: boolean;
 }
 
@@ -28,26 +29,19 @@ export const useDnDBeyondLive = ({ participants, onUpdateHp, enabled }: UseDnDBe
                 try {
                     processingRef.current[p.id] = true;
 
-                    // Stratégie de récupération :
-                    // 1. Essayer le proxy local (fonctionne en dev)
-                    // 2. Fallback sur corsproxy.io (fonctionne en prod / Netlify)
-
+                    // Stratégie de récupération
                     let data = null;
                     const timestamp = Date.now();
                     const targetUrl = `https://character-service.dndbeyond.com/character/v5/character/${p.dndBeyondId}`;
 
                     try {
-                        // Tentative 1: Proxy local
                         const localResponse = await fetch(`/api/dndbeyond/character/v5/character/${p.dndBeyondId}?t=${timestamp}`);
                         if (localResponse.ok) {
                             const jsonData = await localResponse.json();
                             data = jsonData.data || jsonData;
                         }
-                    } catch (e) {
-                        console.log(`[Sync] Proxy local échec, tentative fallback...`);
-                    }
+                    } catch (e) { /* Fallback silent */ }
 
-                    // Tentative 2: CORS Proxy public (si la tentative 1 a échoué)
                     if (!data) {
                         try {
                             const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}?t=${timestamp}`;
@@ -65,8 +59,7 @@ export const useDnDBeyondLive = ({ participants, onUpdateHp, enabled }: UseDnDBe
 
                     const char = data;
 
-                    // Calculer les données pour une mise à jour précise
-                    // 1. Stats pour le modificateur de CON
+                    // --- Extraction Stats ---
                     const stats = char.stats || [];
                     const bonusStats = char.bonusStats || [];
                     const overrideStats = char.overrideStats || [];
@@ -76,16 +69,21 @@ export const useDnDBeyondLive = ({ participants, onUpdateHp, enabled }: UseDnDBe
                         return (stats[index]?.value || 10) + (bonusStats[index]?.value || 0);
                     };
 
-                    const con = getStatValue(2); // CON est à l'index 2
+                    const str = getStatValue(0);
+                    const dex = getStatValue(1);
+                    const con = getStatValue(2);
+                    const int = getStatValue(3);
+                    const wis = getStatValue(4);
+                    const cha = getStatValue(5);
+
                     const conMod = Math.floor((con - 10) / 2);
 
-                    // 2. Niveau total
+                    // --- Calcul PV ---
                     let level = 0;
                     if (char.classes) {
                         level = char.classes.reduce((acc: number, cls: any) => acc + (cls.level || 0), 0);
                     }
 
-                    // 3. Calcul des PV Max
                     let maxHp = 0;
                     let currentHp = 0;
                     if (char.overrideHitPoints) {
@@ -96,27 +94,51 @@ export const useDnDBeyondLive = ({ participants, onUpdateHp, enabled }: UseDnDBe
                         maxHp = base + bonus + (conMod * level);
                     }
 
-                    // 4. PV Actuels
                     const removed = char.removedHitPoints || 0;
-                    // Note: D&D Beyond gère sometimes temporaryHitPoints à part
-                    // currentHp = maxHp - removed + (char.temporaryHitPoints || 0); 
-                    // Mais généralement display = (Max - Removed) (et Temp est affiché à côté)
-                    // On va rester sur Standard HP pour l'instant
                     currentHp = maxHp - removed;
 
-                    // Fallback si calcul échoue (ex: NPC ou format bizarre)
                     if (maxHp <= 0 && char.hitPoints) maxHp = char.hitPoints;
                     if (currentHp <= 0 && char.currentHitPoints) currentHp = char.currentHitPoints;
 
-                    // Si les PV ont changé, on notifie
+                    // --- Calcul CA (Nouveau) ---
+                    const newAc = calculateDndBeyondAC(char, { dex, con, wis });
+
+                    // --- Vérification et Update ---
+                    const updates: Partial<EncounterParticipant> = {};
+                    let hasChanges = false;
+                    const changeLog: string[] = [];
+
                     if (currentHp !== p.currentHp || (maxHp !== p.maxHp && maxHp > 0)) {
-                        console.log(`Live Sync Update pour ${p.name}: ${p.currentHp} -> ${currentHp} / ${p.maxHp} -> ${maxHp}`);
-                        onUpdateHp(p.id, currentHp, maxHp);
+                        updates.currentHp = currentHp;
+                        updates.maxHp = maxHp;
+                        hasChanges = true;
+                        changeLog.push(`PV: ${currentHp}/${maxHp}`);
+                    }
+
+                    // CA Update
+                    // On ne met à jour que si différent et non nul
+                    if (newAc && newAc !== p.ac) {
+                        updates.ac = newAc;
+                        hasChanges = true;
+                        changeLog.push(`CA: ${newAc}`);
+                    }
+
+                    // Si stats changent significativement (Optionnel, peut être lourd)
+                    // On le fait car ça impacte les jets
+                    if (dex !== p.dex || con !== p.con) { // Juste exemples
+                        updates.str = str; updates.dex = dex; updates.con = con;
+                        updates.int = int; updates.wis = wis; updates.cha = cha;
+                        hasChanges = true;
+                    }
+
+                    if (hasChanges) {
+                        console.log(`Live Sync Update pour ${p.name}:`, changeLog);
+                        onUpdateHp(p.id, updates); // Using updated generic callback signature
 
                         toast({
-                            title: "Synchronisation D&D Beyond",
-                            description: `PV de ${p.name} mis à jour : ${currentHp}/${maxHp}`,
-                            duration: 2000
+                            title: `Sync D&D Beyond (${p.name})`,
+                            description: `Mise à jour: ${changeLog.join(', ')}`,
+                            duration: 3000
                         });
                     }
 
@@ -128,10 +150,7 @@ export const useDnDBeyondLive = ({ participants, onUpdateHp, enabled }: UseDnDBe
             }
         };
 
-        // Polling toutes les 5 secondes
         const intervalId = setInterval(checkUpdates, 5000);
-
-        // Première vérification immédiate
         checkUpdates();
 
         return () => clearInterval(intervalId);

@@ -1,9 +1,10 @@
 import React from 'react';
-import { EncounterParticipant } from '../lib/types'; // Assurez-vous que le chemin est correct
-import { getAideDDMonsterSlug } from '../lib/utils';
+import { EncounterParticipant } from '../lib/types';
+import { getAideDDMonsterSlug, getConditionInfo } from '../lib/EncounterUtils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Shield, Heart, Zap, ExternalLink, ChevronLeft, ChevronRight, Edit, Save, X, User, Book, Hash, Swords } from 'lucide-react';
 import { StatBlock } from './StatBlock';
 import { Input } from '@/components/ui/input';
@@ -595,14 +596,29 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                         <div className="mt-4 bg-white p-4 rounded-lg shadow-sm border border-red-100">
                             <h4 className="text-sm font-semibold text-gray-700 mb-2">Conditions</h4>
                             <div className="flex flex-wrap gap-2">
-                                {participant.conditions.map((condition, idx) => (
-                                    <Badge key={idx} variant="destructive" className="flex gap-1 items-center">
-                                        {typeof condition === 'string' ? condition : condition.name}
-                                        {typeof condition !== 'string' && condition.duration > 0 && (
-                                            <span className="text-[10px] bg-red-800/50 px-1 rounded">{condition.duration} trs</span>
-                                        )}
-                                    </Badge>
-                                ))}
+                                <TooltipProvider>
+                                    {participant.conditions.map((condition, idx) => {
+                                        const info = getConditionInfo(condition);
+                                        const ConditionIcon = info.icon;
+                                        return (
+                                            <Tooltip key={idx}>
+                                                <TooltipTrigger>
+                                                    <Badge variant="destructive" className={`flex gap-1 items-center cursor-help ${info.color.replace('text-', 'bg-').replace('border-', '')} text-white border-none`}>
+                                                        <ConditionIcon className="h-3 w-3" />
+                                                        {typeof condition === 'string' ? condition : condition.name}
+                                                        {typeof condition !== 'string' && condition.duration > 0 && (
+                                                            <span className="text-[10px] bg-black/20 px-1 rounded ml-1">{condition.duration} trs</span>
+                                                        )}
+                                                    </Badge>
+                                                </TooltipTrigger>
+                                                <TooltipContent side="top" className="max-w-md bg-stone-900 border-stone-800 text-stone-50 p-3 shadow-xl">
+                                                    <p className="font-bold mb-1">{typeof condition === 'string' ? condition : condition.name}</p>
+                                                    <div className="text-xs whitespace-pre-wrap">{info.description}</div>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        );
+                                    })}
+                                </TooltipProvider>
                             </div>
                         </div>
                     )

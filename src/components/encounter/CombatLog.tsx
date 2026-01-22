@@ -17,7 +17,13 @@ const CombatLog: React.FC<CombatLogProps> = ({ logs, className = "" }) => {
     // Auto-scroll to bottom on new log
     useEffect(() => {
         if (scrollEndRef.current) {
-            scrollEndRef.current.scrollIntoView({ behavior: 'smooth' });
+            // Safer scroll: target the Radix viewport specifically
+            const viewport = scrollEndRef.current.closest('[data-radix-scroll-area-viewport]') as HTMLElement;
+            if (viewport) {
+                viewport.scrollTo({ top: viewport.scrollHeight, behavior: 'smooth' });
+            } else {
+                scrollEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
         }
     }, [logs]);
 

@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { 
+import {
   User,
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword,
-  signOut, 
+  signInWithEmailAndPassword,
+  signOut,
   onAuthStateChanged,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  GoogleAuthProvider,
+  signInWithPopup
 } from 'firebase/auth';
 import { auth, db } from '../firebase/firebase';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -15,11 +16,10 @@ export interface AuthContextProps {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string, displayName?: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
 }
-
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -29,14 +29,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setIsLoading(true);
-      
+
       if (currentUser) {
         setUser(currentUser);
-        
+
         // Vérifier/créer le profil utilisateur dans Firestore
         const userRef = doc(db, 'users', currentUser.uid);
         const userDoc = await getDoc(userRef);
-        
+
         if (!userDoc.exists()) {
           // Créer un nouveau profil utilisateur
           await setDoc(userRef, {
@@ -60,7 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         setUser(null);
       }
-      
+
       setIsLoading(false);
     });
 
@@ -69,6 +69,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
+      if (email !== 'test@test.test') {
+        throw new Error('La connexion par email est restreinte au compte de test. Veuillez utiliser Google.');
+      }
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
       console.error('Erreur de connexion:', error);
@@ -76,29 +79,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signup = async (email: string, password: string, displayName?: string) => {
+  const loginWithGoogle = async () => {
     try {
-      // Créer le compte utilisateur
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const newUser = userCredential.user;
-      
-      // Créer immédiatement le profil utilisateur dans Firestore
-      const userRef = doc(db, 'users', newUser.uid);
-      await setDoc(userRef, {
-        email: newUser.email,
-        displayName: displayName || '',
-        photoURL: newUser.photoURL || '',
-        subscriptionPlan: 'free',
-        createdAt: serverTimestamp(),
-        lastLogin: serverTimestamp(),
-        stats: {
-          parties: 0,
-          encounters: 0
-        }
-      });
-      
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
     } catch (error) {
-      console.error('Erreur d\'inscription:', error);
+      console.error('Erreur de connexion Google:', error);
       throw error;
     }
   };
@@ -111,7 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw error;
     }
   };
-  
+
   const resetPassword = async (email: string) => {
     try {
       await sendPasswordResetEmail(auth, email);
@@ -126,7 +112,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isAuthenticated: !!user,
     isLoading,
     login,
-    signup,
+    loginWithGoogle,
     logout,
     resetPassword
   };

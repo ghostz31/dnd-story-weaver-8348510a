@@ -179,18 +179,36 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
 
                                             {/* Nom et détails */}
                                             <div className="flex-1">
-                                                <div className="font-medium text-sm">
-                                                    <div className="whitespace-nowrap flex items-center gap-1" title={participant.name}>
-                                                        {participant.name}
-                                                        {participant.concentration && (
-                                                            <span className="text-indigo-500 flex items-center gap-0.5" title={`Concentration: ${participant.concentration.spellName}`}>
-                                                                <Brain className="h-3 w-3 animate-pulse" />
-                                                            </span>
+                                                <div className="font-medium text-sm flex items-center justify-between gap-1 w-full">
+                                                    <div className="whitespace-nowrap flex items-center gap-1 flex-1 min-w-0" title={participant.name}>
+                                                        <span className="truncate">{participant.name}</span>
+                                                        {participant.isPC && (
+                                                            <Badge variant="outline" className="text-xs h-4 px-1 flex-shrink-0">PC</Badge>
                                                         )}
                                                     </div>
-                                                    {participant.isPC && (
-                                                        <Badge variant="outline" className="text-xs">PC</Badge>
-                                                    )}
+
+                                                    <TooltipProvider>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    className={`h-6 w-6 p-0 flex-shrink-0 transition-all duration-300 ${participant.conditions.some(c => (typeof c === 'string' ? c : c.name) === 'Concentré')
+                                                                        ? 'text-yellow-600 bg-yellow-100 hover:bg-yellow-200 hover:text-yellow-700 shadow-[0_0_10px_rgba(234,179,8,0.5)] border border-yellow-200'
+                                                                        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'}`}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        onToggleCondition(participant.id, 'Concentré');
+                                                                    }}
+                                                                >
+                                                                    <Brain className={`h-4 w-4 ${participant.conditions.some(c => (typeof c === 'string' ? c : c.name) === 'Concentré') ? 'animate-pulse drop-shadow-[0_0_2px_rgba(234,179,8,0.8)]' : ''}`} />
+                                                                </Button>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent side="top">
+                                                                <p>{participant.conditions.some(c => (typeof c === 'string' ? c : c.name) === 'Concentré') ? 'Arrêter la concentration' : 'Démarrer la concentration'}</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
                                                 </div>
                                             </div>
                                         </div>
@@ -260,7 +278,7 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                     title={`${extractNumericHP(participant.currentHp)}/${extractNumericHP(participant.maxHp)} PV - Cliquer pour modifier`}
                                                 >
                                                     <span className="font-extrabold">{extractNumericHP(participant.currentHp)}</span>/{extractNumericHP(participant.maxHp)}
-                                                    {participant.tempHp && participant.tempHp > 0 && (
+                                                    {typeof participant.tempHp === 'number' && participant.tempHp > 0 && (
                                                         <span className="text-xs text-blue-500 ml-1">+{participant.tempHp}</span>
                                                     )}
                                                 </div>
@@ -354,9 +372,9 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                                             )}
                                                                         </Badge>
                                                                     </TooltipTrigger>
-                                                                    <TooltipContent side="top" className="max-w-xs text-xs">
-                                                                        <p className="font-bold">{conditionName}</p>
-                                                                        <p>{conditionInfo.description}</p>
+                                                                    <TooltipContent side="top" className="max-w-md bg-stone-900 border-stone-800 text-stone-50 p-3 shadow-xl z-50">
+                                                                        <p className="font-bold mb-1">{conditionName}</p>
+                                                                        <div className="text-xs whitespace-pre-wrap">{conditionInfo.description}</div>
                                                                     </TooltipContent>
                                                                 </Tooltip>
                                                             </TooltipProvider>

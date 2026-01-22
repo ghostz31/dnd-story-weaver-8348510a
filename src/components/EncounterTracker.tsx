@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardTitle, CardHeader, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { Sword, Shield, Heart, Plus, Minus, Pencil, Scroll, Zap, Droplets, Eye, EyeOff, Smile, Users, Link, Snowflake, Clock, Ghost, Anchor, ArrowDown, Brain, Footprints, ShieldX, Save, RotateCcw, ChevronLeft, ChevronRight, Dice4, User, Calendar, Trash2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -81,8 +87,8 @@ const EncounterTracker: React.FC = () => {
   const saveHpChanges = () => {
     if (!editingParticipant) return;
     actions.updateParticipant(editingParticipant.id, {
-      currentHp: editingParticipant.currentHp,
-      maxHp: editingParticipant.maxHp
+      currentHp: typeof editingParticipant.currentHp === 'string' ? parseInt(editingParticipant.currentHp as string) || 0 : editingParticipant.currentHp,
+      maxHp: typeof editingParticipant.maxHp === 'string' && /^\d+$/.test(editingParticipant.maxHp as string) ? parseInt(editingParticipant.maxHp as string) : editingParticipant.maxHp
     });
     setHpEditorOpen(false);
     setEditingParticipant(null);
@@ -165,6 +171,8 @@ const EncounterTracker: React.FC = () => {
       actions.updateParticipant(active.id, updates);
     }
   };
+
+
 
   return (
     <div className="w-full px-2 mx-auto py-2">
@@ -311,20 +319,30 @@ const EncounterTracker: React.FC = () => {
             <div className="mt-2 pt-2 border-t border-blue-200">
               <div className="text-sm font-semibold text-blue-800">Conditions:</div>
               <div className="flex flex-wrap gap-1 mt-1">
-                {sortedParticipants[encounter.currentTurn]?.conditions.map(condition => {
-                  const conditionName = typeof condition === 'string' ? condition : condition.name;
-                  const conditionInfo = getConditionInfo(conditionName);
-                  const IconComponent = conditionInfo.icon;
-                  return (
-                    <Badge key={typeof condition === 'string' ? condition : condition.id} variant="outline" className={`flex items-center gap-1 ${conditionInfo.color}`}>
-                      <IconComponent className="h-3 w-3" />
-                      {conditionName}
-                      {typeof condition !== 'string' && condition.duration > 0 && (
-                        <span className="ml-1 text-[10px] bg-blue-200 px-1 rounded">{condition.duration}</span>
-                      )}
-                    </Badge>
-                  );
-                })}
+                <TooltipProvider>
+                  {sortedParticipants[encounter.currentTurn]?.conditions.map(condition => {
+                    const conditionName = typeof condition === 'string' ? condition : condition.name;
+                    const conditionInfo = getConditionInfo(conditionName);
+                    const IconComponent = conditionInfo.icon;
+                    return (
+                      <Tooltip key={typeof condition === 'string' ? condition : condition.id}>
+                        <TooltipTrigger>
+                          <Badge variant="outline" className={`flex items-center gap-1 cursor-help ${conditionInfo.color}`}>
+                            <IconComponent className="h-3 w-3" />
+                            {conditionName}
+                            {typeof condition !== 'string' && condition.duration > 0 && (
+                              <span className="ml-1 text-[10px] bg-blue-200 px-1 rounded">{condition.duration}</span>
+                            )}
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="max-w-md bg-stone-900 border-stone-800 text-stone-50 p-3 shadow-xl">
+                          <p className="font-bold mb-1">{conditionName}</p>
+                          <div className="text-xs whitespace-pre-wrap">{conditionInfo.description}</div>
+                        </TooltipContent>
+                      </Tooltip>
+                    );
+                  })}
+                </TooltipProvider>
               </div>
             </div>
           )}

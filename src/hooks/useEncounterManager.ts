@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import { doc, getDoc } from 'firebase/firestore';
@@ -168,15 +168,47 @@ export const useEncounterManager = () => {
         }
     }, [encounter.participants.length, encounter.participants]); // Added dependency on participants content deep check effectively
 
+    // Ref stable pour accéder aux participants sans dépendance dans useCallback
+    const participantsRef = useRef(encounter.participants);
+    useEffect(() => {
+        participantsRef.current = encounter.participants;
+    }, [encounter.participants]);
+
+    // Callback stable pour éviter de reset le timer du hook à chaque rendu
+    // Callback stable pour éviter de reset le timer du hook à chaque rendu
+    const handleDndBeyondUpdate = useCallback((id: string, updates: Partial<EncounterParticipant>) => {
+        const participant = participantsRef.current.find(p => p.id === id);
+
+        // Concentration Check (Side Effect outside of setter)
+        if (participant && updates.currentHp !== undefined) {
+            const oldHp = typeof participant.currentHp === 'string' ? extractNumericHP(participant.currentHp) : participant.currentHp;
+            const newHpVal = typeof updates.currentHp === 'string' ? extractNumericHP(updates.currentHp) : updates.currentHp;
+
+            if (newHpVal < oldHp) {
+                if (participant.conditions?.some(c => (typeof c === 'string' ? c : c.name) === 'Concentré')) {
+                    const damageVal = oldHp - newHpVal;
+                    const dc = Math.max(10, Math.floor(damageVal / 2));
+
+                    toast({
+                        title: "Jet de Concentration Requis (Sync)",
+                        description: `${participant.name} a subi ${damageVal} dégâts (via D&D Beyond).\nDD Constitution : ${dc}`,
+                        variant: "destructive",
+                        duration: 6000
+                    });
+                }
+            }
+        }
+
+        setEncounter(prev => ({
+            ...prev,
+            participants: prev.participants.map(p => p.id === id ? { ...p, ...updates } : p)
+        }));
+    }, []);
+
     // D&D Beyond Sync
     useDnDBeyondLive({
         participants: encounter.participants,
-        onUpdateHp: (id, currentHp, maxHp) => {
-            setEncounter(prev => ({
-                ...prev,
-                participants: prev.participants.map(p => p.id === id ? { ...p, currentHp, maxHp } : p)
-            }));
-        },
+        onUpdateHp: handleDndBeyondUpdate,
         enabled: true
     });
 
@@ -633,6 +665,9 @@ export const useEncounterManager = () => {
     };
 
     const updateHp = (id: string, amount: number) => {
+        const safeAmount = Number(amount);
+        if (isNaN(safeAmount)) return;
+
         setEncounter(prev => {
             const participant = prev.participants.find(p => p.id === id);
             if (!participant) return prev;
@@ -646,7 +681,21 @@ export const useEncounterManager = () => {
             const isHeal = amount > 0;
             const isDamage = amount < 0;
 
+
             if (isDamage) {
+                // Check for Concentration logic (UI side-effect inside hook, acceptable for this use-case)
+                if (participant.conditions?.some(c => (typeof c === 'string' ? c : c.name) === 'Concentré')) {
+                    const damageVal = Math.abs(amount);
+                    const dc = Math.max(10, Math.floor(damageVal / 2));
+                    // Immediate toast
+                    toast({
+                        title: "Jet de Concentration Requis !",
+                        description: `${participant.name} a subi ${damageVal} dégâts alors qu'il était concentré.\nDD Constitution : ${dc}`,
+                        variant: "destructive",
+                        duration: 6000
+                    });
+                }
+
                 const damage = Math.abs(amount);
                 if (newTempHp > 0) {
                     const absorbed = Math.min(newTempHp, damage);
@@ -715,6 +764,37 @@ export const useEncounterManager = () => {
         } while (sortedParticipants[nextIndex].currentHp <= 0);
 
         const nextId = sortedParticipants[nextIndex].id;
+        const nextParticipant = sortedParticipants[nextIndex];
+
+        // --- Condition Notifications (Start of Turn) ---
+        if (nextParticipant.conditions && nextParticipant.conditions.length > 0) {
+            const conditionsToNotify = nextParticipant.conditions.map(c => {
+                const info = getConditionInfo(c);
+                return { name: typeof c === 'string' ? c : c.name, info };
+            });
+
+            // 1. Critical Start-of-Turn Effects
+            const startEffects = conditionsToNotify.filter(c => c.info.timing === 'start');
+            startEffects.forEach(effect => {
+                toast({
+                    title: `Effet de Début de Tour: ${effect.name}`,
+                    description: `${nextParticipant.name}: ${effect.info.description.split('\n')[0]}`,
+                    variant: "destructive"
+                });
+            });
+
+            // 2. General Reminder (if not just start effects)
+            const otherConditions = conditionsToNotify.filter(c => c.info.timing !== 'start');
+            if (otherConditions.length > 0) {
+                otherConditions.forEach(c => {
+                    toast({
+                        title: `Rappel Condition: ${c.name} (${nextParticipant.name})`,
+                        description: c.info.description,
+                        duration: 6000
+                    });
+                });
+            }
+        }
 
         // Log turn change
         const turnMsg = `Tour de ${sortedParticipants[nextIndex].name} (Round ${newRound})`;
@@ -923,10 +1003,48 @@ export const useEncounterManager = () => {
     };
 
     const updateParticipant = (id: string, updates: Partial<EncounterParticipant>) => {
-        setEncounter(prev => ({
-            ...prev,
-            participants: prev.participants.map(p => p.id === id ? { ...p, ...updates } : p)
-        }));
+        setEncounter(prev => {
+            // Defensive coding: Force numeric types
+            const safeUpdates = { ...updates };
+            if (safeUpdates.currentHp !== undefined && typeof safeUpdates.currentHp === 'string') {
+                safeUpdates.currentHp = parseInt(safeUpdates.currentHp) || 0;
+            }
+            if (safeUpdates.maxHp !== undefined && typeof safeUpdates.maxHp === 'string' && /^\d+$/.test(safeUpdates.maxHp)) {
+                safeUpdates.maxHp = parseInt(safeUpdates.maxHp);
+            }
+            if (safeUpdates.initiative !== undefined) {
+                safeUpdates.initiative = Number(safeUpdates.initiative);
+            }
+
+            // Check for concentration if HP is changing
+            if (safeUpdates.currentHp !== undefined) {
+                const participant = prev.participants.find(p => p.id === id);
+                if (participant) {
+                    const currentHp = typeof participant.currentHp === 'string' ? extractNumericHP(participant.currentHp) : participant.currentHp;
+                    const newHp = safeUpdates.currentHp as number;
+
+                    // If taking damage
+                    if (newHp < currentHp) {
+                        if (participant.conditions?.some(c => (typeof c === 'string' ? c : c.name) === 'Concentré')) {
+                            const damageVal = currentHp - newHp;
+                            const dc = Math.max(10, Math.floor(damageVal / 2));
+
+                            toast({
+                                title: "Jet de Concentration Requis !",
+                                description: `${participant.name} a subi ${damageVal} dégâts alors qu'il était concentré.\nDD Constitution : ${dc}`,
+                                variant: "destructive",
+                                duration: 6000
+                            });
+                        }
+                    }
+                }
+            }
+
+            return {
+                ...prev,
+                participants: prev.participants.map(p => p.id === id ? { ...p, ...safeUpdates } : p)
+            };
+        });
     };
 
     const moveParticipant = (id: string, direction: 'up' | 'down') => {

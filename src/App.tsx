@@ -16,6 +16,7 @@ import Header from './components/layout/Header';
 import { useAuth } from './auth/AuthContext';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 import { GlobalCommandPalette } from './components/GlobalCommandPalette';
+import { Toaster } from './components/ui/toaster';
 import './App.css';
 
 // Composant de protection des routes authentifiées
@@ -117,6 +118,7 @@ function App() {
           )}
         </div>
       </footer>
+      <Toaster />
     </div>
   );
 }
