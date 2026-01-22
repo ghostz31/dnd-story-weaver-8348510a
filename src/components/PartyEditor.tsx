@@ -730,20 +730,20 @@ const PartyEditor: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <UsageStats />
 
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Users className="mr-2 h-6 w-6" />
+        <CardHeader className="p-4 md:p-6">
+          <CardTitle className="flex items-center text-lg md:text-xl">
+            <Users className="mr-2 h-5 w-5 md:h-6 md:w-6" />
             Groupes d'aventuriers
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-sm">
             Gérez vos groupes de personnages joueurs
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 md:p-6 pt-0 md:pt-0">
           {error && (
             <Alert variant="destructive" className="mb-4">
               <AlertCircle className="h-4 w-4 mr-2" />
@@ -757,17 +757,17 @@ const PartyEditor: React.FC = () => {
             </div>
           ) : (
             <>
-              <div className="flex flex-wrap gap-2 mb-4">
+              <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-2 -mb-2">
                 {parties.map(party => (
                   <Button
                     key={party.id}
                     variant={selectedParty?.id === party.id ? "default" : "outline"}
-                    className="flex items-center"
+                    className="flex items-center whitespace-nowrap flex-shrink-0 touch-target"
                     onClick={() => setSelectedParty(party)}
                   >
-                    <Users className="mr-2 h-4 w-4" />
-                    {party.name}
-                    <span className="ml-2 text-xs bg-primary/10 px-1.5 py-0.5 rounded-full">
+                    <Users className="mr-1.5 h-4 w-4" />
+                    <span className="max-w-[120px] truncate">{party.name}</span>
+                    <span className="ml-1.5 text-xs bg-primary/10 px-1.5 py-0.5 rounded-full">
                       {party.players.length}
                     </span>
                   </Button>
@@ -842,38 +842,39 @@ const PartyEditor: React.FC = () => {
 
               {selectedParty ? (
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="text-lg font-semibold flex items-center">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                    <div className="min-w-0">
+                      <h3 className="text-base md:text-lg font-semibold flex items-center truncate">
                         {selectedParty.name}
-                        <span className="ml-2 text-sm font-normal text-gray-500">
-                          (Niveau moyen: {calculateAverageLevel(selectedParty)})
+                        <span className="ml-2 text-xs md:text-sm font-normal text-gray-500">
+                          (Niv. moy: {calculateAverageLevel(selectedParty)})
                         </span>
                       </h3>
                     </div>
-                    <div className="flex space-x-2">
+                    <div className="flex gap-2">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={openEditPartyDialog}
+                        className="touch-target"
                       >
-                        <Edit className="h-4 w-4 mr-1" />
-                        Renommer
+                        <Edit className="h-4 w-4 sm:mr-1" />
+                        <span className="hidden sm:inline">Renommer</span>
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 touch-target"
                         onClick={() => handleDeleteParty(selectedParty.id)}
                       >
-                        <Trash2 className="h-4 w-4 mr-1" />
-                        Supprimer
+                        <Trash2 className="h-4 w-4 sm:mr-1" />
+                        <span className="hidden sm:inline">Supprimer</span>
                       </Button>
                     </div>
                   </div>
 
                   <Card>
-                    <CardHeader className="p-4 pb-2">
+                    <CardHeader className="p-3 md:p-4 pb-2">
                       <div className="flex justify-between items-center">
                         <CardTitle className="text-base">Personnages</CardTitle>
 
@@ -881,6 +882,7 @@ const PartyEditor: React.FC = () => {
                           <DialogTrigger asChild>
                             <Button
                               size="sm"
+                              className="touch-target"
                               onClick={() => {
                                 setIsEditingPlayer(false);
                                 setEditingPlayerId(null);
@@ -899,7 +901,7 @@ const PartyEditor: React.FC = () => {
                               Ajouter
                             </Button>
                           </DialogTrigger>
-                          <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col">
+                          <DialogContent className="w-full max-w-3xl h-full md:h-auto md:max-h-[90vh] flex flex-col rounded-none md:rounded-lg">
                             <DialogHeader>
                               <DialogTitle>
                                 {isEditingPlayer ? "Modifier le personnage" : "Ajouter un personnage"}

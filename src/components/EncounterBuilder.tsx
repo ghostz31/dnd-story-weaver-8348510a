@@ -487,20 +487,20 @@ const EncounterBuilder: React.FC = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {/* Liste des rencontres */}
-      <div className="md:col-span-1 parchment-panel rounded-xl p-4 h-fit sticky top-24">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-gray-800">Rencontres</h2>
+    <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4">
+      {/* Liste des rencontres - Collapsible on mobile */}
+      <div className="lg:col-span-1 parchment-panel rounded-xl p-3 md:p-4 lg:h-fit lg:sticky lg:top-24">
+        <div className="flex justify-between items-center mb-3 md:mb-4">
+          <h2 className="text-lg md:text-xl font-bold text-gray-800">Rencontres</h2>
           <div className="flex items-center gap-2">
             {isAuthenticated && userStats && userStats.maxEncounters < 1000 && (
-              <span className="text-sm text-gray-600">
+              <span className="text-xs md:text-sm text-gray-600">
                 {userStats.encounters}/{userStats.maxEncounters}
               </span>
             )}
             <button
               onClick={resetForm}
-              className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 touch-target"
             >
               Nouvelle
             </button>
@@ -592,8 +592,7 @@ const EncounterBuilder: React.FC = () => {
       </div>
 
       {/* Formulaire de création/édition */}
-      {/* Formulaire de création/édition */}
-      <div className="md:col-span-2 parchment-panel rounded-xl p-6">
+      <div className="lg:col-span-2 parchment-panel rounded-xl p-4 md:p-6">
 
         <EncounterHeader
           isEditing={isEditing}
@@ -623,10 +622,10 @@ const EncounterBuilder: React.FC = () => {
         />
 
         {/* Boutons d'action */}
-        <div className="flex justify-end space-x-2">
+        <div className="flex flex-col sm:flex-row justify-end gap-2">
           <button
             onClick={handleSaveEncounter}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center"
+            className="w-full sm:w-auto px-4 py-2.5 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center justify-center touch-target"
             disabled={isSaving}
           >
             <FaSave className="mr-2" />
@@ -636,11 +635,11 @@ const EncounterBuilder: React.FC = () => {
           {/* Bouton pour lancer la rencontre */}
           <button
             onClick={launchEncounter}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 flex items-center"
+            className="w-full sm:w-auto px-4 py-2.5 bg-red-600 text-white rounded hover:bg-red-700 flex items-center justify-center touch-target"
             disabled={!selectedMonsters.length || isSaving}
           >
             <FaDragon className="mr-2" />
-            Lancer la rencontre
+            <span className="hidden sm:inline">Lancer la </span>rencontre
           </button>
         </div>
 
@@ -732,18 +731,19 @@ const EncounterBuilder: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal du navigateur de monstres */}
+      {/* Modal du navigateur de monstres - Fullscreen on mobile */}
       {showMonsterBrowser && (
-        <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="flex items-center justify-center min-h-screen p-4">
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-end md:items-center justify-center min-h-screen md:p-4">
             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowMonsterBrowser(false)}></div>
-            <div className="relative parchment-card rounded-xl max-w-5xl w-full max-h-[90vh] overflow-y-auto flex flex-col shadow-2xl">
-              <div className="p-4 border-b border-glass-border/20 flex justify-between items-center bg-primary/5">
-                <h2 className="text-xl font-bold font-cinzel">Sélectionner un monstre</h2>
+            <div className="relative parchment-card md:rounded-xl w-full md:max-w-5xl h-full md:h-auto md:max-h-[90vh] overflow-y-auto flex flex-col shadow-2xl animate-in slide-in-from-bottom md:fade-in md:zoom-in-95 duration-200">
+              <div className="p-3 md:p-4 border-b border-glass-border/20 flex justify-between items-center bg-primary/5 sticky top-0 z-10">
+                <h2 className="text-lg md:text-xl font-bold font-cinzel">Sélectionner un monstre</h2>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setShowMonsterBrowser(false)}
+                  className="touch-target h-11 w-11"
                 >
                   <X className="h-5 w-5" />
                 </Button>
