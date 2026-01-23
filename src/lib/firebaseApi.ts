@@ -1539,7 +1539,7 @@ export const saveCustomMonsterCloud = async (monsterData: any): Promise<void> =>
     const monsterRef = doc(db, 'users', user.uid, 'monsters', id || monsterData.id);
 
     await setDoc(monsterRef, {
-      ...cleanData,
+      ...cleanedData,
       updatedAt: serverTimestamp(),
       createdAt: monsterData.createdAt || serverTimestamp()
     }, { merge: true });

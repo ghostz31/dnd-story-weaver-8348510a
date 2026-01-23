@@ -56,6 +56,11 @@ const getCurrentUser = () => {
     return user;
 };
 
+// Helper pour nettoyer les données récursivement (supprimer undefined)
+const cleanData = <T>(data: T): T => {
+    return JSON.parse(JSON.stringify(data));
+};
+
 // ====== Partage de Rencontres ======
 
 /**
@@ -104,7 +109,8 @@ export const shareEncounter = async (encounterId: string): Promise<string> => {
         }
 
         // Créer l'entrée de partage
-        const sharedData = {
+        // On nettoie d'abord les données pour éviter les undefined
+        const cleanEncounterData = cleanData({
             ...encounterData,
             originalId: encounterId,
             ownerId: user.uid,
@@ -112,11 +118,15 @@ export const shareEncounter = async (encounterId: string): Promise<string> => {
             shareCode,
             isPublic: true,
             copiedCount: 0,
+            custom: false // Explicite
+        });
+
+        const sharedData = {
+            ...cleanEncounterData,
             sharedAt: serverTimestamp()
         };
 
-        // Nettoyer les données avant sauvegarde
-        delete sharedData.id;
+
 
         await addDoc(sharedRef, sharedData);
 
@@ -190,8 +200,8 @@ export const copySharedEncounter = async (shareCode: string, folderId?: string):
         const newEncounter = {
             name: `${sharedEncounter.name} (copie)`,
             description: sharedEncounter.description || '',
-            environment: sharedEncounter.environment || [],
-            monsters: sharedEncounter.monsters || [],
+            environment: cleanData(sharedEncounter.environment || []),
+            monsters: cleanData(sharedEncounter.monsters || []),
             participants: [],
             party: null,
             partyId: null,
@@ -276,7 +286,8 @@ export const shareMonster = async (monster: Monster): Promise<string> => {
 
         // Créer l'entrée de partage
         const { id, ...monsterData } = monster;
-        const sharedData = {
+
+        const cleanMonsterData = cleanData({
             ...monsterData,
             originalName: monster.name,
             ownerId: user.uid,
@@ -284,8 +295,12 @@ export const shareMonster = async (monster: Monster): Promise<string> => {
             shareCode,
             isPublic: true,
             copiedCount: 0,
-            sharedAt: serverTimestamp(),
             custom: true
+        });
+
+        const sharedData = {
+            ...cleanMonsterData,
+            sharedAt: serverTimestamp()
         };
 
         await addDoc(sharedRef, sharedData);
