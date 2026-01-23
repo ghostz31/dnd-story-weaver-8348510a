@@ -109,8 +109,8 @@ export const shareEncounter = async (encounterId: string): Promise<string> => {
         }
 
         // Créer l'entrée de partage
-        // On nettoie d'abord les données pour éviter les undefined
-        const cleanEncounterData = cleanData({
+        // On construit l'objet de base sans les timestamps pour le nettoyage
+        const baseSharedData = {
             ...encounterData,
             originalId: encounterId,
             ownerId: user.uid,
@@ -118,17 +118,21 @@ export const shareEncounter = async (encounterId: string): Promise<string> => {
             shareCode,
             isPublic: true,
             copiedCount: 0,
-            custom: false // Explicite
-        });
+            custom: false
+        };
 
-        const sharedData = {
-            ...cleanEncounterData,
+        // Nettoyage impératif de tout l'objet
+        const cleanSharedData = cleanData(baseSharedData);
+
+        // Ajout du timestamp après nettoyage (car JSON.stringify briserait serverTimestamp)
+        const finalSharedData = {
+            ...cleanSharedData,
             sharedAt: serverTimestamp()
         };
 
 
 
-        await addDoc(sharedRef, sharedData);
+        await addDoc(sharedRef, finalSharedData);
 
         return shareCode;
     } catch (error) {
@@ -197,11 +201,12 @@ export const copySharedEncounter = async (shareCode: string, folderId?: string):
         // Créer une copie dans le compte de l'utilisateur
         const encountersRef = collection(db, 'users', user.uid, 'encounters');
 
-        const newEncounter = {
+        // Construction de l'objet de base
+        const baseEncounter = {
             name: `${sharedEncounter.name} (copie)`,
             description: sharedEncounter.description || '',
-            environment: cleanData(sharedEncounter.environment || []),
-            monsters: cleanData(sharedEncounter.monsters || []),
+            environment: sharedEncounter.environment || [],
+            monsters: sharedEncounter.monsters || [],
             participants: [],
             party: null,
             partyId: null,
@@ -210,6 +215,14 @@ export const copySharedEncounter = async (shareCode: string, folderId?: string):
             adjustedXP: sharedEncounter.adjustedXP || 0,
             status: 'draft',
             folderId: folderId || null,
+        };
+
+        // Nettoyage profond (supprime tous les undefined, même imbriqués)
+        const cleanedEncounter = cleanData(baseEncounter);
+
+        // Ajout des timestamps Firestore
+        const newEncounter = {
+            ...cleanedEncounter,
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp()
         };
