@@ -5,7 +5,7 @@ import { useAuth } from '../auth/AuthContext';
 import { toast } from '../hooks/use-toast';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { X } from 'lucide-react';
+import { X, Share2 } from 'lucide-react';
 import { getAideDDMonsterSlug, getMonsterImageUrl } from '../lib/monsterUtils';
 import { useMonsters } from '../hooks/useMonsters';
 import FilterPanel from '@/components/ui/FilterPanel';
@@ -18,6 +18,7 @@ import { StatBlock } from './StatBlock';
 import { MonsterEditor } from './MonsterEditor';
 import { generateUniqueId } from '../lib/monsterUtils';
 import { getMonsterFromAideDD } from '../lib/api';
+import { shareMonster } from '../lib/sharingApi';
 
 interface MonsterBrowserProps {
   onSelectMonster?: (monster: Monster) => void;
@@ -294,6 +295,27 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
       toast({
         title: "Supprimé",
         description: "La créature a été supprimée.",
+      });
+    }
+  };
+
+  const handleShareMonster = async (monster: Monster) => {
+    try {
+      const shareCode = await shareMonster(monster);
+      const shareUrl = `${window.location.origin}/shared/monster/${shareCode}`;
+
+      await navigator.clipboard.writeText(shareUrl);
+
+      toast({
+        title: "Lien copié !",
+        description: `Code de partage : ${shareCode}. Le lien a été copié.`,
+      });
+    } catch (error) {
+      console.error('Erreur partage monstre:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de partager la créature.",
+        variant: "destructive"
       });
     }
   };
@@ -693,6 +715,15 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                           title="Modifier"
                         >
                           <FaPen className="mr-2" /> Modifier
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleShareMonster(selectedMonster)}
+                          title="Partager cette créature"
+                          className="text-blue-600 hover:text-blue-700"
+                        >
+                          <Share2 className="w-4 h-4 mr-2" /> Partager
                         </Button>
                         <Button
                           variant="destructive"
