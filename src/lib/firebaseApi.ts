@@ -1458,20 +1458,107 @@ export const deleteFolder = async (folderId: string): Promise<boolean> => {
   }
 };
 
-// Déplacer une rencontre vers un dossier
-export const moveEncounterToFolder = async (encounterId: string, folderId: string | null): Promise<boolean> => {
+
+
+// ====== API pour les Monstres Personnalisés ======
+
+// Récupérer les monstres personnalisés
+export const getCustomMonsters = async (): Promise<any[]> => {
   try {
     const user = getCurrentUser();
-    const encounterRef = doc(db, 'users', user.uid, 'encounters', encounterId);
+    const monstersRef = collection(db, 'users', user.uid, 'monsters');
+    const q = query(monstersRef);
 
-    await updateDoc(encounterRef, {
-      folderId: folderId,
-      updatedAt: serverTimestamp()
+    const querySnapshot = await getDocs(q);
+    const monsters: any[] = [];
+
+    querySnapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      monsters.push({
+        ...data,
+        id: docSnap.id,
+        custom: true,
+        source: 'Custom'
+      });
     });
 
-    return true;
+    return monsters;
   } catch (error) {
-    console.error("Erreur lors du déplacement de la rencontre:", error);
+    console.error("Erreur lors de la récupération des monstres:", error);
+    return [];
+  }
+};
+
+// Écouter les changements des monstres personnalisés
+export const subscribeToCustomMonsters = (
+  callback: (monsters: any[]) => void,
+  errorCallback?: (error: any) => void
+): (() => void) => {
+  try {
+    const user = getCurrentUser();
+    const monstersRef = collection(db, 'users', user.uid, 'monsters');
+
+    const unsubscribe = onSnapshot(
+      monstersRef,
+      (snapshot) => {
+        const monsters: any[] = [];
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          monsters.push({
+            ...data,
+            id: doc.id,
+            custom: true,
+            source: 'Custom'
+          });
+        });
+        callback(monsters);
+      },
+      (error) => {
+        console.error("Erreur d'abonnement aux monstres:", error);
+        if (errorCallback) errorCallback(error);
+      }
+    );
+
+    return unsubscribe;
+  } catch (error) {
+    console.error("Erreur lors de la mise en place de l'abonnement monstres:", error);
+    if (errorCallback) errorCallback(error);
+    return () => { };
+  }
+};
+
+// Sauvegarder un monstre personnalisé
+export const saveCustomMonsterCloud = async (monsterData: any): Promise<void> => {
+  try {
+    const user = getCurrentUser();
+
+    // Nettoyage des données
+    const { id, custom, source, ...dataToSave } = monsterData;
+    const cleanedData = cleanData(dataToSave);
+
+    const monsterRef = doc(db, 'users', user.uid, 'monsters', id || monsterData.id);
+
+    await setDoc(monsterRef, {
+      ...cleanData,
+      updatedAt: serverTimestamp(),
+      createdAt: monsterData.createdAt || serverTimestamp()
+    }, { merge: true });
+
+  } catch (error) {
+    console.error("Erreur lors de la sauvegarde du monstre:", error);
+    throw error;
+  }
+};
+
+// Supprimer un monstre personnalisé
+export const deleteCustomMonsterCloud = async (monsterId: string): Promise<void> => {
+  try {
+    const user = getCurrentUser();
+    const monsterRef = doc(db, 'users', user.uid, 'monsters', monsterId);
+
+    await deleteDoc(monsterRef);
+  } catch (error) {
+    console.error("Erreur lors de la suppression du monstre:", error);
     throw error;
   }
 }; 

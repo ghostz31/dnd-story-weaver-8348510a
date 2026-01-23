@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sword, Copy, AlertCircle, Loader2, Check, Heart, Shield, Zap } from 'lucide-react';
 import { getSharedMonster, copySharedMonster, SharedMonster } from '../lib/sharingApi';
+import { saveCustomMonsterCloud } from '../lib/firebaseApi';
 import { useAuth } from '../auth/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -58,6 +59,15 @@ const SharedMonsterPage: React.FC = () => {
                 const existingMonsters = JSON.parse(localStorage.getItem('custom_monsters') || '[]');
                 existingMonsters.push(copiedMonster);
                 localStorage.setItem('custom_monsters', JSON.stringify(existingMonsters));
+
+                // Sauvegarder dans le Cloud si authentifié
+                if (isAuthenticated) {
+                    try {
+                        await saveCustomMonsterCloud(copiedMonster);
+                    } catch (e) {
+                        console.error("Erreur sauvegarde cloud:", e);
+                    }
+                }
 
                 setCopied(true);
                 toast({

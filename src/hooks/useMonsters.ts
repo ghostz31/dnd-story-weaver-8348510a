@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { loadMonstersIndex, getMonsters } from '../lib/api';
-import { subscribeToMonsters, getEncounters } from '../lib/firebaseApi';
+import { subscribeToMonsters, getEncounters, saveCustomMonsterCloud, deleteCustomMonsterCloud, subscribeToCustomMonsters, getCustomMonsters } from '../lib/firebaseApi';
 import { Monster } from '../lib/types';
 import { useAuth } from '../auth/AuthContext';
 import { generateUniqueId } from '../lib/monsterUtils';
@@ -55,6 +55,36 @@ export const useMonsters = () => {
             // Load custom monsters
             const storedCustom = localStorage.getItem('custom_monsters');
             let custom: Monster[] = storedCustom ? JSON.parse(storedCustom) : [];
+
+            // Cloud Sync
+            if (isAuthenticated) {
+                try {
+                    const cloudMonsters = await getCustomMonsters();
+                    let hasChanges = false;
+
+                    cloudMonsters.forEach(cloudM => {
+                        const idx = custom.findIndex(c => c.id === cloudM.id);
+                        // Si le monstre cloud n'existe pas ou est différent (simple check ID ici pour l'ajout)
+                        if (idx === -1) {
+                            custom.push(cloudM);
+                            hasChanges = true;
+                        } else {
+                            // On pourrait comparer les dates de màj, mais pour l'instant on écrase avec le Cloud (source de vérité)
+                            // Sauf s'il est "plus récent" en local ? Non, restons simple : Cloud gagne.
+                            if (JSON.stringify(custom[idx]) !== JSON.stringify(cloudM)) {
+                                custom[idx] = cloudM;
+                                hasChanges = true;
+                            }
+                        }
+                    });
+
+                    if (hasChanges) {
+                        localStorage.setItem('custom_monsters', JSON.stringify(custom));
+                    }
+                } catch (e) {
+                    console.error("Erreur sync cloud monstres:", e);
+                }
+            }
 
             // MIGRATION: Check legacy 'dnd_monsters' for custom monsters that might be lost
             // because api.ts writes to 'dnd_monsters' but we prioritize index + custom_monsters
@@ -188,29 +218,41 @@ export const useMonsters = () => {
         }
     };
 
-    const saveCustomMonster = (monster: Monster) => {
+    const saveCustomMonster = async (monster: Monster) => {
         const storedCustom = localStorage.getItem('custom_monsters');
         let custom: Monster[] = storedCustom ? JSON.parse(storedCustom) : [];
 
         const existingIndex = custom.findIndex(m => m.id === monster.id);
+        const monsterToSave = { ...monster, id: monster.id || generateUniqueId(), custom: true, source: 'Custom' };
 
         if (existingIndex >= 0) {
             // Update existing
-            custom[existingIndex] = { ...monster, custom: true, source: 'Custom' };
+            custom[existingIndex] = monsterToSave;
         } else {
             // Add new
-            if (custom.length >= 10) {
-                throw new Error("Limite de 10 monstres personnalisés atteinte.");
-            }
-            custom.push({ ...monster, id: monster.id || generateUniqueId(), custom: true, source: 'Custom' });
+            // Note: Cloud limit is 20 for free plan but local we keep 10-20. 
+            // We'll let Firestore enforce cloud limits if any.
+            custom.push(monsterToSave);
         }
 
+        // Save Local
         localStorage.setItem('custom_monsters', JSON.stringify(custom));
         setCustomMonsters(custom);
+
+        // Save Cloud
+        if (isAuthenticated) {
+            try {
+                await saveCustomMonsterCloud(monsterToSave);
+            } catch (e) {
+                console.error("Erreur sauvegarde cloud:", e);
+                // On ne bloque pas si le cloud échoue, on a le local
+            }
+        }
+
         loadLocalMonsters(); // Reload to merge lists
     };
 
-    const deleteCustomMonster = (monsterId: string) => {
+    const deleteCustomMonster = async (monsterId: string) => {
         const storedCustom = localStorage.getItem('custom_monsters');
         if (!storedCustom) return;
 
@@ -219,12 +261,51 @@ export const useMonsters = () => {
 
         localStorage.setItem('custom_monsters', JSON.stringify(custom));
         setCustomMonsters(custom);
+
+        if (isAuthenticated) {
+            try {
+                await deleteCustomMonsterCloud(monsterId);
+            } catch (e) {
+                console.error("Erreur suppression cloud:", e);
+            }
+        }
+
         loadLocalMonsters();
     };
 
     useEffect(() => {
-        // Simplified: Always load local + custom for now, assuming offline/local-first for this task
         loadLocalMonsters();
+
+        let unsubscribe: (() => void) | undefined;
+
+        if (isAuthenticated) {
+            unsubscribe = subscribeToCustomMonsters((cloudMonsters) => {
+                const storedCustom = localStorage.getItem('custom_monsters');
+                let custom: Monster[] = storedCustom ? JSON.parse(storedCustom) : [];
+                let hasChanges = false;
+
+                cloudMonsters.forEach(cloudM => {
+                    const idx = custom.findIndex(c => c.id === cloudM.id);
+                    if (idx === -1) {
+                        custom.push(cloudM);
+                        hasChanges = true;
+                    } else if (JSON.stringify(custom[idx]) !== JSON.stringify(cloudM)) {
+                        custom[idx] = cloudM;
+                        hasChanges = true;
+                    }
+                });
+
+                if (hasChanges) {
+                    localStorage.setItem('custom_monsters', JSON.stringify(custom));
+                    // Recharger pour mettre à jour l'état complet (monstres + custom)
+                    loadLocalMonsters();
+                }
+            });
+        }
+
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
     }, [isAuthenticated]);
 
     const recoverLostMonsters = async (): Promise<number> => {
