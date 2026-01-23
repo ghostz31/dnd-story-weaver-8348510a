@@ -154,67 +154,7 @@ const IndexPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Section Premium */}
-        <section className="py-16 mb-12 relative z-10">
-          <div className="container mx-auto px-4">
-            <h2 className="text-4xl font-bold mb-4 text-center font-cinzel">L'Ascension Héroïque</h2>
-            <p className="text-xl text-muted-foreground mb-12 text-center font-light">Débloquez le potentiel ultime de votre table</p>
 
-            <motion.div
-              className="max-w-md mx-auto"
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-            >
-              <div className="glass-card p-8 rounded-2xl border-2 border-primary/30 shadow-2xl relative overflow-hidden group hover:border-primary/50 transition-all duration-500">
-                <div className="absolute top-0 right-0 p-4 bg-gradient-to-bl from-primary to-primary/80 text-white rounded-bl-3xl text-sm font-bold uppercase tracking-widest shadow-lg">
-                  Légendaire
-                </div>
-
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-purple-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-
-                <div className="relative z-10">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="p-3 bg-primary/10 rounded-xl">
-                      <CreditCard className="h-8 w-8 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-cinzel font-bold">Premium</h3>
-                      <p className="text-muted-foreground">L'expérience complète</p>
-                    </div>
-                  </div>
-
-                  <div className="mb-8">
-                    <span className="text-4xl font-bold font-cinzel">4,99€</span>
-                    <span className="text-muted-foreground"> / mois</span>
-                  </div>
-
-                  <ul className="space-y-4 mb-8">
-                    {[
-                      "Groupes et personnages illimités",
-                      "Rencontres illimitées",
-                      "Créer et sauvegarder des monstres",
-                      "Exportation PDF des rencontres",
-                      "Aucune publicité"
-                    ].map((feature, i) => (
-                      <li key={i} className="flex items-center gap-3">
-                        <div className="bg-green-500/10 p-1 rounded-full">
-                          <Check className="h-4 w-4 text-green-600 shrink-0" />
-                        </div>
-                        <span className="text-foreground/80">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Button className="w-full py-6 text-lg font-cinzel shadow-glow hover:shadow-glow-lg transition-all" asChild>
-                    <Link to="/subscription">S'abonner Maintenant</Link>
-                  </Button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </section>
       </div>
     </PageTransition>
   );
