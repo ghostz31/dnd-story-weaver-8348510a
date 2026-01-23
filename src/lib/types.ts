@@ -97,6 +97,15 @@ export interface EncounterMonster {
   quantity: number;
 }
 
+// Dossier pour organiser les rencontres
+export interface EncounterFolder {
+  id: string;
+  name: string;
+  color?: string;         // Couleur hex optionnelle (ex: "#FF5733")
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Encounter {
   id: string;
   name: string;
@@ -114,6 +123,7 @@ export interface Encounter {
   round?: number;
   currentTurn?: number;
   isActive?: boolean;
+  folderId?: string;      // ID du dossier (optionnel)
   createdAt: string;
   updatedAt: string;
   combatLog?: CombatLogEntry[];

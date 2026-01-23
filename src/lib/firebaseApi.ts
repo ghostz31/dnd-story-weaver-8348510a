@@ -38,14 +38,14 @@ import {
 } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
 import { db, auth } from '../firebase/firebase';
-import { Party, Player, UserStats, Monster, Encounter, EncounterMonster } from './types';
+import { Party, Player, UserStats, Monster, Encounter, EncounterMonster, EncounterFolder } from './types';
 import { User } from 'firebase/auth';
 import { EncounterSchema, PartySchema } from './schemas';
 
 // Constants pour les limites des plans
 const FREE_PLAN_LIMITS = {
   MAX_PARTIES: 3,
-  MAX_ENCOUNTERS: 10
+  MAX_ENCOUNTERS: 20
 };
 
 // ====== Utilitaires ======
@@ -1293,4 +1293,185 @@ export const calculateXPFromCR = (cr: number): number => {
   };
 
   return crToXP[cr] || 0;
+};
+
+// ====== API pour les dossiers de rencontres ======
+
+// Récupérer tous les dossiers de l'utilisateur
+export const getFolders = async (): Promise<EncounterFolder[]> => {
+  try {
+    const user = getCurrentUser();
+    const foldersRef = collection(db, 'users', user.uid, 'folders');
+    const querySnapshot = await getDocs(foldersRef);
+
+    const folders: EncounterFolder[] = [];
+    querySnapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      folders.push({
+        id: docSnap.id,
+        name: data.name,
+        color: data.color,
+        createdAt: data.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+        updatedAt: data.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString()
+      });
+    });
+
+    return folders.sort((a, b) => a.name.localeCompare(b.name));
+  } catch (error) {
+    console.error("Erreur lors de la récupération des dossiers:", error);
+    throw error;
+  }
+};
+
+// Écouter les changements des dossiers en temps réel
+export const subscribeToFolders = (
+  callback: (folders: EncounterFolder[]) => void,
+  errorCallback?: (error: any) => void
+): (() => void) => {
+  try {
+    const user = getCurrentUser();
+    const foldersRef = collection(db, 'users', user.uid, 'folders');
+
+    const unsubscribe = onSnapshot(
+      foldersRef,
+      (snapshot) => {
+        const folders: EncounterFolder[] = [];
+        snapshot.forEach(docSnap => {
+          const data = docSnap.data();
+          folders.push({
+            id: docSnap.id,
+            name: data.name,
+            color: data.color,
+            createdAt: data.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+            updatedAt: data.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString()
+          });
+        });
+
+        callback(folders.sort((a, b) => a.name.localeCompare(b.name)));
+      },
+      (error) => {
+        console.error("Erreur dans onSnapshot (dossiers):", error);
+        if (errorCallback) errorCallback(error);
+      }
+    );
+
+    return unsubscribe;
+  } catch (error) {
+    console.error("Erreur lors de l'abonnement aux dossiers:", error);
+    if (errorCallback) errorCallback(error);
+    return () => { };
+  }
+};
+
+// Créer un nouveau dossier
+export const createFolder = async (name: string, color?: string): Promise<EncounterFolder> => {
+  try {
+    const user = getCurrentUser();
+    const foldersRef = collection(db, 'users', user.uid, 'folders');
+
+    const now = serverTimestamp();
+    const folderData = {
+      name,
+      color: color || null,
+      createdAt: now,
+      updatedAt: now
+    };
+
+    const docRef = await addDoc(foldersRef, folderData);
+
+    return {
+      id: docRef.id,
+      name,
+      color,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error("Erreur lors de la création du dossier:", error);
+    throw error;
+  }
+};
+
+// Mettre à jour un dossier
+export const updateFolder = async (
+  folderId: string,
+  updates: Partial<Omit<EncounterFolder, 'id' | 'createdAt' | 'updatedAt'>>
+): Promise<EncounterFolder> => {
+  try {
+    const user = getCurrentUser();
+    const folderRef = doc(db, 'users', user.uid, 'folders', folderId);
+
+    const folderDoc = await getDoc(folderRef);
+    if (!folderDoc.exists()) {
+      throw new Error("Dossier non trouvé");
+    }
+
+    const updateData = {
+      ...updates,
+      updatedAt: serverTimestamp()
+    };
+
+    await updateDoc(folderRef, updateData);
+
+    const data = folderDoc.data();
+    return {
+      id: folderId,
+      name: updates.name || data.name,
+      color: updates.color !== undefined ? updates.color : data.color,
+      createdAt: data.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour du dossier:", error);
+    throw error;
+  }
+};
+
+// Supprimer un dossier (les rencontres ne sont pas supprimées, juste leur folderId est retiré)
+export const deleteFolder = async (folderId: string): Promise<boolean> => {
+  try {
+    const user = getCurrentUser();
+    const folderRef = doc(db, 'users', user.uid, 'folders', folderId);
+
+    // Récupérer toutes les rencontres de ce dossier et retirer leur folderId
+    const encountersRef = collection(db, 'users', user.uid, 'encounters');
+    const q = query(encountersRef, where('folderId', '==', folderId));
+    const encountersSnapshot = await getDocs(q);
+
+    // Retirer le folderId de chaque rencontre
+    const updatePromises = encountersSnapshot.docs.map(docSnap =>
+      updateDoc(doc(db, 'users', user.uid, 'encounters', docSnap.id), {
+        folderId: null,
+        updatedAt: serverTimestamp()
+      })
+    );
+
+    await Promise.all(updatePromises);
+
+    // Supprimer le dossier
+    await deleteDoc(folderRef);
+
+    return true;
+  } catch (error) {
+    console.error("Erreur lors de la suppression du dossier:", error);
+    throw error;
+  }
+};
+
+// Déplacer une rencontre vers un dossier
+export const moveEncounterToFolder = async (encounterId: string, folderId: string | null): Promise<boolean> => {
+  try {
+    const user = getCurrentUser();
+    const encounterRef = doc(db, 'users', user.uid, 'encounters', encounterId);
+
+    await updateDoc(encounterRef, {
+      folderId: folderId,
+      updatedAt: serverTimestamp()
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Erreur lors du déplacement de la rencontre:", error);
+    throw error;
+  }
 }; 

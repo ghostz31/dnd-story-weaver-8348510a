@@ -11,6 +11,7 @@ import EncounterHistory from './components/EncounterHistory';
 import PartyEditor from './components/PartyEditor';
 import SpellBrowser from './components/SpellBrowser';
 import MagicItemBrowser from './components/MagicItemBrowser';
+import SharedEncounterPage from './pages/SharedEncounterPage';
 import UserProfile from './components/auth/UserProfile';
 import Header from './components/layout/Header';
 import { useAuth } from './auth/AuthContext';
@@ -64,6 +65,7 @@ function App() {
             <Route path="/items" element={<MagicItemBrowser />} />
             <Route path="/encounter-tracker" element={<EncounterTracker />} />
             <Route path="/encounter-tracker/:encounterId" element={<EncounterTracker />} />
+            <Route path="/shared/:shareCode" element={<SharedEncounterPage />} />
 
             {/* Routes protégées (utilisateur connecté) */}
             <Route path="/profile" element={
