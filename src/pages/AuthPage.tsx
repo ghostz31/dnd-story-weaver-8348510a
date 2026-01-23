@@ -23,7 +23,7 @@ const AuthPage: React.FC = () => {
         </div>
         <h1 className="text-3xl font-bold mb-2 font-cinzel">Trame</h1>
         <p className="text-gray-600 max-w-md">
-          Connectez-vous pour accéder à toutes les fonctionnalités de gestion de vos aventures.
+          Rejoignez la guilde des Maîtres du Jeu. Accédez à tous vos outils pour préparer et mener vos campagnes.
         </p>
       </div>
 

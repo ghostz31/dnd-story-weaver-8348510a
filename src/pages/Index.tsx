@@ -60,7 +60,7 @@ const IndexPage: React.FC = () => {
               Trame
             </h1>
             <p className="text-base sm:text-xl md:text-2xl text-muted-foreground mb-6 md:mb-10 text-center max-w-2xl mx-auto font-light leading-relaxed px-4">
-              Tissez des <span className="text-primary font-medium">légendes inoubliables</span>. Créez des rencontres épiques et équilibrées pour vos aventures D&D.
+              <span className="text-primary font-medium">Préparez moins. Jouez plus.</span> L'écran du MJ numérique qui vous permet d'orchestrer des affrontements épiques et de tisser des légendes autour de votre table.
             </p>
 
             {!isAuthenticated ? (
@@ -88,7 +88,7 @@ const IndexPage: React.FC = () => {
         {/* Section des fonctionnalités */}
         <section className="py-10 md:py-16 mx-2 md:mx-4 lg:mx-8 mb-8 md:mb-12 relative z-10">
           <div className="container mx-auto px-2 md:px-4">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 md:mb-16 text-center font-cinzel text-foreground">Fonctionnalités Magiques</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 md:mb-16 text-center font-cinzel text-foreground">L'Arsenal du Maître du Jeu</h2>
 
             <motion.div
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8"
@@ -102,9 +102,9 @@ const IndexPage: React.FC = () => {
                   <div className="p-3 md:p-4 bg-primary/10 w-fit rounded-2xl mb-4 md:mb-6 group-hover:bg-primary/20 transition-colors">
                     <Sword className="h-6 w-6 md:h-8 md:w-8 text-primary" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-cinzel font-bold mb-2 md:mb-3">Générateur de Rencontres</h3>
+                  <h3 className="text-xl md:text-2xl font-cinzel font-bold mb-2 md:mb-3">Orchestrateur de Rencontres</h3>
                   <p className="text-sm md:text-base text-muted-foreground mb-4 md:mb-6 flex-grow">
-                    Choisissez parmi des centaines de monstres du SRD 5e, ajustez automatiquement la difficulté, et obtenez des statistiques détaillées.
+                    Piochez dans un bestiaire de plus de 400 créatures, équilibrez vos affrontements en un clic, et gardez tous les blocs de stats à portée de main.
                   </p>
                   <Button variant="ghost" className="w-full justify-between hover:bg-primary/5 group-hover:text-primary transition-colors mt-auto" asChild>
                     <Link to="/encounters">
@@ -120,13 +120,13 @@ const IndexPage: React.FC = () => {
                   <div className="p-3 md:p-4 bg-primary/10 w-fit rounded-2xl mb-4 md:mb-6 group-hover:bg-primary/20 transition-colors">
                     <Users className="h-6 w-6 md:h-8 md:w-8 text-primary" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-cinzel font-bold mb-2 md:mb-3">Gestion de Groupe</h3>
+                  <h3 className="text-xl md:text-2xl font-cinzel font-bold mb-2 md:mb-3">Suivi de votre Table</h3>
                   <p className="text-sm md:text-base text-muted-foreground mb-4 md:mb-6 flex-grow">
-                    Créez et gérez plusieurs groupes d'aventuriers. Suivez leurs niveaux, classes et progression pour des défis toujours adaptés.
+                    Gérez vos groupes de PJ, suivez leur progression et adaptez automatiquement la difficulté à leur niveau. Fini les calculs manuels !
                   </p>
                   <Button variant="ghost" className="w-full justify-between hover:bg-primary/5 group-hover:text-primary transition-colors mt-auto" asChild>
                     <Link to="/parties">
-                      Gérer mes groupes
+                      Gérer ma table
                       <Users className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1" />
                     </Link>
                   </Button>
@@ -138,9 +138,9 @@ const IndexPage: React.FC = () => {
                   <div className="p-3 md:p-4 bg-primary/10 w-fit rounded-2xl mb-4 md:mb-6 group-hover:bg-primary/20 transition-colors">
                     <History className="h-6 w-6 md:h-8 md:w-8 text-primary" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-cinzel font-bold mb-2 md:mb-3">Grimoire d'Histoire</h3>
+                  <h3 className="text-xl md:text-2xl font-cinzel font-bold mb-2 md:mb-3">Chroniques de Campagne</h3>
                   <p className="text-sm md:text-base text-muted-foreground mb-4 md:mb-6 flex-grow">
-                    Un registre éternel de vos batailles passées. Dupliquez, modifiez et revivez vos plus grands moments.
+                    Gardez une trace de chaque session. Retrouvez, dupliquez et réutilisez vos rencontres passées pour tisser la continuité de votre campagne.
                   </p>
                   <Button variant="ghost" className="w-full justify-between hover:bg-primary/5 group-hover:text-primary transition-colors mt-auto" asChild>
                     <Link to="/history">
