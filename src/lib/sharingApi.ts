@@ -109,8 +109,8 @@ export const shareEncounter = async (encounterId: string): Promise<string> => {
         }
 
         // Créer l'entrée de partage
-        // On construit l'objet de base sans les timestamps pour le nettoyage
-        const baseSharedData = {
+        // On nettoie d'abord les données pour éviter les undefined
+        const cleanEncounterData = cleanData({
             ...encounterData,
             originalId: encounterId,
             ownerId: user.uid,
@@ -118,21 +118,17 @@ export const shareEncounter = async (encounterId: string): Promise<string> => {
             shareCode,
             isPublic: true,
             copiedCount: 0,
-            custom: false
-        };
+            custom: false // Explicite
+        });
 
-        // Nettoyage impératif de tout l'objet
-        const cleanSharedData = cleanData(baseSharedData);
-
-        // Ajout du timestamp après nettoyage (car JSON.stringify briserait serverTimestamp)
-        const finalSharedData = {
-            ...cleanSharedData,
+        const sharedData = {
+            ...cleanEncounterData,
             sharedAt: serverTimestamp()
         };
 
 
 
-        await addDoc(sharedRef, finalSharedData);
+        await addDoc(sharedRef, sharedData);
 
         return shareCode;
     } catch (error) {
@@ -201,7 +197,6 @@ export const copySharedEncounter = async (shareCode: string, folderId?: string):
         // Créer une copie dans le compte de l'utilisateur
         const encountersRef = collection(db, 'users', user.uid, 'encounters');
 
-        // Construction de l'objet de base
         const baseEncounter = {
             name: `${sharedEncounter.name} (copie)`,
             description: sharedEncounter.description || '',
@@ -214,15 +209,14 @@ export const copySharedEncounter = async (shareCode: string, folderId?: string):
             totalXP: sharedEncounter.totalXP || 0,
             adjustedXP: sharedEncounter.adjustedXP || 0,
             status: 'draft',
-            folderId: folderId || null,
+            folderId: folderId || null
         };
 
-        // Nettoyage profond (supprime tous les undefined, même imbriqués)
-        const cleanedEncounter = cleanData(baseEncounter);
+        // Nettoyer toutes les données (supprime les undefined récursivement)
+        const cleanEncounter = cleanData(baseEncounter);
 
-        // Ajout des timestamps Firestore
         const newEncounter = {
-            ...cleanedEncounter,
+            ...cleanEncounter,
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp()
         };

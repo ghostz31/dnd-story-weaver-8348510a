@@ -67,7 +67,7 @@ const SharedEncounterPage: React.FC = () => {
             console.error('Erreur copie:', err);
             toast({
                 title: "Erreur",
-                description: "Impossible de copier la rencontre.",
+                description: `Impossible de copier : ${err instanceof Error ? err.message : String(err)}`,
                 variant: "destructive"
             });
         } finally {
