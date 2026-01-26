@@ -24,7 +24,7 @@ import {
   subscribeToParties
 } from '../lib/firebaseApi';
 import { Party, Player } from '../lib/types';
-import UsageStats from './UsageStats';
+
 import { useAuth } from '../auth/AuthContext';
 import { calculateDndBeyondAC } from '../lib/dndBeyondUtils';
 
@@ -731,7 +731,7 @@ const PartyEditor: React.FC = () => {
 
   return (
     <div className="space-y-4 md:space-y-6">
-      <UsageStats />
+
 
       <Card>
         <CardHeader className="p-4 md:p-6">

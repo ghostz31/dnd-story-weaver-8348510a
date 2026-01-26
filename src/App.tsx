@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Index from './pages/Index';
 import AuthPage from './pages/AuthPage';
-import SubscriptionPage from './pages/SubscriptionPage';
+
 import MonsterBrowser from './components/MonsterBrowser';
 import EncounterBuilder from './components/EncounterBuilder';
 import CustomEncounterGenerator from './components/CustomEncounterGenerator';
@@ -76,11 +76,7 @@ function App() {
               </ProtectedRoute>
             } />
 
-            <Route path="/subscription" element={
-              <ProtectedRoute>
-                <SubscriptionPage />
-              </ProtectedRoute>
-            } />
+
 
             <Route path="/parties" element={
               <ProtectedRoute>

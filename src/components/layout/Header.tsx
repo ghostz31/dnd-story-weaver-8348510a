@@ -25,7 +25,7 @@ import {
   User,
   ChevronDown,
   LogIn,
-  CreditCard,
+
   PenTool,
   Search,
   Scroll,
@@ -213,10 +213,7 @@ const Header: React.FC = () => {
                     <User className="mr-2 h-4 w-4" />
                     <span>Mon profil</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/subscription')}>
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    <span>Abonnement Premium</span>
-                  </DropdownMenuItem>
+
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout}>
                     <X className="mr-2 h-4 w-4" />

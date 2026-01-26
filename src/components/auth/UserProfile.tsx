@@ -16,22 +16,22 @@ import { db } from '../../firebase/firebase';
 
 const UserProfile: React.FC = () => {
   const { user, logout } = useAuth();
-  
+
   // Informations de profil
   const [displayName, setDisplayName] = useState(user?.displayName || '');
   const [isEditing, setIsEditing] = useState(false);
-  
+
   // Email
   const [email, setEmail] = useState(user?.email || '');
   const [currentPassword, setCurrentPassword] = useState('');
   const [isChangingEmail, setIsChangingEmail] = useState(false);
-  
+
   // Mot de passe
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  
+
   // États généraux
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -46,11 +46,11 @@ const UserProfile: React.FC = () => {
         if (user) {
           setDisplayName(user.displayName || '');
           setEmail(user.email || '');
-          
+
           // Charger les statistiques de l'utilisateur
           const userStats = await getUserStats();
           setStats(userStats);
-          
+
           // Vérifier si l'utilisateur a un abonnement premium
           setIsPremium(userStats.maxParties === Number.POSITIVE_INFINITY);
         }
@@ -58,7 +58,7 @@ const UserProfile: React.FC = () => {
         console.error('Erreur lors du chargement des données utilisateur:', error);
       }
     };
-    
+
     loadUserData();
   }, [user]);
 
@@ -74,26 +74,26 @@ const UserProfile: React.FC = () => {
     e.preventDefault();
     setError('');
     setSuccess('');
-    
+
     if (!displayName.trim()) {
       setError('Le nom d\'utilisateur ne peut pas être vide');
       return;
     }
-    
+
     if (!user) return;
-    
+
     try {
       setIsLoading(true);
-      
+
       // Mettre à jour le profil Firebase
       await updateProfile(user, { displayName });
-      
+
       // Mettre à jour le document utilisateur dans Firestore
       const userRef = doc(db, 'users', user.uid);
       await updateDoc(userRef, {
         displayName: displayName
       });
-      
+
       setSuccess('Profil mis à jour avec succès');
       setIsEditing(false);
     } catch (error) {
@@ -108,39 +108,39 @@ const UserProfile: React.FC = () => {
     e.preventDefault();
     setError('');
     setSuccess('');
-    
+
     if (!email.trim()) {
       setError('L\'adresse email ne peut pas être vide');
       return;
     }
-    
+
     if (!currentPassword) {
       setError('Veuillez entrer votre mot de passe pour confirmer');
       return;
     }
-    
+
     if (!user) return;
-    
+
     try {
       setIsLoading(true);
-      
+
       // Réauthentifier l'utilisateur
       const credential = EmailAuthProvider.credential(
-        user.email!, 
+        user.email!,
         currentPassword
       );
-      
+
       await reauthenticateWithCredential(user, credential);
-      
+
       // Mettre à jour l'adresse email
       await updateEmail(user, email);
-      
+
       // Mettre à jour le document utilisateur dans Firestore
       const userRef = doc(db, 'users', user.uid);
       await updateDoc(userRef, {
         email: email
       });
-      
+
       setSuccess('Adresse email mise à jour avec succès');
       setIsChangingEmail(false);
       setCurrentPassword('');
@@ -162,43 +162,43 @@ const UserProfile: React.FC = () => {
     e.preventDefault();
     setError('');
     setSuccess('');
-    
+
     if (!oldPassword) {
       setError('Veuillez entrer votre mot de passe actuel');
       return;
     }
-    
+
     if (!newPassword) {
       setError('Le nouveau mot de passe ne peut pas être vide');
       return;
     }
-    
+
     if (newPassword.length < 6) {
       setError('Le mot de passe doit contenir au moins 6 caractères');
       return;
     }
-    
+
     if (newPassword !== confirmPassword) {
       setError('Les mots de passe ne correspondent pas');
       return;
     }
-    
+
     if (!user) return;
-    
+
     try {
       setIsLoading(true);
-      
+
       // Réauthentifier l'utilisateur
       const credential = EmailAuthProvider.credential(
-        user.email!, 
+        user.email!,
         oldPassword
       );
-      
+
       await reauthenticateWithCredential(user, credential);
-      
+
       // Mettre à jour le mot de passe
       await updatePassword(user, newPassword);
-      
+
       setSuccess('Mot de passe mis à jour avec succès');
       setIsChangingPassword(false);
       setOldPassword('');
@@ -229,12 +229,10 @@ const UserProfile: React.FC = () => {
               <CardTitle className="text-2xl font-bold">Mon Compte</CardTitle>
               <CardDescription>Gérez votre profil et vos paramètres</CardDescription>
             </div>
-            <Badge variant={isPremium ? "default" : "outline"}>
-              {isPremium ? 'Premium' : 'Gratuit'}
-            </Badge>
+            {/* Premium badge removed */}
           </div>
         </CardHeader>
-        
+
         <CardContent className="space-y-6">
           {error && (
             <Alert variant="destructive">
@@ -242,20 +240,20 @@ const UserProfile: React.FC = () => {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          
+
           {success && (
             <Alert>
               <AlertDescription>{success}</AlertDescription>
             </Alert>
           )}
-          
+
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid grid-cols-3 mb-4">
               <TabsTrigger value="profil">Profil</TabsTrigger>
               <TabsTrigger value="email">Email</TabsTrigger>
               <TabsTrigger value="motdepasse">Mot de passe</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="profil" className="space-y-4">
               {isEditing ? (
                 <form onSubmit={handleUpdateProfile} className="space-y-4">
@@ -268,7 +266,7 @@ const UserProfile: React.FC = () => {
                       disabled={isLoading}
                     />
                   </div>
-                  
+
                   <div className="flex space-x-2">
                     <Button type="submit" disabled={isLoading}>
                       {isLoading ? (
@@ -280,9 +278,9 @@ const UserProfile: React.FC = () => {
                         'Sauvegarder'
                       )}
                     </Button>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
+                    <Button
+                      type="button"
+                      variant="outline"
                       onClick={() => {
                         setIsEditing(false);
                         setDisplayName(user.displayName || '');
@@ -306,7 +304,7 @@ const UserProfile: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label>Nom d'utilisateur</Label>
                     <div className="flex items-center justify-between">
@@ -316,16 +314,16 @@ const UserProfile: React.FC = () => {
                           {user.displayName || 'Non défini'}
                         </div>
                       </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => setIsEditing(true)}
                       >
                         Modifier
                       </Button>
                     </div>
                   </div>
-                  
+
                   <div className="border rounded-md p-4 mt-4">
                     <h3 className="font-medium mb-2">Statistiques du compte</h3>
                     {stats && (
@@ -344,7 +342,7 @@ const UserProfile: React.FC = () => {
                 </div>
               )}
             </TabsContent>
-            
+
             <TabsContent value="email" className="space-y-4">
               <form onSubmit={handleUpdateEmail} className="space-y-4">
                 <div className="space-y-2">
@@ -357,7 +355,7 @@ const UserProfile: React.FC = () => {
                     disabled={isLoading}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="currentPassword">Mot de passe actuel</Label>
                   <Input
@@ -370,7 +368,7 @@ const UserProfile: React.FC = () => {
                   />
                   <p className="text-xs text-gray-500">Pour des raisons de sécurité, veuillez entrer votre mot de passe actuel</p>
                 </div>
-                
+
                 <Button type="submit" disabled={isLoading}>
                   {isLoading ? (
                     <>
@@ -383,7 +381,7 @@ const UserProfile: React.FC = () => {
                 </Button>
               </form>
             </TabsContent>
-            
+
             <TabsContent value="motdepasse" className="space-y-4">
               <form onSubmit={handleUpdatePassword} className="space-y-4">
                 <div className="space-y-2">
@@ -396,7 +394,7 @@ const UserProfile: React.FC = () => {
                     disabled={isLoading}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="newPassword">Nouveau mot de passe</Label>
                   <Input
@@ -408,7 +406,7 @@ const UserProfile: React.FC = () => {
                   />
                   <p className="text-xs text-gray-500">Le mot de passe doit contenir au moins 6 caractères</p>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">Confirmer le nouveau mot de passe</Label>
                   <Input
@@ -419,7 +417,7 @@ const UserProfile: React.FC = () => {
                     disabled={isLoading}
                   />
                 </div>
-                
+
                 <Button type="submit" disabled={isLoading}>
                   {isLoading ? (
                     <>
@@ -433,47 +431,36 @@ const UserProfile: React.FC = () => {
               </form>
             </TabsContent>
           </Tabs>
-          
+
           <div className="space-y-4 mt-6">
             <div className="border rounded-md p-4 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-medium">Plan actuel</h3>
+                  <h3 className="font-medium">Statistiques</h3>
                   <p className="text-sm text-gray-500">
-                    {isPremium 
-                      ? 'Vous avez accès à toutes les fonctionnalités premium' 
-                      : 'Plan gratuit avec fonctionnalités limitées'}
+                    Utilisation de votre compte
                   </p>
                 </div>
-                <Badge variant={isPremium ? "default" : "outline"}>
-                  {isPremium ? 'Premium' : 'Gratuit'}
-                </Badge>
               </div>
-              
-              {!isPremium && stats && (
+
+              {stats && (
                 <div className="space-y-2">
-                  <h4 className="text-sm font-medium">Limitations du plan gratuit:</h4>
                   <ul className="text-sm space-y-1">
                     <li className="flex items-center">
                       <span className="w-1 h-1 bg-gray-500 rounded-full mr-2"></span>
-                      Maximum {stats.maxParties} groupe
+                      {stats.parties} groupe(s) créé(s)
                     </li>
                     <li className="flex items-center">
                       <span className="w-1 h-1 bg-gray-500 rounded-full mr-2"></span>
-                      Maximum {stats.maxEncounters} rencontres sauvegardées
+                      {stats.encounters} rencontre(s) sauvegardée(s)
                     </li>
                   </ul>
-                  
-                  <Button className="w-full mt-4" variant="default" onClick={() => window.location.href = '/subscription'}>
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    Passer au plan premium
-                  </Button>
                 </div>
               )}
             </div>
           </div>
         </CardContent>
-        
+
         <CardFooter className="flex justify-end">
           <Button variant="outline" onClick={handleLogout}>
             <LogOut className="mr-2 h-4 w-4" />

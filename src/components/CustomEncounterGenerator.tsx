@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { toast } from '../hooks/use-toast';
 import { Plus, Trash2, Save, Search, AlertCircle, Check, FileText, Skull } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
-import UsageStats from './UsageStats';
+
 import { useAuth } from '../auth/AuthContext';
 import { getParties, canCreateEncounter, saveEncounter, getEncounters, deleteEncounter, subscribeToEncounters } from '../lib/firebaseApi';
 import { Party, Monster, Encounter } from '../lib/types';
@@ -279,329 +279,328 @@ const CustomEncounterGenerator: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <UsageStats />
+    <Tabs defaultValue="generator" className="w-full">
+      {/* UsageStats removed */}
+      <TabsList className="w-full justify-start mb-2">
+        {/* ... tabs triggers ... */}
+        <TabsTrigger value="generator" className="flex items-center">
+          <Plus className="mr-2 h-4 w-4" />
+          Créer une rencontre
+        </TabsTrigger>
+        <TabsTrigger value="saved" className="flex items-center">
+          <FileText className="mr-2 h-4 w-4" />
+          Rencontres sauvegardées
+          <Badge variant="secondary" className="ml-2">{encounters.length}</Badge>
+        </TabsTrigger>
+      </TabsList>
 
-      <Tabs defaultValue="generator" className="w-full">
-        <TabsList className="w-full justify-start mb-2">
-          <TabsTrigger value="generator" className="flex items-center">
-            <Plus className="mr-2 h-4 w-4" />
-            Créer une rencontre
-          </TabsTrigger>
-          <TabsTrigger value="saved" className="flex items-center">
-            <FileText className="mr-2 h-4 w-4" />
-            Rencontres sauvegardées
-            <Badge variant="secondary" className="ml-2">{encounters.length}</Badge>
-          </TabsTrigger>
-        </TabsList>
+      <TabsContent value="generator">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Skull className="mr-2 h-6 w-6" />
+              Créer une rencontre personnalisée
+            </CardTitle>
+            <CardDescription>
+              Créez une rencontre avec les monstres de votre choix
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {error && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertCircle className="h-4 w-4 mr-2" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
 
-        <TabsContent value="generator">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Skull className="mr-2 h-6 w-6" />
-                Créer une rencontre personnalisée
-              </CardTitle>
-              <CardDescription>
-                Créez une rencontre avec les monstres de votre choix
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {error && (
-                <Alert variant="destructive" className="mb-4">
-                  <AlertCircle className="h-4 w-4 mr-2" />
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
-
-              {isLoading ? (
-                <div className="space-y-4">
-                  <Skeleton className="h-10 w-full" />
-                  <Skeleton className="h-10 w-full" />
-                  <Skeleton className="h-40 w-full" />
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="encounterName">Nom de la rencontre</Label>
-                      <Input
-                        id="encounterName"
-                        placeholder="Embuscade de gobelins"
-                        value={encounterName}
-                        onChange={(e) => setEncounterName(e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="party">Groupe d'aventuriers</Label>
-                      <Select
-                        value={selectedPartyId}
-                        onValueChange={setSelectedPartyId}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionner un groupe" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {parties.length === 0 ? (
-                            <SelectItem value="none" disabled>
-                              Aucun groupe disponible
-                            </SelectItem>
-                          ) : (
-                            parties.map(party => (
-                              <SelectItem key={party.id} value={party.id}>
-                                {party.name} ({party.players.length} joueurs)
-                              </SelectItem>
-                            ))
-                          )}
-                        </SelectContent>
-                      </Select>
-                    </div>
+            {isLoading ? (
+              <div className="space-y-4">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-40 w-full" />
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="encounterName">Nom de la rencontre</Label>
+                    <Input
+                      id="encounterName"
+                      placeholder="Embuscade de gobelins"
+                      value={encounterName}
+                      onChange={(e) => setEncounterName(e.target.value)}
+                    />
                   </div>
-
-                  <div className="border rounded-md p-4">
-                    <h3 className="text-base font-medium mb-3">Rechercher des monstres</h3>
-                    <div className="flex gap-2 mb-4">
-                      <Input
-                        placeholder="Nom du monstre"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="flex-1"
-                      />
-                      <Button
-                        onClick={searchMonsters}
-                        disabled={isSearching || !searchQuery.trim()}
-                      >
-                        {isSearching ? (
-                          <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
+                  <div className="space-y-2">
+                    <Label htmlFor="party">Groupe d'aventuriers</Label>
+                    <Select
+                      value={selectedPartyId}
+                      onValueChange={setSelectedPartyId}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionner un groupe" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {parties.length === 0 ? (
+                          <SelectItem value="none" disabled>
+                            Aucun groupe disponible
+                          </SelectItem>
                         ) : (
-                          <Search className="h-4 w-4 mr-2" />
+                          parties.map(party => (
+                            <SelectItem key={party.id} value={party.id}>
+                              {party.name} ({party.players.length} joueurs)
+                            </SelectItem>
+                          ))
                         )}
-                        Rechercher
-                      </Button>
-                    </div>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
 
-                    {searchResults.length > 0 && (
-                      <ScrollArea className="h-48 border rounded-md">
-                        <div className="p-2">
-                          {searchResults.map(monster => (
-                            <div
-                              key={monster.id}
-                              className="flex justify-between items-center p-2 hover:bg-accent rounded-md cursor-pointer"
-                              onClick={() => setSelectedMonster(monster)}
-                            >
-                              <div>
-                                <div className="font-medium">
-                                  <a
-                                    href={`https://www.aidedd.org/dnd/monstres.php?vf=${getAideDDMonsterSlug(monster.name)}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-600 hover:text-blue-800 hover:underline"
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    {monster.name}
-                                  </a>
-                                </div>
-                                <div className="text-sm text-muted-foreground">
-                                  FD {formatCR(monster.challengeRating)} • {monster.size} {monster.type}
-                                </div>
-                              </div>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  addMonster(monster);
-                                }}
-                              >
-                                <Plus className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      </ScrollArea>
-                    )}
+                <div className="border rounded-md p-4">
+                  <h3 className="text-base font-medium mb-3">Rechercher des monstres</h3>
+                  <div className="flex gap-2 mb-4">
+                    <Input
+                      placeholder="Nom du monstre"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button
+                      onClick={searchMonsters}
+                      disabled={isSearching || !searchQuery.trim()}
+                    >
+                      {isSearching ? (
+                        <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
+                      ) : (
+                        <Search className="h-4 w-4 mr-2" />
+                      )}
+                      Rechercher
+                    </Button>
                   </div>
 
-                  <div>
-                    <h3 className="text-base font-medium mb-3">Monstres de la rencontre</h3>
-                    {monsterList.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center py-8 text-center border rounded-md">
-                        <Skull className="h-10 w-10 text-gray-300 mb-2" />
-                        <p className="text-gray-500 mb-2">Aucun monstre dans cette rencontre</p>
-                        <p className="text-gray-400 text-sm mb-4">
-                          Recherchez et ajoutez des monstres pour créer votre rencontre
-                        </p>
-                      </div>
-                    ) : (
-                      <Table className="border rounded-md">
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Nom</TableHead>
-                            <TableHead>Type</TableHead>
-                            <TableHead>Taille</TableHead>
-                            <TableHead>FD</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {monsterList.map(monster => (
-                            <TableRow key={monster.id}>
-                              <TableCell className="font-medium">
+                  {searchResults.length > 0 && (
+                    <ScrollArea className="h-48 border rounded-md">
+                      <div className="p-2">
+                        {searchResults.map(monster => (
+                          <div
+                            key={monster.id}
+                            className="flex justify-between items-center p-2 hover:bg-accent rounded-md cursor-pointer"
+                            onClick={() => setSelectedMonster(monster)}
+                          >
+                            <div>
+                              <div className="font-medium">
                                 <a
                                   href={`https://www.aidedd.org/dnd/monstres.php?vf=${getAideDDMonsterSlug(monster.name)}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-blue-600 hover:text-blue-800 hover:underline"
+                                  onClick={(e) => e.stopPropagation()}
                                 >
                                   {monster.name}
                                 </a>
-                              </TableCell>
-                              <TableCell>{monster.type}</TableCell>
-                              <TableCell>{monster.size}</TableCell>
-                              <TableCell>{formatCR(monster.challengeRating)}</TableCell>
-                              <TableCell className="text-right">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="text-red-500 hover:text-red-700"
-                                  onClick={() => removeMonster(monster.id)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    )}
-                  </div>
-
-                  <div className="flex justify-end">
-                    <Button
-                      onClick={handleSaveEncounter}
-                      disabled={!canCreate || monsterList.length === 0 || !encounterName.trim() || !selectedPartyId}
-                    >
-                      <Save className="mr-2 h-4 w-4" />
-                      Sauvegarder la rencontre
-                    </Button>
-                  </div>
-
-                  {!canCreate && (
-                    <Alert className="mt-4">
-                      <AlertCircle className="h-4 w-4 mr-2" />
-                      <AlertDescription>
-                        Vous avez atteint votre limite de rencontres. Passez au plan premium pour en créer davantage.
-                      </AlertDescription>
-                    </Alert>
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                FD {formatCR(monster.challengeRating)} • {monster.size} {monster.type}
+                              </div>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                addMonster(monster);
+                              }}
+                            >
+                              <Plus className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
                   )}
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
 
-        <TabsContent value="saved">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <FileText className="mr-2 h-6 w-6" />
-                Rencontres sauvegardées
-              </CardTitle>
-              <CardDescription>
-                Gérez vos rencontres personnalisées
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <div className="space-y-4">
-                  <Skeleton className="h-20 w-full" />
-                  <Skeleton className="h-20 w-full" />
-                  <Skeleton className="h-20 w-full" />
-                </div>
-              ) : encounters.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-10 text-center">
-                  <FileText className="h-16 w-16 text-gray-300 mb-4" />
-                  <p className="text-gray-500 mb-4">
-                    Vous n'avez pas encore de rencontres sauvegardées
-                  </p>
-                  <Button
-                    variant="default"
-                    onClick={() => {
-                      const generatorTab = document.querySelector('[data-value="generator"]') as HTMLElement;
-                      if (generatorTab) generatorTab.click();
-                    }}
-                  >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Créer votre première rencontre
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {encounters.map(encounter => (
-                    <Card key={encounter.id} className="overflow-hidden">
-                      <div className={`absolute top-0 left-0 w-1 h-full ${encounter.difficulty === 'deadly' ? 'bg-red-500' :
-                          encounter.difficulty === 'hard' ? 'bg-orange-500' :
-                            encounter.difficulty === 'medium' ? 'bg-yellow-500' :
-                              'bg-green-500'
-                        }`} />
-                      <CardContent className="p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <h3 className="font-semibold text-base">{encounter.name}</h3>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <Badge variant={
-                                encounter.difficulty === 'deadly' ? 'destructive' :
-                                  encounter.difficulty === 'hard' ? 'default' :
-                                    encounter.difficulty === 'medium' ? 'secondary' :
-                                      'outline'
-                              }>
-                                {encounter.difficulty === 'deadly' ? 'Mortelle' :
-                                  encounter.difficulty === 'hard' ? 'Difficile' :
-                                    encounter.difficulty === 'medium' ? 'Moyenne' :
-                                      'Facile'}
-                              </Badge>
-                              <span>{encounter.monsters.length} monstre(s)</span>
-                              <span>•</span>
-                              <span>
-                                {parties.find(p => p.id === encounter.partyId)?.name || 'Groupe inconnu'}
-                              </span>
-                            </div>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-red-500 hover:text-red-700"
-                            onClick={() => handleDeleteEncounter(encounter.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-
-                        <div className="mt-2 flex flex-wrap gap-1">
-                          {encounter.monsters.map(monster => (
-                            <Badge key={monster.id} variant="outline" className="text-xs">
+                <div>
+                  <h3 className="text-base font-medium mb-3">Monstres de la rencontre</h3>
+                  {monsterList.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-8 text-center border rounded-md">
+                      <Skull className="h-10 w-10 text-gray-300 mb-2" />
+                      <p className="text-gray-500 mb-2">Aucun monstre dans cette rencontre</p>
+                      <p className="text-gray-400 text-sm mb-4">
+                        Recherchez et ajoutez des monstres pour créer votre rencontre
+                      </p>
+                    </div>
+                  ) : (
+                    <Table className="border rounded-md">
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Nom</TableHead>
+                          <TableHead>Type</TableHead>
+                          <TableHead>Taille</TableHead>
+                          <TableHead>FD</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {monsterList.map(monster => (
+                          <TableRow key={monster.id}>
+                            <TableCell className="font-medium">
                               <a
                                 href={`https://www.aidedd.org/dnd/monstres.php?vf=${getAideDDMonsterSlug(monster.name)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="hover:underline"
-                                onClick={(e) => e.stopPropagation()}
+                                className="text-blue-600 hover:text-blue-800 hover:underline"
                               >
                                 {monster.name}
-                              </a> (FD {formatCR(monster.challengeRating)})
-                            </Badge>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                              </a>
+                            </TableCell>
+                            <TableCell>{monster.type}</TableCell>
+                            <TableCell>{monster.size}</TableCell>
+                            <TableCell>{formatCR(monster.challengeRating)}</TableCell>
+                            <TableCell className="text-right">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-500 hover:text-red-700"
+                                onClick={() => removeMonster(monster.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    onClick={handleSaveEncounter}
+                    disabled={!canCreate || monsterList.length === 0 || !encounterName.trim() || !selectedPartyId}
+                  >
+                    <Save className="mr-2 h-4 w-4" />
+                    Sauvegarder la rencontre
+                  </Button>
+                </div>
+
+                {!canCreate && (
+                  <Alert className="mt-4">
+                    <AlertCircle className="h-4 w-4 mr-2" />
+                    <AlertDescription>
+                      Vous avez atteint votre limite de rencontres.
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      <TabsContent value="saved">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <FileText className="mr-2 h-6 w-6" />
+              Rencontres sauvegardées
+            </CardTitle>
+            <CardDescription>
+              Gérez vos rencontres personnalisées
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="space-y-4">
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" />
+              </div>
+            ) : encounters.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-10 text-center">
+                <FileText className="h-16 w-16 text-gray-300 mb-4" />
+                <p className="text-gray-500 mb-4">
+                  Vous n'avez pas encore de rencontres sauvegardées
+                </p>
+                <Button
+                  variant="default"
+                  onClick={() => {
+                    const generatorTab = document.querySelector('[data-value="generator"]') as HTMLElement;
+                    if (generatorTab) generatorTab.click();
+                  }}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Créer votre première rencontre
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {encounters.map(encounter => (
+                  <Card key={encounter.id} className="overflow-hidden">
+                    <div className={`absolute top-0 left-0 w-1 h-full ${encounter.difficulty === 'deadly' ? 'bg-red-500' :
+                      encounter.difficulty === 'hard' ? 'bg-orange-500' :
+                        encounter.difficulty === 'medium' ? 'bg-yellow-500' :
+                          'bg-green-500'
+                      }`} />
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h3 className="font-semibold text-base">{encounter.name}</h3>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Badge variant={
+                              encounter.difficulty === 'deadly' ? 'destructive' :
+                                encounter.difficulty === 'hard' ? 'default' :
+                                  encounter.difficulty === 'medium' ? 'secondary' :
+                                    'outline'
+                            }>
+                              {encounter.difficulty === 'deadly' ? 'Mortelle' :
+                                encounter.difficulty === 'hard' ? 'Difficile' :
+                                  encounter.difficulty === 'medium' ? 'Moyenne' :
+                                    'Facile'}
+                            </Badge>
+                            <span>{encounter.monsters.length} monstre(s)</span>
+                            <span>•</span>
+                            <span>
+                              {parties.find(p => p.id === encounter.partyId)?.name || 'Groupe inconnu'}
+                            </span>
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-500 hover:text-red-700"
+                          onClick={() => handleDeleteEncounter(encounter.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {encounter.monsters.map(monster => (
+                          <Badge key={monster.id} variant="outline" className="text-xs">
+                            <a
+                              href={`https://www.aidedd.org/dnd/monstres.php?vf=${getAideDDMonsterSlug(monster.name)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="hover:underline"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {monster.name}
+                            </a> (FD {formatCR(monster.challengeRating)})
+                          </Badge>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
+
   );
 };
 
