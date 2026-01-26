@@ -584,8 +584,17 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
                             target.style.display = 'none';
-                            target.parentElement!.classList.add('flex', 'items-center', 'justify-center', 'bg-secondary/20');
-                            target.parentElement!.innerHTML = '<span class="text-lg text-secondary-foreground font-bold">' + monster.name.charAt(0).toUpperCase() + '</span>';
+                            const parent = target.parentElement!;
+                            parent.classList.add('flex', 'items-center', 'justify-center', 'bg-secondary/20');
+
+                            // Safe DOM manipulation instead of innerHTML
+                            const span = document.createElement('span');
+                            span.className = "text-lg text-secondary-foreground font-bold";
+                            span.textContent = monster.name.charAt(0).toUpperCase();
+
+                            // Clear and append
+                            while (parent.firstChild) parent.removeChild(parent.firstChild);
+                            parent.appendChild(span);
                           }}
                         />
                       </div>
@@ -640,8 +649,17 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                                   onError={(e) => {
                                     const target = e.target as HTMLImageElement;
                                     target.style.display = 'none';
-                                    target.parentElement!.classList.add('flex', 'items-center', 'justify-center', 'bg-secondary/20');
-                                    target.parentElement!.innerHTML = '<span class="text-xs text-secondary-foreground font-bold">' + monster.name.charAt(0).toUpperCase() + '</span>';
+                                    const parent = target.parentElement!;
+                                    parent.classList.add('flex', 'items-center', 'justify-center', 'bg-secondary/20');
+
+                                    // Safe DOM manipulation instead of innerHTML
+                                    const span = document.createElement('span');
+                                    span.className = "text-xs text-secondary-foreground font-bold";
+                                    span.textContent = monster.name.charAt(0).toUpperCase();
+
+                                    // Clear and append
+                                    while (parent.firstChild) parent.removeChild(parent.firstChild);
+                                    parent.appendChild(span);
                                   }}
                                 />
                               </div>
