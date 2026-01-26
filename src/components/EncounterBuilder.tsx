@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { toast } from '../hooks/use-toast';
 import { v4 as uuidv4 } from 'uuid';
-import { FaPlus, FaMinus, FaTrash, FaSave, FaEdit, FaDragon, FaFolder, FaShareAlt } from 'react-icons/fa';
-import { Save, Play, PenTool, X, Share2, Folder, FolderPlus, FolderOpen, Check } from "lucide-react";
+import { Save, Play, PenTool, X, Share2, Folder, FolderPlus, FolderOpen, Check, Plus, Minus, Trash2, Ghost, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -607,7 +606,7 @@ const EncounterBuilder: React.FC = () => {
             className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
             size="sm"
           >
-            <FaPlus className="mr-2 h-3.5 w-3.5" /> Nouvelle
+            <Plus className="mr-2 h-3.5 w-3.5" /> Nouvelle
           </Button>
         </div>
 
@@ -661,7 +660,7 @@ const EncounterBuilder: React.FC = () => {
             className="h-8 w-8 rounded-full border-dashed border-gray-400 text-gray-500 hover:text-primary hover:border-primary flex-shrink-0 ml-auto"
             title="Nouveau dossier"
           >
-            <FaPlus className="h-3 w-3" />
+            <Plus className="h-3 w-3" />
           </Button>
         </div>
 
@@ -770,7 +769,7 @@ const EncounterBuilder: React.FC = () => {
                       className="h-8 w-8 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 translation-opacity"
                       title="Supprimer"
                     >
-                      <FaTrash className="h-3.5 w-3.5" />
+                      <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   </div>
                 </div>
@@ -844,7 +843,7 @@ const EncounterBuilder: React.FC = () => {
             className="w-full sm:w-auto px-4 py-2.5 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center justify-center touch-target"
             disabled={isSaving}
           >
-            <FaSave className="mr-2" />
+            <Save className="mr-2" />
             {isEditing ? "Mettre à jour" : "Enregistrer"}
           </button>
 
@@ -854,7 +853,7 @@ const EncounterBuilder: React.FC = () => {
             className="w-full sm:w-auto px-4 py-2.5 bg-red-600 text-white rounded hover:bg-red-700 flex items-center justify-center touch-target"
             disabled={!selectedMonsters.length || isSaving}
           >
-            <FaDragon className="mr-2" />
+            <Play className="mr-2" />
             <span className="hidden sm:inline">Lancer la </span>rencontre
           </button>
         </div>

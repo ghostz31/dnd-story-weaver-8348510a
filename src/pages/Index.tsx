@@ -98,7 +98,7 @@ const IndexPage: React.FC = () => {
               viewport={{ once: true }}
             >
               <motion.div variants={item}>
-                <div className="glass-card h-full p-4 sm:p-6 md:p-8 rounded-xl hover:shadow-glow transition-all duration-300 border border-glass-border/30 group flex flex-col interactive-tap">
+                <div className="fantasy-glass h-full p-4 sm:p-6 md:p-8 rounded-xl hover:shadow-glow group flex flex-col interactive-tap">
                   <div className="p-3 md:p-4 bg-primary/10 w-fit rounded-2xl mb-4 md:mb-6 group-hover:bg-primary/20 transition-colors">
                     <Sword className="h-6 w-6 md:h-8 md:w-8 text-primary" />
                   </div>
@@ -116,7 +116,7 @@ const IndexPage: React.FC = () => {
               </motion.div>
 
               <motion.div variants={item}>
-                <div className="glass-card h-full p-4 sm:p-6 md:p-8 rounded-xl hover:shadow-glow transition-all duration-300 border border-glass-border/30 group flex flex-col interactive-tap">
+                <div className="fantasy-glass h-full p-4 sm:p-6 md:p-8 rounded-xl hover:shadow-glow group flex flex-col interactive-tap">
                   <div className="p-3 md:p-4 bg-primary/10 w-fit rounded-2xl mb-4 md:mb-6 group-hover:bg-primary/20 transition-colors">
                     <Users className="h-6 w-6 md:h-8 md:w-8 text-primary" />
                   </div>
@@ -134,7 +134,7 @@ const IndexPage: React.FC = () => {
               </motion.div>
 
               <motion.div variants={item}>
-                <div className="glass-card h-full p-4 sm:p-6 md:p-8 rounded-xl hover:shadow-glow transition-all duration-300 border border-glass-border/30 group flex flex-col interactive-tap">
+                <div className="fantasy-glass h-full p-4 sm:p-6 md:p-8 rounded-xl hover:shadow-glow group flex flex-col interactive-tap">
                   <div className="p-3 md:p-4 bg-primary/10 w-fit rounded-2xl mb-4 md:mb-6 group-hover:bg-primary/20 transition-colors">
                     <History className="h-6 w-6 md:h-8 md:w-8 text-primary" />
                   </div>

@@ -46,19 +46,17 @@
     --destructive: 0 85% 60%;
     --destructive-foreground: 40 20% 97%;
 
-    --border: 40 10% 80%;
-    /* Pencil outline */
+    --border: 45 20% 75%;
+    /* Warm Pencil/Gold outline */
     --input: 40 10% 85%;
     --ring: 350 75% 45%;
-    /* Focus ring same as primary */
 
     --radius: 0.5rem;
-    /* Sharper corners for a "book" feel */
 
-    /* Glass Vars (Cleaned up for Sharpness) */
+    /* Fantasy Glass Vars */
     --glass: 40 20% 98%;
     --glass-foreground: 220 10% 15%;
-    --glass-border: 40 10% 85%;
+    --glass-border: 45 50% 60%;
   }
 
   .dark {
@@ -102,7 +100,7 @@
 
     --glass: 220 15% 12%;
     --glass-foreground: 40 10% 90%;
-    --glass-border: 220 15% 25%;
+    --glass-border: 220 15% 30%;
   }
 }
 
@@ -113,7 +111,6 @@
 
   body {
     @apply bg-background text-foreground font-inter antialiased;
-    /* texture grain overlay can be added here if we had an asset */
   }
 
   .font-cinzel {
@@ -127,17 +124,30 @@
 
 @layer components {
 
+  /* Fantasy Glass Utilities */
+  .fantasy-glass {
+    @apply bg-background/60 backdrop-blur-md border border-primary/10 shadow-sm transition-all duration-300;
+  }
+
+  .fantasy-glass:hover {
+    @apply border-primary/30 bg-background/70;
+  }
+
   /* Panels & Cards */
   .parchment-panel {
-    @apply bg-card border border-border shadow-sm;
+    @apply bg-card/90 backdrop-blur-sm border border-border shadow-sm transition-all duration-300;
+  }
+
+  .parchment-panel:hover {
+    @apply border-primary/30;
   }
 
   .parchment-card {
-    @apply bg-card text-card-foreground border border-border shadow-md transition-all duration-200;
+    @apply bg-card/80 backdrop-blur-md text-card-foreground border border-border/60 shadow-md transition-all duration-300 rounded-xl;
   }
 
   .parchment-card:hover {
-    @apply shadow-lg -translate-y-[1px] border-primary/40;
+    @apply shadow-lg -translate-y-[2px] border-primary/40 bg-card/95;
   }
 
   /* Utility to make text feel like ink */

@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Monster, monsterCategories, monsterTypes, monsterSizes } from '../lib/types';
-import { FaSync, FaSearch, FaPlus, FaInfoCircle, FaPen, FaCopy, FaTrash } from 'react-icons/fa';
+import { RefreshCw, Search, Plus, Info, Pen, Copy, Trash2, Ghost, Skull, Shield, Zap, X, Share2, Filter, Undo, UploadCloud } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
 import { toast } from '../hooks/use-toast';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { X, Share2 } from 'lucide-react';
 import { getAideDDMonsterSlug, getMonsterImageUrl } from '../lib/monsterUtils';
 import { useMonsters } from '../hooks/useMonsters';
 import FilterPanel from '@/components/ui/FilterPanel';
@@ -42,6 +41,9 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedSize, setSelectedSize] = useState('all');
   const [selectedAlignment, setSelectedAlignment] = useState('all');
+
+  // Quick Filters
+  const [quickFilterType, setQuickFilterType] = useState<string | null>(null);
 
   const [isCustom, setIsCustom] = useState(false);
 
@@ -81,6 +83,13 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
         return false;
       }
 
+      // Quick Filter Type
+      if (quickFilterType) {
+        if (!monster.type.toLowerCase().includes(quickFilterType.toLowerCase())) {
+          return false;
+        }
+      }
+
       // Filtre par CR
       if (crMin !== undefined || crMax !== undefined) {
         const monsterCR = parseCR(monster.cr);
@@ -110,8 +119,6 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
         if (!monster.alignment.toLowerCase().includes(selectedAlignment)) return false;
       }
 
-
-
       // Filtre Custom
       if (isCustom && !monster.custom) return false;
 
@@ -130,7 +137,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
       // Then alphabetically by name
       return a.name.localeCompare(b.name);
     });
-  }, [searchQuery, crMin, crMax, selectedType, selectedSize, selectedCategory, selectedAlignment, isCustom, monsters]);
+  }, [searchQuery, crMin, crMax, selectedType, selectedSize, selectedCategory, selectedAlignment, isCustom, monsters, quickFilterType]);
 
   useEffect(() => {
     setFilteredMonsters(sortedAndFilteredMonsters);
@@ -204,6 +211,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
     setSelectedCategory('all');
     setSelectedSize('all');
     setSelectedAlignment('all');
+    setQuickFilterType(null);
     setIsCustom(false);
     refresh();
   }, [refresh]);
@@ -215,9 +223,10 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
     if (selectedCategory !== 'all') count++;
     if (selectedAlignment !== 'all') count++;
     if (crMin !== undefined || crMax !== undefined) count++;
+    if (quickFilterType) count++;
     if (isCustom) count++;
     return count;
-  }, [selectedType, selectedSize, selectedCategory, selectedAlignment, crMin, crMax, isCustom]);
+  }, [selectedType, selectedSize, selectedCategory, selectedAlignment, crMin, crMax, isCustom, quickFilterType]);
 
   // Editor Handlers
   const handleCreateMonster = () => {
@@ -325,23 +334,33 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
     <div className="w-full">
       {/* Barre de recherche et header */}
       <div className="flex flex-col gap-3 mb-4">
-        <div className="parchment-panel p-2 md:p-3 rounded-xl flex flex-col sm:flex-row gap-2 sm:items-center">
-          <div className="relative flex-1">
-            <input
-              type="text"
+        <div className="parchment-panel p-2 md:p-3 rounded-xl flex flex-col md:flex-row gap-2 md:items-center">
+          <div className="flex gap-2 relative flex-1">
+            <Search className="absolute left-3 top-3 md:top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Rechercher un monstre (Golem, Dragon, Gobelin...)"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Rechercher un monstre..."
-              className="pl-10 pr-4 py-2.5 md:py-2 border border-border/50 bg-white/50 rounded-md w-full focus:ring-primary/50 focus:border-primary/50 placeholder:text-muted-foreground/70 text-foreground text-base"
+              className="pl-9 bg-white/50 h-11 md:h-10 text-base"
             />
-            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+            {(searchQuery) && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-1 top-1.5 md:top-1 h-8 w-8 text-muted-foreground hover:text-foreground touch-target"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
           </div>
+
           <div className="flex gap-2">
             <Button
               onClick={handleCreateMonster}
               className="flex-1 sm:flex-none bg-primary hover:bg-primary/90 text-white font-cinzel whitespace-nowrap touch-target"
             >
-              <FaPlus className="mr-1 md:mr-2" /> <span className="hidden sm:inline">Créer</span>
+              <Plus className="mr-1 md:mr-2 h-4 w-4" /> <span className="hidden sm:inline">Créer</span>
             </Button>
             <Button
               onClick={async () => {
@@ -374,7 +393,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
               title="Tenter de récupérer les monstres perdus depuis les rencontres"
             >
               <span className="hidden sm:inline">Récupérer</span>
-              <FaSync className="sm:hidden" />
+              <UploadCloud className="sm:hidden h-4 w-4" />
             </Button>
             <Button
               onClick={handleRefreshMonsters}
@@ -384,8 +403,39 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
               className="flex-shrink-0 touch-target h-10 w-10"
               title="Actualiser la liste"
             >
-              <FaSync className={`${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
             </Button>
+          </div>
+        </div>
+
+        {/* Quick Filters */}
+        <div className="parchment-panel p-2 md:p-3 rounded-xl space-y-3">
+          <div className="space-y-2">
+            <Label className="text-xs font-cinzel font-bold text-muted-foreground">Type de Monstre</Label>
+            <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1 -mb-1">
+              {[
+                { label: 'Dragons', value: 'Dragon' },
+                { label: 'Morts-vivants', value: 'mort-vivant' },
+                { label: 'Humanoïdes', value: 'humanoïde' },
+                { label: 'Bêtes', value: 'bête' },
+                { label: 'Fiélons', value: 'fiélon' },
+                { label: 'Monstruosités', value: 'monstruosité' },
+                { label: 'Géants', value: 'géant' },
+                { label: 'Élémentaires', value: 'élémentaire' },
+              ].map(({ label, value }) => (
+                <Badge
+                  key={value}
+                  variant={quickFilterType === value ? 'default' : 'outline'}
+                  className={`cursor-pointer transition-all whitespace-nowrap flex-shrink-0 touch-target active:scale-95 ${quickFilterType === value
+                    ? 'bg-primary text-primary-foreground shadow-md'
+                    : 'bg-white/50 hover:bg-primary/10'
+                    }`}
+                  onClick={() => setQuickFilterType(quickFilterType === value ? null : value)}
+                >
+                  {label}
+                </Badge>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -509,7 +559,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                 }}
                 className="w-full bg-green-600 hover:bg-green-700 text-white font-cinzel"
               >
-                <FaPlus className="mr-2" /> Ajouter tous les monstres filtrés ({filteredMonsters.length})
+                <Plus className="mr-2" /> Ajouter tous les monstres filtrés ({filteredMonsters.length})
               </Button>
             </div>
           )}
@@ -551,7 +601,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                       <div className="flex-shrink-0">
                         {isSelectable ? (
                           <Button size="sm" className="h-9 w-9 p-0 touch-target" onClick={(e) => { e.stopPropagation(); handleSelectMonster(monster); }}>
-                            <FaPlus size={14} />
+                            <Plus size={14} />
                           </Button>
                         ) : (
                           <Badge variant="outline" className="font-mono bg-white/40 border-border/50">
@@ -627,7 +677,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                                 }}
                                 className="h-7 px-2"
                               >
-                                <FaPlus className="mr-1" size={10} /> Ajouter
+                                <Plus className="mr-1" size={10} /> Ajouter
                               </Button>
                             )}
                             <Button
@@ -639,7 +689,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                               }}
                               className="h-7 px-2 hover:bg-white/40"
                             >
-                              <FaInfoCircle className="mr-1" size={12} /> Détails
+                              <Info className="mr-1" size={12} /> Détails
                             </Button>
                           </td>
                         </tr>
@@ -662,8 +712,10 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                 )}
               </>
             ) : (
-              <div className="parchment-card p-8 text-center rounded-xl border border-dashed border-border/50 text-muted-foreground">
-                <p>Aucun monstre trouvé. La crypte est vide...</p>
+              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                <Ghost className="h-16 w-16 mb-4 opacity-20" />
+                <p className="font-cinzel text-lg">La crypte est vide...</p>
+                <p className="text-sm opacity-70">Aucun monstre ne correspond à votre recherche.</p>
               </div>
             )}
           </div>
@@ -703,7 +755,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                       title="Dupliquer et modifier"
                       className="touch-target"
                     >
-                      <FaCopy className="md:mr-2" />
+                      <Copy className="md:mr-2" />
                       <span className="hidden md:inline">Dupliquer</span>
                     </Button>
                     {selectedMonster.custom && (
@@ -714,7 +766,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                           onClick={() => handleEditMonster(selectedMonster)}
                           title="Modifier"
                         >
-                          <FaPen className="mr-2" /> Modifier
+                          <Pen className="mr-2" /> Modifier
                         </Button>
                         <Button
                           variant="outline"
@@ -731,7 +783,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                           onClick={() => handleDeleteMonster(selectedMonster)}
                           title="Supprimer"
                         >
-                          <FaTrash className="mr-2" /> Supprimer
+                          <Trash2 className="mr-2" /> Supprimer
                         </Button>
                       </>
                     )}
@@ -789,7 +841,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                           }}
                           className="bg-primary hover:bg-primary/90 text-primary-foreground font-cinzel gap-2 text-lg px-8 py-6"
                         >
-                          <FaPlus /> Ajouter à la rencontre
+                          <Plus /> Ajouter à la rencontre
                         </Button>
                       </div>
                     )}
