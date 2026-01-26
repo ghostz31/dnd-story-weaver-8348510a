@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Monster } from '@/lib/types';
 import { loadMonstersIndex } from '@/lib/api';
-import { FaSearch, FaFilter, FaChevronDown, FaChevronUp, FaSync, FaTimes } from 'react-icons/fa';
+import { Search, Filter, ChevronDown, ChevronUp, RefreshCw, X } from 'lucide-react';
 import { Image as ImageIcon } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -89,7 +89,7 @@ const getAideDDUrl = (monsterName: string): string => {
     .replace(/[\u0300-\u036f]/g, '') // Enlever les accents
     .replace(/ /g, '-')              // Remplacer les espaces par des tirets
     .replace(/[^a-z0-9-]/g, '');     // Supprimer les caractères non alphanumériques
-  
+
   return `https://www.aidedd.org/dnd/monstres.php?vf=${slug}`;
 };
 
@@ -112,7 +112,7 @@ export default function MonstersPage() {
   const [monsters, setMonsters] = useState<Monster[]>([]);
   const [filteredMonsters, setFilteredMonsters] = useState<Monster[]>([]);
   const [loading, setLoading] = useState(false);
-  
+
   // États des filtres
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -121,7 +121,7 @@ export default function MonstersPage() {
   const [minCR, setMinCR] = useState('all');
   const [maxCR, setMaxCR] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
-  
+
   // État de l'iframe
   const [selectedMonsterUrl, setSelectedMonsterUrl] = useState<string | null>(null);
   const [selectedMonsterName, setSelectedMonsterName] = useState<string>('');
@@ -135,12 +135,12 @@ export default function MonstersPage() {
     setLoading(true);
     try {
       console.log("Chargement des monstres depuis l'index...");
-      
+
       const monstersIndex = await loadMonstersIndex();
-      
+
       if (monstersIndex && monstersIndex.length > 0) {
         console.log(`${monstersIndex.length} monstres chargés depuis l'index`);
-        
+
         // Transformer l'index au format Monster pour l'application
         const formattedMonsters = monstersIndex.map((monster: any) => ({
           id: monster.id,
@@ -158,7 +158,7 @@ export default function MonstersPage() {
           hp: 10,
           image: monster.image
         }));
-        
+
         setMonsters(formattedMonsters);
         toast({
           title: "Succès",
@@ -186,7 +186,7 @@ export default function MonstersPage() {
 
     // Filtre par recherche
     if (searchQuery) {
-      filtered = filtered.filter(monster => 
+      filtered = filtered.filter(monster =>
         monster.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
@@ -253,7 +253,7 @@ export default function MonstersPage() {
   return (
     <div className="container mx-auto py-6 px-4">
       <h1 className="text-2xl font-bold mb-6 text-center">Bibliothèque de Monstres</h1>
-      
+
       {/* Barre de recherche et contrôles */}
       <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-2">
         <div className="relative w-full sm:w-1/2">
@@ -264,17 +264,17 @@ export default function MonstersPage() {
             placeholder="Rechercher un monstre..."
             className="pl-10 pr-4 py-2 border rounded-md w-full"
           />
-          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
         </div>
-        
+
         <div className="flex gap-2 items-center">
           <button
             onClick={() => setShowFilters(!showFilters)}
             className="flex items-center gap-1 px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
           >
-            <FaFilter className="text-gray-700" />
+            <Filter className="text-gray-700" />
             {showFilters ? "Masquer" : "Filtres"}
-            {showFilters ? <FaChevronUp className="text-gray-700" /> : <FaChevronDown className="text-gray-700" />}
+            {showFilters ? <ChevronUp className="text-gray-700" /> : <ChevronDown className="text-gray-700" />}
           </button>
 
           <button
@@ -282,7 +282,7 @@ export default function MonstersPage() {
             className={`flex items-center gap-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={loading}
           >
-            <FaSync className={`${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`${loading ? 'animate-spin' : ''}`} />
             Actualiser
           </button>
         </div>
@@ -304,7 +304,7 @@ export default function MonstersPage() {
                 ))}
               </select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
               <select
@@ -317,7 +317,7 @@ export default function MonstersPage() {
                 ))}
               </select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Taille</label>
               <select
@@ -330,7 +330,7 @@ export default function MonstersPage() {
                 ))}
               </select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">FP Min</label>
               <select
@@ -343,7 +343,7 @@ export default function MonstersPage() {
                 ))}
               </select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">FP Max</label>
               <select
@@ -356,7 +356,7 @@ export default function MonstersPage() {
                 ))}
               </select>
             </div>
-            
+
             <div className="flex items-end">
               <button
                 onClick={resetFilters}
@@ -378,7 +378,7 @@ export default function MonstersPage() {
               Monstres ({filteredMonsters.length})
             </h2>
           </div>
-          
+
           <div className="overflow-y-auto" style={{ maxHeight: '70vh' }}>
             {loading ? (
               <div className="flex justify-center items-center py-8">
@@ -396,8 +396,8 @@ export default function MonstersPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {filteredMonsters.map((monster) => (
-                    <tr 
-                      key={monster.id} 
+                    <tr
+                      key={monster.id}
                       className="hover:bg-blue-50 cursor-pointer transition-colors"
                       onClick={() => handleMonsterClick(monster)}
                     >
@@ -405,8 +405,8 @@ export default function MonstersPage() {
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-8 w-8 bg-gray-200 rounded-full overflow-hidden">
                             {monster.image ? (
-                              <img 
-                                src={`/data/aidedd-complete/images/${monster.image}`} 
+                              <img
+                                src={`/data/aidedd-complete/images/${monster.image}`}
                                 alt={monster.name}
                                 className="h-8 w-8 object-cover"
                                 onError={(e) => {
@@ -447,41 +447,41 @@ export default function MonstersPage() {
           </div>
         </div>
 
-                 {/* Iframe pour les détails */}
-         <div className="bg-white rounded-lg shadow">
-           <div className="px-4 py-2 border-b flex justify-between items-center">
-             <h2 className="text-lg font-semibold">
-               {selectedMonsterName ? `Détails - ${selectedMonsterName}` : 'Détails du monstre'}
-             </h2>
-             {selectedMonsterUrl && (
-               <button
-                 onClick={closeIframe}
-                 className="text-gray-500 hover:text-gray-700 p-1"
-                 title="Fermer"
-               >
-                 <FaTimes />
-               </button>
-             )}
-           </div>
-           
-           <div style={{ height: 'calc(100vh - 200px)', padding: '15px' }}>
-             {selectedMonsterUrl ? (
-               <iframe
-                 src={selectedMonsterUrl}
-                 className="w-full h-full border-0 rounded"
-                 title={`Détails de ${selectedMonsterName}`}
-               />
-             ) : (
-               <div className="flex items-center justify-center h-full text-gray-500">
-                 <div className="text-center">
-                   <ImageIcon size={48} className="mx-auto mb-4 text-gray-300" />
-                   <p>Cliquez sur un monstre pour voir ses détails</p>
-                 </div>
-               </div>
-             )}
-           </div>
-         </div>
+        {/* Iframe pour les détails */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="px-4 py-2 border-b flex justify-between items-center">
+            <h2 className="text-lg font-semibold">
+              {selectedMonsterName ? `Détails - ${selectedMonsterName}` : 'Détails du monstre'}
+            </h2>
+            {selectedMonsterUrl && (
+              <button
+                onClick={closeIframe}
+                className="text-gray-500 hover:text-gray-700 p-1"
+                title="Fermer"
+              >
+                <X />
+              </button>
+            )}
+          </div>
+
+          <div style={{ height: 'calc(100vh - 200px)', padding: '15px' }}>
+            {selectedMonsterUrl ? (
+              <iframe
+                src={selectedMonsterUrl}
+                className="w-full h-full border-0 rounded"
+                title={`Détails de ${selectedMonsterName}`}
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-500">
+                <div className="text-center">
+                  <ImageIcon size={48} className="mx-auto mb-4 text-gray-300" />
+                  <p>Cliquez sur un monstre pour voir ses détails</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
-} 
+}

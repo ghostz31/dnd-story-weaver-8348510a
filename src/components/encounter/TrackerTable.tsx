@@ -79,8 +79,8 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
     };
 
     return (
-        <div className="w-full">
-            <Table className="w-full">
+        <div className="w-full overflow-x-auto pb-2">
+            <Table className="w-full min-w-[800px]">
                 <TableHeader>
                     <TableRow>
                         <TableHead className="w-[50px]">Tour</TableHead>

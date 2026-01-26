@@ -246,7 +246,7 @@ const EncounterTracker: React.FC = () => {
 
 
   return (
-    <div className="w-full px-2 mx-auto py-2">
+    <div className="w-full px-2 mx-auto py-2 pb-24 md:pb-2">
       {/* Header - Responsive */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2 mb-3">
         <div className="min-w-0">
@@ -295,8 +295,8 @@ const EncounterTracker: React.FC = () => {
           </div>
         </div>
 
-        {/* Action buttons - horizontal scroll on mobile */}
-        <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1 -mb-1">
+        {/* Action buttons - Desktop only or non-mobile optimized */}
+        <div className="hidden md:flex gap-2 overflow-x-auto hide-scrollbar pb-1 -mb-1">
           <Button
             variant="outline"
             size="sm"
@@ -776,6 +776,41 @@ const EncounterTracker: React.FC = () => {
 
       {/* Bulle flottante du Grimoire */}
       <FloatingGrimoireBubble onOpen={() => setGrimoireOpen(true)} />
+
+      {/* Mobile Bottom Nav */}
+      <div className="bottom-nav-safe md:hidden bg-card/95 backdrop-blur shadow-lg border-t border-border px-4 gap-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={actions.previousTurn}
+          disabled={encounter.participants.length === 0}
+          className="flex-1 flex-col h-auto py-1 gap-1 touch-target rounded-xl hover:bg-primary/5"
+        >
+          <ChevronLeft size={20} />
+          <span className="text-[10px] uppercase font-bold tracking-wider">Préc.</span>
+        </Button>
+
+        <Button
+          variant="default"
+          size="icon"
+          onClick={actions.nextTurn}
+          disabled={encounter.participants.length === 0}
+          className="flex-1 flex-col h-auto py-1 gap-1 touch-target rounded-xl shadow-glow scale-110 -translate-y-2 border-4 border-background"
+        >
+          <ChevronRight size={24} />
+          <span className="text-[10px] uppercase font-bold tracking-wider">Suivant</span>
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={actions.rollInitiativeForAll}
+          className="flex-1 flex-col h-auto py-1 gap-1 touch-target rounded-xl hover:bg-primary/5"
+        >
+          <Dice4 size={20} />
+          <span className="text-[10px] uppercase font-bold tracking-wider">Init.</span>
+        </Button>
+      </div>
     </div >
   );
 };

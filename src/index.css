@@ -203,12 +203,24 @@
   --safe-right: env(safe-area-inset-right, 0px);
   --vh: 1vh;
   /* Will be set by JS for Android 100vh fix */
+
+  /* Mobile Typography Scale */
+  --text-xs: clamp(0.75rem, 2vw, 0.875rem);
+  /* 12-14px */
+  --text-sm: clamp(0.875rem, 2.5vw, 1rem);
+  /* 14-16px */
+  --text-base: clamp(1rem, 3vw, 1.125rem);
+  /* 16-18px */
+  --text-lg: clamp(1.125rem, 3.5vw, 1.25rem);
+  /* 18-20px */
+  --text-xl: clamp(1.25rem, 4vw, 1.5rem);
+  /* 20-24px */
 }
 
 /* Touch Target Minimum Size */
 @layer components {
   .touch-target {
-    @apply min-w-[44px] min-h-[44px];
+    @apply min-w-[44px] min-h-[44px] flex items-center justify-center;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }

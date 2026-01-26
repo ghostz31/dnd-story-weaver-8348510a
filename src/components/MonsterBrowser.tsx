@@ -568,11 +568,11 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
             {filteredMonsters.length > 0 ? (
               <>
                 {/* Mobile Card View */}
-                <div className="md:hidden space-y-2">
+                <div className="md:hidden space-y-2 pb-20 md:pb-0">
                   {filteredMonsters.slice(0, visibleCount).map((monster) => (
                     <div
                       key={monster.id}
-                      className="mobile-card flex items-center gap-3 p-3 active:bg-primary/5 interactive-tap"
+                      className="mobile-card flex items-center gap-3 p-3 active:bg-primary/5 interactive-tap touch-action-pan-y"
                       onClick={() => handleSelectMonster(monster)}
                     >
                       <div className="h-12 w-12 flex-shrink-0 bg-secondary/10 rounded-lg overflow-hidden border border-border/30">
@@ -733,7 +733,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
           }}
         >
           <div
-            className="parchment-panel w-full md:max-w-4xl h-full md:h-[90vh] flex flex-col md:rounded-xl overflow-hidden shadow-2xl relative animate-in slide-in-from-bottom md:fade-in md:zoom-in-95 duration-200 cursor-default"
+            className="parchment-panel w-full md:max-w-4xl h-full md:h-[90vh] flex flex-col md:rounded-xl overflow-hidden shadow-2xl relative animate-in slide-in-from-bottom md:fade-in md:zoom-in-95 duration-200 cursor-default overscroll-contain"
             onClick={(e) => e.stopPropagation()}
           >
 
