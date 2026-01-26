@@ -1458,6 +1458,22 @@ export const deleteFolder = async (folderId: string): Promise<boolean> => {
   }
 };
 
+// Déplacer une rencontre vers un dossier
+export const moveEncounterToFolder = async (encounterId: string, folderId: string | null): Promise<void> => {
+  try {
+    const user = getCurrentUser();
+    const encounterRef = doc(db, 'users', user.uid, 'encounters', encounterId);
+
+    await updateDoc(encounterRef, {
+      folderId: folderId,
+      updatedAt: serverTimestamp()
+    });
+  } catch (error) {
+    console.error("Erreur lors du déplacement de la rencontre:", error);
+    throw error;
+  }
+};
+
 
 
 // ====== API pour les Monstres Personnalisés ======
