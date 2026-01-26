@@ -4,12 +4,13 @@ import { MagicItem } from '../lib/types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, X, Gem, Filter } from 'lucide-react';
+import { Search, X, Gem, Filter, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import FilterPanel from '@/components/ui/FilterPanel';
 import { Label } from '@/components/ui/label';
+import { useFavorites } from '../hooks/useFavorites';
 
 interface Props {
     onSelectItem?: (item: MagicItem) => void;
@@ -18,6 +19,7 @@ interface Props {
 
 const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => {
     const { items, loading, error } = useMagicItems();
+    const { favorites, toggleFavorite, isFavorite } = useFavorites();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedRarity, setSelectedRarity] = useState<string>('all');
     const [selectedType, setSelectedType] = useState<string>('all');
@@ -26,6 +28,7 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
     const [selectedItem, setSelectedItem] = useState<MagicItem | null>(null);
     const [quickFilterType, setQuickFilterType] = useState<string | null>(null);
     const [quickFilterRarity, setQuickFilterRarity] = useState<string | null>(null);
+    const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
     // Extraction des valeurs uniques pour les filtres
     const uniqueRarities = useMemo(() => {
@@ -55,6 +58,11 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
     // Filtrage
     const filteredItems = useMemo(() => {
         return items.filter(item => {
+            // Filtre Favoris
+            if (showFavoritesOnly && !isFavorite(item.id, 'item')) {
+                return false;
+            }
+
             // Recherche textuelle
             if (searchQuery && !item.name.toLowerCase().includes(searchQuery.toLowerCase())) {
                 return false;
@@ -104,7 +112,7 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
 
             return true;
         });
-    }, [items, searchQuery, selectedRarity, selectedType, selectedAttunement, selectedSource, quickFilterType, quickFilterRarity]);
+    }, [items, searchQuery, selectedRarity, selectedType, selectedAttunement, selectedSource, quickFilterType, quickFilterRarity, showFavoritesOnly, favorites]); // Added favorites dependency
 
     const getRarityColor = (rarity: string) => {
         switch (rarity.toLowerCase()) {
@@ -125,8 +133,9 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
         if (selectedSource !== 'all') count++;
         if (quickFilterType) count++;
         if (quickFilterRarity) count++;
+        if (showFavoritesOnly) count++;
         return count;
-    }, [selectedRarity, selectedType, selectedAttunement, selectedSource, quickFilterType, quickFilterRarity]);
+    }, [selectedRarity, selectedType, selectedAttunement, selectedSource, quickFilterType, quickFilterRarity, showFavoritesOnly]);
 
     const resetFilters = () => {
         setSearchQuery('');
@@ -136,6 +145,7 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
         setSelectedSource('all');
         setQuickFilterType(null);
         setQuickFilterRarity(null);
+        setShowFavoritesOnly(false);
     };
 
     return (
@@ -162,6 +172,17 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
                             </Button>
                         )}
                     </div>
+
+                    {/* Toggle Favoris */}
+                    <Button
+                        variant={showFavoritesOnly ? "default" : "outline"}
+                        size="icon"
+                        onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                        className={`h-11 w-11 md:h-10 md:w-10 flex-shrink-0 ${showFavoritesOnly ? 'bg-yellow-400 hover:bg-yellow-500 text-white border-yellow-500' : 'bg-white/50 text-gray-400'}`}
+                        title={showFavoritesOnly ? "Voir tous les objets" : "Voir mes favoris"}
+                    >
+                        <Star className={`h-5 w-5 ${showFavoritesOnly ? 'fill-current' : ''}`} />
+                    </Button>
                 </div>
 
                 {/* Quick Filters */}
@@ -301,38 +322,55 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
 
                 <ScrollArea className="flex-1 p-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {filteredItems.map(item => (
-                            <Card
-                                key={item.id}
-                                className="cursor-pointer hover:shadow-md transition-all hover:scale-[1.01] bg-white/60 border-border/30 hover:border-primary/30"
-                                onClick={() => setSelectedItem(item)}
-                            >
-                                <CardHeader className="p-4 pb-2">
-                                    <div className="flex justify-between items-start gap-2">
-                                        <CardTitle className="text-base font-bold text-primary font-cinzel">{item.name}</CardTitle>
-                                        <Badge variant="outline" className={`text-[10px] whitespace-nowrap ${getRarityColor(item.rarity)}`}>
-                                            {item.rarity}
-                                        </Badge>
-                                    </div>
-                                    <CardDescription className="text-xs font-serif">
-                                        {item.type} {item.attunement && (
-                                            item.attunementDetails
-                                                ? `• ${item.attunementDetails}`
-                                                : "• Harmonisation requise"
-                                        )}
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent className="p-4 pt-2">
-                                    <p className="text-sm text-foreground/80 line-clamp-2 font-serif">{item.description}</p>
-                                </CardContent>
-                            </Card>
-                        ))}
+                        {filteredItems.map(item => {
+                            const isFav = isFavorite(item.id, 'item');
+                            return (
+                                <Card
+                                    key={item.id}
+                                    className="cursor-pointer hover:shadow-md transition-all hover:scale-[1.01] bg-white/60 border-border/30 hover:border-primary/30 group relative"
+                                    onClick={() => setSelectedItem(item)}
+                                >
+                                    <CardHeader className="p-4 pb-2">
+                                        <div className="flex justify-between items-start gap-2">
+                                            <CardTitle className="text-base font-bold text-primary font-cinzel flex-1 leading-tight">{item.name}</CardTitle>
+                                            <div className="flex items-center gap-1 flex-shrink-0">
+                                                <Badge variant="outline" className={`text-[10px] whitespace-nowrap ${getRarityColor(item.rarity)}`}>
+                                                    {item.rarity}
+                                                </Badge>
+                                                <Button
+                                                    size="icon"
+                                                    variant="ghost"
+                                                    className={`h-6 w-6 rounded-full ${isFav ? 'text-yellow-400 hover:text-yellow-500' : 'text-gray-300 hover:text-yellow-400 opacity-50 hover:opacity-100'} transition-all`}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        toggleFavorite(item.id, item.name, 'item');
+                                                    }}
+                                                    title={isFav ? "Retirer des favoris" : "Ajouter aux favoris"}
+                                                >
+                                                    <Star className={`h-4 w-4 ${isFav ? 'fill-current' : ''}`} />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                        <CardDescription className="text-xs font-serif mt-1">
+                                            {item.type} {item.attunement && (
+                                                item.attunementDetails
+                                                    ? `• ${item.attunementDetails}`
+                                                    : "• Harmonisation requise"
+                                            )}
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="p-4 pt-2">
+                                        <p className="text-sm text-foreground/80 line-clamp-2 font-serif">{item.description}</p>
+                                    </CardContent>
+                                </Card>
+                            );
+                        })}
                     </div>
 
                     {!loading && filteredItems.length === 0 && (
                         <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
                             <Gem className="h-12 w-12 mb-4 opacity-50" />
-                            <p>Aucun objet magique trouvé.</p>
+                            <p>{showFavoritesOnly ? "Aucun objet favori." : "Aucun objet magique trouvé."}</p>
                         </div>
                     )}
                 </ScrollArea>
@@ -351,7 +389,21 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
                         <CardHeader className="bg-primary/5 border-b border-border/20 p-4">
                             <div className="flex justify-between items-start">
                                 <div className="min-w-0 flex-1">
-                                    <CardTitle className="text-xl md:text-2xl font-cinzel text-primary truncate">{selectedItem.name}</CardTitle>
+                                    <div className="flex items-center gap-3">
+                                        <CardTitle className="text-xl md:text-2xl font-cinzel text-primary truncate">{selectedItem.name}</CardTitle>
+                                        <Button
+                                            size="icon"
+                                            variant="ghost"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                toggleFavorite(selectedItem.id, selectedItem.name, 'item');
+                                            }}
+                                            className={`h-8 w-8 rounded-full ${isFavorite(selectedItem.id, 'item') ? 'text-yellow-400 hover:text-yellow-500' : 'text-gray-400 hover:text-yellow-400'}`}
+                                            title={isFavorite(selectedItem.id, 'item') ? "Retirer des favoris" : "Ajouter aux favoris"}
+                                        >
+                                            <Star className={`h-5 w-5 ${isFavorite(selectedItem.id, 'item') ? 'fill-current' : ''}`} />
+                                        </Button>
+                                    </div>
                                     <div className="flex gap-2 mt-2 flex-wrap">
                                         <Badge variant="outline" className={getRarityColor(selectedItem.rarity)}>
                                             {selectedItem.rarity}

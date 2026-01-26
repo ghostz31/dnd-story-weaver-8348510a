@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { toast } from '../hooks/use-toast';
 import { v4 as uuidv4 } from 'uuid';
-import { FaPlus, FaMinus, FaTrash, FaSave, FaEdit, FaDragon } from 'react-icons/fa';
-import { Save, Play, PenTool, X } from "lucide-react";
+import { FaPlus, FaMinus, FaTrash, FaSave, FaEdit, FaDragon, FaFolder, FaShareAlt } from 'react-icons/fa';
+import { Save, Play, PenTool, X, Share2, Folder, FolderPlus, FolderOpen, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +18,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { getUserStats } from '../lib/firebaseApi';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { getUserStats, subscribeToFolders, createFolder, moveEncounterToFolder } from '../lib/firebaseApi';
+import { shareEncounter, getShareUrl } from '../lib/sharingApi';
+import { EncounterFolder } from '../lib/types';
 import { getMonsterFromAideDD } from '../lib/api';
 import { Monster, Party, Encounter, EncounterMonster, environments, UserStats } from '../lib/types';
 import { useEncounterLogic } from '../hooks/useEncounterLogic';
@@ -51,6 +54,20 @@ const EncounterBuilder: React.FC = () => {
   const [showMonsterBrowser, setShowMonsterBrowser] = useState(false);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
 
+  // Folders & Sharing State
+  const [folders, setFolders] = useState<EncounterFolder[]>([]);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null); // For filtering the list
+  const [sharingId, setSharingId] = useState<string | null>(null);
+  const [isCreatingFolder, setIsCreatingFolder] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
+  const [createFolderDialogOpen, setCreateFolderDialogOpen] = useState(false);
+  const [localEncounters, setLocalEncounters] = useState<LocalEncounter[]>([]);
+
+  // Sync local encounters with repository data
+  useEffect(() => {
+    setLocalEncounters(encounters);
+  }, [encounters]);
+
   // Logic Hook
   const { totalXP, adjustedXP, difficulty, xpPerPlayer, difficultyColor } = useEncounterLogic(selectedMonsters, selectedParty);
   const { isAuthenticated, user } = useAuth();
@@ -73,7 +90,92 @@ const EncounterBuilder: React.FC = () => {
 
   useEffect(() => {
     loadUserStats();
+
+    // Subscribe to Folders
+    if (isAuthenticated) {
+      const unsubscribe = subscribeToFolders((foldersData) => {
+        setFolders(foldersData);
+      });
+      return () => unsubscribe();
+    }
   }, [isAuthenticated]);
+
+  // Folder & Sharing Handlers
+  const handleCreateFolder = async () => {
+    if (!newFolderName.trim()) return;
+    try {
+      setIsCreatingFolder(true);
+      await createFolder(newFolderName.trim());
+      setNewFolderName('');
+      setCreateFolderDialogOpen(false);
+      toast({ title: "Succès", description: `Dossier "${newFolderName}" créé.` });
+    } catch (error) {
+      toast({ title: "Erreur", description: "Impossible de créer le dossier.", variant: "destructive" });
+    } finally {
+      setIsCreatingFolder(false);
+    }
+  };
+
+  const handleShare = async (e: React.MouseEvent, encounterId: string) => {
+    e.stopPropagation();
+    try {
+      setSharingId(encounterId);
+      const shareCode = await shareEncounter(encounterId);
+      const shareUrl = getShareUrl(shareCode);
+      await navigator.clipboard.writeText(shareUrl);
+      toast({
+        title: "Lien copié !",
+        description: `Code: ${shareCode}. Lien dans le presse-papiers.`
+      });
+    } catch (error) {
+      console.error('Partage erreur:', error);
+      toast({ title: "Erreur", description: "Échec du partage.", variant: "destructive" });
+    } finally {
+      setSharingId(null);
+    }
+  };
+
+  const handleMoveToFolder = async (encounterId: string, folderId: string | null) => {
+    // Optimistic Update
+    setLocalEncounters(prev => prev.map(e =>
+      e.id === encounterId ? { ...e, folderId: folderId || undefined } : e
+    ));
+
+    try {
+      await moveEncounterToFolder(encounterId, folderId);
+      toast({ title: "Déplacé", description: folderId ? "Rencontre déplacée." : "Rencontre retirée du dossier." });
+    } catch (error) {
+      // Revert on error
+      toast({ title: "Erreur", description: "Échec du déplacement.", variant: "destructive" });
+      setLocalEncounters(encounters); // Reset to source of truth
+    }
+  };
+
+  // Drag and Drop Handlers
+  const handleDragStart = (e: React.DragEvent, encounterId: string) => {
+    e.dataTransfer.setData('encounterId', encounterId);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, folderId: string | null) => {
+    e.preventDefault();
+    const encounterId = e.dataTransfer.getData('encounterId');
+    if (encounterId) {
+      handleMoveToFolder(encounterId, folderId);
+    }
+  };
+
+  // Filter encounters based on selected folder
+  const filteredEncounters = selectedFolderId === null
+    ? localEncounters
+    : selectedFolderId === 'none'
+      ? localEncounters.filter(e => !e.folderId)
+      : localEncounters.filter(e => e.folderId === selectedFolderId);
 
   // Réinitialiser le formulaire
   const resetForm = () => {
@@ -490,105 +592,219 @@ const EncounterBuilder: React.FC = () => {
     <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4">
       {/* Liste des rencontres - Collapsible on mobile */}
       <div className="lg:col-span-1 parchment-panel rounded-xl p-3 md:p-4 lg:h-fit lg:sticky lg:top-24">
-        <div className="flex justify-between items-center mb-3 md:mb-4">
-          <h2 className="text-lg md:text-xl font-bold text-gray-800">Rencontres</h2>
+        <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
-            {isAuthenticated && userStats && userStats.maxEncounters < 1000 && (
-              <span className="text-xs md:text-sm text-gray-600">
+            <h2 className="text-xl font-bold font-cinzel text-gray-800">Rencontres</h2>
+            {isAuthenticated && userStats && (
+              <Badge variant="outline" className="text-xs bg-white/50">
                 {userStats.encounters}/{userStats.maxEncounters}
-              </span>
+              </Badge>
             )}
-            <button
-              onClick={resetForm}
-              className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 touch-target"
-            >
-              Nouvelle
-            </button>
           </div>
+
+          <Button
+            onClick={resetForm}
+            className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+            size="sm"
+          >
+            <FaPlus className="mr-2 h-3.5 w-3.5" /> Nouvelle
+          </Button>
         </div>
 
-        {encounters.length === 0 ? (
-          <div>
-            <p className="text-gray-500">Aucune rencontre créée. Créez votre première rencontre !</p>
-            <p className="text-xs text-red-500 mt-2">Debug: encounters.length = {encounters.length}</p>
+
+
+        {/* Folder Tabs - Cleaner Look */}
+        <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-2 hide-scrollbar">
+          <Button
+            variant={selectedFolderId === null ? "secondary" : "ghost"}
+            size="sm"
+            onClick={() => setSelectedFolderId(null)}
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop(e, null)}
+            className={`h-8 text-xs rounded-full px-4 ${selectedFolderId === null ? 'bg-gray-200 text-gray-800 font-medium' : 'text-gray-500'}`}
+          >
+            Tous
+          </Button>
+          <Button
+            variant={selectedFolderId === 'none' ? "secondary" : "ghost"}
+            size="sm"
+            onClick={() => setSelectedFolderId('none')}
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop(e, null)} // 'none' technically means no folderId, so null acts same or we use specific handler logic
+            className={`h-8 text-xs rounded-full px-4 ${selectedFolderId === 'none' ? 'bg-gray-200 text-gray-800 font-medium' : 'text-gray-500'}`}
+          >
+            Sans dossier
+          </Button>
+          <div className="w-px h-6 bg-gray-300 mx-1 flex-shrink-0" />
+          {folders.map(folder => (
+            <Button
+              key={folder.id}
+              variant={selectedFolderId === folder.id ? "secondary" : "ghost"}
+              size="sm"
+              onClick={() => setSelectedFolderId(folder.id)}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, folder.id)}
+              className={`h-8 text-xs rounded-full px-4 whitespace-nowrap transition-colors`}
+              style={{
+                backgroundColor: selectedFolderId === folder.id ? (folder.color || '#e5e7eb') : undefined,
+                color: selectedFolderId === folder.id ? '#1f2937' : '#6b7280',
+                fontWeight: selectedFolderId === folder.id ? 500 : 400
+              }}
+            >
+              {folder.name}
+            </Button>
+          ))}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setCreateFolderDialogOpen(true)}
+            className="h-8 w-8 rounded-full border-dashed border-gray-400 text-gray-500 hover:text-primary hover:border-primary flex-shrink-0 ml-auto"
+            title="Nouveau dossier"
+          >
+            <FaPlus className="h-3 w-3" />
+          </Button>
+        </div>
+
+        {filteredEncounters.length === 0 ? (
+          <div className="text-center py-12 bg-white/40 rounded-lg border-2 border-dashed border-gray-200">
+            <p className="text-gray-500">Aucune rencontre trouvée.</p>
           </div>
         ) : (
-          <ul className="divide-y divide-gray-200">
-            {encounters.map(encounter => (
+          <ul className="space-y-3 pb-20 lg:pb-0">
+            {filteredEncounters.map(encounter => (
               <li
                 key={encounter.id}
-                className={`py-2 px-2 cursor-pointer hover:bg-gray-50 flex justify-between items-center ${selectedEncounter?.id === encounter.id ? 'bg-blue-50' : ''
-                  }`}
+                draggable
+                onDragStart={(e) => handleDragStart(e, encounter.id)}
+                className={`
+                group relative bg-white border rounded-lg p-3 cursor-pointer transition-all duration-200
+                hover:shadow-md hover:border-blue-300 active:cursor-grabbing
+                ${selectedEncounter?.id === encounter.id ? 'ring-2 ring-blue-500 border-transparent shadow-sm' : 'border-stone-200'}
+              `}
                 onClick={() => handleSelectEncounter(encounter as LocalEncounter)}
               >
-                <div>
-                  <span className="font-medium">{encounter.name}</span>
-                  <div className="text-sm text-gray-500">
-                    Difficulté: <span className={
-                      encounter.difficulty === 'deadly' ? 'text-red-600' :
-                        encounter.difficulty === 'hard' ? 'text-orange-500' :
-                          encounter.difficulty === 'medium' ? 'text-yellow-500' :
-                            'text-green-500'
-                    }>
-                      {encounter.difficulty === 'easy' ? 'Facile' :
-                        encounter.difficulty === 'medium' ? 'Moyen' :
-                          encounter.difficulty === 'hard' ? 'Difficile' :
-                            encounter.difficulty === 'deadly' ? 'Mortel' : encounter.difficulty}
-                    </span>
+                <div className="flex justify-between items-start gap-3">
+                  <div className="min-w-0 flex-1">
+                    <h3 className={`font-semibold text-sm truncate ${selectedEncounter?.id === encounter.id ? 'text-blue-700' : 'text-gray-900'}`}>
+                      {encounter.name}
+                    </h3>
+
+                    <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                      <Badge variant="secondary" className={`text-[10px] h-5 px-1.5 font-normal ${encounter.difficulty === 'deadly' ? 'bg-red-100 text-red-700' :
+                        encounter.difficulty === 'hard' ? 'bg-orange-100 text-orange-700' :
+                          encounter.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                            'bg-green-100 text-green-700'
+                        }`}>
+                        {encounter.difficulty === 'easy' ? 'Facile' :
+                          encounter.difficulty === 'medium' ? 'Moyen' :
+                            encounter.difficulty === 'hard' ? 'Difficile' :
+                              encounter.difficulty === 'deadly' ? 'Mortel' : 'Trivial'}
+                      </Badge>
+
+                      {encounter.folderId && folders.find(f => f.id === encounter.folderId) && (
+                        <div className="flex items-center text-[10px] text-gray-500 bg-gray-100 rounded-sm px-1.5 h-5">
+                          <FolderOpen className="h-3 w-3 mr-1 opacity-70" />
+                          {folders.find(f => f.id === encounter.folderId)?.name}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Actions overlay - always visible on mobile/active, hover on desktop */}
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-gray-400 hover:text-blue-600 hover:bg-blue-50 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                      onClick={(e) => handleShare(e, encounter.id)}
+                      title="Partager"
+                    >
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-gray-400 hover:text-gray-700 hover:bg-gray-100 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Folder className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleMoveToFolder(encounter.id, null); }}>
+                          <Folder className="h-4 w-4 mr-2" /> Sans dossier
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        {folders.map(folder => (
+                          <DropdownMenuItem key={folder.id} onClick={(e) => { e.stopPropagation(); handleMoveToFolder(encounter.id, folder.id); }}>
+                            <FolderOpen className="h-4 w-4 mr-2" /> {folder.name}
+                            {encounter.folderId === folder.id && <Check className="h-3 w-3 ml-auto opacity-70" />}
+                          </DropdownMenuItem>
+                        ))}
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setCreateFolderDialogOpen(true); }}>
+                          <FolderPlus className="h-4 w-4 mr-2" /> Nouveau dossier
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        if (window.confirm("Supprimer cette rencontre ?")) {
+                          try {
+                            const success = await deleteEncounter(encounter.id);
+                            if (success) {
+                              if (selectedEncounter?.id === encounter.id) resetForm();
+                              toast({ title: "Supprimée", description: "Rencontre supprimée." });
+                            }
+                          } catch (err) {
+                            toast({ title: "Erreur", description: "Échec suppression.", variant: "destructive" });
+                          }
+                        }
+                      }}
+                      className="h-8 w-8 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 translation-opacity"
+                      title="Supprimer"
+                    >
+                      <FaTrash className="h-3.5 w-3.5" />
+                    </button>
                   </div>
                 </div>
-                <button
-                  onClick={async (e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-
-                    console.log(`[EncounterBuilder] Clic sur suppression pour rencontre ID: ${encounter.id}`);
-
-                    const confirmed = window.confirm("Êtes-vous sûr de vouloir supprimer cette rencontre ?");
-                    console.log(`[EncounterBuilder] Confirmation: ${confirmed}`);
-
-                    if (!confirmed) {
-                      console.log("[EncounterBuilder] Suppression annulée par l'utilisateur");
-                      return;
-                    }
-
-                    try {
-                      console.log(`[EncounterBuilder] Début suppression de la rencontre ID: ${encounter.id}`);
-                      const success = await deleteEncounter(encounter.id);
-
-                      console.log(`[EncounterBuilder] Suppression terminée, succès: ${success}`);
-
-                      if (success) {
-                        // Si la rencontre supprimée était sélectionnée, réinitialiser le formulaire
-                        if (selectedEncounter?.id === encounter.id) {
-                          console.log("[EncounterBuilder] Rencontre supprimée était sélectionnée, réinitialisation du formulaire");
-                          resetForm();
-                        }
-
-                        toast({
-                          title: "Succès",
-                          description: "Rencontre supprimée avec succès."
-                        });
-                      }
-                    } catch (err) {
-                      console.error("[EncounterBuilder] Erreur lors de la suppression:", err);
-                      toast({
-                        title: "Erreur",
-                        description: "Impossible de supprimer la rencontre.",
-                        variant: "destructive"
-                      });
-                    }
-                  }}
-                  className="text-red-500 hover:text-red-700 relative z-10 pointer-events-auto"
-                  type="button"
-                  aria-label="Supprimer la rencontre"
-                >
-                  <FaTrash />
-                </button>
               </li>
             ))}
           </ul>
         )}
+
+
+        {/* Dialog creation dossier */}
+        <Dialog open={createFolderDialogOpen} onOpenChange={setCreateFolderDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Nouveau dossier</DialogTitle>
+              <DialogDescription>Créez un dossier pour organiser vos rencontres.</DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <Label htmlFor="builder-new-folder-name">Nom</Label>
+              <Input
+                id="builder-new-folder-name"
+                value={newFolderName}
+                onChange={(e) => setNewFolderName(e.target.value)}
+                placeholder="Ex: Campagne finale"
+              />
+            </div>
+            <DialogFooter>
+              <Button onClick={handleCreateFolder} disabled={isCreatingFolder || !newFolderName.trim()}>
+                Créer
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+
       </div>
 
       {/* Formulaire de création/édition */}
@@ -732,30 +948,32 @@ const EncounterBuilder: React.FC = () => {
       </div>
 
       {/* Modal du navigateur de monstres - Fullscreen on mobile */}
-      {showMonsterBrowser && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex items-end md:items-center justify-center min-h-screen md:p-4">
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowMonsterBrowser(false)}></div>
-            <div className="relative parchment-card md:rounded-xl w-full md:max-w-5xl h-full md:h-auto md:max-h-[90vh] overflow-y-auto flex flex-col shadow-2xl animate-in slide-in-from-bottom md:fade-in md:zoom-in-95 duration-200">
-              <div className="p-3 md:p-4 border-b border-glass-border/20 flex justify-between items-center bg-primary/5 sticky top-0 z-10">
-                <h2 className="text-lg md:text-xl font-bold font-cinzel">Sélectionner un monstre</h2>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setShowMonsterBrowser(false)}
-                  className="touch-target h-11 w-11"
-                >
-                  <X className="h-5 w-5" />
-                </Button>
+      {
+        showMonsterBrowser && (
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex items-end md:items-center justify-center min-h-screen md:p-4">
+              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowMonsterBrowser(false)}></div>
+              <div className="relative parchment-card md:rounded-xl w-full md:max-w-5xl h-full md:h-auto md:max-h-[90vh] overflow-y-auto flex flex-col shadow-2xl animate-in slide-in-from-bottom md:fade-in md:zoom-in-95 duration-200">
+                <div className="p-3 md:p-4 border-b border-glass-border/20 flex justify-between items-center bg-primary/5 sticky top-0 z-10">
+                  <h2 className="text-lg md:text-xl font-bold font-cinzel">Sélectionner un monstre</h2>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowMonsterBrowser(false)}
+                    className="touch-target h-11 w-11"
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+                <MonsterBrowser
+                  onSelectMonster={handleAddMonster}
+                  isSelectable={true}
+                />
               </div>
-              <MonsterBrowser
-                onSelectMonster={handleAddMonster}
-                isSelectable={true}
-              />
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Modal d'initiative */}
       <InitiativeModal
@@ -764,7 +982,7 @@ const EncounterBuilder: React.FC = () => {
         participants={preparedParticipants}
         onConfirm={handleStartEncounterWithInitiative}
       />
-    </div>
+    </div >
   );
 };
 

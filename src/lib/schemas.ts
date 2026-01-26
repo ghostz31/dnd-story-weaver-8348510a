@@ -200,6 +200,7 @@ export const EncounterSchema = z.object({
     round: z.number().default(1),
     currentTurn: z.number().default(0),
     isActive: z.boolean().optional(),
+    folderId: z.string().nullable().optional(),
     createdAt: z.string(),
     updatedAt: z.string(),
 });

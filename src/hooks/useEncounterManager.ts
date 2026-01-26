@@ -32,18 +32,21 @@ export const useEncounterManager = () => {
 
     // --- State ---
     const [encounter, setEncounter] = useState<{
+        id?: string;
         name: string;
         participants: EncounterParticipant[];
         currentTurn: number;
         round: number;
         party?: { id: string; name: string };
-        combatLog: CombatLogEntry[]; // NEW
+        combatLog: CombatLogEntry[];
+        folderId?: string;
     }>({
         name: 'Rencontre',
         participants: [],
         currentTurn: 0,
         round: 1,
-        combatLog: []
+        combatLog: [],
+        folderId: undefined
     });
 
     const [isLoadingEncounter, setIsLoadingEncounter] = useState(false);
@@ -462,12 +465,14 @@ export const useEncounterManager = () => {
                         console.log("[loadSavedEncounter] Using existing participants with full data");
                     }
                     setEncounter({
+                        id: encounterId,
                         name: data.name,
                         participants,
                         currentTurn: data.currentTurn || 0,
                         round: data.round || 1,
                         party: syncedParty,
-                        combatLog: data.combatLog || []
+                        combatLog: data.combatLog || [],
+                        folderId: data.folderId
                     });
                     toast({ title: "Chargée", description: "Rencontre chargée et synchronisée." });
                 } else {

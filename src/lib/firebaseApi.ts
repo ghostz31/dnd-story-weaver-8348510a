@@ -518,6 +518,7 @@ export const getEncounters = async (): Promise<Encounter[]> => {
         round: data.round || 1,
         currentTurn: data.currentTurn || 0,
         isActive: data.isActive || false,
+        folderId: data.folderId || null,
         createdAt: formatDate(data.createdAt),
         updatedAt: formatDate(data.updatedAt)
       });
@@ -577,6 +578,7 @@ export const subscribeToEncounters = (
             round: data.round || 1,
             currentTurn: data.currentTurn || 0,
             isActive: data.isActive || false,
+            folderId: data.folderId || null,
             createdAt: formatDate(data.createdAt),
             updatedAt: formatDate(data.updatedAt)
           });
@@ -957,6 +959,7 @@ export const updateFirestoreEncounter = async (
       round: data.round || 0,
       currentTurn: data.currentTurn || 0,
       isActive: data.isActive || false,
+      folderId: data.folderId || null,
       createdAt: data.createdAt?.toDate?.() ? data.createdAt.toDate().toISOString() : new Date().toISOString(),
       updatedAt: data.updatedAt?.toDate?.() ? data.updatedAt.toDate().toISOString() : new Date().toISOString()
     };

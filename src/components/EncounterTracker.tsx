@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Sword, Shield, Heart, Plus, Minus, Pencil, Scroll, Zap, Droplets, Eye, EyeOff, Smile, Users, Link, Snowflake, Clock, Ghost, Anchor, ArrowDown, Brain, Footprints, ShieldX, Save, RotateCcw, ChevronLeft, ChevronRight, Dice4, User, Calendar, Trash2 } from 'lucide-react';
+import { Sword, Shield, Heart, Plus, Minus, Pencil, Scroll, Zap, Droplets, Eye, EyeOff, Smile, Users, Link, Snowflake, Clock, Ghost, Anchor, ArrowDown, Brain, Footprints, ShieldX, Save, RotateCcw, ChevronLeft, ChevronRight, Dice4, User, Calendar, Trash2, Share2, Folder, FolderPlus, FolderOpen, Check } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,6 +17,10 @@ import FloatingGrimoireBubble from './FloatingGrimoireBubble';
 import SpellBrowser from './SpellBrowser';
 import { useAuth } from '../auth/AuthContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { subscribeToFolders, createFolder, moveEncounterToFolder } from '../lib/firebaseApi';
+import { shareEncounter, getShareUrl } from '../lib/sharingApi';
+import { EncounterFolder } from '../lib/types';
 import TrackerTable from './encounter/TrackerTable';
 import TurnControls from './encounter/TurnControls';
 import CombatLog from './encounter/CombatLog';
@@ -54,6 +58,73 @@ const EncounterTracker: React.FC = () => {
   const { toast } = useToast();
   const params = useParams();
   const navigate = useNavigate();
+
+  // Sharing & Folders State
+  const [folders, setFolders] = useState<EncounterFolder[]>([]);
+  const [sharingId, setSharingId] = useState<string | null>(null);
+  const [isCreatingFolder, setIsCreatingFolder] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
+  const [createFolderDialogOpen, setCreateFolderDialogOpen] = useState(false);
+
+  // Subscribe to folders
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      const unsubscribe = subscribeToFolders((foldersData) => {
+        setFolders(foldersData);
+      });
+      return () => unsubscribe();
+    }
+  }, [isAuthenticated]);
+
+  // Handlers for Sharing & Folders
+  const handleShare = async () => {
+    if (!encounter.id || encounter.id === 'temp' || !params.encounterId) {
+      toast({ title: "Impossible", description: "Sauvegardez la rencontre avant de la partager.", variant: "destructive" });
+      return;
+    }
+
+    try {
+      setSharingId(encounter.id);
+      const shareCode = await shareEncounter(encounter.id);
+      const shareUrl = getShareUrl(shareCode);
+      await navigator.clipboard.writeText(shareUrl);
+      toast({
+        title: "Lien copié !",
+        description: `Code: ${shareCode}. Lien dans le presse-papiers.`
+      });
+    } catch (error) {
+      console.error('Partage erreur:', error);
+      toast({ title: "Erreur", description: "Échec du partage.", variant: "destructive" });
+    } finally {
+      setSharingId(null);
+    }
+  };
+
+  const handleCreateFolder = async () => {
+    if (!newFolderName.trim()) return;
+    try {
+      setIsCreatingFolder(true);
+      await createFolder(newFolderName.trim());
+      setNewFolderName('');
+      setCreateFolderDialogOpen(false);
+      toast({ title: "Succès", description: `Dossier "${newFolderName}" créé.` });
+    } catch (error) {
+      toast({ title: "Erreur", description: "Impossible de créer le dossier.", variant: "destructive" });
+    } finally {
+      setIsCreatingFolder(false);
+    }
+  };
+
+  const handleMoveToFolder = async (folderId: string | null) => {
+    if (!encounter.id || encounter.id === 'temp') return;
+    try {
+      await moveEncounterToFolder(encounter.id, folderId);
+      setEncounter(prev => ({ ...prev, folderId: folderId || undefined }));
+      toast({ title: "Déplacé", description: folderId ? "Rencontre déplacée." : "Rencontre retirée du dossier." });
+    } catch (error) {
+      toast({ title: "Erreur", description: "Échec du déplacement.", variant: "destructive" });
+    }
+  };
 
   // Local UI State for Dialogs
   const [hpEditorOpen, setHpEditorOpen] = useState(false);
@@ -284,8 +355,73 @@ const EncounterTracker: React.FC = () => {
             <RotateCcw className="h-4 w-4" />
             <span className="hidden sm:inline ml-1">Réinitialiser</span>
           </Button>
+
+          {isAuthenticated && encounter.id && encounter.id !== 'temp' && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleShare}
+                disabled={!!sharingId}
+                className="touch-target whitespace-nowrap flex-shrink-0"
+                title="Partager"
+              >
+                <Share2 className={`h-4 w-4 ${sharingId ? 'animate-pulse' : ''}`} />
+              </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="touch-target whitespace-nowrap flex-shrink-0" title="Classer">
+                    <Folder className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => setCreateFolderDialogOpen(true)}>
+                    <FolderPlus className="h-4 w-4 mr-2" />
+                    Nouveau dossier
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => handleMoveToFolder(null)}>
+                    <Folder className="h-4 w-4 mr-2" />
+                    Sans dossier
+                  </DropdownMenuItem>
+                  {folders.map(folder => (
+                    <DropdownMenuItem key={folder.id} onClick={() => handleMoveToFolder(folder.id)}>
+                      <FolderOpen className="h-4 w-4 mr-2" />
+                      {folder.name}
+                      {encounter.folderId === folder.id && <Check className="h-3 w-3 ml-auto" />}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          )}
         </div>
       </div>
+
+      {/* Dialog creation dossier */}
+      <Dialog open={createFolderDialogOpen} onOpenChange={setCreateFolderDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Nouveau dossier</DialogTitle>
+            <DialogDescription>Créez un dossier pour organiser vos rencontres.</DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Label htmlFor="new-folder-name">Nom</Label>
+            <Input
+              id="new-folder-name"
+              value={newFolderName}
+              onChange={(e) => setNewFolderName(e.target.value)}
+              placeholder="Ex: Campagne finale"
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={handleCreateFolder} disabled={isCreatingFolder || !newFolderName.trim()}>
+              Créer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Résumé du tour actuel - Responsive */}
       {encounter.participants.length > 0 && (
