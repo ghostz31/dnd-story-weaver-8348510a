@@ -4,6 +4,13 @@
   command = "npm run build"
   publish = "dist"
 
+# D&D Beyond Proxy
+[[redirects]]
+  from = "/api/dndbeyond/*"
+  to = "https://character-service.dndbeyond.com/:splat"
+  status = 200
+  force = true
+
 # SPA routing - redirect all routes to index.html
 [[redirects]]
   from = "/*"
