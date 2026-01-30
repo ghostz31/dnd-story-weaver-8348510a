@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Monster, monsterCategories, monsterTypes, monsterSizes } from '../lib/types';
-import { RefreshCw, Search, Plus, Info, Pen, Copy, Trash2, Ghost, Skull, Shield, Zap, X, Share2, Filter, Undo, UploadCloud } from 'lucide-react';
+import { Search, Plus, Info, Pen, Copy, Trash2, Ghost, Skull, Shield, Zap, X, Share2, Filter, Undo } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
 import { toast } from '../hooks/use-toast';
 import { Button } from './ui/button';
@@ -362,49 +362,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
             >
               <Plus className="mr-1 md:mr-2 h-4 w-4" /> <span className="hidden sm:inline">Créer</span>
             </Button>
-            <Button
-              onClick={async () => {
-                try {
-                  const recoveryFn = (useMonsters() as any).recoverLostMonsters;
-                  const count = await recoveryFn();
-                  if (count > 0) {
-                    toast({
-                      title: "Récupération terminée",
-                      description: `${count} monstres ont été restaurés (Cloud & Local).`,
-                    });
-                    refresh();
-                  } else {
-                    toast({
-                      title: "Aucun monstre trouvé",
-                      description: "Aucun monstre perdu n'a été trouvé.",
-                    });
-                  }
-                } catch (e) {
-                  console.error(e);
-                  toast({
-                    title: "Erreur",
-                    description: "Erreur lors de la récupération.",
-                    variant: "destructive"
-                  });
-                }
-              }}
-              variant="outline"
-              className="flex-1 sm:flex-none whitespace-nowrap bg-white/50 touch-target text-xs sm:text-sm"
-              title="Tenter de récupérer les monstres perdus depuis les rencontres"
-            >
-              <span className="hidden sm:inline">Récupérer</span>
-              <UploadCloud className="sm:hidden h-4 w-4" />
-            </Button>
-            <Button
-              onClick={handleRefreshMonsters}
-              disabled={loading}
-              variant="outline"
-              size="icon"
-              className="flex-shrink-0 touch-target h-10 w-10"
-              title="Actualiser la liste"
-            >
-              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            </Button>
+
           </div>
         </div>
 
