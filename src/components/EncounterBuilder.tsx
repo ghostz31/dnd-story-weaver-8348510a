@@ -854,7 +854,7 @@ const EncounterBuilder: React.FC = () => {
             disabled={!selectedMonsters.length || isSaving}
           >
             <Play className="mr-2" />
-            <span className="hidden sm:inline">Lancer la </span>rencontre
+            <span className="hidden sm:inline">Lancer la</span> rencontre
           </button>
         </div>
 
