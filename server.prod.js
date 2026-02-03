@@ -157,6 +157,44 @@ async function createServer() {
     }
   });
 
+  // Proxy Middleware for D&D Beyond
+  // Express 5: app.use matches prefix, so '/*' is interpreted as a parameterized route by path-to-regexp v3+, causing "Missing parameter name".
+  // Removing '/*' is safe because app.use matches all sub-paths by default.
+  app.use('/api/dndbeyond', async (req, res) => {
+    try {
+      const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
+      if (!checkRateLimit(clientIp)) {
+        res.status(429).json({ error: 'Trop de requêtes, réessayez plus tard' });
+        return;
+      }
+
+      // Rewrite path: /api/dndbeyond/x/y -> /x/y
+      const targetPath = req.originalUrl.replace(/^\/api\/dndbeyond/, '');
+      const targetUrl = `https://character-service.dndbeyond.com${targetPath}`;
+
+      console.log(`Proxy D&D Beyond: ${targetUrl}`);
+
+      const response = await fetch(targetUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+          'Accept': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        // D&D Beyond retourne parfois des 403/404 normaux pour des persos privés, on relaie le status
+        res.status(response.status).send(await response.text());
+        return;
+      }
+
+      const data = await response.json();
+      res.json(data);
+    } catch (error) {
+      console.error('Erreur du proxy D&D Beyond:', error);
+      res.status(500).json({ error: 'Erreur proxy D&D Beyond', details: error.message });
+    }
+  });
+
   // Serve static files from 'dist' directory
   app.use(express.static(path.join(__dirname, 'dist')));
 

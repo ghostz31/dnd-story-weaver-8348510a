@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  dnd-story-weaver:
+    image: dnd-story-weaver:latest
+    container_name: dnd-story-weaver
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - PORT=8080
+      - NODE_ENV=production
+      # Mettez ici l'URL de votre NAS si accessible de l'extérieur, ou localhost si testé en local
+      # - PRODUCTION_URL=http://votre-nas-ip:3000
+    ports:
+      - "3000:8080"

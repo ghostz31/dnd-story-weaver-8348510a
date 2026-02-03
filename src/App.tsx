@@ -15,6 +15,8 @@ import SharedEncounterPage from './pages/SharedEncounterPage';
 import SharedMonsterPage from './pages/SharedMonsterPage';
 import UserProfile from './components/auth/UserProfile';
 import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
+import { PrivacyPage, TermsPage, CookiesPage, NewsPage } from './pages/LegalPages';
 import { useAuth } from './auth/AuthContext';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 import { GlobalCommandPalette } from './components/GlobalCommandPalette';
@@ -29,7 +31,6 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   console.log(`[ProtectedRoute] Path: ${location.pathname}, Auth: ${isAuthenticated}, Loading: ${isLoading}`);
 
   if (isLoading) {
-    // Affichage d'un chargement pendant la vérification de l'authentification
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -38,7 +39,6 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   }
 
   if (!isAuthenticated) {
-    // Redirection vers la page de connexion avec l'URL actuelle en "from"
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
@@ -50,11 +50,11 @@ function App() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="min-h-screen-mobile bg-background text-foreground font-inter">
+    <div className="flex flex-col min-h-screen bg-background text-foreground font-inter">
       <Header />
       <GlobalCommandPalette />
 
-      <main className="w-full mx-auto py-4 px-2 md:py-6 md:px-4">
+      <main className="flex-grow w-full mx-auto py-4 px-2 md:py-6 md:px-4">
         <ErrorBoundary>
           <Routes>
             {/* Routes publiques */}
@@ -68,6 +68,10 @@ function App() {
             <Route path="/encounter-tracker/:encounterId" element={<EncounterTracker />} />
             <Route path="/shared/:shareCode" element={<SharedEncounterPage />} />
             <Route path="/shared/monster/:shareCode" element={<SharedMonsterPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/cookies" element={<CookiesPage />} />
+            <Route path="/news" element={<NewsPage />} />
 
             {/* Routes protégées (utilisateur connecté) */}
             <Route path="/profile" element={
@@ -75,8 +79,6 @@ function App() {
                 <UserProfile />
               </ProtectedRoute>
             } />
-
-
 
             <Route path="/parties" element={
               <ProtectedRoute>
@@ -108,16 +110,7 @@ function App() {
         </ErrorBoundary>
       </main>
 
-      <footer className="border-t border-border bg-card/50 text-muted-foreground p-4 md:p-6 mt-8 md:mt-12" style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}>
-        <div className="container mx-auto text-center">
-          <p className="text-sm md:text-base">Outil pour maîtres de jeu</p>
-          {!isAuthenticated && (
-            <p className="text-xs md:text-sm mt-2">
-              <a href="/auth" className="text-primary hover:underline touch-target inline-flex items-center justify-center">Connectez-vous</a> pour sauvegarder vos rencontres et groupes
-            </p>
-          )}
-        </div>
-      </footer>
+      <Footer />
       <Toaster />
     </div>
   );
