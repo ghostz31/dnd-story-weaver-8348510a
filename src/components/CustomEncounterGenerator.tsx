@@ -20,6 +20,7 @@ import { useAuth } from '../auth/AuthContext';
 import { getParties, canCreateEncounter, saveEncounter, getEncounters, deleteEncounter, subscribeToEncounters } from '../lib/firebaseApi';
 import { Party, Monster, Encounter } from '../lib/types';
 import { useMonsters } from '../hooks/useMonsters';
+import { normalizeForSearch } from '../utils/stringUtils';
 
 // Difficultés d'une rencontre
 const ENCOUNTER_DIFFICULTIES = ['easy', 'medium', 'hard', 'deadly'] as const;
@@ -106,7 +107,7 @@ const CustomEncounterGenerator: React.FC = () => {
 
     // Filtrage simple côté client sur la liste complète chargée par le hook
     const results = allMonsters.filter(m =>
-      m.name.toLowerCase().includes(searchQuery.toLowerCase())
+      normalizeForSearch(m.name).includes(normalizeForSearch(searchQuery))
     ).slice(0, 20); // Limiter à 20 résultats pour la perf
 
     setSearchResults(results);

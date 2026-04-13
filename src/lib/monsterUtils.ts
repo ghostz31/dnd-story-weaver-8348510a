@@ -11,7 +11,8 @@ export const getAideDDMonsterSlug = (name: string): string => {
     return name.toLowerCase()
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '') // Enlever les accents
-        .replace(/['\s]/g, '-')          // Remplacer espaces et apostrophes par des tirets
+        .replace(/'/g, '')               // Supprimer les apostrophes
+        .replace(/[\s_]+/g, '-')         // Remplacer espaces et underscores par des tirets
         .replace(/[^a-z0-9-]/g, '')      // Supprimer les autres caractères spéciaux
         .replace(/-+/g, '-')             // Éviter les tirets multiples
         .replace(/^-|-$/g, '');          // Supprimer les tirets au début/fin
@@ -20,7 +21,13 @@ export const getAideDDMonsterSlug = (name: string): string => {
 // Fonction pour obtenir l'URL de l'image du monstre
 // Retourne undefined si aucune image n'est connue
 export const getMonsterImageUrl = (monster: Monster): string | undefined => {
-    // 1. Priorité absolue : l'image définie dans l'objet monstre (champ image ou imageUrl)
+    // 1. Priorité absolue : Mapping manuel connu
+    const mappedSlug = MANUAL_IMAGE_SLUGS[monster.name];
+    if (mappedSlug) {
+        return `https://www.aidedd.org/dnd/images/${mappedSlug}.jpg`;
+    }
+
+    // 2. Image définie dans l'objet monstre (champ image ou imageUrl)
     const imageField = monster.image || (monster as any).imageUrl;
     if (imageField && imageField.trim() !== '' && imageField !== 'null') {
         const img = imageField.trim();
@@ -36,7 +43,13 @@ export const getMonsterImageUrl = (monster: Monster): string | undefined => {
         return `https://www.aidedd.org/dnd/images/${img}`;
     }
 
-    // 2. Génération automatique basée sur le nom (Stratégie locale systématique)
+    // 3. Fallback sur le originalName si présent
+    if (monster.originalName) {
+        const originalSlug = getAideDDMonsterSlug(monster.originalName);
+        return `https://www.aidedd.org/dnd/images/${originalSlug}.jpg`;
+    }
+
+    // 4. Génération automatique basée sur le nom (Stratégie locale systématique)
     const slug = getAideDDMonsterSlug(monster.name);
     return `/data/aidedd-complete/images/${slug}.jpg`;
 };

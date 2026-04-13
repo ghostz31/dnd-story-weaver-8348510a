@@ -28,6 +28,7 @@ interface TrackerTableProps {
     // Actions
     onSelect: (id: string | null) => void;
     onUpdateHp: (id: string, amount: number) => void;
+    onUpdateHpBatch?: (ids: string[], amount: number) => void;
     onMove: (id: string, direction: 'up' | 'down') => void;
     onInitiativeChange: (id: string, value: number) => void;
     onOpenInitiativeEditor: (participant: EncounterParticipant) => void;
@@ -49,6 +50,7 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
     showHpModifier,
     onSelect,
     onUpdateHp,
+    onUpdateHpBatch,
     onMove,
     onInitiativeChange,
     onOpenInitiativeEditor,
@@ -327,6 +329,39 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                             <Zap className="h-3 w-3" />
                                                         </button>
                                                     )}
+                                                </div>
+                                            )}
+                                            
+                                            {/* Boutons d'action de groupe pour les monstres multiples */}
+                                            {showHpModifier === participant.id && !participant.isPC && onUpdateHpBatch && (
+                                                <div className="flex flex-col mt-1 bg-gray-50 border rounded p-1 text-xs">
+                                                    <span className="font-semibold text-gray-500 mb-1">Actions de groupe ({participants.filter(p => !p.isPC && p.id.substring(0, p.id.lastIndexOf('-')) === participant.id.substring(0, participant.id.lastIndexOf('-'))).length} cibles)</span>
+                                                    <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                                                        <button
+                                                            onClick={() => {
+                                                                const baseId = participant.id.substring(0, participant.id.lastIndexOf('-'));
+                                                                const groupIds = participants.filter(p => !p.isPC && p.id.substring(0, p.id.lastIndexOf('-')) === baseId).map(p => p.id);
+                                                                onUpdateHpBatch(groupIds, hpModifierValue);
+                                                                onToggleHpModifier(null);
+                                                            }}
+                                                            className="flex-1 flex items-center justify-center gap-1 bg-green-500 hover:bg-green-600 text-white rounded px-2 py-1"
+                                                            title={`Soigner tout le groupe de ${hpModifierValue} PV`}
+                                                        >
+                                                            <Users className="h-3 w-3" /> <Plus className="h-3 w-3" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => {
+                                                                const baseId = participant.id.substring(0, participant.id.lastIndexOf('-'));
+                                                                const groupIds = participants.filter(p => !p.isPC && p.id.substring(0, p.id.lastIndexOf('-')) === baseId).map(p => p.id);
+                                                                onUpdateHpBatch(groupIds, -hpModifierValue);
+                                                                onToggleHpModifier(null);
+                                                            }}
+                                                            className="flex-1 flex items-center justify-center gap-1 bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1"
+                                                            title={`Infliger ${hpModifierValue} dégâts à tout le groupe`}
+                                                        >
+                                                            <Users className="h-3 w-3" /> <Minus className="h-3 w-3" />
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             )}
 

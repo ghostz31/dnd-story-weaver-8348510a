@@ -11,6 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import FilterPanel from '@/components/ui/FilterPanel';
 import { Label } from '@/components/ui/label';
 import { useFavorites } from '../hooks/useFavorites';
+import { normalizeForSearch } from '../utils/stringUtils';
 
 interface Props {
     onSelectItem?: (item: MagicItem) => void;
@@ -64,7 +65,7 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
             }
 
             // Recherche textuelle
-            if (searchQuery && !item.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+            if (searchQuery && !normalizeForSearch(item.name).includes(normalizeForSearch(searchQuery))) {
                 return false;
             }
 

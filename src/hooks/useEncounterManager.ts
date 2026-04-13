@@ -447,7 +447,7 @@ export const useEncounterManager = () => {
                         const monsterParticipants = data.monsters.flatMap(({ monster, quantity }: any) =>
                             Array.from({ length: quantity }, (_, idx) => ({
                                 id: `monster-${monster.id}-${idx}`,
-                                name: monster.name,
+                                name: `${monster.name} ${quantity > 1 ? String.fromCharCode(65 + idx) : ''}`.trim(),
                                 initiative: Math.floor(Math.random() * 20) + 1,
                                 ac: monster.ac || 10,
                                 currentHp: monster.hp || 10,
@@ -545,7 +545,7 @@ export const useEncounterManager = () => {
                         const monsterParticipants = data.monsters.flatMap(({ monster, quantity }: any) =>
                             Array.from({ length: quantity }, (_, idx) => ({
                                 id: `monster-${monster.id}-${idx}`,
-                                name: monster.name,
+                                name: `${monster.name} ${quantity > 1 ? String.fromCharCode(65 + idx) : ''}`.trim(),
                                 initiative: Math.floor(Math.random() * 20) + 1,
                                 ac: monster.ac || 10,
                                 currentHp: extractNumericHP(monster.hp || 10),
@@ -747,6 +747,84 @@ export const useEncounterManager = () => {
                     };
                 })
 
+            };
+        });
+    };
+
+    const updateHpBatch = (ids: string[], amount: number) => {
+        const safeAmount = Number(amount);
+        if (isNaN(safeAmount) || ids.length === 0) return;
+
+        setEncounter(prev => {
+            const isHeal = amount > 0;
+            const isDamage = amount < 0;
+            let logEntries: CombatLogEntry[] = [];
+            const newLogTime = Date.now();
+            let entryCount = 0;
+
+            const updatedParticipants = prev.participants.map(p => {
+                if (!ids.includes(p.id)) return p;
+
+                const currentNumeric = typeof p.currentHp === 'string'
+                    ? extractNumericHP(p.currentHp)
+                    : p.currentHp;
+
+                let newHp = currentNumeric;
+                let newTempHp = p.tempHp || 0;
+
+                if (isDamage) {
+                    if (p.conditions?.some(c => (typeof c === 'string' ? c : c.name) === 'Concentré')) {
+                        const damageVal = Math.abs(amount);
+                        const dc = Math.max(10, Math.floor(damageVal / 2));
+                        toast({
+                            title: "Jet de Concentration Requis !",
+                            description: `${p.name} a subi ${damageVal} dégâts alors qu'il était concentré.\nDD Constitution : ${dc}`,
+                            variant: "destructive",
+                            duration: 6000
+                        });
+                    }
+
+                    const damage = Math.abs(amount);
+                    if (newTempHp > 0) {
+                        const absorbed = Math.min(newTempHp, damage);
+                        newTempHp -= absorbed;
+                        const remainingDamage = damage - absorbed;
+                        if (remainingDamage > 0) {
+                            newHp = Math.max(0, currentNumeric - remainingDamage);
+                        }
+                    } else {
+                        newHp = Math.max(0, currentNumeric - damage);
+                    }
+                } else if (isHeal) {
+                    const maxNumeric = typeof p.maxHp === 'string'
+                        ? extractNumericHP(p.maxHp)
+                        : p.maxHp;
+                    newHp = Math.min(maxNumeric, currentNumeric + amount);
+                }
+
+                const msg = isHeal
+                    ? `${p.name} groupe soigne de ${amount} PV.`
+                    : `${p.name} groupe subit ${Math.abs(amount)} dégâts.`;
+
+                logEntries.push({
+                    id: uuid() + `_${entryCount++}`,
+                    timestamp: newLogTime,
+                    type: isHeal ? 'heal' : 'damage',
+                    message: msg,
+                    targetId: p.id
+                });
+
+                return {
+                    ...p,
+                    currentHp: newHp,
+                    tempHp: newTempHp
+                };
+            });
+
+            return {
+                ...prev,
+                combatLog: [...logEntries, ...prev.combatLog].slice(0, 100),
+                participants: updatedParticipants
             };
         });
     };
@@ -1094,6 +1172,7 @@ export const useEncounterManager = () => {
         grimoireOpen: false,
         actions: {
             updateHp,
+            updateHpBatch,
             updateParticipant,
             nextTurn,
             previousTurn,

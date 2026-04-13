@@ -528,6 +528,7 @@ const EncounterTracker: React.FC = () => {
                   showHpModifier={showHpModifier}
                   onSelect={setSelectedParticipantId}
                   onUpdateHp={actions.updateHp}
+                  onUpdateHpBatch={actions.updateHpBatch}
                   onMove={actions.moveParticipant}
                   onInitiativeChange={(id, val) => {
                     actions.updateParticipant(id, { initiative: val });

@@ -8,6 +8,7 @@ import { Badge } from './ui/badge';
 import { getAideDDMonsterSlug, getMonsterImageUrl } from '../lib/monsterUtils';
 import { useMonsters } from '../hooks/useMonsters';
 import FilterPanel from '@/components/ui/FilterPanel';
+import { normalizeForSearch } from '../utils/stringUtils';
 import { formatCR } from '@/lib/EncounterUtils';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -79,7 +80,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
   const applyFiltersToMonsters = (monstersToFilter: Monster[]): Monster[] => {
     return monstersToFilter.filter(monster => {
       // Filtre par nom
-      if (searchQuery && !monster.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+      if (searchQuery && !normalizeForSearch(monster.name).includes(normalizeForSearch(searchQuery))) {
         return false;
       }
 

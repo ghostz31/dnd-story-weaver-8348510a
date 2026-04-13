@@ -33,6 +33,7 @@ import {
   X,
   Gem
 } from 'lucide-react';
+import { ModeToggle } from '@/components/ModeToggle';
 
 const Header: React.FC = () => {
   const { user, logout } = useAuth();
@@ -195,6 +196,7 @@ const Header: React.FC = () => {
 
           {/* Menu utilisateur */}
           <div className="flex items-center space-x-2">
+            <ModeToggle />
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

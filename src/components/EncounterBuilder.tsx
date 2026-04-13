@@ -350,7 +350,7 @@ const EncounterBuilder: React.FC = () => {
       const monsters: InitiativeParticipant[] = selectedMonsters.flatMap(({ monster, quantity }) =>
         Array.from({ length: quantity }, (_, index) => ({
           id: `monster-${monster.id}-${index}`,
-          name: `${monster.name} ${quantity > 1 ? index + 1 : ''}`,
+          name: `${monster.name} ${quantity > 1 ? String.fromCharCode(65 + index) : ''}`,
           isPC: false,
           initiative: 0,
           dex: monster.dex || 10,
@@ -439,7 +439,7 @@ const EncounterBuilder: React.FC = () => {
           Array.from({ length: quantity }, (_, index) => {
             const id = `monster-${monster.id}-${index}`;
             const initData = participantsWithInit.find(p => p.id === id);
-            const displayName = `${monster.name} ${quantity > 1 ? index + 1 : ''}`;
+            const displayName = `${monster.name} ${quantity > 1 ? String.fromCharCode(65 + index) : ''}`.trim();
 
             return {
               ...monster,

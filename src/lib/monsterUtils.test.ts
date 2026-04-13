@@ -52,7 +52,7 @@ describe('monsterUtils', () => {
 
         it('should use explicit image property if no manual mapping exists', () => {
             const monster = createMockMonster({ name: 'Monstre Inconnu', image: 'custom-file.jpg' });
-            expect(getMonsterImageUrl(monster)).toBe('https://www.aidedd.org/dnd/images/custom-file.jpg');
+            expect(getMonsterImageUrl(monster)).toBe('/data/aidedd-complete/images/custom-file.jpg');
         });
 
         it('should use originalName slug if provided and no mapping/image exists', () => {
@@ -60,12 +60,9 @@ describe('monsterUtils', () => {
             expect(getMonsterImageUrl(monster)).toBe('https://www.aidedd.org/dnd/images/creature.jpg');
         });
 
-        it('should fallback to slugified name if nothing else is available', () => {
-            const monster = createMockMonster({ name: 'Dragon Rouge' });
-            // Assuming Dragon Rouge is not in the map for this test (it actually is, so let's use a fake one)
-            // Dragon Rouge IS in the map -> red-dragon-adult... wait, let's pick a name definitely NOT in the map
-            const unknownMonster = createMockMonster({ name: 'Super Monstre' });
-            expect(getMonsterImageUrl(unknownMonster)).toBe('https://www.aidedd.org/dnd/images/super-monstre.jpg');
+        it('should fallback to slugified name in local path if nothing else is available', () => {
+            const monster = createMockMonster({ name: 'Super Monstre' });
+            expect(getMonsterImageUrl(monster)).toBe('/data/aidedd-complete/images/super-monstre.jpg');
         });
 
         // Verification de cas réels qui posaient problème

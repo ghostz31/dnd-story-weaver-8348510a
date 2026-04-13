@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import FilterPanel from '@/components/ui/FilterPanel';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { normalizeForSearch } from '@/utils/stringUtils';
 
 interface SpellBrowserProps {
     onSelectSpell?: (spell: Spell) => void;
@@ -49,7 +50,7 @@ const SpellBrowser: React.FC<SpellBrowserProps> = ({ onSelectSpell, className = 
     const filteredSpells = useMemo(() => {
         return spells.filter(spell => {
             // Recherche textuelle
-            if (searchQuery && !spell.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+            if (searchQuery && !normalizeForSearch(spell.name).includes(normalizeForSearch(searchQuery))) {
                 return false;
             }
 
