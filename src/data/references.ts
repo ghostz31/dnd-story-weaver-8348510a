@@ -6,6 +6,73 @@
  */
 
 // ============================================================================
+// TYPES — Interfaces des références
+// ============================================================================
+
+/** Caractéristique abrégée (clé d'AbilityScores) */
+export type Ability = 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'
+
+export interface SkillReference {
+  id: string
+  name: string
+  nameEn: string
+  ability: Ability
+}
+
+export interface SaveReference {
+  id: string
+  name: string
+  nameEn: string
+  ability: Ability
+  abbreviation: string
+}
+
+export interface AbilityReference {
+  id: string
+  name: string
+  nameEn: string
+  abbreviation: string
+}
+
+export interface RacialTraitReference {
+  id: string
+  name: string
+  nameEn: string
+  description: string
+  /** IDs de compétences accordées par ce trait */
+  grants?: string[]
+}
+
+export interface FeatPrerequisites {
+  /** Prérequis de caractéristique (valeur minimum par caractéristique) */
+  ability?: Partial<Record<Ability, number>>
+  /** Prérequis de maîtrise (ex: 'medium_armor') */
+  proficiency?: string
+  /** Prérequis de capacité (ex: 'spellcasting') */
+  feature?: string
+}
+
+export interface FeatBonus {
+  cha?: number
+  con?: number
+  int?: number
+  str?: number
+  /** Bonus de vitesse en mètres */
+  speed?: number
+  /** Bonus de points de vie par niveau */
+  hpPerLevel?: number
+}
+
+export interface FeatReference {
+  id: string
+  name: string
+  nameEn: string
+  description: string
+  prerequisites: FeatPrerequisites | null
+  bonus?: FeatBonus
+}
+
+// ============================================================================
 // COMPÉTENCES
 // ============================================================================
 
@@ -118,7 +185,7 @@ export const SKILLS = {
     nameEn: 'Survival',
     ability: 'wis',
   },
-} as const
+} as const satisfies Record<string, SkillReference>
 
 // ============================================================================
 // JETS DE SAUVEGARDE
@@ -167,7 +234,7 @@ export const SAVES = {
     ability: 'cha',
     abbreviation: 'CHA',
   },
-} as const
+} as const satisfies Record<string, SaveReference>
 
 // ============================================================================
 // CARACTÉRISTIQUES
@@ -210,7 +277,7 @@ export const ABILITIES = {
     nameEn: 'Charisma',
     abbreviation: 'CHA',
   },
-} as const
+} as const satisfies Record<string, AbilityReference>
 
 // ============================================================================
 // TRAITS RACIAUX COMMUNS
@@ -327,7 +394,7 @@ export const RACIAL_TRAITS = {
     nameEn: 'Infernal Legacy',
     description: 'Vous connaissez le sort mineur Thaumaturgie. Une fois que vous atteignez le niveau 3, vous pouvez lancer le sort Représentation infernale une fois par jour. Le Charisme est votre caractéristique d\'incantation pour ces sorts.',
   },
-} as const
+} as const satisfies Record<string, RacialTraitReference>
 
 // ============================================================================
 // DONS
@@ -629,7 +696,7 @@ export const FEATS = {
     description: 'FOR ou DEX +1, maîtrise 4 armes au choix.',
     prerequisites: null,
   },
-} as const
+} as const satisfies Record<string, FeatReference>
 
 // ============================================================================
 // UTILITAIRES
@@ -638,7 +705,7 @@ export const FEATS = {
 /**
  * Récupère une référence par son ID
  */
-export function getReferenceById(id: string): any {
+export function getReferenceById(id: string): SkillReference | SaveReference | AbilityReference | RacialTraitReference | FeatReference | undefined {
   // Chercher dans toutes les catégories
   const allReferences = {
     ...SKILLS,
@@ -654,21 +721,21 @@ export function getReferenceById(id: string): any {
 /**
  * Liste toutes les compétences
  */
-export function getAllSkills() {
+export function getAllSkills(): SkillReference[] {
   return Object.values(SKILLS)
 }
 
 /**
  * Liste tous les traits raciaux
  */
-export function getAllRacialTraits() {
+export function getAllRacialTraits(): RacialTraitReference[] {
   return Object.values(RACIAL_TRAITS)
 }
 
 /**
  * Liste tous les dons
  */
-export function getAllFeats() {
+export function getAllFeats(): FeatReference[] {
   return Object.values(FEATS)
 }
 

@@ -1,4 +1,20 @@
-export const backgrounds = [
+export interface Background {
+    id: string
+    name: string
+    skillProficiencies: string[]
+    toolProficiencies?: string[]
+    /** Nombre de langues supplémentaires acquises */
+    languages?: number
+    equipment: string[]
+    feature: string
+    traits: string[]
+    ideals: string[]
+    bonds: string[]
+    flaws: string[]
+    source: 'PHB' | 'XGtE'
+}
+
+export const backgrounds: Background[] = [
     {
         id: 'acolyte',
         name: 'Acolyte',
