@@ -18,7 +18,7 @@ import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import { PrivacyPage, TermsPage, CookiesPage, NewsPage } from './pages/LegalPages';
 import { useAuth } from './auth/AuthContext';
-import ErrorBoundary from './components/ui/ErrorBoundary';
+import ErrorBoundary from './components/common/ErrorBoundary';
 import { GlobalCommandPalette } from './components/GlobalCommandPalette';
 import { Toaster } from './components/ui/toaster';
 import { ThemeProvider } from './components/theme-provider';

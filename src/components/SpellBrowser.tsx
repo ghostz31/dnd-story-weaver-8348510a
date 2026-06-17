@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import FilterPanel from '@/components/ui/FilterPanel';
+import FilterPanel from '@/components/common/FilterPanel';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { normalizeForSearch } from '@/utils/stringUtils';
