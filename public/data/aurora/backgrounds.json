@@ -1,0 +1,324 @@
+{
+  "version": "2.0.0",
+  "source": "PHB",
+  "count": 13,
+  "backgrounds": [
+    {
+      "id": "ID_PHB_BACKGROUND_ACOLYTE",
+      "name": "Acolyte",
+      "nameEn": "Acolyte",
+      "description": "Vous avez passé votre vie au service d'un temple, apprenti d'un prêtre ou d'un oracle.",
+      "skillProficiencies": [
+        "ID_SKILL_INSIGHT",
+        "ID_SKILL_RELIGION"
+      ],
+      "languageCount": 2,
+      "equipment": [
+        "ID_EQUIPMENT_HOLY_SYMBOL",
+        "ID_EQUIPMENT_PRAYER_BOOK",
+        "ID_EQUIPMENT_INCENSE",
+        "ID_EQUIPMENT_VESTMENTS",
+        "ID_EQUIPMENT_COMMON_CLOTHES",
+        "ID_EQUIPMENT_BELT_POUCH"
+      ],
+      "feature": {
+        "name": "Sanctuaire",
+        "description": "Les temples et sanctuaires de votre foi vous offrent nourriture et abri, et vos confrères vous aident (pas au péril de leur vie)."
+      }
+    },
+    {
+      "id": "ID_PHB_BACKGROUND_CHARLATAN",
+      "name": "Charlatan",
+      "nameEn": "Charlatan",
+      "description": "Vous avez toujours un don pour découvrir les faiblesses des gens et les exploiter.",
+      "skillProficiencies": [
+        "ID_SKILL_DECEPTION",
+        "ID_SKILL_SLEIGHT_OF_HAND"
+      ],
+      "toolProficiencies": [
+        "ID_TOOL_DISGUISE_KIT",
+        "ID_TOOL_FORGERY_KIT"
+      ],
+      "equipment": [
+        "ID_EQUIPMENT_FINE_CLOTHES",
+        "ID_EQUIPMENT_DISGUISE_KIT",
+        "ID_EQUIPMENT_WEIGHTED_DICE",
+        "ID_EQUIPMENT_BELT_POUCH"
+      ],
+      "feature": {
+        "name": "Fausse identité",
+        "description": "Vous avez créé une fausse identité complète avec documents, relations et vêtements."
+      }
+    },
+    {
+      "id": "ID_PHB_BACKGROUND_CRIMINAL",
+      "name": "Criminel",
+      "nameEn": "Criminal",
+      "description": "Vous avez vécu des années en marge de la société, membre d'une guilde de voleurs ou agissant seul.",
+      "skillProficiencies": [
+        "ID_SKILL_DECEPTION",
+        "ID_SKILL_STEALTH"
+      ],
+      "toolProficiencies": [
+        "ID_TOOL_THIEVES_TOOLS",
+        "ID_TOOL_GAMING_SET"
+      ],
+      "equipment": [
+        "ID_EQUIPMENT_CROWBAR",
+        "ID_EQUIPMENT_DARK_COMMON_CLOTHES",
+        "ID_EQUIPMENT_BELT_POUCH",
+        "ID_EQUIPMENT_THIEVES_TOOLS"
+      ],
+      "feature": {
+        "name": "Contact criminel",
+        "description": "Vous avez un contact fiable qui connaît les réseaux criminels locaux."
+      }
+    },
+    {
+      "id": "ID_PHB_BACKGROUND_ENTERTAINER",
+      "name": "Artiste",
+      "nameEn": "Entertainer",
+      "description": "Vous avez charmé, diverti et inspiré des auditoires avec vos talents artistiques.",
+      "skillProficiencies": [
+        "ID_SKILL_ACROBATICS",
+        "ID_SKILL_PERFORMANCE"
+      ],
+      "toolProficiencies": [
+        "ID_TOOL_DISGUISE_KIT",
+        "ID_TOOL_MUSICAL_INSTRUMENT"
+      ],
+      "equipment": [
+        "ID_EQUIPMENT_MUSICAL_INSTRUMENT",
+        "ID_EQUIPMENT_FAN_LETTER",
+        "ID_EQUIPMENT_COSTUME",
+        "ID_EQUIPMENT_BELT_POUCH"
+      ],
+      "feature": {
+        "name": "Popularité",
+        "description": "Vous pouvez trouver un endroit où performer, recevant nourriture et logement modestes."
+      }
+    },
+    {
+      "id": "ID_PHB_BACKGROUND_FOLK_HERO",
+      "name": "Héros du peuple",
+      "nameEn": "Folk Hero",
+      "description": "Vous venez d'un humble milieu, mais le destin vous a fait vivre quelque chose d'extraordinaire.",
+      "skillProficiencies": [
+        "ID_SKILL_ANIMAL_HANDLING",
+        "ID_SKILL_SURVIVAL"
+      ],
+      "toolProficiencies": [
+        "ID_TOOL_ARTISAN_TOOLS",
+        "ID_TOOL_VEHICLES_LAND"
+      ],
+      "equipment": [
+        "ID_EQUIPMENT_ARTISAN_TOOLS",
+        "ID_EQUIPMENT_SHOVEL",
+        "ID_EQUIPMENT_IRON_POT",
+        "ID_EQUIPMENT_COMMON_CLOTHES",
+        "ID_EQUIPMENT_BELT_POUCH"
+      ],
+      "feature": {
+        "name": "Hospitalité rustique",
+        "description": "Les paysans vous cachent et vous aident, ne trahissant jamais (sauf au péril de leur vie)."
+      }
+    },
+    {
+      "id": "ID_PHB_BACKGROUND_GUILD_ARTISAN",
+      "name": "Artisan de guilde",
+      "nameEn": "Guild Artisan",
+      "description": "Vous étiez membre d'une guilde d'artisans, ayant appris un métier spécifique.",
+      "skillProficiencies": [
+        "ID_SKILL_INSIGHT",
+        "ID_SKILL_PERSUASION"
+      ],
+      "toolProficiencies": [
+        "ID_TOOL_ARTISAN_TOOLS"
+      ],
+      "languageCount": 1,
+      "equipment": [
+        "ID_EQUIPMENT_ARTISAN_TOOLS",
+        "ID_EQUIPMENT_GUILD_LETTER",
+        "ID_EQUIPMENT_TRAVELERS_CLOTHES",
+        "ID_EQUIPMENT_BELT_POUCH"
+      ],
+      "feature": {
+        "name": "Membre de guilde",
+        "description": "Votre guilde vous offre logement et nourriture, et vous aide avec des personnages influents."
+      }
+    },
+    {
+      "id": "ID_PHB_BACKGROUND_HERMIT",
+      "name": "Ermite",
+      "nameEn": "Hermit",
+      "description": "Vous avez vécu isolé du monde, en méditation dans une communauté monastique ou dans une hutte.",
+      "skillProficiencies": [
+        "ID_SKILL_MEDICINE",
+        "ID_SKILL_RELIGION"
+      ],
+      "toolProficiencies": [
+        "ID_TOOL_HERBALISM_KIT"
+      ],
+      "languageCount": 1,
+      "equipment": [
+        "ID_EQUIPMENT_SCROLL_CASE",
+        "ID_EQUIPMENT_WINTER_BLANKET",
+        "ID_EQUIPMENT_COMMON_CLOTHES",
+        "ID_EQUIPMENT_HERBALISM_KIT",
+        "ID_EQUIPMENT_BELT_POUCH"
+      ],
+      "feature": {
+        "name": "Découverte",
+        "description": "Vous avez fait une découverte unique lors de votre isolement (nature de la divinité, réalité cosmique, etc.)"
+      }
+    },
+    {
+      "id": "ID_PHB_BACKGROUND_NOBLE",
+      "name": "Noble",
+      "nameEn": "Noble",
+      "description": "Vous appartenez à une famille noble, élevé dans le luxe et l'éducation, habitué au pouvoir et au privilège.",
+      "skillProficiencies": [
+        "ID_SKILL_HISTORY",
+        "ID_SKILL_PERSUASION"
+      ],
+      "toolProficiencies": [
+        "ID_TOOL_GAMING_SET"
+      ],
+      "languageCount": 1,
+      "equipment": [
+        "ID_EQUIPMENT_FINE_CLOTHES",
+        "ID_EQUIPMENT_SIGNET_RING",
+        "ID_EQUIPMENT_SCROLL_BIRTH",
+        "ID_EQUIPMENT_BELT_POUCH"
+      ],
+      "feature": {
+        "name": "Position de privilège",
+        "description": "Vous êtes accueilli dans la haute société, et les gens supposent que vous avez le droit d'être là."
+      }
+    },
+    {
+      "id": "ID_PHB_BACKGROUND_OUTLANDER",
+      "name": "Étranger",
+      "nameEn": "Outlander",
+      "description": "Vous avez grandi dans les terres sauvages, loin de la civilisation et de ses conforts.",
+      "skillProficiencies": [
+        "ID_SKILL_ATHLETICS",
+        "ID_SKILL_SURVIVAL"
+      ],
+      "toolProficiencies": [
+        "ID_TOOL_MUSICAL_INSTRUMENT"
+      ],
+      "languageCount": 1,
+      "equipment": [
+        "ID_EQUIPMENT_STAFF",
+        "ID_EQUIPMENT_TRAP",
+        "ID_EQUIPMENT_HUNTING_TROPHY",
+        "ID_EQUIPMENT_TRAVELERS_CLOTHES",
+        "ID_EQUIPMENT_BELT_POUCH"
+      ],
+      "feature": {
+        "name": "Vagabond",
+        "description": "Vous pouvez trouver nourriture et eau fraîche pour vous et jusqu'à 5 autres personnes par jour."
+      }
+    },
+    {
+      "id": "ID_PHB_BACKGROUND_SAGE",
+      "name": "Sage",
+      "nameEn": "Sage",
+      "description": "Vous avez passé des années à apprendre les connaissances du multivers, étudiant dans des bibliothèques et des écoles.",
+      "skillProficiencies": [
+        "ID_SKILL_ARCANA",
+        "ID_SKILL_HISTORY"
+      ],
+      "languageCount": 2,
+      "equipment": [
+        "ID_EQUIPMENT_INK",
+        "ID_EQUIPMENT_QUILL",
+        "ID_EQUIPMENT_SMALL_KNIFE",
+        "ID_EQUIPMENT_LETTER_FRIEND",
+        "ID_EQUIPMENT_COMMON_CLOTHES",
+        "ID_EQUIPMENT_BELT_POUCH"
+      ],
+      "feature": {
+        "name": "Chercheur",
+        "description": "Vous savez où trouver des informations (connaissances locales, bibliothèques, savants, etc.)"
+      }
+    },
+    {
+      "id": "ID_PHB_BACKGROUND_SAILOR",
+      "name": "Marin",
+      "nameEn": "Sailor",
+      "description": "Vous avez navigué pendant des années, combattu des monstres marins et affronté tempêtes.",
+      "skillProficiencies": [
+        "ID_SKILL_ATHLETICS",
+        "ID_SKILL_PERCEPTION"
+      ],
+      "toolProficiencies": [
+        "ID_TOOL_NAVIGATOR_TOOLS",
+        "ID_TOOL_VEHICLES_WATER"
+      ],
+      "equipment": [
+        "ID_EQUIPMENT_CLUB",
+        "ID_EQUIPMENT_SILK_ROPE",
+        "ID_EQUIPMENT_LUCKY_CHARM",
+        "ID_EQUIPMENT_COMMON_CLOTHES",
+        "ID_EQUIPMENT_BELT_POUCH"
+      ],
+      "feature": {
+        "name": "Aller dans le vent",
+        "description": "Vous pouvez obtenir passage gratuit sur un navire pour vous et vos compagnons."
+      }
+    },
+    {
+      "id": "ID_PHB_BACKGROUND_SOLDIER",
+      "name": "Soldat",
+      "nameEn": "Soldier",
+      "description": "Vous avez servi dans une armée, appris les bases du combat et la vie militaire.",
+      "skillProficiencies": [
+        "ID_SKILL_ATHLETICS",
+        "ID_SKILL_INTIMIDATION"
+      ],
+      "toolProficiencies": [
+        "ID_TOOL_GAMING_SET",
+        "ID_TOOL_VEHICLES_LAND"
+      ],
+      "equipment": [
+        "ID_EQUIPMENT_INSIGNIA_RANK",
+        "ID_EQUIPMENT_TROPHY",
+        "ID_EQUIPMENT_BONE_DICE",
+        "ID_EQUIPMENT_COMMON_CLOTHES",
+        "ID_EQUIPMENT_BELT_POUCH"
+      ],
+      "feature": {
+        "name": "Grade militaire",
+        "description": "Les soldats respectent votre rang, vous permettant d'accéder à des installations militaires."
+      }
+    },
+    {
+      "id": "ID_PHB_BACKGROUND_URCHIN",
+      "name": "Gueux",
+      "nameEn": "Urchin",
+      "description": "Vous avez grandi dans les rues, seul, devant voler et survivre par vos propres moyens.",
+      "skillProficiencies": [
+        "ID_SKILL_SLEIGHT_OF_HAND",
+        "ID_SKILL_STEALTH"
+      ],
+      "toolProficiencies": [
+        "ID_TOOL_DISGUISE_KIT",
+        "ID_TOOL_THIEVES_TOOLS"
+      ],
+      "equipment": [
+        "ID_EQUIPMENT_SMALL_KNIFE",
+        "ID_EQUIPMENT_MAP_HOME",
+        "ID_EQUIPMENT_PET_MOUSE",
+        "ID_EQUIPMENT_PARENT_TOKEN",
+        "ID_EQUIPMENT_COMMON_CLOTHES",
+        "ID_EQUIPMENT_BELT_POUCH"
+      ],
+      "feature": {
+        "name": "Connaissance des rues",
+        "description": "Vous connaissez les messages secrets et passages de la ville, pouvez voyager deux fois plus vite dans les ruelles."
+      }
+    }
+  ]
+}

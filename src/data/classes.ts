@@ -153,7 +153,7 @@ export const fightingStyles: FightingStyle[] = [
     },
     {
         id: 'great-weapon-fighting',
-        name: 'Combat à deux armes',
+        name: 'Combat à grande arme',
         description: 'Lorsque vous obtenez 1 ou 2 sur un dé de dégâts pour une attaque avec une arme de corps à corps que vous tenez à deux mains, vous pouvez relancer le dé.',
         availableFor: ['fighter', 'paladin'],
     },
@@ -327,6 +327,9 @@ export const classes: CharacterClass[] = [
         armorProficiencies: ['Armures légères', 'Armures intermédiaires', 'Boucliers'],
         weaponProficiencies: ['Armes courantes', 'Armes de guerre'],
         startingEquipment: ['Hache à deux mains', 'Deux hachettes', 'Pack d\'explorateur', '4 javelines'],
+        classResources: {
+            hasRage: true,
+        },
     },
     {
         id: 'bard',
@@ -352,6 +355,9 @@ export const classes: CharacterClass[] = [
                 [4, 3, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 3, 2, 2, 1, 1],
             ],
         },
+        classResources: {
+            hasBardicInspiration: true,
+        },
     },
     {
         id: 'cleric',
@@ -368,6 +374,7 @@ export const classes: CharacterClass[] = [
         spellcasting: {
             ability: 'wis',
             cantripsKnown: [3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+            spellsKnown: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             spellSlots: [
                 [2], [3], [4, 2], [4, 3], [4, 3, 2], [4, 3, 3], [4, 3, 3, 1], [4, 3, 3, 2],
                 [4, 3, 3, 3, 1], [4, 3, 3, 3, 2], [4, 3, 3, 3, 2, 1], [4, 3, 3, 3, 2, 1],
@@ -375,6 +382,9 @@ export const classes: CharacterClass[] = [
                 [4, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 2, 1, 1, 1, 1], [4, 3, 3, 3, 3, 1, 1, 1, 1],
                 [4, 3, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 3, 2, 2, 1, 1],
             ],
+        },
+        classResources: {
+            hasChannelDivinity: true,
         },
     },
     {
@@ -384,14 +394,15 @@ export const classes: CharacterClass[] = [
         hitDie: 8,
         primaryAbility: 'wis',
         savingThrows: ['int', 'wis'],
-        skillChoices: ['Arcanes', 'Dressage', 'Perspicacité', 'Médecine', 'Nature', 'Perception', 'Religion', 'Survie'],
+        skillChoices: ['Dressage', 'Arcanes', 'Perspicacité', 'Médecine', 'Nature', 'Perception', 'Religion', 'Survie'],
         numSkillChoices: 2,
-        armorProficiencies: ['Armures légères', 'Armures intermédiaires', 'Boucliers (non métalliques)'],
-        weaponProficiencies: ['Gourdin', 'Dague', 'Fléchettes', 'Javeline', 'Masse', 'Bâton', 'Cimeterre', 'Serpe', 'Fronde', 'Lance'],
-        startingEquipment: ['Bouclier en bois', 'Cimeterre', 'Armure de cuir', 'Pack d\'explorateur', 'Focus druidique'],
+        armorProficiencies: ['Armures légères', 'Armures intermédiaires', 'Boucliers'],
+        weaponProficiencies: ['Massue', 'Dague', 'Fléchettes', 'Bâton', 'Scimitarre', 'Fronde', 'Javeline'],
+        startingEquipment: ['Bouclier', 'Scimitarre', 'Armure de cuir', "Pack d'explorateur"],
         spellcasting: {
             ability: 'wis',
             cantripsKnown: [2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+            spellsKnown: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             spellSlots: [
                 [2], [3], [4, 2], [4, 3], [4, 3, 2], [4, 3, 3], [4, 3, 3, 1], [4, 3, 3, 2],
                 [4, 3, 3, 3, 1], [4, 3, 3, 3, 2], [4, 3, 3, 3, 2, 1], [4, 3, 3, 3, 2, 1],
@@ -400,32 +411,9 @@ export const classes: CharacterClass[] = [
                 [4, 3, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 3, 2, 2, 1, 1],
             ],
         },
-    },
-    {
-        id: 'fighter',
-        name: 'Guerrier',
-        nameEn: 'Fighter',
-        hitDie: 10,
-        primaryAbility: 'str',
-        savingThrows: ['str', 'con'],
-        skillChoices: ['Acrobaties', 'Dressage', 'Athlétisme', 'Histoire', 'Perspicacité', 'Intimidation', 'Perception', 'Survie'],
-        numSkillChoices: 2,
-        armorProficiencies: ['Toutes les armures', 'Boucliers'],
-        weaponProficiencies: ['Armes courantes', 'Armes de guerre'],
-        startingEquipment: ['Cotte de mailles', 'Épée longue', 'Bouclier', 'Arbalète légère', 'Pack d\'exploration'],
-    },
-    {
-        id: 'monk',
-        name: 'Moine',
-        nameEn: 'Monk',
-        hitDie: 8,
-        primaryAbility: 'dex',
-        savingThrows: ['str', 'dex'],
-        skillChoices: ['Acrobaties', 'Athlétisme', 'Histoire', 'Perspicacité', 'Religion', 'Discrétion'],
-        numSkillChoices: 2,
-        armorProficiencies: [],
-        weaponProficiencies: ['Armes courantes', 'Épée courte'],
-        startingEquipment: ['Épée courte', 'Pack d\'exploration', '10 fléchettes'],
+        classResources: {
+            hasWildShape: true,
+        },
     },
     {
         id: 'paladin',
@@ -438,16 +426,22 @@ export const classes: CharacterClass[] = [
         numSkillChoices: 2,
         armorProficiencies: ['Toutes les armures', 'Boucliers'],
         weaponProficiencies: ['Armes courantes', 'Armes de guerre'],
-        startingEquipment: ['Arme de guerre', 'Bouclier', 'Cotte de mailles', 'Symbole sacré', 'Pack d\'exploration'],
+        startingEquipment: ['Arme de guerre', 'Bouclier', 'Cotte de mailles', 'Symbole sacré', "Pack d'exploration"],
         spellcasting: {
             ability: 'cha',
             cantripsKnown: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            spellsKnown: [0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11],
             spellSlots: [
                 [], [2], [3], [3], [4, 2], [4, 2], [4, 3], [4, 3],
                 [4, 3, 2], [4, 3, 2], [4, 3, 3], [4, 3, 3],
                 [4, 3, 3, 1], [4, 3, 3, 1], [4, 3, 3, 2], [4, 3, 3, 2],
                 [4, 3, 3, 3, 1], [4, 3, 3, 3, 1], [4, 3, 3, 3, 2], [4, 3, 3, 3, 2],
             ],
+        },
+        classResources: {
+            hasLayOnHands: true,
+            hasDivineSmite: true,
+            hasChannelDivinity: true,
         },
     },
     {
@@ -461,7 +455,7 @@ export const classes: CharacterClass[] = [
         numSkillChoices: 3,
         armorProficiencies: ['Armures légères', 'Armures intermédiaires', 'Boucliers'],
         weaponProficiencies: ['Armes courantes', 'Armes de guerre'],
-        startingEquipment: ['Armure d\'écailles', 'Deux épées courtes', 'Pack d\'exploration', 'Arc long', '20 flèches'],
+        startingEquipment: ["Armure d'écailles", 'Deux épées courtes', "Pack d'exploration", 'Arc long', '20 flèches'],
         spellcasting: {
             ability: 'wis',
             cantripsKnown: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -472,6 +466,43 @@ export const classes: CharacterClass[] = [
                 [4, 3, 3, 1], [4, 3, 3, 1], [4, 3, 3, 2], [4, 3, 3, 2],
                 [4, 3, 3, 3, 1], [4, 3, 3, 3, 1], [4, 3, 3, 3, 2], [4, 3, 3, 3, 2],
             ],
+        },
+        classResources: {
+            hasFavoredEnemy: true,
+        },
+    },
+    {
+        id: 'fighter',
+        name: 'Guerrier',
+        nameEn: 'Fighter',
+        hitDie: 10,
+        primaryAbility: 'str',
+        savingThrows: ['str', 'con'],
+        skillChoices: ['Acrobaties', 'Dressage', 'Athlétisme', 'Histoire', 'Perspicacité', 'Intimidation', 'Perception', 'Survie'],
+        numSkillChoices: 2,
+        armorProficiencies: ['Toutes les armures', 'Boucliers'],
+        weaponProficiencies: ['Armes courantes', 'Armes de guerre'],
+        startingEquipment: ['Cotte de mailles', 'Épée longue', 'Bouclier', 'Arbalète légère', "Pack d'exploration"],
+        classResources: {
+            hasSecondWind: true,
+            hasActionSurge: true,
+            hasIndomitable: true,
+        },
+    },
+    {
+        id: 'monk',
+        name: 'Moine',
+        nameEn: 'Monk',
+        hitDie: 8,
+        primaryAbility: 'dex',
+        savingThrows: ['str', 'dex'],
+        skillChoices: ['Acrobaties', 'Athlétisme', 'Histoire', 'Perspicacité', 'Religion', 'Discrétion'],
+        numSkillChoices: 2,
+        armorProficiencies: [],
+        weaponProficiencies: ['Armes courantes', 'Épée courte'],
+        startingEquipment: ['Épée courte', "Pack d'explorateur", 'Dix dards'],
+        classResources: {
+            hasKi: true,
         },
     },
     {
@@ -486,6 +517,9 @@ export const classes: CharacterClass[] = [
         armorProficiencies: ['Armures légères'],
         weaponProficiencies: ['Armes courantes', 'Arbalète de poing', 'Épée longue', 'Rapière', 'Épée courte'],
         startingEquipment: ['Rapière', 'Arc court', '20 flèches', 'Pack de cambrioleur', 'Armure de cuir', 'Deux dagues', 'Outils de voleur'],
+        classResources: {
+            hasSneakAttack: true,
+        },
     },
     {
         id: 'sorcerer',
@@ -511,6 +545,9 @@ export const classes: CharacterClass[] = [
                 [4, 3, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 3, 2, 2, 1, 1],
             ],
         },
+        classResources: {
+            hasSorceryPoints: true,
+        },
     },
     {
         id: 'warlock',
@@ -532,6 +569,9 @@ export const classes: CharacterClass[] = [
                 [1], [2], [2], [2], [2], [2], [2], [2], [2], [2],
                 [3], [3], [3], [3], [3], [3], [4], [4], [4], [4],
             ],
+        },
+        classResources: {
+            hasEldritchInvocations: true,
         },
     },
     {
@@ -556,6 +596,9 @@ export const classes: CharacterClass[] = [
                 [4, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 2, 1, 1, 1, 1], [4, 3, 3, 3, 3, 1, 1, 1, 1],
                 [4, 3, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 3, 2, 2, 1, 1],
             ],
+        },
+        classResources: {
+            hasArcaneRecovery: true,
         },
     },
 ]

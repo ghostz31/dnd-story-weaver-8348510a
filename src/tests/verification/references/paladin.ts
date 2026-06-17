@@ -1,0 +1,43 @@
+import type { FullClassRef } from '../reference-types'
+
+export const paladinRef: FullClassRef = {
+    name: 'Paladin', nameEn: 'Paladin', hitDie: 10, primaryAbility: 'str',
+    savingThrows: ['wis', 'cha'], armorProficiencies: ['toutes les armures', 'boucliers'],
+    weaponProficiencies: ['armes courantes', 'armes de guerre'], numSkillChoices: 2,
+    skillChoices: ['Athlétisme', 'Intimidation', 'Intuition', 'Médecine', 'Persuasion', 'Religion'], tools: [], startingEquipment: [],
+    progression: [
+        { level: 1, proficiencyBonus: 2, features: ['Sens divin', 'Imposition des mains'] },
+        { level: 2, proficiencyBonus: 2, features: ['Style de combat', 'Incantation', 'Châtiment divin'] },
+        { level: 3, proficiencyBonus: 2, features: ['Santé divine', 'Serment sacré', 'Canal divin'] },
+        { level: 4, proficiencyBonus: 2, features: ['Amélioration de caractéristiques'] },
+        { level: 5, proficiencyBonus: 3, features: ['Attaque supplémentaire'] },
+        { level: 6, proficiencyBonus: 3, features: ['Aura de protection'] },
+        { level: 7, proficiencyBonus: 3, features: [] },
+        { level: 8, proficiencyBonus: 3, features: ['Amélioration de caractéristiques'] },
+        { level: 9, proficiencyBonus: 4, features: [] },
+        { level: 10, proficiencyBonus: 4, features: ['Aura de courage'] },
+        { level: 11, proficiencyBonus: 4, features: ['Châtiment divin amélioré'] },
+        { level: 12, proficiencyBonus: 4, features: ['Amélioration de caractéristiques'] },
+        { level: 13, proficiencyBonus: 5, features: [] },
+        { level: 14, proficiencyBonus: 5, features: ['Contact purifiant'] },
+        { level: 15, proficiencyBonus: 5, features: [] },
+        { level: 16, proficiencyBonus: 5, features: ['Amélioration de caractéristiques'] },
+        { level: 17, proficiencyBonus: 6, features: [] },
+        { level: 18, proficiencyBonus: 6, features: ['Amélioration d\'auras'] },
+        { level: 19, proficiencyBonus: 6, features: ['Amélioration de caractéristiques'] },
+        { level: 20, proficiencyBonus: 6, features: [] },
+    ],
+    resourceTables: { paladinLayOnHandsPool: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95] as number[] },
+    classActions: {
+        layOnHands: { restoreOn: 'long', availableFrom: 1 }, divineSmite: { restoreOn: 'long', availableFrom: 2 },
+        divineSense: { restoreOn: 'never', availableFrom: 1 }, channelDivinity: { restoreOn: 'short', availableFrom: 3 },
+        divineHealth: { restoreOn: 'never', availableFrom: 3 }, extraAttack: { restoreOn: 'never', availableFrom: 5 },
+        auraOfProtection: { restoreOn: 'never', availableFrom: 6 }, auraOfCourage: { restoreOn: 'never', availableFrom: 10 },
+        improvedDivineSmite: { restoreOn: 'never', availableFrom: 11 }, cleansingTouch: { restoreOn: 'long', availableFrom: 14 },
+    },
+    subclasses: {
+        devotion: { id: 'devotion', name: 'Serment de Dévotion', source: 'PHB', features: { 3: { name: 'Conduit divin', keywords: ['conduit'] }, 7: { name: 'Aura de dévotion', keywords: ['charmé'] }, 15: { name: 'Pureté de l\'esprit', keywords: ['protection'] }, 20: { name: 'Nimbe sacré', keywords: ['lumière'] } } },
+        ancients: { id: 'ancients', name: 'Serment des Anciens', source: 'PHB', features: { 3: { name: 'Conduit divin', keywords: ['conduit'] }, 7: { name: 'Aura de garde', keywords: ['résistance'] },         15: { name: 'Sentinelle immortelle', keywords: ['immortelle'] }, 20: { name: 'Champion antique', keywords: ['pv'] } } },
+        vengeance: { id: 'vengeance', name: 'Serment de Vengeance', source: 'PHB', features: { 3: { name: 'Conduit divin', keywords: ['conduit'] }, 7: { name: 'Vengeur implacable', keywords: ['opportunité'] }, 15: { name: 'Âme vengeresse', keywords: ['vœu'] }, 20: { name: 'Ange de la vengeance', keywords: ['ailes'] } } },
+    },
+}

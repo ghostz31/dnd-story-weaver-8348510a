@@ -1,0 +1,348 @@
+{
+  "version": "2.0.0",
+  "source": "PHB",
+  "count": 40,
+  "feats": [
+    {
+      "id": "ID_FEAT_ALERT",
+      "name": "Alerte",
+      "nameEn": "Alert",
+      "description": "+5 à l'initiative, pas de surprise si conscient, pas d'avantage pour les attaquants cachés.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_ATHLETE",
+      "name": "Athlète",
+      "nameEn": "Athlete",
+      "description": "Redressez-vous avec 1.5m de déplacement, escalade sans coût de mouvement supplémentaire, saut en distance et hauteur avec +1.5m.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_ACTOR",
+      "name": "Comédien",
+      "nameEn": "Actor",
+      "description": "+1 CHA, avantage aux tests pour imiter quelqu'un, imiter la voix d'une créature entendue pendant 1 minute.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_CHARGER",
+      "name": "Chargeur",
+      "nameEn": "Charger",
+      "description": "Après un Foncer de 3m, attaque bonus ou pousser avec +5 dégâts.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_CROSSBOW_EXPERT",
+      "name": "Expert arbalète",
+      "nameEn": "Crossbow Expert",
+      "description": "Pas de désavantage à portée courte, action bonus pour attaquer avec une arbalète de poing, attaque de mêlée ne vous gène pas pour les attaques à distance.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_DEFENSIVE_DUELIST",
+      "name": "Duelliste défensif",
+      "nameEn": "Defensive Duelist",
+      "description": "Réaction pour ajouter votre bonus de maîtrise à la CA avec une arme de finesse.",
+      "prerequisites": [
+        {
+          "type": "ability",
+          "dex": 13
+        }
+      ]
+    },
+    {
+      "id": "ID_FEAT_DUAL_WIELDER",
+      "name": "Combat à deux armes",
+      "nameEn": "Dual Wielder",
+      "description": "+1 CA si deux armes en main, utiliser deux armes non légères.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_DUNGEON_DELVER",
+      "name": "Explorateur de donjons",
+      "nameEn": "Dungeon Delver",
+      "description": "Avantage pour repérer portes et passages secrets, résistance aux pièges, pas de désavantage aux jets de Perception dans une lumière faible.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_DURABLE",
+      "name": "Endurant",
+      "nameEn": "Durable",
+      "description": "Récupérez le minimum de 2× votre bonus de maîtrise aux dé de PV lors des repos courts.",
+      "prerequisites": [
+        {
+          "type": "ability",
+          "con": 13
+        }
+      ]
+    },
+    {
+      "id": "ID_FEAT_ELEMENTAL_ADEPT",
+      "name": "Adepte élémentaire",
+      "nameEn": "Elemental Adept",
+      "description": "Sorts d'un type de dégâts élémentaire ignore la résistance, 1 devient 2 sur les dé de dégâts.",
+      "prerequisites": [
+        {
+          "type": "feature",
+          "feature": "spellcasting"
+        }
+      ]
+    },
+    {
+      "id": "ID_FEAT_GREAT_WEAPON_MASTER",
+      "name": "Maître d'armes lourdes",
+      "nameEn": "Great Weapon Master",
+      "description": "-5 pour +10 dégâts avec une arme lourde ou de corps-à-corps à deux mains. Action bonus si critique ou tué à 0 PV.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_HEALER",
+      "name": "Guérisseur",
+      "nameEn": "Healer",
+      "description": "Action pour stabiliser à 1 PV avec la trousse de soins. Action bonus pour soigner 1d6+4+PV max avec la trousse.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_HEAVILY_ARMORED",
+      "name": "Armure lourde",
+      "nameEn": "Heavily Armored",
+      "description": "+1 FOR, maîtrise des armures lourdes.",
+      "prerequisites": [
+        {
+          "type": "proficiency",
+          "armor": "medium"
+        }
+      ]
+    },
+    {
+      "id": "ID_FEAT_HEAVY_ARMOR_MASTER",
+      "name": "Maître des armures lourdes",
+      "nameEn": "Heavy Armor Master",
+      "description": "+1 FOR, -3 dégâts contondants/perforants/tranchants avec une armure lourde.",
+      "prerequisites": [
+        {
+          "type": "proficiency",
+          "armor": "heavy"
+        }
+      ]
+    },
+    {
+      "id": "ID_FEAT_INSPIRING_LEADER",
+      "name": "Chef inspirant",
+      "nameEn": "Inspiring Leader",
+      "description": "10 minutes de discours pour donner PV temporaires = niveau + mod CHA à jusqu'à 6 créatures.",
+      "prerequisites": [
+        {
+          "type": "ability",
+          "cha": 13
+        }
+      ]
+    },
+    {
+      "id": "ID_FEAT_KEEN_MIND",
+      "name": "Esprit vif",
+      "nameEn": "Keen Mind",
+      "description": "+1 INT, souvenez-vous de tout ce que vous avez vu/entendu depuis 1 mois, toujours savez où nord est, heure exacte.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_LIGHTLY_ARMORED",
+      "name": "Armure légère",
+      "nameEn": "Lightly Armored",
+      "description": "+1 FOR ou DEX, maîtrise des armures légères.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_LINGUIST",
+      "name": "Linguiste",
+      "nameEn": "Linguist",
+      "description": "+1 INT, +3 langues, créer des codes.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_LUCKY",
+      "name": "Chanceux",
+      "nameEn": "Lucky",
+      "description": "Relancez un jet d'attaque, de test de capacité ou de sauvegarde. 3/utilisation/repos long.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_MAGE_SLAYER",
+      "name": "Pourfendeur de mages",
+      "nameEn": "Mage Slayer",
+      "description": "Réaction d'attaque contre un lanceur de sorts à 1,5m. Avantage aux jets de sauvegarde contre les sorts à 1,5m.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_MAGIC_INITIATE",
+      "name": "Initié à la magie",
+      "nameEn": "Magic Initiate",
+      "description": "2 sorts mineurs et 1 sort niveau 1 d'une classe (1/jour) d'une classe de lanceur de sorts.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_MARTIAL_ADEPT",
+      "name": "Adepte martial",
+      "nameEn": "Martial Adept",
+      "description": "2 manœuvres du Maître de bataille, 1 dé de supériorité d4.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_MEDIUM_ARMOR_MASTER",
+      "name": "Maître des armures intermédiaires",
+      "nameEn": "Medium Armor Master",
+      "description": "Pas de désavantage de Discrétion avec armure intermédiaire, +3 au lieu de +2 de mod DEX max.",
+      "prerequisites": [
+        {
+          "type": "proficiency",
+          "armor": "medium"
+        }
+      ]
+    },
+    {
+      "id": "ID_FEAT_MOBILE",
+      "name": "Mobile",
+      "nameEn": "Mobile",
+      "description": "Vitesse +3m, pas d'attaque d'opportunité contre cible attaquée, terrain difficile ne vous ralentit pas en Dash.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_MODERATELY_ARMORED",
+      "name": "Armure intermédiaire",
+      "nameEn": "Moderately Armored",
+      "description": "+1 FOR ou DEX, maîtrise des armures intermédiaires et des boucliers.",
+      "prerequisites": [
+        {
+          "type": "proficiency",
+          "armor": "light"
+        }
+      ]
+    },
+    {
+      "id": "ID_FEAT_MOUNTED_COMBATANT",
+      "name": "Cavalier",
+      "nameEn": "Mounted Combatant",
+      "description": "Avantage aux jets d'attaque contre créatures plus petites que votre monture, attaque cible monture à la place, monture résiste aux jets de sauvegarde de DEX.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_OBSERVANT",
+      "name": "Observateur",
+      "nameEn": "Observant",
+      "description": "+1 INT ou SAG, +5 à la Perception passive et Investigation passive, lire sur les lèvres.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_POLEARM_MASTER",
+      "name": "Maître des armes d'hast",
+      "nameEn": "Polearm Master",
+      "description": "Attaque bonus avec le dos de l'arme d'hast, attaque d'opportunité quand une créature entre à votre portée.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_RESILIENT",
+      "name": "Résistant",
+      "nameEn": "Resilient",
+      "description": "+1 à une caractéristique (max 20), maîtrise des jets de sauvegarde de cette caractéristique.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_RITUAL_CASTER",
+      "name": "Lanceur de rituels",
+      "nameEn": "Ritual Caster",
+      "description": "Livre des rituels avec 2 sorts de ritual de niveau 1 d'une classe de lanceur de sorts.",
+      "prerequisites": [
+        {
+          "type": "ability",
+          "int": 13,
+          "wis": 13
+        }
+      ]
+    },
+    {
+      "id": "ID_FEAT_SAVAGE_ATTACKER",
+      "name": "Attaquant sauvage",
+      "nameEn": "Savage Attacker",
+      "description": "Relancez les dégâts d'arme d'une attaque une fois par tour.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_SENTINEL",
+      "name": "Sentinelle",
+      "nameEn": "Sentinel",
+      "description": "Attaque d'opportunité arrête la cible, attaque d'opportunité même si cible Se désengage, attaque si cible attaque un allié à 1,5m.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_SHARPSHOOTER",
+      "name": "Tireur d'élite",
+      "nameEn": "Sharpshooter",
+      "description": "Pas de désavantage à longue portée, -5 pour +10 dégâts, ignorer les couverts à moitié et trois quarts.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_SHIELD_MASTER",
+      "name": "Maître des boucliers",
+      "nameEn": "Shield Master",
+      "description": "Bonus action pour pousser avec le bouclier, bonus de bouclier aux jets de sauvegarde de DEX, pas de dégâts si réussi le jet de sauvegarde.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_SKILLED",
+      "name": "Compétent",
+      "nameEn": "Skilled",
+      "description": "+3 compétences ou outils.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_SKULKER",
+      "name": "Rôdeur",
+      "nameEn": "Skulker",
+      "description": "Vous pouvez vous cacher quand légèrement dissimulé, raté une attaque à distance ne révèle pas votre position, lumière faible ne donne pas de désavantage à la Perception.",
+      "prerequisites": [
+        {
+          "type": "ability",
+          "dex": 13
+        }
+      ]
+    },
+    {
+      "id": "ID_FEAT_SPELL_SNIPER",
+      "name": "Tireur de sorts",
+      "nameEn": "Spell Sniper",
+      "description": "Doublage de portée des sorts d'attaque, ignorez les couverts, sorts d'attaque sans jet d'attaque peuvent faire des critiques, sort mineur.",
+      "prerequisites": [
+        {
+          "type": "feature",
+          "feature": "spellcasting"
+        }
+      ]
+    },
+    {
+      "id": "ID_FEAT_TOUGH",
+      "name": "Robuste",
+      "nameEn": "Tough",
+      "description": "PV max +2 par niveau.",
+      "prerequisites": []
+    },
+    {
+      "id": "ID_FEAT_WAR_CASTER",
+      "name": "Lanceur de guerre",
+      "nameEn": "War Caster",
+      "description": "Avantage aux jets de CON pour maintenir la concentration, gestes somatiques même avec armes/bouclier, attaque d'opportunité avec un sort à 1 action.",
+      "prerequisites": [
+        {
+          "type": "feature",
+          "feature": "spellcasting"
+        }
+      ]
+    },
+    {
+      "id": "ID_FEAT_WEAPON_MASTER",
+      "name": "Maître d'armes",
+      "nameEn": "Weapon Master",
+      "description": "+1 FOR ou DEX, maîtrise de 4 armes simples ou de guerre.",
+      "prerequisites": []
+    }
+  ]
+}

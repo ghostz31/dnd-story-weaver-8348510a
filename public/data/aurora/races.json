@@ -1,0 +1,703 @@
+{
+  "version": "2.0.0",
+  "source": "PHB",
+  "count": 9,
+  "races": [
+    {
+      "id": "ID_PHB_RACE_DWARF",
+      "name": "Nain",
+      "nameEn": "Dwarf",
+      "source": "PHB",
+      "size": "medium",
+      "speed": 7.5,
+      "abilityBonuses": {
+        "constitution": 2
+      },
+      "traits": [
+        "ID_RACIAL_DARKVISION",
+        "ID_RACIAL_DWARVEN_RESILIENCE",
+        "ID_RACIAL_DWARVEN_COMBAT_TRAINING",
+        "ID_RACIAL_STONECUNNING"
+      ],
+      "languages": [
+        "ID_LANGUAGE_COMMON",
+        "ID_LANGUAGE_DWARVISH"
+      ],
+      "subraces": [
+        {
+          "id": "ID_PHB_SUBRACE_HILL_DWARF",
+          "name": "Nain des collines",
+          "nameEn": "Hill Dwarf",
+          "abilityBonuses": {
+            "wisdom": 1
+          },
+          "traits": [
+            "ID_RACIAL_DWARVEN_TOUGHNESS"
+          ],
+          "rules": []
+        },
+        {
+          "id": "ID_PHB_SUBRACE_MOUNTAIN_DWARF",
+          "name": "Nain des montagnes",
+          "nameEn": "Mountain Dwarf",
+          "abilityBonuses": {
+            "strength": 2
+          },
+          "traits": [
+            "ID_RACIAL_DWARVEN_ARMOR_TRAINING"
+          ],
+          "rules": []
+        }
+      ],
+      "rules": [
+        {
+          "type": "grant",
+          "targetType": "proficiency",
+          "targetId": "ID_WEAPON_BATTLEAXE"
+        },
+        {
+          "type": "grant",
+          "targetType": "proficiency",
+          "targetId": "ID_WEAPON_HANDAXE"
+        },
+        {
+          "type": "grant",
+          "targetType": "proficiency",
+          "targetId": "ID_WEAPON_LIGHT_HAMMER"
+        },
+        {
+          "type": "grant",
+          "targetType": "proficiency",
+          "targetId": "ID_WEAPON_WARHAMMER"
+        }
+      ]
+    },
+    {
+      "id": "ID_PHB_RACE_ELF",
+      "name": "Elfe",
+      "nameEn": "Elf",
+      "source": "PHB",
+      "size": "medium",
+      "speed": 9,
+      "abilityBonuses": {
+        "dexterity": 2
+      },
+      "traits": [
+        "ID_RACIAL_DARKVISION",
+        "ID_RACIAL_KEEN_SENSES",
+        "ID_RACIAL_FEY_ANCESTRY",
+        "ID_RACIAL_TRANCE"
+      ],
+      "languages": [
+        "ID_LANGUAGE_COMMON",
+        "ID_LANGUAGE_ELVISH"
+      ],
+      "skillProficiencies": [
+        "ID_SKILL_PERCEPTION"
+      ],
+      "subraces": [
+        {
+          "id": "ID_PHB_SUBRACE_HIGH_ELF",
+          "name": "Elfe des hautes-terres",
+          "nameEn": "High Elf",
+          "abilityBonuses": {
+            "intelligence": 1
+          },
+          "traits": [
+            "ID_RACIAL_ELF_WEAPON_TRAINING",
+            "ID_RACIAL_CANTRIP",
+            "ID_RACIAL_EXTRA_LANGUAGE"
+          ],
+          "rules": [
+            {
+              "type": "select",
+              "targetType": "spell",
+              "count": 1,
+              "options": "any",
+              "supports": [
+                "wizard",
+                "cantrip"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ID_PHB_SUBRACE_WOOD_ELF",
+          "name": "Elfe des bois",
+          "nameEn": "Wood Elf",
+          "abilityBonuses": {
+            "wisdom": 1
+          },
+          "traits": [
+            "ID_RACIAL_ELF_WEAPON_TRAINING",
+            "ID_RACIAL_FLEET_OF_FOOT",
+            "ID_RACIAL_MASK_OF_THE_WILD"
+          ],
+          "rules": []
+        },
+        {
+          "id": "ID_PHB_SUBRACE_DROW",
+          "name": "Drow",
+          "nameEn": "Dark Elf",
+          "abilityBonuses": {
+            "charisma": 1
+          },
+          "traits": [
+            "ID_RACIAL_SUPERIOR_DARKVISION",
+            "ID_RACIAL_SUNLIGHT_SENSITIVITY",
+            "ID_RACIAL_DROW_MAGIC"
+          ],
+          "rules": []
+        }
+      ],
+      "rules": [
+        {
+          "type": "grant",
+          "targetType": "proficiency",
+          "targetId": "ID_SKILL_PERCEPTION"
+        }
+      ]
+    },
+    {
+      "id": "ID_PHB_RACE_HALFLING",
+      "name": "Halfelin",
+      "nameEn": "Halfling",
+      "source": "PHB",
+      "size": "small",
+      "speed": 7.5,
+      "abilityBonuses": {
+        "dexterity": 2
+      },
+      "traits": [
+        "ID_RACIAL_LUCKY",
+        "ID_RACIAL_BRAVE",
+        "ID_RACIAL_HALFLING_NIMBLENESS"
+      ],
+      "languages": [
+        "ID_LANGUAGE_COMMON",
+        "ID_LANGUAGE_HALFLING"
+      ],
+      "subraces": [
+        {
+          "id": "ID_PHB_SUBRACE_LIGHTFOOT_HALFLING",
+          "name": "Halfelin pied-léger",
+          "nameEn": "Lightfoot Halfling",
+          "abilityBonuses": {
+            "charisma": 1
+          },
+          "traits": [
+            "ID_RACIAL_NATURALLY_STEALTHY"
+          ],
+          "rules": []
+        },
+        {
+          "id": "ID_PHB_SUBRACE_STOUT_HALFLING",
+          "name": "Halfelin robuste",
+          "nameEn": "Stout Halfling",
+          "abilityBonuses": {
+            "constitution": 1
+          },
+          "traits": [
+            "ID_RACIAL_STOUT_RESILIENCE"
+          ],
+          "rules": []
+        }
+      ],
+      "rules": []
+    },
+    {
+      "id": "ID_PHB_RACE_HUMAN",
+      "name": "Humain",
+      "nameEn": "Human",
+      "source": "PHB",
+      "size": "medium",
+      "speed": 9,
+      "abilityBonuses": {
+        "strength": 1,
+        "dexterity": 1,
+        "constitution": 1,
+        "intelligence": 1,
+        "wisdom": 1,
+        "charisma": 1
+      },
+      "traits": [],
+      "languages": [
+        "ID_LANGUAGE_COMMON"
+      ],
+      "rules": [
+        {
+          "type": "select",
+          "targetType": "language",
+          "count": 1,
+          "options": "any"
+        }
+      ],
+      "subraces": [
+        {
+          "id": "ID_PHB_SUBRACE_VARIANT_HUMAN",
+          "name": "Humain (variante)",
+          "nameEn": "Variant Human",
+          "abilityBonuses": {},
+          "traits": [],
+          "rules": [
+            {
+              "type": "select",
+              "targetType": "skill",
+              "count": 1,
+              "options": "any"
+            },
+            {
+              "type": "select",
+              "targetType": "feat",
+              "count": 1,
+              "options": "any"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ID_PHB_RACE_DRAGONBORN",
+      "name": "Drakéide",
+      "nameEn": "Dragonborn",
+      "source": "PHB",
+      "size": "medium",
+      "speed": 9,
+      "abilityBonuses": {
+        "strength": 2,
+        "charisma": 1
+      },
+      "traits": [
+        "ID_RACIAL_DRACONIC_ANCESTRY",
+        "ID_RACIAL_BREATH_WEAPON",
+        "ID_RACIAL_DAMAGE_RESISTANCE"
+      ],
+      "languages": [
+        "ID_LANGUAGE_COMMON",
+        "ID_LANGUAGE_DRACONIC"
+      ],
+      "rules": [
+        {
+          "type": "select",
+          "targetType": "trait",
+          "count": 1,
+          "options": [
+            "ID_RACIAL_DRACONIC_BLACK",
+            "ID_RACIAL_DRACONIC_BLUE",
+            "ID_RACIAL_DRACONIC_BRASS",
+            "ID_RACIAL_DRACONIC_BRONZE",
+            "ID_RACIAL_DRACONIC_COPPER",
+            "ID_RACIAL_DRACONIC_GOLD",
+            "ID_RACIAL_DRACONIC_GREEN",
+            "ID_RACIAL_DRACONIC_RED",
+            "ID_RACIAL_DRACONIC_SILVER",
+            "ID_RACIAL_DRACONIC_WHITE"
+          ]
+        }
+      ],
+      "subraces": []
+    },
+    {
+      "id": "ID_PHB_RACE_GNOME",
+      "name": "Gnome",
+      "nameEn": "Gnome",
+      "source": "PHB",
+      "size": "small",
+      "speed": 7.5,
+      "abilityBonuses": {
+        "intelligence": 2
+      },
+      "traits": [
+        "ID_RACIAL_DARKVISION",
+        "ID_RACIAL_GNOME_CUNNING"
+      ],
+      "languages": [
+        "ID_LANGUAGE_COMMON",
+        "ID_LANGUAGE_GNOMISH"
+      ],
+      "subraces": [
+        {
+          "id": "ID_PHB_SUBRACE_FOREST_GNOME",
+          "name": "Gnome des forêts",
+          "nameEn": "Forest Gnome",
+          "abilityBonuses": {
+            "dexterity": 1
+          },
+          "traits": [
+            "ID_RACIAL_NATURAL_ILLUSIONIST",
+            "ID_RACIAL_SPEAK_WITH_SMALL_BEASTS"
+          ],
+          "rules": []
+        },
+        {
+          "id": "ID_PHB_SUBRACE_ROCK_GNOME",
+          "name": "Gnome des roches",
+          "nameEn": "Rock Gnome",
+          "abilityBonuses": {
+            "constitution": 1
+          },
+          "traits": [
+            "ID_RACIAL_ARTIFICERS_LORE",
+            "ID_RACIAL_TINKER"
+          ],
+          "rules": []
+        }
+      ],
+      "rules": []
+    },
+    {
+      "id": "ID_PHB_RACE_HALF_ELF",
+      "name": "Demi-elfe",
+      "nameEn": "Half-Elf",
+      "source": "PHB",
+      "size": "medium",
+      "speed": 9,
+      "abilityBonuses": {
+        "charisma": 2
+      },
+      "traits": [
+        "ID_RACIAL_DARKVISION",
+        "ID_RACIAL_FEY_ANCESTRY",
+        "ID_RACIAL_SKILL_VERSATILITY"
+      ],
+      "languages": [
+        "ID_LANGUAGE_COMMON",
+        "ID_LANGUAGE_ELVISH"
+      ],
+      "rules": [
+        {
+          "type": "select",
+          "targetType": "ability",
+          "count": 2,
+          "options": [
+            "strength",
+            "dexterity",
+            "constitution",
+            "intelligence",
+            "wisdom"
+          ],
+          "supports": [
+            "+1"
+          ]
+        },
+        {
+          "type": "select",
+          "targetType": "skill",
+          "count": 2,
+          "options": "any"
+        }
+      ],
+      "subraces": []
+    },
+    {
+      "id": "ID_PHB_RACE_HALF_ORC",
+      "name": "Demi-orque",
+      "nameEn": "Half-Orc",
+      "source": "PHB",
+      "size": "medium",
+      "speed": 9,
+      "abilityBonuses": {
+        "strength": 2,
+        "constitution": 1
+      },
+      "traits": [
+        "ID_RACIAL_DARKVISION",
+        "ID_RACIAL_MENACING",
+        "ID_RACIAL_RELENTLESS_ENDURANCE",
+        "ID_RACIAL_SAVAGE_ATTACKS"
+      ],
+      "skillProficiencies": [
+        "ID_SKILL_INTIMIDATION"
+      ],
+      "languages": [
+        "ID_LANGUAGE_COMMON",
+        "ID_LANGUAGE_ORC"
+      ],
+      "rules": [
+        {
+          "type": "grant",
+          "targetType": "proficiency",
+          "targetId": "ID_SKILL_INTIMIDATION"
+        }
+      ],
+      "subraces": []
+    },
+    {
+      "id": "ID_PHB_RACE_TIEFLING",
+      "name": "Tiefelin",
+      "nameEn": "Tiefling",
+      "source": "PHB",
+      "size": "medium",
+      "speed": 9,
+      "abilityBonuses": {
+        "intelligence": 1,
+        "charisma": 2
+      },
+      "traits": [
+        "ID_RACIAL_DARKVISION",
+        "ID_RACIAL_HELLISH_RESISTANCE",
+        "ID_RACIAL_INFERNAL_LEGACY"
+      ],
+      "languages": [
+        "ID_LANGUAGE_COMMON",
+        "ID_LANGUAGE_INFERNAL"
+      ],
+      "rules": [],
+      "subraces": []
+    }
+  ],
+  "traits": {
+    "ID_RACIAL_DARKVISION": {
+      "id": "ID_RACIAL_DARKVISION",
+      "name": "Vision dans le noir",
+      "nameEn": "Darkvision",
+      "source": "PHB",
+      "description": "Vous pouvez voir à 18 mètres dans une lumière faible comme si c'était une lumière vive, et dans le noir comme si c'était une lumière faible. Vous ne discernez pas les couleurs dans le noir, seulement des nuances de gris."
+    },
+    "ID_RACIAL_DWARVEN_RESILIENCE": {
+      "id": "ID_RACIAL_DWARVEN_RESILIENCE",
+      "name": "Résistance naine",
+      "nameEn": "Dwarven Resilience",
+      "source": "PHB",
+      "description": "Vous avez l'avantage aux jets de sauvegarde contre le poison, et vous avez la résistance aux dégâts de poison."
+    },
+    "ID_RACIAL_DWARVEN_COMBAT_TRAINING": {
+      "id": "ID_RACIAL_DWARVEN_COMBAT_TRAINING",
+      "name": "Entraînement aux armes naines",
+      "nameEn": "Dwarven Combat Training",
+      "source": "PHB",
+      "description": "Vous maîtrisez la hache d'armes, la hachette, le marteau léger et le marteau de guerre."
+    },
+    "ID_RACIAL_STONECUNNING": {
+      "id": "ID_RACIAL_STONECUNNING",
+      "name": "Connaissance de la pierre",
+      "nameEn": "Stonecunning",
+      "source": "PHB",
+      "description": "Chaque fois que vous faites un test d'Intelligence (Histoire) lié à l'origine d'un travail dans la pierre, vous êtes considéré comme maîtrisant la compétence Histoire et ajoutez le double de votre bonus de maîtrise."
+    },
+    "ID_RACIAL_DWARVEN_TOUGHNESS": {
+      "id": "ID_RACIAL_DWARVEN_TOUGHNESS",
+      "name": "Ténacité naine",
+      "nameEn": "Dwarven Toughness",
+      "source": "PHB",
+      "description": "Vos points de vie maximum augmentent de 1, et ils augmentent encore de 1 à chaque fois que vous gagnez un niveau."
+    },
+    "ID_RACIAL_DWARVEN_ARMOR_TRAINING": {
+      "id": "ID_RACIAL_DWARVEN_ARMOR_TRAINING",
+      "name": "Entraînement aux armures naines",
+      "nameEn": "Dwarven Armor Training",
+      "source": "PHB",
+      "description": "Vous maîtrisez les armures légères et les armures intermédiaires."
+    },
+    "ID_RACIAL_KEEN_SENSES": {
+      "id": "ID_RACIAL_KEEN_SENSES",
+      "name": "Sens aiguisés",
+      "nameEn": "Keen Senses",
+      "source": "PHB",
+      "description": "Vous maîtrisez la compétence Perception."
+    },
+    "ID_RACIAL_FEY_ANCESTRY": {
+      "id": "ID_RACIAL_FEY_ANCESTRY",
+      "name": "Ascendance féerique",
+      "nameEn": "Fey Ancestry",
+      "source": "PHB",
+      "description": "Vous avez l'avantage aux jets de sauvegarde pour ne pas être charmé, et la magie ne peut pas vous endormir."
+    },
+    "ID_RACIAL_TRANCE": {
+      "id": "ID_RACIAL_TRANCE",
+      "name": "Transe",
+      "nameEn": "Trance",
+      "source": "PHB",
+      "description": "Les elfes n'ont pas besoin de dormir. Au lieu de cela, ils méditent profondément pendant 4 heures par jour. Après un tel repos, vous obtenez les mêmes bénéfices qu'un humain après 8 heures de sommeil."
+    },
+    "ID_RACIAL_ELF_WEAPON_TRAINING": {
+      "id": "ID_RACIAL_ELF_WEAPON_TRAINING",
+      "name": "Entraînement aux armes elfiques",
+      "nameEn": "Elf Weapon Training",
+      "source": "PHB",
+      "description": "Vous maîtrisez l'épée longue, l'épée courte, l'arc court et l'arc long."
+    },
+    "ID_RACIAL_CANTRIP": {
+      "id": "ID_RACIAL_CANTRIP",
+      "name": "Sort mineur",
+      "nameEn": "Cantrip",
+      "source": "PHB",
+      "description": "Vous connaissez un sort mineur de votre choix dans la liste de sorts du magicien. L'Intelligence est votre caractéristique d'incantation pour ce sort."
+    },
+    "ID_RACIAL_EXTRA_LANGUAGE": {
+      "id": "ID_RACIAL_EXTRA_LANGUAGE",
+      "name": "Langue supplémentaire",
+      "nameEn": "Extra Language",
+      "source": "PHB",
+      "description": "Vous parlez, lisez et écrivez une langue supplémentaire de votre choix."
+    },
+    "ID_RACIAL_FLEET_OF_FOOT": {
+      "id": "ID_RACIAL_FLEET_OF_FOOT",
+      "name": "Pied léger",
+      "nameEn": "Fleet of Foot",
+      "source": "PHB",
+      "description": "Votre vitesse de base passe à 10,5 mètres (35 ft)."
+    },
+    "ID_RACIAL_MASK_OF_THE_WILD": {
+      "id": "ID_RACIAL_MASK_OF_THE_WILD",
+      "name": "Camouflage naturel",
+      "nameEn": "Mask of the Wild",
+      "source": "PHB",
+      "description": "Vous pouvez tenter de vous cacher même lorsque vous n'êtes que légèrement dissimulé par le feuillage, une pluie battante, la neige, la brume ou d'autres phénomènes naturels."
+    },
+    "ID_RACIAL_SUPERIOR_DARKVISION": {
+      "id": "ID_RACIAL_SUPERIOR_DARKVISION",
+      "name": "Vision dans le noir supérieure",
+      "nameEn": "Superior Darkvision",
+      "source": "PHB",
+      "description": "Votre vision dans le noir a un rayon de 36 mètres."
+    },
+    "ID_RACIAL_SUNLIGHT_SENSITIVITY": {
+      "id": "ID_RACIAL_SUNLIGHT_SENSITIVITY",
+      "name": "Sensibilité au soleil",
+      "nameEn": "Sunlight Sensitivity",
+      "source": "PHB",
+      "description": "Vous avez un désavantage aux jets d'attaque et aux tests de Sagesse (Perception) liés à la vue lorsque vous, la cible ou ce que vous essayez de percevoir est en plein soleil."
+    },
+    "ID_RACIAL_DROW_MAGIC": {
+      "id": "ID_RACIAL_DROW_MAGIC",
+      "name": "Magie drow",
+      "nameEn": "Drow Magic",
+      "source": "PHB",
+      "description": "Vous connaissez le sort mineur Lumières dansantes. Au niveau 3, vous pouvez lancer Lueurs féeriques (1/jour). Au niveau 5, vous pouvez lancer Ténèbres (1/jour). Le Charisme est votre caractéristique d'incantation."
+    },
+    "ID_RACIAL_LUCKY": {
+      "id": "ID_RACIAL_LUCKY",
+      "name": "Chanceux",
+      "nameEn": "Lucky",
+      "source": "PHB",
+      "description": "Lorsque vous obtenez un 1 sur le d20 pour un jet d'attaque, de capacité ou de sauvegarde, vous pouvez relancer le dé et utiliser le nouveau résultat."
+    },
+    "ID_RACIAL_BRAVE": {
+      "id": "ID_RACIAL_BRAVE",
+      "name": "Brave",
+      "nameEn": "Brave",
+      "source": "PHB",
+      "description": "Vous avez l'avantage aux jets de sauvegarde contre l'état effrayé."
+    },
+    "ID_RACIAL_HALFLING_NIMBLENESS": {
+      "id": "ID_RACIAL_HALFLING_NIMBLENESS",
+      "name": "Agilité halfeline",
+      "nameEn": "Halfling Nimbleness",
+      "source": "PHB",
+      "description": "Vous pouvez traverser l'espace occupé par une créature de toute taille supérieure à la vôtre."
+    },
+    "ID_RACIAL_NATURALLY_STEALTHY": {
+      "id": "ID_RACIAL_NATURALLY_STEALTHY",
+      "name": "Naturellement furtif",
+      "nameEn": "Naturally Stealthy",
+      "source": "PHB",
+      "description": "Vous pouvez tenter de vous cacher même lorsque vous êtes masqué seulement par une créature d'une taille supérieure à la vôtre."
+    },
+    "ID_RACIAL_STOUT_RESILIENCE": {
+      "id": "ID_RACIAL_STOUT_RESILIENCE",
+      "name": "Résistance robuste",
+      "nameEn": "Stout Resilience",
+      "source": "PHB",
+      "description": "Vous avez l'avantage aux jets de sauvegarde contre le poison, et vous avez la résistance aux dégâts de poison."
+    },
+    "ID_RACIAL_DRACONIC_ANCESTRY": {
+      "id": "ID_RACIAL_DRACONIC_ANCESTRY",
+      "name": "Ancêtre draconique",
+      "nameEn": "Draconic Ancestry",
+      "source": "PHB",
+      "description": "Vous avez un ancêtre dragon. Choisissez un type de dragon qui détermine votre arme de souffle et votre résistance aux dégâts."
+    },
+    "ID_RACIAL_BREATH_WEAPON": {
+      "id": "ID_RACIAL_BREATH_WEAPON",
+      "name": "Arme de souffle",
+      "nameEn": "Breath Weapon",
+      "source": "PHB",
+      "description": "Vous pouvez utiliser votre action pour exhaler une arme de souffle destructrice. La taille, la forme et le type de dégâts dépendent de votre ancêtre draconique."
+    },
+    "ID_RACIAL_DAMAGE_RESISTANCE": {
+      "id": "ID_RACIAL_DAMAGE_RESISTANCE",
+      "name": "Résistance aux dégâts",
+      "nameEn": "Damage Resistance",
+      "source": "PHB",
+      "description": "Vous avez la résistance au type de dégâts associé à votre ancêtre draconique."
+    },
+    "ID_RACIAL_GNOME_CUNNING": {
+      "id": "ID_RACIAL_GNOME_CUNNING",
+      "name": "Ruse gnome",
+      "nameEn": "Gnome Cunning",
+      "source": "PHB",
+      "description": "Vous avez l'avantage à tous les jets de sauvegarde d'Intelligence, de Sagesse et de Charisme contre la magie."
+    },
+    "ID_RACIAL_NATURAL_ILLUSIONIST": {
+      "id": "ID_RACIAL_NATURAL_ILLUSIONIST",
+      "name": "Illusionniste naturel",
+      "nameEn": "Natural Illusionist",
+      "source": "PHB",
+      "description": "Vous connaissez le sort mineur Illusion mineure. L'Intelligence est votre caractéristique d'incantation."
+    },
+    "ID_RACIAL_SPEAK_WITH_SMALL_BEASTS": {
+      "id": "ID_RACIAL_SPEAK_WITH_SMALL_BEASTS",
+      "name": "Parler avec les petites bêtes",
+      "nameEn": "Speak with Small Beasts",
+      "source": "PHB",
+      "description": "Grâce à des sons et des gestes, vous pouvez communiquer des idées simples aux petites bêtes (bestioles)."
+    },
+    "ID_RACIAL_ARTIFICERS_LORE": {
+      "id": "ID_RACIAL_ARTIFICERS_LORE",
+      "name": "Connaissance de l'artificier",
+      "nameEn": "Artificer's Lore",
+      "source": "PHB",
+      "description": "Lorsque vous faites un test d'Intelligence (Histoire) lié aux objets magiques, aux objets alchimiques ou aux mécanismes techniques, ajoutez deux fois votre bonus de maîtrise."
+    },
+    "ID_RACIAL_TINKER": {
+      "id": "ID_RACIAL_TINKER",
+      "name": "Bricolage",
+      "nameEn": "Tinker",
+      "source": "PHB",
+      "description": "Vous maîtrisez les outils d'artisan (outils de bricoleur). En utilisant ces outils, vous pouvez passer 1 heure et 10 po de matériaux pour construire un jouet mécanique minuscule."
+    },
+    "ID_RACIAL_SKILL_VERSATILITY": {
+      "id": "ID_RACIAL_SKILL_VERSATILITY",
+      "name": "Polyvalence",
+      "nameEn": "Skill Versatility",
+      "source": "PHB",
+      "description": "Vous gagnez la maîtrise de deux compétences de votre choix."
+    },
+    "ID_RACIAL_MENACING": {
+      "id": "ID_RACIAL_MENACING",
+      "name": "Menaçant",
+      "nameEn": "Menacing",
+      "source": "PHB",
+      "description": "Vous maîtrisez la compétence Intimidation."
+    },
+    "ID_RACIAL_RELENTLESS_ENDURANCE": {
+      "id": "ID_RACIAL_RELENTLESS_ENDURANCE",
+      "name": "Endurance implacable",
+      "nameEn": "Relentless Endurance",
+      "source": "PHB",
+      "description": "Lorsque vous êtes réduit à 0 point de vie mais pas tué, vous pouvez choisir d'être réduit à 1 point de vie à la place. Vous ne pouvez pas utiliser cette capacité à nouveau avant d'avoir terminé un repos long."
+    },
+    "ID_RACIAL_SAVAGE_ATTACKS": {
+      "id": "ID_RACIAL_SAVAGE_ATTACKS",
+      "name": "Attaques sauvages",
+      "nameEn": "Savage Attacks",
+      "source": "PHB",
+      "description": "Lorsque vous obtenez un coup critique avec une arme de corps-à-corps, vous pouvez lancer un des dés de dégâts de l'arme une fois de plus et ajouter le résultat aux dégâts supplémentaires."
+    },
+    "ID_RACIAL_HELLISH_RESISTANCE": {
+      "id": "ID_RACIAL_HELLISH_RESISTANCE",
+      "name": "Résistance infernale",
+      "nameEn": "Hellish Resistance",
+      "source": "PHB",
+      "description": "Vous avez la résistance aux dégâts de feu."
+    },
+    "ID_RACIAL_INFERNAL_LEGACY": {
+      "id": "ID_RACIAL_INFERNAL_LEGACY",
+      "name": "Héritage infernal",
+      "nameEn": "Infernal Legacy",
+      "source": "PHB",
+      "description": "Vous connaissez le sort mineur Thaumaturgie. Au niveau 3, vous pouvez lancer Représailles infernales (2/jour). Au niveau 5, vous pouvez lancer Ténèbres (1/jour). Le Charisme est votre caractéristique d'incantation."
+    }
+  }
+}

@@ -1,4 +1,5 @@
 // Types for D&D 5e Character
+import type { InventoryItem, Currency } from './inventory'
 
 export interface AbilityScores {
     str: number
@@ -32,8 +33,15 @@ export interface Character {
     speed: number
     proficiencyBonus: number
 
+    // Actions
+    actionsPerTurn: number      // 1 par défaut, Monk=2+ avec Flurry
+    bonusActionsPerTurn: number // 1 par défaut, monk peut avoir plus
+    reactionsPerTurn: number    // 1 par défaut
+
     // Skills & Proficiencies
     skillProficiencies: string[]
+    // Compétences avec expertise (double bonus de maîtrise)
+    expertiseSkills?: string[]
     savingThrowProficiencies: string[]
     languages: string[]
     toolProficiencies: string[]
@@ -52,6 +60,9 @@ export interface Character {
     flaws: string
     backstory: string
 
+    // Notes de session
+    sessionNotes?: SessionNote[]
+
     // Meta
     createdAt: Date
     updatedAt: Date
@@ -61,12 +72,79 @@ export interface Character {
 
     // Choix ASI pour calcul final (optionnel, pour l'historique)
     asiChoices?: Record<number, AsiChoice>
+
+    // Attribution des bonus raciaux libres TCoE (ex: Fée +2/+1 à choisir)
+    customAbilityBonuses?: Partial<AbilityScores>
+
+    // Conditions actives (combat)
+    activeConditions?: string[]
+    // Niveau d'épuisement (1-6, remplace l'approche par tableau dans activeConditions)
+    exhaustionLevel?: number
+    // Ressources de classe utilisées
+    classResourcesUsed?: Record<string, number>
+    // Métamagie Ensorceleur (IDs des options choisies)
+    metamagicChoices?: string[]  // keys des conditions
+    // Effets actifs (ex: 'rage', 'chant-de-lame', 'forme-sauvage')
+    activeEffects?: string[]
+    // Ressources de sous-classe génériques (id -> current/max)
+    subclassResources?: Record<string, { current: number; max: number }>
+
+    // Options de classe (styles de combat, etc.)
+    classOptions?: Record<string, string>
+
+    // Toggles de dons actifs (ex: GWM, Sharpshooter)
+    featToggles?: Record<string, boolean>
+
+    // Ressources de classe (utilisation limitée)
+    classResources?: {
+        // Rage du Barbare
+        rages?: { current: number; max: number }
+        // Ki du Moine
+        ki?: { current: number; max: number }
+        // Channel Divinity du Clerc / Paladin
+        channelDivinity?: { current: number; max: number }
+        // Sorcery Points de l'Ensorceleur
+        sorceryPoints?: { current: number; max: number }
+        // Sneak Attack du Roublard (dés par niveau)
+        sneakAttackDice?: { current: number; max: number }
+        // Journeys Domain spells par jour
+        domainSpells?: { current: number; max: number }
+        // Wild Shape du Druide
+        wildShape?: { current: number; max: number }
+        // Second Souffle du Guerrier
+        secondWind?: { current: number; max: number }
+        // Fougue du Guerrier
+        actionSurge?: { current: number; max: number }
+        // Indomptable du Guerrier
+        indomitable?: { current: number; max: number }
+        // Châtiment divin du Paladin
+        divineSmite?: { current: number; max: number }
+        // Récupération arcanique du Magicien
+        arcaneRecovery?: { current: number; max: number }
+        // Inspiration bardique
+        bardicInspiration?: { current: number; max: number }
+        // Ennemi juré du Rôdeur
+        favoredEnemy?: { current: number; max: number }
+        // Invocations occultes de l'Occultiste
+        eldritchInvocations?: { current: number; max: number }
+        // Points de vie temporaires
+        tempHP?: { current: number; source: string }
+    }
 }
 
 export interface AsiChoice {
     type: 'feat' | 'stats'
     featId?: string
     stats?: Partial<AbilityScores>
+    applied?: boolean
+}
+
+export interface SessionNote {
+    id: string
+    title: string
+    date: string // ISO date
+    content: string
+    tags: string[]
 }
 
 export interface CharacterCreation {
@@ -88,9 +166,13 @@ export interface CharacterCreation {
     selectedSpells: string[]
     // Nouveaux champs pour ASI/Feats
     asiChoices: Record<number, AsiChoice>
+    customAbilityBonuses?: Partial<AbilityScores>
+
+    // Inventaire créé dans l'étape Équipement
+    inventory?: InventoryItem[]
 }
 
-export type RaceSource = 'PHB' | 'XGtE' | 'TCoE'
+export type RaceSource = 'PHB' | 'XGtE' | 'TCoE' | 'EEPC' | 'MotM'
 
 export interface Race {
     id: string
@@ -113,8 +195,12 @@ export interface Race {
 export interface Subrace {
     id: string
     name: string
+    nameEn?: string
     abilityBonuses: Partial<AbilityScores>
     traits: string[]
+    speed?: number
+    size?: string
+    languages?: string[]
 }
 
 export interface CharacterClass {
@@ -135,26 +221,27 @@ export interface CharacterClass {
         spellsKnown?: number[]
         spellSlots: number[][]
     }
+    // Ressources de classe spécifiques
+    classResources?: {
+        hasRage?: boolean               // Barbare
+        hasKi?: boolean                   // Moine
+        hasChannelDivinity?: boolean      // Clerc / Paladin
+        hasSorceryPoints?: boolean        // Ensorceleur
+        hasSneakAttack?: boolean          // Roublard
+        hasBardicInspiration?: boolean    // Barde
+        hasLayOnHands?: boolean           // Paladin
+        hasSecondWind?: boolean           // Guerrier
+        hasWildShape?: boolean            // Druide
+        hasActionSurge?: boolean          // Guerrier
+        hasIndomitable?: boolean          // Guerrier
+        hasDivineSmite?: boolean          // Paladin
+        hasArcaneRecovery?: boolean       // Magicien
+        hasEldritchInvocations?: boolean  // Occultiste
+        hasFavoredEnemy?: boolean         // Rôdeur
+    }
 }
 
-export interface InventoryItem {
-    id: string
-    name: string
-    quantity: number
-    weight: number
-    equipped: boolean
-    attunement?: boolean
-    description?: string
-    type: 'weapon' | 'armor' | 'gear' | 'consumable' | 'treasure' | 'other'
-}
-
-export interface Currency {
-    pp: number
-    gp: number
-    ep: number
-    sp: number
-    cp: number
-}
+export type { InventoryItem, Currency, CharacterInventory } from './inventory'
 
 export interface SpellcastingInfo {
     ability: keyof AbilityScores

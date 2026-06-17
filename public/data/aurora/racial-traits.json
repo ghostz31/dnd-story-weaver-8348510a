@@ -1,0 +1,254 @@
+{
+  "ID_RACIAL_DARKVISION": {
+    "id": "ID_RACIAL_DARKVISION",
+    "name": "Vision dans le noir",
+    "nameEn": "Darkvision",
+    "source": "PHB",
+    "description": "Vous pouvez voir à 18 mètres dans une lumière faible comme si c'était une lumière vive, et dans le noir comme si c'était une lumière faible. Vous ne discernez pas les couleurs dans le noir, seulement des nuances de gris."
+  },
+  "ID_RACIAL_DWARVEN_RESILIENCE": {
+    "id": "ID_RACIAL_DWARVEN_RESILIENCE",
+    "name": "Résistance naine",
+    "nameEn": "Dwarven Resilience",
+    "source": "PHB",
+    "description": "Vous avez l'avantage aux jets de sauvegarde contre le poison, et vous avez la résistance aux dégâts de poison."
+  },
+  "ID_RACIAL_DWARVEN_COMBAT_TRAINING": {
+    "id": "ID_RACIAL_DWARVEN_COMBAT_TRAINING",
+    "name": "Entraînement aux armes naines",
+    "nameEn": "Dwarven Combat Training",
+    "source": "PHB",
+    "description": "Vous maîtrisez la hache d'armes, la hachette, le marteau léger et le marteau de guerre."
+  },
+  "ID_RACIAL_STONECUNNING": {
+    "id": "ID_RACIAL_STONECUNNING",
+    "name": "Connaissance de la pierre",
+    "nameEn": "Stonecunning",
+    "source": "PHB",
+    "description": "Chaque fois que vous faites un test d'Intelligence (Histoire) lié à l'origine d'un travail dans la pierre, vous êtes considéré comme maîtrisant la compétence Histoire et ajoutez le double de votre bonus de maîtrise."
+  },
+  "ID_RACIAL_DWARVEN_TOUGHNESS": {
+    "id": "ID_RACIAL_DWARVEN_TOUGHNESS",
+    "name": "Ténacité naine",
+    "nameEn": "Dwarven Toughness",
+    "source": "PHB",
+    "description": "Vos points de vie maximum augmentent de 1, et ils augmentent encore de 1 à chaque fois que vous gagnez un niveau."
+  },
+  "ID_RACIAL_DWARVEN_ARMOR_TRAINING": {
+    "id": "ID_RACIAL_DWARVEN_ARMOR_TRAINING",
+    "name": "Entraînement aux armures naines",
+    "nameEn": "Dwarven Armor Training",
+    "source": "PHB",
+    "description": "Vous maîtrisez les armures légères et les armures intermédiaires."
+  },
+  "ID_RACIAL_KEEN_SENSES": {
+    "id": "ID_RACIAL_KEEN_SENSES",
+    "name": "Sens aiguisés",
+    "nameEn": "Keen Senses",
+    "source": "PHB",
+    "description": "Vous maîtrisez la compétence Perception."
+  },
+  "ID_RACIAL_FEY_ANCESTRY": {
+    "id": "ID_RACIAL_FEY_ANCESTRY",
+    "name": "Ascendance féerique",
+    "nameEn": "Fey Ancestry",
+    "source": "PHB",
+    "description": "Vous avez l'avantage aux jets de sauvegarde pour ne pas être charmé, et la magie ne peut pas vous endormir."
+  },
+  "ID_RACIAL_TRANCE": {
+    "id": "ID_RACIAL_TRANCE",
+    "name": "Transe",
+    "nameEn": "Trance",
+    "source": "PHB",
+    "description": "Les elfes n'ont pas besoin de dormir. Au lieu de cela, ils méditent profondément pendant 4 heures par jour. Après un tel repos, vous obtenez les mêmes bénéfices qu'un humain après 8 heures de sommeil."
+  },
+  "ID_RACIAL_ELF_WEAPON_TRAINING": {
+    "id": "ID_RACIAL_ELF_WEAPON_TRAINING",
+    "name": "Entraînement aux armes elfiques",
+    "nameEn": "Elf Weapon Training",
+    "source": "PHB",
+    "description": "Vous maîtrisez l'épée longue, l'épée courte, l'arc court et l'arc long."
+  },
+  "ID_RACIAL_CANTRIP": {
+    "id": "ID_RACIAL_CANTRIP",
+    "name": "Sort mineur",
+    "nameEn": "Cantrip",
+    "source": "PHB",
+    "description": "Vous connaissez un sort mineur de votre choix dans la liste de sorts du magicien. L'Intelligence est votre caractéristique d'incantation pour ce sort."
+  },
+  "ID_RACIAL_EXTRA_LANGUAGE": {
+    "id": "ID_RACIAL_EXTRA_LANGUAGE",
+    "name": "Langue supplémentaire",
+    "nameEn": "Extra Language",
+    "source": "PHB",
+    "description": "Vous parlez, lisez et écrivez une langue supplémentaire de votre choix."
+  },
+  "ID_RACIAL_FLEET_OF_FOOT": {
+    "id": "ID_RACIAL_FLEET_OF_FOOT",
+    "name": "Pied léger",
+    "nameEn": "Fleet of Foot",
+    "source": "PHB",
+    "description": "Votre vitesse de base passe à 10,5 mètres (35 ft)."
+  },
+  "ID_RACIAL_MASK_OF_THE_WILD": {
+    "id": "ID_RACIAL_MASK_OF_THE_WILD",
+    "name": "Camouflage naturel",
+    "nameEn": "Mask of the Wild",
+    "source": "PHB",
+    "description": "Vous pouvez tenter de vous cacher même lorsque vous n'êtes que légèrement dissimulé par le feuillage, une pluie battante, la neige, la brume ou d'autres phénomènes naturels."
+  },
+  "ID_RACIAL_SUPERIOR_DARKVISION": {
+    "id": "ID_RACIAL_SUPERIOR_DARKVISION",
+    "name": "Vision dans le noir supérieure",
+    "nameEn": "Superior Darkvision",
+    "source": "PHB",
+    "description": "Votre vision dans le noir a un rayon de 36 mètres."
+  },
+  "ID_RACIAL_SUNLIGHT_SENSITIVITY": {
+    "id": "ID_RACIAL_SUNLIGHT_SENSITIVITY",
+    "name": "Sensibilité au soleil",
+    "nameEn": "Sunlight Sensitivity",
+    "source": "PHB",
+    "description": "Vous avez un désavantage aux jets d'attaque et aux tests de Sagesse (Perception) liés à la vue lorsque vous, la cible ou ce que vous essayez de percevoir est en plein soleil."
+  },
+  "ID_RACIAL_DROW_MAGIC": {
+    "id": "ID_RACIAL_DROW_MAGIC",
+    "name": "Magie drow",
+    "nameEn": "Drow Magic",
+    "source": "PHB",
+    "description": "Vous connaissez le sort mineur Lumières dansantes. Au niveau 3, vous pouvez lancer Lueurs féeriques (1/jour). Au niveau 5, vous pouvez lancer Ténèbres (1/jour). Le Charisme est votre caractéristique d'incantation."
+  },
+  "ID_RACIAL_LUCKY": {
+    "id": "ID_RACIAL_LUCKY",
+    "name": "Chanceux",
+    "nameEn": "Lucky",
+    "source": "PHB",
+    "description": "Lorsque vous obtenez un 1 sur le d20 pour un jet d'attaque, de capacité ou de sauvegarde, vous pouvez relancer le dé et utiliser le nouveau résultat."
+  },
+  "ID_RACIAL_BRAVE": {
+    "id": "ID_RACIAL_BRAVE",
+    "name": "Brave",
+    "nameEn": "Brave",
+    "source": "PHB",
+    "description": "Vous avez l'avantage aux jets de sauvegarde contre l'état effrayé."
+  },
+  "ID_RACIAL_HALFLING_NIMBLENESS": {
+    "id": "ID_RACIAL_HALFLING_NIMBLENESS",
+    "name": "Agilité halfeline",
+    "nameEn": "Halfling Nimbleness",
+    "source": "PHB",
+    "description": "Vous pouvez traverser l'espace occupé par une créature de toute taille supérieure à la vôtre."
+  },
+  "ID_RACIAL_NATURALLY_STEALTHY": {
+    "id": "ID_RACIAL_NATURALLY_STEALTHY",
+    "name": "Naturellement furtif",
+    "nameEn": "Naturally Stealthy",
+    "source": "PHB",
+    "description": "Vous pouvez tenter de vous cacher même lorsque vous êtes masqué seulement par une créature d'une taille supérieure à la vôtre."
+  },
+  "ID_RACIAL_STOUT_RESILIENCE": {
+    "id": "ID_RACIAL_STOUT_RESILIENCE",
+    "name": "Résistance robuste",
+    "nameEn": "Stout Resilience",
+    "source": "PHB",
+    "description": "Vous avez l'avantage aux jets de sauvegarde contre le poison, et vous avez la résistance aux dégâts de poison."
+  },
+  "ID_RACIAL_DRACONIC_ANCESTRY": {
+    "id": "ID_RACIAL_DRACONIC_ANCESTRY",
+    "name": "Ancêtre draconique",
+    "nameEn": "Draconic Ancestry",
+    "source": "PHB",
+    "description": "Vous avez un ancêtre dragon. Choisissez un type de dragon qui détermine votre arme de souffle et votre résistance aux dégâts."
+  },
+  "ID_RACIAL_BREATH_WEAPON": {
+    "id": "ID_RACIAL_BREATH_WEAPON",
+    "name": "Arme de souffle",
+    "nameEn": "Breath Weapon",
+    "source": "PHB",
+    "description": "Vous pouvez utiliser votre action pour exhaler une arme de souffle destructrice. La taille, la forme et le type de dégâts dépendent de votre ancêtre draconique."
+  },
+  "ID_RACIAL_DAMAGE_RESISTANCE": {
+    "id": "ID_RACIAL_DAMAGE_RESISTANCE",
+    "name": "Résistance aux dégâts",
+    "nameEn": "Damage Resistance",
+    "source": "PHB",
+    "description": "Vous avez la résistance au type de dégâts associé à votre ancêtre draconique."
+  },
+  "ID_RACIAL_GNOME_CUNNING": {
+    "id": "ID_RACIAL_GNOME_CUNNING",
+    "name": "Ruse gnome",
+    "nameEn": "Gnome Cunning",
+    "source": "PHB",
+    "description": "Vous avez l'avantage à tous les jets de sauvegarde d'Intelligence, de Sagesse et de Charisme contre la magie."
+  },
+  "ID_RACIAL_NATURAL_ILLUSIONIST": {
+    "id": "ID_RACIAL_NATURAL_ILLUSIONIST",
+    "name": "Illusionniste naturel",
+    "nameEn": "Natural Illusionist",
+    "source": "PHB",
+    "description": "Vous connaissez le sort mineur Illusion mineure. L'Intelligence est votre caractéristique d'incantation."
+  },
+  "ID_RACIAL_SPEAK_WITH_SMALL_BEASTS": {
+    "id": "ID_RACIAL_SPEAK_WITH_SMALL_BEASTS",
+    "name": "Parler avec les petites bêtes",
+    "nameEn": "Speak with Small Beasts",
+    "source": "PHB",
+    "description": "Grâce à des sons et des gestes, vous pouvez communiquer des idées simples aux petites bêtes (bestioles)."
+  },
+  "ID_RACIAL_ARTIFICERS_LORE": {
+    "id": "ID_RACIAL_ARTIFICERS_LORE",
+    "name": "Connaissance de l'artificier",
+    "nameEn": "Artificer's Lore",
+    "source": "PHB",
+    "description": "Lorsque vous faites un test d'Intelligence (Histoire) lié aux objets magiques, aux objets alchimiques ou aux mécanismes techniques, ajoutez deux fois votre bonus de maîtrise."
+  },
+  "ID_RACIAL_TINKER": {
+    "id": "ID_RACIAL_TINKER",
+    "name": "Bricolage",
+    "nameEn": "Tinker",
+    "source": "PHB",
+    "description": "Vous maîtrisez les outils d'artisan (outils de bricoleur). En utilisant ces outils, vous pouvez passer 1 heure et 10 po de matériaux pour construire un jouet mécanique minuscule."
+  },
+  "ID_RACIAL_SKILL_VERSATILITY": {
+    "id": "ID_RACIAL_SKILL_VERSATILITY",
+    "name": "Polyvalence",
+    "nameEn": "Skill Versatility",
+    "source": "PHB",
+    "description": "Vous gagnez la maîtrise de deux compétences de votre choix."
+  },
+  "ID_RACIAL_MENACING": {
+    "id": "ID_RACIAL_MENACING",
+    "name": "Menaçant",
+    "nameEn": "Menacing",
+    "source": "PHB",
+    "description": "Vous maîtrisez la compétence Intimidation."
+  },
+  "ID_RACIAL_RELENTLESS_ENDURANCE": {
+    "id": "ID_RACIAL_RELENTLESS_ENDURANCE",
+    "name": "Endurance implacable",
+    "nameEn": "Relentless Endurance",
+    "source": "PHB",
+    "description": "Lorsque vous êtes réduit à 0 point de vie mais pas tué, vous pouvez choisir d'être réduit à 1 point de vie à la place. Vous ne pouvez pas utiliser cette capacité à nouveau avant d'avoir terminé un repos long."
+  },
+  "ID_RACIAL_SAVAGE_ATTACKS": {
+    "id": "ID_RACIAL_SAVAGE_ATTACKS",
+    "name": "Attaques sauvages",
+    "nameEn": "Savage Attacks",
+    "source": "PHB",
+    "description": "Lorsque vous obtenez un coup critique avec une arme de corps-à-corps, vous pouvez lancer un des dés de dégâts de l'arme une fois de plus et ajouter le résultat aux dégâts supplémentaires."
+  },
+  "ID_RACIAL_HELLISH_RESISTANCE": {
+    "id": "ID_RACIAL_HELLISH_RESISTANCE",
+    "name": "Résistance infernale",
+    "nameEn": "Hellish Resistance",
+    "source": "PHB",
+    "description": "Vous avez la résistance aux dégâts de feu."
+  },
+  "ID_RACIAL_INFERNAL_LEGACY": {
+    "id": "ID_RACIAL_INFERNAL_LEGACY",
+    "name": "Héritage infernal",
+    "nameEn": "Infernal Legacy",
+    "source": "PHB",
+    "description": "Vous connaissez le sort mineur Thaumaturgie. Au niveau 3, vous pouvez lancer Représailles infernales (2/jour). Au niveau 5, vous pouvez lancer Ténèbres (1/jour). Le Charisme est votre caractéristique d'incantation."
+  }
+}

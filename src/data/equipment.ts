@@ -204,7 +204,7 @@ export const armorCategoryLabels: Record<ArmorCategory, string> = {
 }
 
 // Utility: Convert starting equipment names to InventoryItem objects
-import type { InventoryItem } from '../types/inventory'
+import type { InventoryItem, ItemType, ItemRarity } from '../types/inventory'
 
 /**
  * Convertit une liste de noms d'équipement de départ en objets InventoryItem structurés.
@@ -291,3 +291,76 @@ export function convertStartingEquipment(equipmentNames: string[]): Omit<Invento
 
     return items
 }
+
+export interface CatalogMagicItem {
+    id: string
+    name: string
+    type: ItemType
+    rarity: ItemRarity
+    attunement: boolean
+    description: string
+    weight: number
+    bonusFields: Partial<Pick<InventoryItem, 'attackBonus' | 'damageBonus' | 'acBonus' | 'abilityBonus' | 'abilitySetTo' | 'saveBonus' | 'spellAttackBonus' | 'spellSaveDCBonus' | 'speedBonus' | 'damageExtra' | 'damage' | 'damageType' | 'armorClass' | 'armorCategory' | 'addDex' | 'maxDex' | 'stealthDisadvantage' | 'properties' | 'charges' | 'maxCharges' | 'chargesRecovery'>>
+}
+
+export const magicItems: CatalogMagicItem[] = [
+    // === ARMES +1/+2/+3 ===
+    { id: 'weapon_plus1', name: 'Arme +1', type: 'weapon', rarity: 'uncommon', attunement: true, description: 'Arme magique avec un bonus de +1 aux jets d\'attaque et de dégâts.', weight: 0, bonusFields: { attackBonus: 1, damageBonus: 1 } },
+    { id: 'weapon_plus2', name: 'Arme +2', type: 'weapon', rarity: 'rare', attunement: true, description: 'Arme magique avec un bonus de +2 aux jets d\'attaque et de dégâts.', weight: 0, bonusFields: { attackBonus: 2, damageBonus: 2 } },
+    { id: 'weapon_plus3', name: 'Arme +3', type: 'weapon', rarity: 'very-rare', attunement: true, description: 'Arme magique avec un bonus de +3 aux jets d\'attaque et de dégâts.', weight: 0, bonusFields: { attackBonus: 3, damageBonus: 3 } },
+
+    // === ARMURES +1/+2/+3 ===
+    { id: 'armor_plus1', name: 'Armure +1', type: 'armor', rarity: 'rare', attunement: false, description: 'Armure magique conférant un bonus de +1 à la CA.', weight: 0, bonusFields: { acBonus: 1 } },
+    { id: 'armor_plus2', name: 'Armure +2', type: 'armor', rarity: 'very-rare', attunement: true, description: 'Armure magique conférant un bonus de +2 à la CA.', weight: 0, bonusFields: { acBonus: 2 } },
+    { id: 'armor_plus3', name: 'Armure +3', type: 'armor', rarity: 'legendary', attunement: true, description: 'Armure magique conférant un bonus de +3 à la CA.', weight: 0, bonusFields: { acBonus: 3 } },
+
+    // === BOUCLIER +1/+2/+3 ===
+    { id: 'shield_plus1', name: 'Bouclier +1', type: 'armor', rarity: 'uncommon', attunement: true, description: 'Bouclier magique conférant un bonus de +1 à la CA.', weight: 6, bonusFields: { armorClass: 2, armorCategory: 'shield', acBonus: 1, addDex: false } },
+    { id: 'shield_plus2', name: 'Bouclier +2', type: 'armor', rarity: 'rare', attunement: true, description: 'Bouclier magique conférant un bonus de +2 à la CA.', weight: 6, bonusFields: { armorClass: 2, armorCategory: 'shield', acBonus: 2, addDex: false } },
+    { id: 'shield_plus3', name: 'Bouclier +3', type: 'armor', rarity: 'very-rare', attunement: true, description: 'Bouclier magique conférant un bonus de +3 à la CA.', weight: 6, bonusFields: { armorClass: 2, armorCategory: 'shield', acBonus: 3, addDex: false } },
+
+    // === OBJETS AUGMENTANT LES CARACTÉRISTIQUES ===
+    { id: 'belt_hill_giant_strength', name: 'Ceinture de Force des Géants des collines', type: 'wondrous', rarity: 'rare', attunement: true, description: 'Votre score de Force devient 21.', weight: 1, bonusFields: { abilitySetTo: { str: 21 } } },
+    { id: 'belt_stone_giant_strength', name: 'Ceinture de Force des Géants de pierre', type: 'wondrous', rarity: 'rare', attunement: true, description: 'Votre score de Force devient 23.', weight: 1, bonusFields: { abilitySetTo: { str: 23 } } },
+    { id: 'belt_frost_giant_strength', name: 'Ceinture de Force des Géants du gel', type: 'wondrous', rarity: 'very-rare', attunement: true, description: 'Votre score de Force devient 25.', weight: 1, bonusFields: { abilitySetTo: { str: 25 } } },
+    { id: 'belt_fire_giant_strength', name: 'Ceinture de Force des Géants du feu', type: 'wondrous', rarity: 'very-rare', attunement: true, description: 'Votre score de Force devient 27.', weight: 1, bonusFields: { abilitySetTo: { str: 27 } } },
+    { id: 'belt_cloud_giant_strength', name: 'Ceinture de Force des Géants des nuages', type: 'wondrous', rarity: 'legendary', attunement: true, description: 'Votre score de Force devient 29.', weight: 1, bonusFields: { abilitySetTo: { str: 29 } } },
+    { id: 'belt_storm_giant_strength', name: 'Ceinture de Force des Géants des tempêtes', type: 'wondrous', rarity: 'legendary', attunement: true, description: 'Votre score de Force devient 31.', weight: 1, bonusFields: { abilitySetTo: { str: 31 } } },
+    { id: 'gauntlets_ogre_power', name: 'Gantelets de Puissance d\'Ogre', type: 'wondrous', rarity: 'uncommon', attunement: true, description: 'Votre score de Force devient 19 s\'il est inférieur.', weight: 2, bonusFields: { abilitySetTo: { str: 19 } } },
+    { id: 'headband_intellect', name: 'Bandeau d\'Intellect', type: 'wondrous', rarity: 'uncommon', attunement: true, description: 'Votre score d\'Intelligence devient 19 s\'il est inférieur.', weight: 0, bonusFields: { abilitySetTo: { int: 19 } } },
+    { id: 'amulet_health', name: 'Amulette de Santé', type: 'wondrous', rarity: 'uncommon', attunement: true, description: 'Votre score de Constitution devient 19 s\'il est inférieur.', weight: 0, bonusFields: { abilitySetTo: { con: 19 } } },
+    { id: 'cloak_charisma', name: 'Cape de Charisme', type: 'wondrous', rarity: 'uncommon', attunement: true, description: 'Votre score de Charisme devient 19 s\'il est inférieur.', weight: 1, bonusFields: { abilitySetTo: { cha: 19 } } },
+    { id: 'slippers_spider_climbing', name: 'Pantoufles d\'Escalade', type: 'wondrous', rarity: 'uncommon', attunement: true, description: 'Vous pouvez marcher sur les surfaces verticales et les plafonds.', weight: 0.5, bonusFields: {} },
+
+    // === OBJETS DE PROTECTION ===
+    { id: 'ring_protection', name: 'Anneau de Protection', type: 'wondrous', rarity: 'rare', attunement: true, description: 'Bonus de +1 à la CA et aux jets de sauvegarde.', weight: 0, bonusFields: { acBonus: 1, saveBonus: 1 } },
+    { id: 'cloak_protection', name: 'Cape de Protection', type: 'wondrous', rarity: 'rare', attunement: true, description: 'Bonus de +1 à la CA et aux jets de sauvegarde.', weight: 1, bonusFields: { acBonus: 1, saveBonus: 1 } },
+    { id: 'ring_protection_plus2', name: 'Anneau de Protection +2', type: 'wondrous', rarity: 'very-rare', attunement: true, description: 'Bonus de +2 à la CA et aux jets de sauvegarde.', weight: 0, bonusFields: { acBonus: 2, saveBonus: 2 } },
+
+    // === OBJETS DE VITESSE ===
+    { id: 'boots_elvenkind', name: 'Bottes Elfiques', type: 'wondrous', rarity: 'uncommon', attunement: true, description: 'Vitesse +3m, avantage aux tests de Stealth.', weight: 1, bonusFields: { speedBonus: 3 } },
+    { id: 'boots_speed', name: 'Bottes de Vitesse', type: 'wondrous', rarity: 'rare', attunement: true, description: 'Vitesse +3m, action bonus pour Dash.', weight: 1, bonusFields: { speedBonus: 3 } },
+    { id: 'boots_flying', name: 'Bottes Volantes', type: 'wondrous', rarity: 'very-rare', attunement: true, description: 'Vous pouvez voler à votre vitesse de marche.', weight: 1, bonusFields: { speedBonus: 0 } },
+    { id: 'boots_striding_springing', name: 'Bottes d\'Enjambée et de Bondissement', type: 'wondrous', rarity: 'uncommon', attunement: true, description: 'Vitesse +3m, bonds de 6m.', weight: 1, bonusFields: { speedBonus: 3 } },
+
+    // === OBJETS DE SORTS ===
+    { id: 'wand_war_mage', name: 'Baguette du Maître de Guerre', type: 'wondrous', rarity: 'rare', attunement: true, description: 'Bonus de +1 aux jets d\'attaque de sort et au DD de sauvegarde des sorts.', weight: 0, bonusFields: { spellAttackBonus: 1, spellSaveDCBonus: 1 } },
+    { id: 'wand_warmage_plus2', name: 'Baguette du Maître de Guerre +2', type: 'wondrous', rarity: 'very-rare', attunement: true, description: 'Bonus de +2 aux jets d\'attaque de sort et au DD de sauvegarde des sorts.', weight: 0, bonusFields: { spellAttackBonus: 2, spellSaveDCBonus: 2 } },
+    { id: 'rod_pact_keeper', name: 'Bâton du Pacte', type: 'wondrous', rarity: 'uncommon', attunement: true, description: 'Occultiste : bonus de +1 aux jets d\'attaque de sort et au DD de sauvegarde.', weight: 0, bonusFields: { spellAttackBonus: 1, spellSaveDCBonus: 1 } },
+    { id: 'staff_power', name: 'Bâton de Puissance', type: 'wondrous', rarity: 'very-rare', attunement: true, description: 'Bonus de +2 aux jets d\'attaque de sort. 20 charges.', weight: 4, bonusFields: { spellAttackBonus: 2, charges: 20, maxCharges: 20, chargesRecovery: 'long' } },
+    { id: 'pearl_power', name: 'Perle de Puissance', type: 'wondrous', rarity: 'uncommon', attunement: false, description: 'Récupération arcanique : regagnez 1 emplacement de sort de niveau 3.', weight: 0, bonusFields: { charges: 1, maxCharges: 1, chargesRecovery: 'dawn' } },
+
+    // === ARMES MAGIQUES SPÉCIFIQUES ===
+    { id: 'flame_tongue', name: 'Lame Flamboyante', type: 'weapon', rarity: 'rare', attunement: true, description: 'Action bonus pour activer : +2d6 dégâts de feu supplémentaires.', weight: 0, bonusFields: { damageExtra: '2d6 feu' } },
+    { id: 'frost_brand', name: 'Marque de Givre', type: 'weapon', rarity: 'rare', attunement: true, description: 'Action bonus pour activer : +1d6 dégâts de froid. Résistance au feu.', weight: 0, bonusFields: { damageExtra: '1d6 froid' } },
+    { id: 'sword_sharpness', name: 'Épée d\'Acuité', type: 'weapon', rarity: 'very-rare', attunement: true, description: 'Arme +3. Critique sur 19-20. Si réduit à 0 PV, tranchage.', weight: 0, bonusFields: { attackBonus: 3, damageBonus: 3 } },
+    { id: 'dagger_venom', name: 'Dague d\'Empoisonnement', type: 'weapon', rarity: 'rare', attunement: true, description: 'Dague +1. Cible doit réussir un JS CON 13 ou subir 2d10 dégâts de poison.', weight: 1, bonusFields: { attackBonus: 1, damageBonus: 1, damage: '1d4', damageType: 'piercing', properties: ['Finesse', 'Légère', 'Lancer'] } },
+    { id: 'sun_blade', name: 'Lame Solaire', type: 'weapon', rarity: 'rare', attunement: true, description: 'Épée +2, dégâts radiants contre morts-vivants. Lumière 12m.', weight: 3, bonusFields: { attackBonus: 2, damageBonus: 2, damage: '1d8', damageType: 'radiant', properties: ['Finesse'] } },
+    { id: 'holy_avenger', name: 'Vengeur Sacré', type: 'weapon', rarity: 'legendary', attunement: true, description: 'Arme +3. Aura 3m : alliés ont avantage aux JDS contre sorts.', weight: 0, bonusFields: { attackBonus: 3, damageBonus: 3 } },
+
+    // === ARMURES MAGIQUES SPÉCIFIQUES ===
+    { id: 'mithral_armor', name: 'Armure de Mithral', type: 'armor', rarity: 'uncommon', attunement: false, description: 'Pas de désavantage de furtivité, pas de bruit.', weight: 0, bonusFields: { stealthDisadvantage: false, acBonus: 0 } },
+    { id: 'elven_chain', name: 'Cotte Elfique', type: 'armor', rarity: 'rare', attunement: false, description: 'Cotte de mailles légère. CA 14 + DEX (max 2). Pas de désavantage de furtivité.', weight: 20, bonusFields: { armorClass: 14, armorCategory: 'medium', addDex: true, maxDex: 2, stealthDisadvantage: false } },
+    { id: 'cloak_displacement', name: 'Cape de Déplacement', type: 'wondrous', rarity: 'rare', attunement: true, description: 'Les attaques contre vous ont désavantage. Disparaît après avoir été touchée.', weight: 1, bonusFields: {} },
+    { id: 'bracers_archery', name: 'Brassards d\'Archerie', type: 'wondrous', rarity: 'uncommon', attunement: true, description: 'Bonus de +2 aux jets de dégâts avec les arcs.', weight: 1, bonusFields: {} },
+]

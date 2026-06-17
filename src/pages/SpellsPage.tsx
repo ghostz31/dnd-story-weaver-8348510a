@@ -13,8 +13,11 @@ import {
 } from '@heroicons/react/24/solid'
 import { CheckCircleIcon as CheckCircleOutline, PlusCircleIcon as PlusCircleOutline } from '@heroicons/react/24/outline'
 import { useCharacter } from '../contexts/CharacterContext'
+import { Breadcrumb } from '../components/Breadcrumb'
 import type { Spell } from '../types/spell'
+import { cn } from '../lib/utils'
 import { spellSchoolColors } from '../types/spell'
+import { SpellsTable } from '../components/spells/SpellsTable'
 import { loadAllSpells, classIdToSpellClassName } from '../data/spells'
 import { getAlwaysPreparedSpells, getSubclassSpellLabel, isAlwaysPreparedSpell } from '../data/subclassSpells'
 import {
@@ -35,7 +38,7 @@ export function SpellsPage() {
         character,
         getModifier,
         proficiencyBonus,
-        useSpellSlot,
+        consumeSpellSlot,
         restoreSpellSlot,
         resetAllSpellSlots,
         getSpellSlotsForLevel,
@@ -170,6 +173,13 @@ export function SpellsPage() {
         return groupSpellsByLevel(filteredSpells)
     }, [filteredSpells])
 
+    // Liste plate pour la vue tableau desktop
+    const flatSpells = useMemo(() => {
+        const spells: Spell[] = []
+        spellsByLevel.forEach((levelSpells) => spells.push(...levelSpells))
+        return spells
+    }, [spellsByLevel])
+
     // Sorts préparés
     const preparedSpells = character?.preparedSpells || []
 
@@ -232,20 +242,6 @@ export function SpellsPage() {
         )
     }
 
-    // Label d'explication selon le type de classe
-    const getSpellTypeExplanation = () => {
-        switch (spellcastingType) {
-            case 'spellbook':
-                return `Grimoire : ${knownLeveledSpells.length}/${maxKnownLeveled} sorts inscrits · Préparés : ${currentPreparedCount}/${maxPrepared}`
-            case 'known':
-                return `Sorts connus : ${knownLeveledSpells.length}/${maxKnownLeveled}`
-            case 'prepared':
-                return `Sorts préparés : ${currentPreparedCount}/${maxPrepared}`
-            default:
-                return ''
-        }
-    }
-
     return (
         <div className="flex flex-col gap-4 animate-fade-in pb-8">
             {/* Header */}
@@ -254,6 +250,7 @@ export function SpellsPage() {
                     <ChevronLeftIcon className="w-6 h-6" style={{ color: 'hsl(var(--muted-foreground))' }} />
                 </Link>
                 <div className="flex-1">
+                    <Breadcrumb items={[{ label: character.name, to: `/character/${character.id}` }, { label: 'Grimoire' }]} />
                     <h1 className="font-cinzel text-2xl font-bold flex items-center gap-2">
                         <SparklesIcon className="w-6 h-6" style={{ color: 'hsl(var(--primary))' }} />
                         Grimoire
@@ -342,16 +339,16 @@ export function SpellsPage() {
                                                 return (
                                                     <button
                                                         key={i}
-                                                        onClick={() => isUsed ? restoreSpellSlot(level) : useSpellSlot(level)}
-                                                        className="w-8 h-8 rounded-lg border-2 transition-all hover:scale-110"
-                                                        title={isUsed ? 'Restaurer' : 'Utiliser'}
+                                                        onClick={() => isUsed ? restoreSpellSlot(level) : consumeSpellSlot(level)}
+                                                        className="w-7 h-7 rounded-full border-2 transition-all hover:scale-125 active:scale-95"
+                                                        title={isUsed ? 'Restaurer l\'emplacement' : 'Utiliser un emplacement'}
                                                         style={{
                                                             borderColor: isUsed ? 'hsl(var(--border))' : 'hsl(var(--primary))',
                                                             background: isUsed
                                                                 ? 'transparent'
-                                                                : 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)))',
-                                                            boxShadow: isUsed ? 'none' : '0 0 10px hsl(var(--primary-glow) / 0.5)',
-                                                            opacity: isUsed ? 0.4 : 1,
+                                                                : 'radial-gradient(circle at 30% 30%, hsl(var(--primary)), hsl(var(--primary-glow)))',
+                                                            boxShadow: isUsed ? 'inset 0 0 4px hsl(var(--border))' : '0 0 8px hsl(var(--primary-glow) / 0.4)',
+                                                            opacity: isUsed ? 0.25 : 1,
                                                         }}
                                                     />
                                                 )
@@ -378,6 +375,49 @@ export function SpellsPage() {
                 <div className="card h-32 animate-pulse bg-muted/20" />
             ) : (
                 <>
+                    {/* Table view — desktop large uniquement */}
+                    <div className="hidden xl:block">
+                        <SpellsTable
+                            spells={flatSpells}
+                            expandedSpell={expandedSpell}
+                            onToggleExpand={(name) => setExpandedSpell(name)}
+                            renderActions={(spell) => {
+                                const isKnown = knownSpellNames.includes(spell.name)
+                                const isPrepared = preparedSpells.includes(spell.name)
+                                const isAlwaysPrepared = isAlwaysPreparedSpell(spell.name, character?.subclass, character?.level || 0)
+
+                                if (!showOnlyKnown && !isKnown) {
+                                    return (
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); toggleKnownSpell(spell.name) }}
+                                            className="btn btn-xs btn-primary"
+                                            disabled={spell.level > 0 && !canLearnMoreSpells}
+                                        >
+                                            {spell.level === 0 ? 'Apprendre' : 'Apprendre'}
+                                        </button>
+                                    )
+                                }
+                                if (showOnlyKnown && spell.level > 0 && !isAlwaysPrepared && spellcastingType !== 'known') {
+                                    return (
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); toggleSpellPreparation(spell.name) }}
+                                            className={cn(
+                                                'btn btn-xs',
+                                                isPrepared ? 'btn-primary' : 'btn-ghost'
+                                            )}
+                                            disabled={!isPrepared && !canPrepareMore}
+                                        >
+                                            {isPrepared ? 'Préparé' : 'Préparer'}
+                                        </button>
+                                    )
+                                }
+                                return null
+                            }}
+                        />
+                    </div>
+
+                    {/* Card view — mobile / tablette */}
+                    <div className="xl:hidden">
                     {/* Mode info banner */}
                     {!showOnlyKnown && (
                         <div className="card bg-primary/5 border-primary/20 p-3 text-sm text-center">
@@ -589,6 +629,7 @@ export function SpellsPage() {
                             </p>
                         </div>
                     )}
+                    </div>
                 </>
             )}
         </div>

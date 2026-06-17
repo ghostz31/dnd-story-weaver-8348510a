@@ -1,0 +1,897 @@
+{
+  "version": "2.0.0",
+  "source": "PHB",
+  "count": 60,
+  "weapons": [
+    {
+      "id": "ID_WEAPON_DAGGER",
+      "name": "Dague",
+      "nameEn": "Dagger",
+      "cost": 200,
+      "weight": 1,
+      "type": "simple-melee",
+      "damage": "1d4",
+      "damageType": "piercing",
+      "properties": [
+        "finesse",
+        "light",
+        "thrown"
+      ],
+      "range": {
+        "normal": 20,
+        "long": 60
+      }
+    },
+    {
+      "id": "ID_WEAPON_HANDAXE",
+      "name": "Hachette",
+      "nameEn": "Handaxe",
+      "cost": 500,
+      "weight": 2,
+      "type": "simple-melee",
+      "damage": "1d6",
+      "damageType": "slashing",
+      "properties": [
+        "light",
+        "thrown"
+      ],
+      "range": {
+        "normal": 20,
+        "long": 60
+      }
+    },
+    {
+      "id": "ID_WEAPON_JAVELIN",
+      "name": "Javeline",
+      "nameEn": "Javelin",
+      "cost": 500,
+      "weight": 2,
+      "type": "simple-melee",
+      "damage": "1d6",
+      "damageType": "piercing",
+      "properties": [
+        "thrown"
+      ],
+      "range": {
+        "normal": 30,
+        "long": 120
+      }
+    },
+    {
+      "id": "ID_WEAPON_LIGHT_HAMMER",
+      "name": "Marteau léger",
+      "nameEn": "Light Hammer",
+      "cost": 200,
+      "weight": 2,
+      "type": "simple-melee",
+      "damage": "1d4",
+      "damageType": "bludgeoning",
+      "properties": [
+        "light",
+        "thrown"
+      ],
+      "range": {
+        "normal": 20,
+        "long": 60
+      }
+    },
+    {
+      "id": "ID_WEAPON_MACE",
+      "name": "Masse",
+      "nameEn": "Mace",
+      "cost": 500,
+      "weight": 4,
+      "type": "simple-melee",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": []
+    },
+    {
+      "id": "ID_WEAPON_QUARTERSTAFF",
+      "name": "Bâton",
+      "nameEn": "Quarterstaff",
+      "cost": 200,
+      "weight": 4,
+      "type": "simple-melee",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d8"
+    },
+    {
+      "id": "ID_WEAPON_SPEAR",
+      "name": "Lance",
+      "nameEn": "Spear",
+      "cost": 100,
+      "weight": 3,
+      "type": "simple-melee",
+      "damage": "1d6",
+      "damageType": "piercing",
+      "properties": [
+        "thrown",
+        "versatile"
+      ],
+      "range": {
+        "normal": 20,
+        "long": 60
+      },
+      "versatileDamage": "1d8"
+    },
+    {
+      "id": "ID_WEAPON_GREATCLUB",
+      "name": "Gourdin",
+      "nameEn": "Greatclub",
+      "cost": 200,
+      "weight": 10,
+      "type": "simple-melee",
+      "damage": "1d8",
+      "damageType": "bludgeoning",
+      "properties": [
+        "two-handed"
+      ]
+    },
+    {
+      "id": "ID_WEAPON_CLUB",
+      "name": "Massue",
+      "nameEn": "Club",
+      "cost": 10,
+      "weight": 2,
+      "type": "simple-melee",
+      "damage": "1d4",
+      "damageType": "bludgeoning",
+      "properties": [
+        "light"
+      ]
+    },
+    {
+      "id": "ID_WEAPON_SICKLE",
+      "name": "Serpe",
+      "nameEn": "Sickle",
+      "cost": 100,
+      "weight": 2,
+      "type": "simple-melee",
+      "damage": "1d4",
+      "damageType": "slashing",
+      "properties": [
+        "light"
+      ]
+    },
+    {
+      "id": "ID_WEAPON_SHORTSWORD",
+      "name": "Épée courte",
+      "nameEn": "Shortsword",
+      "cost": 1000,
+      "weight": 2,
+      "type": "simple-melee",
+      "damage": "1d6",
+      "damageType": "piercing",
+      "properties": [
+        "finesse",
+        "light"
+      ]
+    },
+    {
+      "id": "ID_WEAPON_LONGSWORD",
+      "name": "Épée longue",
+      "nameEn": "Longsword",
+      "cost": 1500,
+      "weight": 3,
+      "type": "martial-melee",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d10"
+    },
+    {
+      "id": "ID_WEAPON_BATTLEAXE",
+      "name": "Hache d'armes",
+      "nameEn": "Battleaxe",
+      "cost": 1000,
+      "weight": 4,
+      "type": "martial-melee",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d10"
+    },
+    {
+      "id": "ID_WEAPON_WARHAMMER",
+      "name": "Marteau de guerre",
+      "nameEn": "Warhammer",
+      "cost": 1500,
+      "weight": 2,
+      "type": "martial-melee",
+      "damage": "1d8",
+      "damageType": "bludgeoning",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d10"
+    },
+    {
+      "id": "ID_WEAPON_RAPIER",
+      "name": "Rapière",
+      "nameEn": "Rapier",
+      "cost": 2500,
+      "weight": 2,
+      "type": "martial-melee",
+      "damage": "1d8",
+      "damageType": "piercing",
+      "properties": [
+        "finesse"
+      ]
+    },
+    {
+      "id": "ID_WEAPON_SCIMITAR",
+      "name": "Cimeterre",
+      "nameEn": "Scimitar",
+      "cost": 2500,
+      "weight": 3,
+      "type": "martial-melee",
+      "damage": "1d6",
+      "damageType": "slashing",
+      "properties": [
+        "finesse",
+        "light"
+      ]
+    },
+    {
+      "id": "ID_WEAPON_GLAIVE",
+      "name": "Coutille",
+      "nameEn": "Glaive",
+      "cost": 2000,
+      "weight": 6,
+      "type": "martial-melee",
+      "damage": "1d10",
+      "damageType": "slashing",
+      "properties": [
+        "heavy",
+        "reach",
+        "two-handed"
+      ]
+    },
+    {
+      "id": "ID_WEAPON_GREATSWORD",
+      "name": "Espadon",
+      "nameEn": "Greatsword",
+      "cost": 5000,
+      "weight": 6,
+      "type": "martial-melee",
+      "damage": "2d6",
+      "damageType": "slashing",
+      "properties": [
+        "heavy",
+        "two-handed"
+      ]
+    },
+    {
+      "id": "ID_WEAPON_GREATAXE",
+      "name": "Hache à deux mains",
+      "nameEn": "Greataxe",
+      "cost": 3000,
+      "weight": 7,
+      "type": "martial-melee",
+      "damage": "1d12",
+      "damageType": "slashing",
+      "properties": [
+        "heavy",
+        "two-handed"
+      ]
+    },
+    {
+      "id": "ID_WEAPON_HALBERD",
+      "name": "Hallebarde",
+      "nameEn": "Halberd",
+      "cost": 2000,
+      "weight": 6,
+      "type": "martial-melee",
+      "damage": "1d10",
+      "damageType": "slashing",
+      "properties": [
+        "heavy",
+        "reach",
+        "two-handed"
+      ]
+    },
+    {
+      "id": "ID_WEAPON_LANCE",
+      "name": "Lance de cavalerie",
+      "nameEn": "Lance",
+      "cost": 1000,
+      "weight": 6,
+      "type": "martial-melee",
+      "damage": "1d12",
+      "damageType": "piercing",
+      "properties": [
+        "reach",
+        "special"
+      ]
+    },
+    {
+      "id": "ID_WEAPON_MAUL",
+      "name": "Masse d'armes",
+      "nameEn": "Maul",
+      "cost": 1000,
+      "weight": 10,
+      "type": "martial-melee",
+      "damage": "2d6",
+      "damageType": "bludgeoning",
+      "properties": [
+        "heavy",
+        "two-handed"
+      ]
+    },
+    {
+      "id": "ID_WEAPON_PIKE",
+      "name": "Pique",
+      "nameEn": "Pike",
+      "cost": 500,
+      "weight": 18,
+      "type": "martial-melee",
+      "damage": "1d10",
+      "damageType": "piercing",
+      "properties": [
+        "heavy",
+        "reach",
+        "two-handed"
+      ]
+    },
+    {
+      "id": "ID_WEAPON_SHORTBOW",
+      "name": "Arc court",
+      "nameEn": "Shortbow",
+      "cost": 2500,
+      "weight": 2,
+      "type": "simple-ranged",
+      "damage": "1d6",
+      "damageType": "piercing",
+      "properties": [
+        "ammunition",
+        "two-handed"
+      ],
+      "range": {
+        "normal": 80,
+        "long": 320
+      }
+    },
+    {
+      "id": "ID_WEAPON_LONGBOW",
+      "name": "Arc long",
+      "nameEn": "Longbow",
+      "cost": 5000,
+      "weight": 2,
+      "type": "martial-ranged",
+      "damage": "1d8",
+      "damageType": "piercing",
+      "properties": [
+        "ammunition",
+        "heavy",
+        "two-handed"
+      ],
+      "range": {
+        "normal": 150,
+        "long": 600
+      }
+    },
+    {
+      "id": "ID_WEAPON_LIGHT_CROSSBOW",
+      "name": "Arbalète légère",
+      "nameEn": "Light Crossbow",
+      "cost": 2500,
+      "weight": 5,
+      "type": "simple-ranged",
+      "damage": "1d8",
+      "damageType": "piercing",
+      "properties": [
+        "ammunition",
+        "loading",
+        "two-handed"
+      ],
+      "range": {
+        "normal": 80,
+        "long": 320
+      }
+    },
+    {
+      "id": "ID_WEAPON_HEAVY_CROSSBOW",
+      "name": "Arbalète lourde",
+      "nameEn": "Heavy Crossbow",
+      "cost": 5000,
+      "weight": 18,
+      "type": "martial-ranged",
+      "damage": "1d10",
+      "damageType": "piercing",
+      "properties": [
+        "ammunition",
+        "heavy",
+        "loading",
+        "two-handed"
+      ],
+      "range": {
+        "normal": 100,
+        "long": 400
+      }
+    },
+    {
+      "id": "ID_WEAPON_HAND_CROSSBOW",
+      "name": "Arbalète de poing",
+      "nameEn": "Hand Crossbow",
+      "cost": 7500,
+      "weight": 3,
+      "type": "martial-ranged",
+      "damage": "1d6",
+      "damageType": "piercing",
+      "properties": [
+        "ammunition",
+        "light",
+        "loading"
+      ],
+      "range": {
+        "normal": 30,
+        "long": 120
+      }
+    },
+    {
+      "id": "ID_WEAPON_BLOWGUN",
+      "name": "Sarbacane",
+      "nameEn": "Blowgun",
+      "cost": 1000,
+      "weight": 1,
+      "type": "martial-ranged",
+      "damage": "1",
+      "damageType": "piercing",
+      "properties": [
+        "ammunition",
+        "loading"
+      ],
+      "range": {
+        "normal": 25,
+        "long": 100
+      }
+    },
+    {
+      "id": "ID_WEAPON_NET",
+      "name": "Filet",
+      "nameEn": "Net",
+      "cost": 100,
+      "weight": 3,
+      "type": "martial-ranged",
+      "damage": "0",
+      "damageType": "bludgeoning",
+      "properties": [
+        "special",
+        "thrown"
+      ],
+      "range": {
+        "normal": 5,
+        "long": 15
+      }
+    }
+  ],
+  "armor": [
+    {
+      "id": "ID_ARMOR_PADDED",
+      "name": "Gambison",
+      "nameEn": "Padded Armor",
+      "type": "light",
+      "cost": 500,
+      "weight": 8,
+      "ac": 11,
+      "maxDex": null,
+      "stealthDisadvantage": true
+    },
+    {
+      "id": "ID_ARMOR_LEATHER",
+      "name": "Armure de cuir",
+      "nameEn": "Leather Armor",
+      "type": "light",
+      "cost": 1000,
+      "weight": 10,
+      "ac": 11,
+      "maxDex": null,
+      "stealthDisadvantage": false
+    },
+    {
+      "id": "ID_ARMOR_STUDDED_LEATHER",
+      "name": "Armure de cuir clouté",
+      "nameEn": "Studded Leather Armor",
+      "type": "light",
+      "cost": 4500,
+      "weight": 13,
+      "ac": 12,
+      "maxDex": null,
+      "stealthDisadvantage": false
+    },
+    {
+      "id": "ID_ARMOR_HIDE",
+      "name": "Armure de peaux",
+      "nameEn": "Hide Armor",
+      "type": "medium",
+      "cost": 1000,
+      "weight": 12,
+      "ac": 12,
+      "maxDex": 2,
+      "stealthDisadvantage": false
+    },
+    {
+      "id": "ID_ARMOR_CHAIN_SHIRT",
+      "name": "Chemise de mailles",
+      "nameEn": "Chain Shirt",
+      "type": "medium",
+      "cost": 5000,
+      "weight": 20,
+      "ac": 13,
+      "maxDex": 2,
+      "stealthDisadvantage": false
+    },
+    {
+      "id": "ID_ARMOR_SCALE_MAIL",
+      "name": "Armure d'écailles",
+      "nameEn": "Scale Mail",
+      "type": "medium",
+      "cost": 5000,
+      "weight": 45,
+      "ac": 14,
+      "maxDex": 2,
+      "stealthDisadvantage": true
+    },
+    {
+      "id": "ID_ARMOR_BREASTPLATE",
+      "name": "Cuirasse",
+      "nameEn": "Breastplate",
+      "type": "medium",
+      "cost": 40000,
+      "weight": 20,
+      "ac": 14,
+      "maxDex": 2,
+      "stealthDisadvantage": false
+    },
+    {
+      "id": "ID_ARMOR_HALF_PLATE",
+      "name": "Demi-armure",
+      "nameEn": "Half Plate Armor",
+      "type": "medium",
+      "cost": 75000,
+      "weight": 40,
+      "ac": 15,
+      "maxDex": 2,
+      "stealthDisadvantage": true
+    },
+    {
+      "id": "ID_ARMOR_RING_MAIL",
+      "name": "Armure d'anneaux",
+      "nameEn": "Ring Mail",
+      "type": "heavy",
+      "cost": 3000,
+      "weight": 40,
+      "ac": 14,
+      "maxDex": 0,
+      "stealthDisadvantage": true
+    },
+    {
+      "id": "ID_ARMOR_CHAIN_MAIL",
+      "name": "Cotte de mailles",
+      "nameEn": "Chain Mail",
+      "type": "heavy",
+      "cost": 7500,
+      "weight": 55,
+      "ac": 16,
+      "maxDex": 0,
+      "stealthDisadvantage": true,
+      "strengthReq": 13
+    },
+    {
+      "id": "ID_ARMOR_SPLINT",
+      "name": "Armure de clibanion",
+      "nameEn": "Splint Armor",
+      "type": "heavy",
+      "cost": 20000,
+      "weight": 60,
+      "ac": 17,
+      "maxDex": 0,
+      "stealthDisadvantage": true,
+      "strengthReq": 15
+    },
+    {
+      "id": "ID_ARMOR_PLATE",
+      "name": "Armure de plates",
+      "nameEn": "Plate Armor",
+      "type": "heavy",
+      "cost": 150000,
+      "weight": 65,
+      "ac": 18,
+      "maxDex": 0,
+      "stealthDisadvantage": true,
+      "strengthReq": 15
+    },
+    {
+      "id": "ID_ARMOR_SHIELD",
+      "name": "Bouclier",
+      "nameEn": "Shield",
+      "type": "shield",
+      "cost": 1000,
+      "weight": 6,
+      "ac": 2,
+      "maxDex": null,
+      "stealthDisadvantage": false
+    }
+  ],
+  "adventuringGear": [
+    {
+      "id": "ID_EQUIPMENT_BACKPACK",
+      "name": "Sac à dos",
+      "nameEn": "Backpack",
+      "cost": 200,
+      "weight": 5,
+      "description": "1m³ de capacité, 15kg max"
+    },
+    {
+      "id": "ID_EQUIPMENT_BEDROLL",
+      "name": "Sac de couchage",
+      "nameEn": "Bedroll",
+      "cost": 100,
+      "weight": 7
+    },
+    {
+      "id": "ID_EQUIPMENT_ROPE_HEMP",
+      "name": "Corde en chanvre (15m)",
+      "nameEn": "Hempen Rope",
+      "cost": 100,
+      "weight": 10
+    },
+    {
+      "id": "ID_EQUIPMENT_ROPE_SILK",
+      "name": "Corde de soie (15m)",
+      "nameEn": "Silk Rope",
+      "cost": 1000,
+      "weight": 5
+    },
+    {
+      "id": "ID_EQUIPMENT_TORCH",
+      "name": "Torche",
+      "nameEn": "Torch",
+      "cost": 1,
+      "weight": 1,
+      "description": "Lumière vive dans un rayon de 6m, faible dans 12m supplémentaires. Brûle 1 heure."
+    },
+    {
+      "id": "ID_EQUIPMENT_LANTERN_HOODED",
+      "name": "Lanterne à capote",
+      "nameEn": "Hooded Lantern",
+      "cost": 500,
+      "weight": 2,
+      "description": "Lumière vive 9m, faible 18m. 6 heures avec 0.5L d'huile."
+    },
+    {
+      "id": "ID_EQUIPMENT_OIL",
+      "name": "Flasque d'huile (0.5L)",
+      "nameEn": "Oil Flask",
+      "cost": 10,
+      "weight": 1
+    },
+    {
+      "id": "ID_EQUIPMENT_TENT",
+      "name": "Tente pour deux personnes",
+      "nameEn": "Tent",
+      "cost": 200,
+      "weight": 20
+    },
+    {
+      "id": "ID_EQUIPMENT_RATIONS",
+      "name": "Rations (1 jour)",
+      "nameEn": "Rations",
+      "cost": 50,
+      "weight": 2
+    },
+    {
+      "id": "ID_EQUIPMENT_WATERSKIN",
+      "name": "Outre",
+      "nameEn": "Waterskin",
+      "cost": 20,
+      "weight": 5
+    },
+    {
+      "id": "ID_EQUIPMENT_TINDERBOX",
+      "name": "Boîte à amadou",
+      "nameEn": "Tinderbox",
+      "cost": 50,
+      "weight": 1
+    },
+    {
+      "id": "ID_EQUIPMENT_HEALERS_KIT",
+      "name": "Trousse de soins",
+      "nameEn": "Healer's Kit",
+      "cost": 500,
+      "weight": 3,
+      "description": "10 utilisations. Action pour stabiliser une créature à 0 PV."
+    },
+    {
+      "id": "ID_EQUIPMENT_THIEVES_TOOLS",
+      "name": "Outils de cambrioleur",
+      "nameEn": "Thieves' Tools",
+      "cost": 2500,
+      "weight": 1,
+      "description": "Nécessaires pour crocheter les serrures."
+    },
+    {
+      "id": "ID_EQUIPMENT_SPELLBOOK",
+      "name": "Grimoire",
+      "nameEn": "Spellbook",
+      "cost": 5000,
+      "weight": 3,
+      "description": "Contient les sorts du magicien. 100 pages."
+    },
+    {
+      "id": "ID_EQUIPMENT_COMPONENT_POUCH",
+      "name": "Bourse de composantes",
+      "nameEn": "Component Pouch",
+      "cost": 2500,
+      "weight": 2,
+      "description": "Contient les composantes matérielles de sorts."
+    },
+    {
+      "id": "ID_EQUIPMENT_DRUIDIC_FOCUS",
+      "name": "Focus druidique",
+      "nameEn": "Druidic Focus",
+      "cost": 500,
+      "weight": 2,
+      "description": "Bâton en bois d'if, baguette en bois d'yeuse, bâton creux."
+    },
+    {
+      "id": "ID_EQUIPMENT_HOLY_SYMBOL",
+      "name": "Symbole sacré",
+      "nameEn": "Holy Symbol",
+      "cost": 500,
+      "weight": 1,
+      "description": "Emblème, reliquaire ou amulette."
+    }
+  ],
+  "equipmentPacks": [
+    {
+      "id": "ID_EQUIPMENT_DUNGEONEER_PACK",
+      "name": "Sac d'aventurier",
+      "nameEn": "Dungeoneer's Pack",
+      "cost": 1200,
+      "weight": 54,
+      "contents": [
+        "ID_EQUIPMENT_BACKPACK",
+        "ID_EQUIPMENT_TORCH",
+        "ID_EQUIPMENT_TORCH",
+        "ID_EQUIPMENT_TORCH",
+        "ID_EQUIPMENT_TORCH",
+        "ID_EQUIPMENT_TORCH",
+        "ID_EQUIPMENT_TORCH",
+        "ID_EQUIPMENT_TORCH",
+        "ID_EQUIPMENT_TORCH",
+        "ID_EQUIPMENT_TORCH",
+        "ID_EQUIPMENT_TORCH",
+        "ID_EQUIPMENT_TINDERBOX",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_WATERSKIN",
+        "ID_EQUIPMENT_HEALERS_KIT",
+        "ID_EQUIPMENT_ROPE_HEMP"
+      ]
+    },
+    {
+      "id": "ID_EQUIPMENT_EXPLORER_PACK",
+      "name": "Sac d'explorateur",
+      "nameEn": "Explorer's Pack",
+      "cost": 1000,
+      "weight": 49,
+      "contents": [
+        "ID_EQUIPMENT_BACKPACK",
+        "ID_EQUIPMENT_BEDROLL",
+        "ID_EQUIPMENT_TORCH",
+        "ID_EQUIPMENT_TORCH",
+        "ID_EQUIPMENT_TORCH",
+        "ID_EQUIPMENT_TORCH",
+        "ID_EQUIPMENT_TORCH",
+        "ID_EQUIPMENT_TORCH",
+        "ID_EQUIPMENT_TORCH",
+        "ID_EQUIPMENT_TORCH",
+        "ID_EQUIPMENT_TORCH",
+        "ID_EQUIPMENT_TINDERBOX",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_WATERSKIN"
+      ]
+    },
+    {
+      "id": "ID_EQUIPMENT_DIPLOMAT_PACK",
+      "name": "Sac de diplomate",
+      "nameEn": "Diplomat's Pack",
+      "cost": 3900,
+      "weight": 16,
+      "contents": [
+        "ID_EQUIPMENT_BACKPACK",
+        "ID_EQUIPMENT_OIL",
+        "ID_EQUIPMENT_OIL",
+        "ID_EQUIPMENT_LANTERN_HOODED",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_WATERSKIN"
+      ]
+    },
+    {
+      "id": "ID_EQUIPMENT_ENTERTAINER_PACK",
+      "name": "Sac d'artiste",
+      "nameEn": "Entertainer's Pack",
+      "cost": 4000,
+      "weight": 22,
+      "contents": [
+        "ID_EQUIPMENT_BACKPACK",
+        "ID_EQUIPMENT_BEDROLL",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_WATERSKIN"
+      ]
+    },
+    {
+      "id": "ID_EQUIPMENT_PRIEST_PACK",
+      "name": "Sac de prêtre",
+      "nameEn": "Priest's Pack",
+      "cost": 1900,
+      "weight": 15,
+      "contents": [
+        "ID_EQUIPMENT_BACKPACK",
+        "ID_EQUIPMENT_HOLY_SYMBOL",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_RATIONS",
+        "ID_EQUIPMENT_WATERSKIN"
+      ]
+    }
+  ]
+}

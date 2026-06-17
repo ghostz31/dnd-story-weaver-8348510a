@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // === Données utilisateur ===
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      match /characters/{characterId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /{document=**} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // === Personnages partagés (synchro Trame) ===
+    // Lecture publique authentifiée (le MJ lit les stats de combat)
+    // Écriture uniquement par le propriétaire du personnage
+    match /shared_characters/{shareCode} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
+      allow update: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
+    }
+  }
+}

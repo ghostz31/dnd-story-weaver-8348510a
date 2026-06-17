@@ -1,7 +1,8 @@
-import type { CharacterCreation, AbilityScores } from '../types/character'
+import type { Character, CharacterCreation, AbilityScores } from '../types/character'
+import type { StoredCharacter } from '../contexts/CharacterContext'
 import { getFeatById } from '../data/feats'
 
-export function getFinalAbilityScores(character: CharacterCreation): AbilityScores {
+export function getFinalAbilityScores(character: Character | CharacterCreation | StoredCharacter): AbilityScores {
     // 1. Stats de base (assignées ou roll)
     const scores = { ...character.abilityScores }
 
@@ -12,7 +13,13 @@ export function getFinalAbilityScores(character: CharacterCreation): AbilityScor
         scores[key] = (scores[key] || 0) + (bonus || 0)
     })
 
-    // TODO: Gérer bonus libres TCoE (customAbilityBonuses)
+    // 2b. Bonus libres TCoE (customAbilityBonuses)
+    if (character.race?.customAbilityBonuses && character.customAbilityBonuses) {
+        Object.entries(character.customAbilityBonuses).forEach(([stat, bonus]) => {
+            const key = stat as keyof AbilityScores
+            scores[key] = (scores[key] || 0) + (bonus || 0)
+        })
+    }
 
     // 3. Bonus de sous-race
     if (character.subrace && character.race?.subraces) {
@@ -36,12 +43,21 @@ export function getFinalAbilityScores(character: CharacterCreation): AbilityScor
                 })
             } else if (choice.type === 'feat' && choice.featId) {
                 // Bonus via Don (Half-Feat)
-                const feat = getFeatById(choice.featId)
-                if (feat && feat.abilityScoreIncrease) {
-                    Object.entries(feat.abilityScoreIncrease).forEach(([stat, bonus]) => {
+                if (choice.stats) {
+                    // Don avec choix utilisateur (ex: Athlète → FOR ou DEX +1)
+                    Object.entries(choice.stats).forEach(([stat, bonus]) => {
                         const key = stat as keyof AbilityScores
                         scores[key] = (scores[key] || 0) + (bonus || 0)
                     })
+                } else {
+                    // Don avec bonus fixe (ex: Acteur → CHA +1)
+                    const feat = getFeatById(choice.featId)
+                    if (feat?.abilityScoreIncrease) {
+                        Object.entries(feat.abilityScoreIncrease).forEach(([stat, bonus]) => {
+                            const key = stat as keyof AbilityScores
+                            scores[key] = (scores[key] || 0) + (bonus || 0)
+                        })
+                    }
                 }
             }
         })

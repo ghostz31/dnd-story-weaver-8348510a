@@ -38,6 +38,7 @@ export interface LevelUpChoices {
     hpGained: number // Total PV gagnés (dé/moyenne + mod CON)
     asiChoice?: ASIChoice
     subclassId?: string // ID de la sous-classe choisie
+    fightingStyleId?: string // ID du style de combat choisi
     newSpellsSelected?: string[] // IDs des nouveaux sorts choisis
     newCantripsSelected?: string[] // IDs des nouveaux cantrips choisis
 }
@@ -46,7 +47,8 @@ export interface LevelUpChoices {
 export type LevelUpStep =
     | 'intro'
     | 'hp'
-    | 'subclass' // Nouvel état
+    | 'fightingStyle'
+    | 'subclass'
     | 'asi'
     | 'spells'
     | 'confirm'
@@ -61,7 +63,8 @@ export interface LevelUpInfo {
     proficiencyBonusCurrent: number
     proficiencyBonusNew: number
     hasASI: boolean
-    hasSubclassChoice: boolean // Nouveau drapeau
+    hasSubclassChoice: boolean
+    needsFightingStyleChoice: boolean
     // Pour les casters
     newCantripsCount: number  // Nombre de nouveaux cantrips à choisir
     newSpellsCount: number    // Nombre de nouveaux sorts à choisir

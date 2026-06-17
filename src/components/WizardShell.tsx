@@ -9,6 +9,7 @@ interface WizardShellProps {
     hideNext?: boolean
     nextLabel?: string
     onNext?: () => void
+    loading?: boolean
 }
 
 const stepLabels: Record<string, string> = {
@@ -34,8 +35,9 @@ export function WizardShell({
     hideNext,
     nextLabel = 'Suivant',
     onNext,
+    loading = false,
 }: WizardShellProps) {
-    const { currentStep, canProceed, nextStep, prevStep } = useWizard()
+    const { currentStep, canProceed, stepErrors, nextStep, prevStep } = useWizard()
     const currentIndex = steps.indexOf(currentStep)
     const progress = ((currentIndex + 1) / steps.length) * 100
 
@@ -80,6 +82,23 @@ export function WizardShell({
                 {children}
             </div>
 
+            {/* Validation errors */}
+            {stepErrors.length > 0 && (
+                <div className="sticky bottom-0 pt-2 pb-2 px-4 bg-gradient-to-t from-background to-transparent">
+                    <div className="space-y-1.5">
+                        {stepErrors.map((err, i) => (
+                            <div
+                                key={i}
+                                className="flex items-start gap-2 p-2.5 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-xs"
+                            >
+                                <span className="text-sm mt-px">✕</span>
+                                <span>{err}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Navigation */}
             <div
                 className="sticky bottom-0 pt-4 pb-safe bg-gradient-to-t from-background to-transparent px-4"
@@ -97,12 +116,18 @@ export function WizardShell({
                     {!hideNext && (
                         <button
                             onClick={handleNext}
-                            disabled={!canProceed}
-                            className="btn btn-primary flex-1"
-                            style={{ opacity: canProceed ? 1 : 0.5 }}
+                            disabled={!canProceed || loading}
+                            className="btn btn-primary flex-1 flex items-center justify-center gap-2"
+                            style={{ opacity: canProceed && !loading ? 1 : 0.5 }}
                         >
+                            {loading && (
+                                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                </svg>
+                            )}
                             {nextLabel}
-                            {nextLabel === 'Suivant' && <ChevronRightIcon className="w-5 h-5" />}
+                            {nextLabel === 'Suivant' && !loading && <ChevronRightIcon className="w-5 h-5" />}
                         </button>
                     )}
                 </div>

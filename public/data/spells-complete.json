@@ -19,23 +19,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Affaiblissement",
-    "level": 5,
-    "school": "nécromancie",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "18 mètres",
-    "components": "V, S",
-    "duration": "concentration, jusqu'à 1 minute",
-    "classes": [
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Un tentacule de ténèbres crépitantes s'étend vers une créature que vous pouvez voir à portée. La cible doit faire un JS de DEX. En cas d'échec, la cible subit 4d8 dégâts nécrotiques et à chacun de vos tours vous pouvez utiliser votre action pour infliger automatiquement 4d8 dégâts nécrotiques à la cible. Le sort se termine si la cible sort de portée ou bénéficie d'un abri total. En cas de réussite, la cible subit la moitié des dégâts et le sort se termine.<br>Aux niveaux supérieurs : dégâts initiaux +1d8 par niveau.",
-    "source": "XGtE"
-  },
-  {
     "name": "Agrandissement/Rapetissement",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=agrandissement-rapetissement",
     "level": 2,
@@ -177,23 +160,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Ancrage au sol",
-    "level": 2,
-    "school": "transmutation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "90 mètres",
-    "components": "V",
-    "duration": "concentration, jusqu'à 1 minute",
-    "classes": [
-      "Druide",
-      "Ensorceleur",
-      "Magicien"
-    ],
-    "description": "Choisissez une créature que vous pouvez voir à portée. Des bandes jaunes d'énergie magique s'enroulent autour de la créature. La cible doit faire un JS de FOR au début de chacun de ses tours. En cas d'échec, sa vitesse de vol est réduite à 0 jusqu'au début de son prochain tour si elle en possède une. Une créature ancrée au sol qui est en l'air descend de 18 m par tour jusqu'à atteindre le sol ou que le sort se termine.",
-    "source": "XGtE"
-  },
-  {
     "name": "Animation d'objets",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=animation-d-objets",
     "level": 5,
@@ -262,23 +228,6 @@
     ],
     "description": "Vous tentez de supprimer les émotions fortes dans un groupe de personnes. Chaque humanoïde dans une sphère de 6 mètres de rayon centrée sur un point choisi dans la portée du sort doit effectuer un jet de sauvegarde de Charisme. Une créature peut choisir de rater volontairement son jet de sauvegarde. En cas d'échec au jet de sauvegarde, choisissez l'un des deux effets suivants.<br>Vous pouvez supprimer tous les effets qui font qu'une cible est charmée ou effrayée. Lorsque ce sort prend fin, les effets supprimés reviennent, en présumant que leur durée n'a pas expiré entre temps.<br>Ou vous pouvez rendre une cible indifférente à des créatures envers qui elle montre des signes d'hostilité. Cette indifférence prend fin lorsque la cible est attaquée ou blessée par un sort ou lorsqu'elle est témoin d'une attaque envers un de ses alliés. Lorsque le sort prend fin, la créature redevient hostile, à moins que le MD en décide autrement.<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Apparence surnaturelle de Tasha",
-    "level": 6,
-    "school": "transmutation",
-    "ritual": false,
-    "castingTime": "1 action bonus",
-    "range": "personnelle",
-    "components": "V, S, M (un objet gravé de symboles des plans extérieurs d'une valeur de 500 po)",
-    "duration": "concentration, jusqu'à 1 minute",
-    "classes": [
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Choisissez Plans Inférieurs ou Plans Supérieurs. Vous gagnez les traits suivants pendant la durée : immunité aux dégâts de feu/poison (inf.) ou radiants/nécrotiques (sup.), vol 12 m, +2d8 dégâts de feu (inf.) ou radiants (sup.) à vos attaques, et les attaques que vous faites ignorent les résistances.",
-    "source": "TCoE"
   },
   {
     "name": "Apparence trompeuse",
@@ -361,22 +310,6 @@
     ],
     "description": "Un nuage d'orage prend la forme d'un cylindre de 3 mètres de hauteur et d'un rayon de 18 mètres centré sur un point visible à portée au-dessus de vous. Le sort échoue si vous ne pouvez voir un point en l'air là où le nuage devrait apparaître (par exemple, si vous vous trouvez dans une pièce trop petite pour accueillir le nuage).<br>Lorsque vous incantez le sort, choisissez un point visible sous le nuage. Un éclair jaillit du nuage jusqu'au point choisi. Chaque créature à 1,50 mètre ou moins de ce point doit effectuer un jet de sauvegarde de Dextérité, subissant 3d10 dégâts de foudre en cas d'échec, ou la moitié de ces dégâts en cas de réussite. À chacun de vos tours, jusqu'à la fin du sort, vous pouvez utiliser votre action pour appeler la foudre de cette manière, en ciblant le même point ou un nouveau.<br>Si vous êtes en extérieur et dans des conditions orageuses lors de l'incantation de ce sort, le sort vous permet de contrôler l'orage plutôt que d'en créer un nouveau. Dans ces conditions, les dégâts du sort augmentent de 1d10.<br><strong><em>Aux niveaux supérieurs</em></strong>. Lorsque vous lancez ce sort en utilisant un emplacement de sort de niveau 4 ou supérieur, les dégâts augmentent de 1d10 pour chaque niveau d'emplacement au-delà du niveau 3.<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Appel infernal",
-    "level": 5,
-    "school": "invocation",
-    "ritual": false,
-    "castingTime": "1 minute",
-    "range": "27 mètres",
-    "components": "V, S, M (un rubis d'une valeur de 999 po)",
-    "duration": "concentration, jusqu'à 1 heure",
-    "classes": [
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous invoquez un diable de FP 6 ou inférieur. Il apparaît dans un espace inoccupé à portée. Le diable est hostile à toutes les créatures qui ne sont pas des diables. Le diable obéit à vos commandes verbales tant que votre concentration est maintenue. Si vous perdez la concentration, le diable ne disparaît pas mais devient hostile.<br>Aux niveaux supérieurs : FP max +1 par niv au-delà du 5e.",
-    "source": "XGtE"
   },
   {
     "name": "Arme élémentaire",
@@ -846,21 +779,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Bosquet druidique",
-    "level": 6,
-    "school": "abjuration",
-    "ritual": false,
-    "castingTime": "10 minutes",
-    "range": "contact",
-    "components": "V, S, M (du gui récolté avec une faucille en or sous la pleine lune)",
-    "duration": "24 heures",
-    "classes": [
-      "Druide"
-    ],
-    "description": "Vous consacrez une zone extérieure de 9 m à 27 m de côté. Vous pouvez y placer les effets suivants : terrain difficile (herbe, lianes), mur d'épines, vent qui repousse le brouillard, sort d'alarme de druide, et passage sans trace dans toute la zone. Vous pouvez les combiner comme vous le souhaitez.",
-    "source": "XGtE"
-  },
-  {
     "name": "Bouche magique",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=bouche-magique",
     "level": 2,
@@ -999,54 +917,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Bourrasque protectrice",
-    "level": 2,
-    "school": "évocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "personnelle",
-    "components": "V",
-    "duration": "concentration, jusqu'à 1 minute",
-    "classes": [
-      "Barde",
-      "Druide",
-      "Ensorceleur"
-    ],
-    "description": "Un vent fort souffle autour de vous dans un rayon de 3 m. Zone de terrain difficile. La zone rend les jets d'attaque d'arme à distance automatiquement ratés. Le vent disperse les gaz et vapeurs et éteint les flammes non protégées.",
-    "source": "XGtE"
-  },
-  {
-    "name": "Bras de Hadar",
-    "level": 1,
-    "school": "invocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "personnelle (rayon de 3 mètres)",
-    "components": "V, S",
-    "duration": "instantanée",
-    "classes": [
-      "Occultiste"
-    ],
-    "description": "Vous invoquez le pouvoir de Hadar, le Sombre Affamé. Des tentacules de ténèbres noires jaillissent de vous et frappent toutes les créatures dans un rayon de 3 mètres autour de vous. Chaque créature dans la zone doit faire un jet de sauvegarde de Force. En cas d'échec, la cible subit 2d6 dégâts nécrotiques et ne peut utiliser de réaction jusqu'à son prochain tour. En cas de réussite, elle subit la moitié des dégâts.<br>Aux niveaux supérieurs : +1d6 par niveau au-delà du 1er.",
-    "source": "PHB"
-  },
-  {
-    "name": "Breuvage caustique de Tasha",
-    "level": 1,
-    "school": "évocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "personnelle (ligne de 9 mètres)",
-    "components": "V, S, M (un peu de nourriture moisie)",
-    "duration": "concentration, jusqu'à 1 minute",
-    "classes": [
-      "Ensorceleur",
-      "Magicien"
-    ],
-    "description": "Un jet d'acide émane de vous en une ligne de 1,50 m de large et 9 m de long, dans la direction de votre choix. Chaque créature dans la ligne doit réussir un JS de DEX ou être recouverte d'acide pendant la durée du sort. Une créature recouverte subit 2d4 dégâts d'acide au début de chacun de ses tours. Elle peut utiliser son action pour gratter ou laver l'acide sur elle ou sur une autre créature, mettant fin à l'effet.<br>Aux niveaux supérieurs : la longueur augmente de 1,50 m et les dégâts de 2d4 par niveau au-delà du 1er.",
-    "source": "TCoE"
-  },
-  {
     "name": "Brume mortelle",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=brume-mortelle",
     "level": 5,
@@ -1080,22 +950,6 @@
     ],
     "description": "Une prison en forme de cube immobile et invisible, composée de force magique, apparaît autour d'une zone que vous choisissez et à portée. La prison peut être une cage ou une boîte solide, selon votre choix.<br>Une prison prenant la forme d'une cage peut faire jusqu'à 6 mètres de côté et est constituée de barreaux de 1,25 cm de diamètre et espacés de 1,25 cm également.<br>Une prison prenant la forme d'une boîte peut faire jusqu'à 3 mètres de côté, créant une barrière solide qui empêche la matière de passer au travers et bloque les sorts lancés de l'intérieur vers l'extérieur de la zone, et vice versa.<br>Lorsque vous lancez ce sort, toute créature qui se trouve complètement dans la zone de la cage est piégée. Les créatures qui ne sont que partiellement dans la zone, ou celles qui sont trop larges pour tenir dans la prison, sont repoussées depuis le centre de la zone jusqu'à ce qu'elles en soient complètement sorties.<br>Une créature à l'intérieur de la cage ne peut pas la quitter par des moyens non magiques. Si la créature tente d'utiliser la téléportation ou le voyage planaire pour sortir de la cage, elle doit d'abords effectuer un jet de sauvegarde de Charisme. En cas de réussite, la créature peut utiliser cette magie pour sortir de la cage. En cas d'échec, la créature ne peut sortir de la cage et a dépensé cette utilisation de sort ou d'effet. La cage peut également s'étendre dans le plan éthéré pour bloquer les voyages éthérés.<br>Ce sort ne peut pas être dissipé avec le sort <em><a href=\"https://www.aidedd.org/dnd/sorts.php?vf=dissipation-de-la-magie\">dissipation de la magie</a></em>.<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Cage de l'âme",
-    "level": 6,
-    "school": "nécromancie",
-    "ritual": false,
-    "castingTime": "1 réaction",
-    "range": "18 mètres",
-    "components": "V, S, M (un minuscule cage en argent d'une valeur de 100 po)",
-    "duration": "8 heures",
-    "classes": [
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Réaction quand un humanoïde meurt à portée : vous capturez son âme dans la cage d'argent. Pendant la durée, vous pouvez exploiter l'âme (6 utilisations) : poser une question à l'âme, voler sa force vitale (2d8 PV), emprunter ses connaissances (avantage à un jet), ou émettre de la lumière grâce au tourment de l'âme.",
-    "source": "XGtE"
   },
   {
     "name": "Cage des âmes",
@@ -1146,23 +1000,6 @@
     ],
     "description": "Choisissez un objet pesant de 500 g à 2,5 kg à portée et qui n'est ni porté ni transporté. L'objet vole en ligne droite jusqu'à 27 mètres dans une direction que vous choisissez avant de tomber au sol, s'arrêtant plus tôt s'il rencontre une surface solide. Si l'objet va frapper une créature, cette créature doit faire un jet de sauvegarde de Dextérité. En cas d'échec à la sauvegarde, l'objet frappe la cible et arrête sa course. Lorsque l'objet heurte quelque chose, l'objet et ce qu'il frappe subissent chacun 3d8 dégâts contondants.<br><strong><em>Aux niveaux supérieurs</em></strong>. Lorsque vous lancez ce sort en utilisant un emplacement de sort de niveau 2 ou supérieur, le poids maximal de l'objet que vous pouvez cibler avec ce sort augmente de 2,5 kg et les dégâts augmentent de 1d8 pour chaque niveau d'emplacement au-delà du niveau 1.<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Cause de peur",
-    "level": 1,
-    "school": "nécromancie",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "18 mètres",
-    "components": "V",
-    "duration": "concentration, jusqu'à 1 minute",
-    "classes": [
-      "Barde",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous éveillez un sentiment de mortalité chez une créature que vous pouvez voir à portée. Une créature artificielle ou un mort-vivant est immunisé contre cet effet. La cible doit réussir un jet de sauvegarde de Sagesse ou être effrayée par vous jusqu'à la fin du sort. La cible effrayée peut répéter le JS à la fin de chacun de ses tours, mettant fin à l'effet en cas de réussite.<br>Aux niveaux supérieurs : ciblez une créature supplémentaire par niveau au-delà du 1er.",
-    "source": "XGtE"
   },
   {
     "name": "Cécité/Surdité",
@@ -1341,21 +1178,6 @@
     ],
     "description": "Vous et jusqu'à huit créatures consentantes qui vous tenez par les mains en formant un cercle, êtes transportés dans un plan d'existence différent. Vous pouvez spécifier une destination en termes généraux, comme la Cité d'Airain dans le plan élémentaire du feu ou le palace de Dispater au deuxième niveau des Neuf enfers, et vous apparaissez dans, ou à proximité de votre destination. Si vous essayez d'atteindre la Cité d'Airain par exemple, vous pourriez arriver dans la rue du Métal, devant ses Portes de cendres, ou regardant la cité depuis l'autre côté de la Mer de feu, à la discrétion du MD.<br>Sinon, si vous connaissez la séquence des symboles d'un cercle de téléportation sur un autre plan d'existence, ce sort vous transporte jusqu'à ce cercle. Si le cercle de téléportation est trop petit pour contenir toutes les créatures que vous transportez, elles apparaissent dans l'espace inoccupé le plus proche du cercle.<br>Vous pouvez utiliser ce sort pour bannir une créature non consentante dans un autre plan. Choisissez une créature à portée et faites un jet d'attaque au corps à corps avec un sort contre elle. Si vous la touchez, la créature doit effectuer un jet de sauvegarde de Charisme. En cas d'échec, elle est transportée à un endroit aléatoire du plan d'existence que vous avez visé. Une créature transportée de la sorte devra trouver elle-même un moyen de revenir dans votre plan d'existence.<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Chaos bolt",
-    "level": 1,
-    "school": "évocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "36 mètres",
-    "components": "V, S",
-    "duration": "instantanée",
-    "classes": [
-      "Ensorceleur"
-    ],
-    "description": "Vous lancez une masse ondulante et crépitante d'énergie chaotique sur une créature à portée. Faites un jet d'attaque de sort à distance contre la cible. En cas de réussite, la cible subit 2d8 + 1d6 dégâts. Choisissez l'un des d8. Le nombre indique le type de dégâts (1: acide, 2: froid, 3: feu, 4: force, 5: foudre, 6: poison, 7: psychiques, 8: tonnerre). Si les deux d8 donnent le même nombre, l'énergie chaotique bondit vers une autre créature de votre choix à 9 m de la cible. Faites un nouveau jet d'attaque et de dégâts.<br>Aux niveaux supérieurs : +1d6 dégâts par niveau au-delà du 1er.",
-    "source": "XGtE"
   },
   {
     "name": "Charme-monstre",
@@ -2325,24 +2147,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Couronne de folie",
-    "level": 3,
-    "school": "enchantement",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "36 mètres",
-    "components": "V, S",
-    "duration": "concentration, jusqu'à 1 minute",
-    "classes": [
-      "Barde",
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Une créature que vous pouvez voir à portée doit réussir un JS de SAG ou être affligée d'une folie dévorante pendant la durée. Au début de chacun de ses tours, la cible doit utiliser son action avant de se déplacer pour faire une attaque au CàC contre une créature autre que vous et qu'elle peut atteindre naturellement. Si elle ne peut attaquer personne, elle ne fait rien. Aux tours suivants, la cible peut agir normalement si vous maintenez votre concentration. Chaque fois qu'elle subit des dégâts, la cible peut refaire le JS.",
-    "source": "XGtE"
-  },
-  {
     "name": "Couronne du dément",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=couronne-du-dement",
     "level": 2,
@@ -2413,24 +2217,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Création de feu de joie",
-    "level": 0,
-    "school": "invocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "18 mètres",
-    "components": "V, S",
-    "duration": "concentration, jusqu'à 1 minute",
-    "classes": [
-      "Druide",
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous créez un feu de joie sur le sol dans un espace inoccupé de 1,50 mètre de côté que vous pouvez voir à portée. Toute créature dans cet espace doit réussir un jet de sauvegarde de Dextérité ou subir 1d8 dégâts de feu. Une créature doit aussi faire ce jet de sauvegarde lorsqu'elle se déplace dans l'espace du feu de joie pour la première fois lors d'un tour, ou lorsqu'elle y termine son tour.<br>Le feu de joie enflamme les objets inflammables dans sa zone qui ne sont ni portés ni transportés.<br>Les dégâts du sort augmentent de 1d8 lorsque vous atteignez le niveau 5 (2d8), le niveau 11 (3d8) et le niveau 17 (4d8).",
-    "source": "XGtE"
-  },
-  {
     "name": "Création de mort-vivant",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=creation-de-mort-vivant",
     "level": 6,
@@ -2481,24 +2267,6 @@
     ],
     "description": "Soit vous créez, soit vous détruisez de l'eau.<br><strong><em>Création d'eau</em></strong>. Vous créez jusqu'à 40 litres d'eau pure dans un contenant ouvert à portée. Vous pouvez sinon choisir de faire tomber l'eau sous forme de pluie dans un cube de 9 mètres d'arête à portée, éteignant ainsi les flammes non protégées de la zone.<br><strong><em>Destruction d'eau</em></strong>. Vous détruisez jusqu'à 40 litres d'eau présente dans un contenant ouvert à portée. Sinon, vous pouvez choisir de supprimer le brouillard dans un cube de 9 mètres d'arête à portée.<br><strong><em>Aux niveaux supérieurs</em></strong>. Lorsque vous lancez ce sort en utilisant un emplacement de sort de niveau 2 ou supérieur, vous créez ou détruisez 40 litres d'eau supplémentaires, ou augmentez la taille du cube de 1,50 mètre d'arête, pour chaque niveau d'emplacement au-delà du niveau 1.<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Cri psychique",
-    "level": 9,
-    "school": "enchantement",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "27 mètres",
-    "components": "S",
-    "duration": "instantanée",
-    "classes": [
-      "Barde",
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous déchaînez le pouvoir de votre esprit pour frapper les intellects de jusqu'à dix créatures de votre choix que vous pouvez voir à portée. Chaque cible avec une INT de 2 ou moins n'est pas affectée. Chaque cible doit faire un JS d'INT. En cas d'échec, la cible subit 14d6 dégâts psychiques et est étourdie. En cas de réussite, la cible subit la moitié des dégâts. Une cible étourdie peut refaire le JS à la fin de chacun de ses tours.",
-    "source": "XGtE"
   },
   {
     "name": "Croissance d'épines",
@@ -2782,23 +2550,6 @@
     ],
     "description": "Pour la durée du sort, vous pouvez percevoir la présence et localiser les poisons, les créatures venimeuses, et les maladies dans un rayon de 9 mètres autour de vous. Vous identifiez également le type de poison, de créature venimeuse, ou de maladie.<br>Le sort peut outrepasser la plupart des obstacles mais il est bloqué par 30 cm de pierre, 2,50 cm de métal ordinaire, une mince feuille de plomb ou 90 cm de bois ou de terre.<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Diable de poussière",
-    "level": 2,
-    "school": "invocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "18 mètres",
-    "components": "V, S, M (une pincée de poussière)",
-    "duration": "concentration, jusqu'à 1 minute",
-    "classes": [
-      "Druide",
-      "Ensorceleur",
-      "Magicien"
-    ],
-    "description": "Choisissez un espace inoccupé de 1,50 m de côté que vous pouvez voir à portée. Un tourbillon élémentaire de 1,50 m de côté et 3 m de haut apparaît à cet endroit pour la durée. Toute créature qui termine son tour à 1,50 m du tourbillon doit faire un JS de FOR, subissant 1d8 dégâts contondants en cas d'échec, ou la moitié en cas de réussite. À votre tour, vous pouvez déplacer le tourbillon de 9 m. Si le tourbillon passe sur une créature de taille M ou inférieure, celle-ci doit faire le JS.<br>Aux niveaux supérieurs : +1d8 par niveau au-delà du 2e.",
-    "source": "XGtE"
   },
   {
     "name": "Discours captivant",
@@ -3147,23 +2898,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Écriture aérienne",
-    "level": 2,
-    "school": "transmutation",
-    "ritual": true,
-    "castingTime": "1 action",
-    "range": "vue",
-    "components": "V, S",
-    "duration": "concentration, jusqu'à 1 heure",
-    "classes": [
-      "Barde",
-      "Druide",
-      "Magicien"
-    ],
-    "description": "Vous faites apparaître dans le ciel des mots dans un nuage, lisibles à 30 km. Vous pouvez écrire jusqu'à 10 mots. Le message reste visible pour la durée puis se dissipe.",
-    "source": "XGtE"
-  },
-  {
     "name": "Embrasement",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=embrasement",
     "level": 0,
@@ -3426,23 +3160,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Explosion de lame",
-    "level": 0,
-    "school": "invocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "personnelle (rayon de 1,50 mètre)",
-    "components": "V",
-    "duration": "instantanée",
-    "classes": [
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous créez un cercle momentané de lames spectrales qui tournent autour de vous. Toutes les autres créatures à 1,50 mètre de vous doivent réussir un jet de sauvegarde de Dextérité ou subir 1d6 dégâts de force.<br>Les dégâts augmentent de 1d6 au niveau 5 (2d6), 11 (3d6) et 17 (4d6).",
-    "source": "TCoE"
-  },
-  {
     "name": "Fabrication",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=fabrication",
     "level": 4,
@@ -3665,21 +3382,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Fléau d'Hadar",
-    "level": 1,
-    "school": "évocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "personnelle (rayon de 6 mètres)",
-    "components": "V, S",
-    "duration": "instantanée",
-    "classes": [
-      "Occultiste"
-    ],
-    "description": "Une sphère de lumière noire striée de violet jaillit de vous. Chaque créature dans un rayon de 6 mètres centré sur vous doit faire un jet de sauvegarde de Constitution. En cas d'échec, la cible subit 2d10 dégâts nécrotiques et ne peut regagner de points de vie jusqu'au début de votre prochain tour. En cas de réussite, elle subit la moitié des dégâts mais peut regagner des PV.<br>Aux niveaux supérieurs : +1d10 par niveau au-delà du 1er.",
-    "source": "PHB"
-  },
-  {
     "name": "Fléau d'insectes",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=fleau-d-insectes",
     "level": 5,
@@ -3838,23 +3540,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Forme de terre",
-    "level": 0,
-    "school": "transmutation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "9 mètres",
-    "components": "S",
-    "duration": "instantanée ou 1 heure",
-    "classes": [
-      "Druide",
-      "Ensorceleur",
-      "Magicien"
-    ],
-    "description": "Vous choisissez une portion de terre ou de pierre que vous pouvez voir à portée et qui tient dans un cube de 1,50 mètre de côté. Vous la manipulez de l'une des façons suivantes : vous déplacez la terre sur 1,50 mètre dans n'importe quelle direction ; vous faites apparaître des formes, des couleurs ou les deux sur la terre ou la pierre, formant des mots, des images ou des motifs pendant 1 heure ; vous transformez le sol en terrain difficile ou normal pendant 1 heure. Si vous lancez ce sort plusieurs fois, vous pouvez avoir jusqu'à deux de ses effets non instantanés actifs en même temps.",
-    "source": "XGtE"
-  },
-  {
     "name": "Forme éthérée",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=forme-etheree",
     "level": 7,
@@ -3928,21 +3613,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Forteresse imposante",
-    "level": 8,
-    "school": "invocation",
-    "ritual": false,
-    "castingTime": "1 minute",
-    "range": "1,5 kilomètre",
-    "components": "V, S, M (un diamant d'une valeur de 500 po que le sort consomme)",
-    "duration": "instantanée",
-    "classes": [
-      "Magicien"
-    ],
-    "description": "Vous créez une forteresse de pierre sur un terrain dont vous pouvez voir la surface à portée. La zone doit être un carré de 36 m de côté et ne doit contenir aucune créature. La forteresse possède un donjon, des murs, une cour et les aménagements que vous choisissez. Après 7 jours, le sort se termine et la forteresse s'effondre.",
-    "source": "XGtE"
-  },
-  {
     "name": "Forteresse majestueuse",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=forteresse-majestueuse",
     "level": 8,
@@ -3990,23 +3660,6 @@
     ],
     "description": "Vous créez une longue et épaisse liane ressemblant à de la vigne et recouverte d'épines qui, selon vos ordres, s'accroche à une créature à portée. Effectuez une attaque au corps à corps avec un sort contre la cible. Si l'attaque touche, la créature subit 1d6 dégâts perforants, et si la créature est de taille G ou inférieure, vous la tirez de jusqu'à 3 mètres vers vous.<br>Les dégâts de ce sort augmentent de 1d6 lorsque vous atteignez le niveau 5 (2d6), le niveau 11 (3d6) et le niveau 17 (4d6).<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Fouet mental",
-    "level": 0,
-    "school": "enchantement",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "18 mètres",
-    "components": "V",
-    "duration": "1 round",
-    "classes": [
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous tendez vos sens psychiques vers une créature que vous pouvez voir à portée. La cible doit faire un jet de sauvegarde d'Intelligence. En cas d'échec, la cible subit 1d6 dégâts psychiques et elle soustrait 1d4 au premier jet de sauvegarde qu'elle fait avant la fin de son prochain tour.<br>Les dégâts augmentent de 1d6 au niveau 5 (2d6), 11 (3d6) et 17 (4d6).",
-    "source": "TCoE"
   },
   {
     "name": "Fouet mental de Tasha",
@@ -4097,22 +3750,6 @@
     ],
     "description": "Un fort bruit résonnant, douloureusement intense, retentit d'un point de votre choix dans la portée du sort. Chaque créature présente dans une sphère d'un rayon de 3 mètres centrée sur ce point doit effectuer un jet de sauvegarde de Constitution, subissant 3d8 dégâts de tonnerre en cas d'échec, ou la moitié de ces dégâts en cas de réussite. Une créature constituée de matériau inorganique, comme la pierre, le cristal ou le métal, fait son jet de sauvegarde avec un désavantage.<br>Un objet non magique qui n'est pas porté ou transporté subit aussi les dégâts s'il est dans la zone du sort.<br><strong><em>Aux niveaux supérieurs</em></strong>. Lorsque vous lancez ce sort en utilisant un emplacement de sort de niveau 3 ou supérieur, les dégâts du sort augmentent de 1d8 pour chaque niveau d'emplacement au-delà du niveau 2.<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Frappe de vent d'acier",
-    "level": 5,
-    "school": "invocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "9 mètres",
-    "components": "V, S, M (une arme de CàC d'une valeur de 1 pa)",
-    "duration": "instantanée",
-    "classes": [
-      "Magicien",
-      "Rôdeur"
-    ],
-    "description": "Vous brandissez l'arme utilisée pour le lancer et vous disparaissez, frappant comme le vent. Choisissez jusqu'à 5 créatures à portée. Faites une attaque de sort au CàC contre chacune. En cas de réussite, une cible subit 6d10 dégâts de force. Vous pouvez ensuite vous téléporter dans un espace inoccupé que vous pouvez voir à 1,50 m d'une des cibles.",
-    "source": "XGtE"
   },
   {
     "name": "Frappe du vent d'acier",
@@ -4267,24 +3904,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Givrevif",
-    "level": 0,
-    "school": "évocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "18 mètres",
-    "components": "V, S",
-    "duration": "instantanée",
-    "classes": [
-      "Druide",
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous provoquez un froid engourdissant sur une créature que vous pouvez voir à portée. La cible doit réussir un jet de sauvegarde de Constitution ou subir 1d6 dégâts de froid et avoir un désavantage au prochain jet d'attaque qu'elle fait avant la fin de son prochain tour.<br>Les dégâts du sort augmentent de 1d6 lorsque vous atteignez le niveau 5 (2d6), le niveau 11 (3d6) et le niveau 17 (4d6).",
-    "source": "XGtE"
-  },
-  {
     "name": "Glas",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=glas",
     "level": 0,
@@ -4301,23 +3920,6 @@
     ],
     "description": "Vous pointez une créature que vous pouvez voir à portée, et le son douloureux d'une cloche emplit l'air autour d'elle pendant un moment. La cible doit réussir un jet de sauvegarde de Sagesse ou subir 1d8 dégâts nécrotiques. Si la cible n'est pas à son maximum de points de vie, elle subit 1d12 de dégâts nécrotiques.<br>Les dégâts du sort augmentent de un dé lorsque vous atteignez le niveau 5 (2d8 ou 2d12), le niveau 11 (3d8 ou 3d12) et le niveau 17 (4d8 ou 4d12).<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Glas funèbre",
-    "level": 0,
-    "school": "nécromancie",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "18 mètres",
-    "components": "V, S",
-    "duration": "instantanée",
-    "classes": [
-      "Clerc",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous désignez une créature que vous pouvez voir à portée, et le son d'une cloche douloureusement forte retentit autour d'elle un instant. La cible doit réussir un jet de sauvegarde de Sagesse ou subir 1d8 dégâts nécrotiques. Si la cible a perdu des points de vie, elle subit à la place 1d12 dégâts nécrotiques.<br>Les dégâts du sort augmentent de 1d8 (ou 1d12) lorsque vous atteignez le niveau 5 (2d8/2d12), le niveau 11 (3d8/3d12) et le niveau 17 (4d8/4d12).",
-    "source": "XGtE"
   },
   {
     "name": "Globe d'invulnérabilité",
@@ -4709,22 +4311,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Inondation d'énergie négative",
-    "level": 5,
-    "school": "nécromancie",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "18 mètres",
-    "components": "V, M (un os brisé)",
-    "duration": "instantanée",
-    "classes": [
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous envoyez de l'énergie négative vers une créature que vous pouvez voir à portée. La cible doit faire un JS de CON. En cas d'échec, la cible subit 5d12 dégâts nécrotiques. Un humanoïde tué par ces dégâts se relève comme zombi au début de votre prochain tour. En cas de réussite, la cible subit la moitié des dégâts.",
-    "source": "XGtE"
-  },
-  {
     "name": "Insecte géant",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=insecte-geant",
     "level": 4,
@@ -4775,78 +4361,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Investiture de flamme",
-    "level": 6,
-    "school": "transmutation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "personnelle",
-    "components": "V, S",
-    "duration": "concentration, jusqu'à 10 minutes",
-    "classes": [
-      "Druide",
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Des flammes se répandent sur votre corps sans vous blesser. Vous gagnez : immunité aux dégâts de feu, résistance aux dégâts de froid, toute créature à 1,50 m qui vous touche au CàC subit 1d10 dégâts de feu, et vous pouvez par une action lance une ligne de feu (4,50 m de large, 4,50 m de long) infligeant 4d8 dégâts de feu (JS de DEX, moitié).",
-    "source": "XGtE"
-  },
-  {
-    "name": "Investiture de glace",
-    "level": 6,
-    "school": "transmutation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "personnelle",
-    "components": "V, S",
-    "duration": "concentration, jusqu'à 10 minutes",
-    "classes": [
-      "Druide",
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous êtes entouré de glace. Vous gagnez : immunité aux dégâts de froid, résistance aux dégâts de feu, le sol dans un rayon de 3 m est difficile pour les autres créatures, et vous pouvez par une action créer un cône de 4,50 m de vent glacial infligeant 4d6 dégâts de froid (JS de CON, moitié) et réduisant la vitesse de 6 m en cas d'échec.",
-    "source": "XGtE"
-  },
-  {
-    "name": "Investiture de pierre",
-    "level": 6,
-    "school": "transmutation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "personnelle",
-    "components": "V, S",
-    "duration": "concentration, jusqu'à 10 minutes",
-    "classes": [
-      "Druide",
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Une peau de pierre recouvre votre corps. Vous gagnez : résistance aux dégâts contondants, perforants et tranchants non magiques, vous pouvez par une action provoquer un mini séisme dans un rayon de 4,50 m (JS de DEX ou chute à terre), et vous pouvez traverser la terre ou la pierre solide (2,50 m d'épaisseur max).",
-    "source": "XGtE"
-  },
-  {
-    "name": "Investiture de vent",
-    "level": 6,
-    "school": "transmutation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "personnelle",
-    "components": "V, S",
-    "duration": "concentration, jusqu'à 10 minutes",
-    "classes": [
-      "Druide",
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Du vent tourbillonne autour de votre corps. Vous gagnez : les attaques à distance d'arme ont un désavantage contre vous, vol de 18 mètres, et vous pouvez par une action créer un cube de 4,50 m de vent infligeant 2d10 dégâts contondants (JS de CON, moitié) et repoussant de 3 m en cas d'échec.",
-    "source": "XGtE"
-  },
-  {
     "name": "Invisibilité",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=invisibilite",
     "level": 2,
@@ -4882,22 +4396,6 @@
     ],
     "description": "Vous ou une créature que vous touchez devenez invisible jusqu'à la fin de la durée du sort. Tout ce que porte ou transporte la cible est invisible tant que ça demeure sur sa personne.<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Invocation d'aberration",
-    "level": 4,
-    "school": "invocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "27 mètres",
-    "components": "V, S, M (un bocal de tentacules de pieuvre mariné)",
-    "duration": "concentration, jusqu'à 1 heure",
-    "classes": [
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous invoquez un esprit aberrant. Il se manifeste dans un espace inoccupé que vous pouvez voir à portée. Choisissez : Fange, Regard ou Étoile. La créature gagne des traits selon le choix. Elle disparaît à 0 PV ou à la fin du sort. Elle est alliée et obéit à vos ordres.<br>Aux niveaux supérieurs : le profil s'améliore.",
-    "source": "TCoE"
   },
   {
     "name": "Invocation d'animaux",
@@ -4968,38 +4466,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Invocation d'ombres",
-    "level": 3,
-    "school": "invocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "27 mètres",
-    "components": "V, S, M (une larme dans un bijou en onyx noir)",
-    "duration": "concentration, jusqu'à 1 heure",
-    "classes": [
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous invoquez un esprit de l'Obscur. Il se manifeste dans un espace inoccupé que vous pouvez voir à portée. Quand vous lancez le sort, choisissez une émotion : Peur, Désespoir ou Fureur. La créature gagne des traits selon l'émotion choisie. Elle disparaît à 0 PV ou à la fin du sort. Elle est alliée et obéit à vos ordres.<br>Aux niveaux supérieurs : le profil s'améliore.",
-    "source": "TCoE"
-  },
-  {
-    "name": "Invocation de bête",
-    "level": 2,
-    "school": "invocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "27 mètres",
-    "components": "V, S, M (une plume, un bout de fourrure et une queue de poisson)",
-    "duration": "concentration, jusqu'à 1 heure",
-    "classes": [
-      "Druide",
-      "Rôdeur"
-    ],
-    "description": "Vous invoquez un esprit bestial. Il se manifeste dans un espace inoccupé que vous pouvez voir à portée. Cette forme corporelle utilise le profil d'Esprit bestial. Quand vous lancez le sort, choisissez Air, Terre ou Mer. La créature ressemble physiquement à un animal de votre choix adapté à l'environnement et gagne certains traits. La créature disparaît quand elle tombe à 0 PV ou quand le sort se termine. La créature est alliée et obéit à vos ordres.<br>Aux niveaux supérieurs : aux niveaux 3+, le profil s'améliore.",
-    "source": "TCoE"
-  },
-  {
     "name": "Invocation de céleste",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=invocation-de-celeste",
     "level": 7,
@@ -5014,53 +4480,6 @@
     ],
     "description": "Vous invoquez un céleste de FP 4 ou inférieur, qui apparaît dans un espace inoccupé que vous pouvez voir et à portée. Le céleste disparaît lorsqu'il tombe à 0 point de vie ou lorsque le sort prend fin.<br>Le céleste a une attitude amicale envers vous et vos compagnons pour la durée du sort. Lancez l'initiative pour le céleste ; il a ses propres tours de jeu. Il obéit aux ordres verbaux que vous lui donnez (aucune action n'est requise de votre part), tant qu'elles ne sont pas en contradiction avec son alignement. Si vous ne lui donnez aucun ordre, le céleste ne fait que se défendre contre les créatures qui lui sont hostiles. Le MD possède les statistiques du céleste.<br><strong><em>Aux niveaux supérieurs</em></strong>. Lorsque vous lancez ce sort en utilisant un emplacement de sort de niveau 9, vous invoquez un céleste de FP 5 ou inférieur.<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Invocation de construction",
-    "level": 4,
-    "school": "invocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "27 mètres",
-    "components": "V, S, M (un cœur en argent d'une valeur de 400 po)",
-    "duration": "concentration, jusqu'à 1 heure",
-    "classes": [
-      "Magicien"
-    ],
-    "description": "Vous invoquez l'esprit d'une construction. Il se manifeste dans un espace inoccupé. Choisissez un matériau : Argile, Métal ou Pierre. La créature gagne des traits selon le choix. Elle disparaît à 0 PV ou à la fin du sort. Elle est alliée et obéit à vos ordres.<br>Aux niveaux supérieurs : le profil s'améliore.",
-    "source": "TCoE"
-  },
-  {
-    "name": "Invocation de démon majeur",
-    "level": 4,
-    "school": "invocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "18 mètres",
-    "components": "V, S, M (une fiole de sang et un rubis d'une valeur de 1000 po)",
-    "duration": "concentration, jusqu'à 1 heure",
-    "classes": [
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous invoquez un démon de FP 5 ou inférieur. Il apparaît dans un espace inoccupé à portée. Le MJ choisit le démon. Le démon est hostile à toutes les créatures non-démon. Il obéit à vos ordres si votre concentration est maintenue, mais à la fin de chacun de ses tours il fait un JS de CHA. En cas de réussite, il se libère et agit selon sa nature.<br>Aux niveaux supérieurs : FP max +1 par niv au-delà du 4e.",
-    "source": "XGtE"
-  },
-  {
-    "name": "Invocation de démons mineurs",
-    "level": 3,
-    "school": "invocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "18 mètres",
-    "components": "V, S, M (une fiole de sang)",
-    "duration": "concentration, jusqu'à 1 heure",
-    "classes": [
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous invoquez des démons qui apparaissent dans des espaces inoccupés à portée. Choisissez : 2 de FP 1, 4 de FP 1/2, ou 8 de FP 1/4. Le MJ choisit les démons. Ils sont hostiles à toutes les créatures non-démon. Le MJ fait leurs jets d'initiative. Si vous restez concentré, ils n'attaquent que vos ennemis. Sinon, ils attaquent la créature la plus proche.<br>Aux niveaux supérieurs : 2× plus de démons au niv 6, 3× au niv 8.",
-    "source": "XGtE"
   },
   {
     "name": "Invocation de fée",
@@ -5078,38 +4497,6 @@
     ],
     "description": "Vous invoquez une créature de type fée de FP 6 ou inférieur, ou un esprit féérique qui prend la forme d'une bête de FP 6 ou inférieur. Elle apparaît dans un espace inoccupé que vous pouvez voir et à portée. La fée disparaît lorsqu'elle tombe à 0 point de vie ou lorsque le sort prend fin.<br>La fée a une attitude amicale envers vous et vos compagnons pour la durée du sort. Lancez l'initiative pour la fée ; elle a ses propres tours de jeu. Elle obéit aux ordres verbaux que vous lui donnez (aucune action n'est requise de votre part), tant qu'ils ne sont pas en contradiction avec son alignement. Si vous ne lui donnez aucun ordre, la fée ne fait que se défendre contre les créatures qui lui sont hostiles.<br>Si votre concentration est interrompue, la fée ne disparaît pas. Au lieu de cela, vous perdez le contrôle de la créature, elle devient hostile envers vous et vos compagnons, et peut vous attaquer. Vous ne pouvez pas renvoyer une fée que vous ne contrôlez plus. Elle disparaît 1 heure après que vous l'ayez invoquée. Le MD possède les statistiques de la fée.<br><strong><em>Aux niveaux supérieurs</em></strong>. Lorsque vous lancez ce sort en utilisant un emplacement de sort de niveau 7 ou supérieur, le FP augmente de 1 pour chaque niveau d'emplacement au-delà du niveau 6.<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Invocation de fiélon",
-    "level": 6,
-    "school": "invocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "27 mètres",
-    "components": "V, S, M (une fiole de sang humanoid et une perle d'une valeur de 600 po)",
-    "duration": "concentration, jusqu'à 1 heure",
-    "classes": [
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous invoquez un esprit fiélon. Il se manifeste dans un espace inoccupé. Choisissez : Démon, Diable ou Yugoloth. La créature gagne des traits selon le choix. Elle disparaît à 0 PV ou à la fin du sort. Elle est alliée et obéit à vos ordres.<br>Aux niveaux supérieurs : le profil s'améliore.",
-    "source": "TCoE"
-  },
-  {
-    "name": "Invocation de morts-vivants",
-    "level": 3,
-    "school": "nécromancie",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "27 mètres",
-    "components": "V, S, M (un os de poulet noirci)",
-    "duration": "concentration, jusqu'à 1 heure",
-    "classes": [
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous invoquez un esprit mort-vivant. Il se manifeste dans un espace inoccupé que vous pouvez voir à portée. Quand vous lancez le sort, choisissez : Fantomatique, Putréfié ou Squelettique. La créature gagne des traits selon le choix. Elle disparaît à 0 PV ou à la fin du sort. Elle est alliée et obéit à vos ordres.<br>Aux niveaux supérieurs : le profil s'améliore.",
-    "source": "TCoE"
   },
   {
     "name": "Invocation de projectiles",
@@ -5178,23 +4565,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Lame d'ombre",
-    "level": 2,
-    "school": "illusion",
-    "ritual": false,
-    "castingTime": "1 action bonus",
-    "range": "personnelle",
-    "components": "V, S",
-    "duration": "concentration, jusqu'à 1 minute",
-    "classes": [
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous tissez ensemble des fils d'ombre pour créer une épée de ténèbres solidifiées dans votre main. Cette lame magique dure jusqu'à la fin du sort. Elle compte comme une arme de corps à corps simple avec laquelle vous avez la maîtrise. Elle inflige 2d8 dégâts psychiques en cas de coup et a les propriétés finesse, légère et lancer (portée 6/18 m). Si vous la lâchez ou la lancez, elle disparaît et réapparaît dans votre main. Vous avez un avantage aux jets d'attaque avec cette arme si la cible est dans une lumière faible ou les ténèbres.<br>Aux niveaux supérieurs : 3d8 au niv 3-4, 4d8 au niv 5-6, 5d8 au niv 7+.",
-    "source": "XGtE"
-  },
-  {
     "name": "Lame d'ombres",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=lame-d-ombres",
     "level": 2,
@@ -5211,23 +4581,6 @@
     ],
     "description": "Vous tissez ensemble des fils d'ombre pour créer une épée de ténèbres solidifiées dans votre main. Cette épée magique dure jusqu'à la fin du sort. Elle compte comme une arme courante de corps à corps que vous maîtrisez. Elle inflige 2d8 dégâts psychiques si vous touchez et possède les propriétés finesse, légère et lancer (portée 6/18). De plus, lorsque vous utilisez l'épée pour attaquer une cible qui se trouve dans une lumière faible ou dans les ténèbres, vous effectuez l'attaque avec un avantage. Si vous laissez tomber l'arme ou la lancez, elle se dissipe à la fin du tour. Par la suite, tant que le sort est actif, vous pouvez utiliser une action bonus pour faire réapparaître l'épée dans votre main.<br><strong><em>Aux niveaux supérieurs</em></strong>. Lorsque vous lancez ce sort en utilisant un emplacement de sort de niveau 3 ou 4, les dégâts passent à 3d8. Lorsque vous le lancez en utilisant un emplacement de sort de niveau 5 ou 6, les dégâts passent à 4d8. Lorsque vous le lancez en utilisant un emplacement de sort de niveau 7 ou plus, les dégâts passent à 5d8.<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Lame de désastre",
-    "level": 9,
-    "school": "invocation",
-    "ritual": false,
-    "castingTime": "1 action bonus",
-    "range": "18 mètres",
-    "components": "V, S",
-    "duration": "concentration, jusqu'à 1 minute",
-    "classes": [
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous créez une fissure planaire en forme de lame à un point que vous voyez à portée. La lame dure la durée du sort. Quand vous la créez, faites jusqu'à 2 attaques de sort au CàC contre des cibles à 1,50 m de la lame. En cas de réussite, la cible subit 4d12 dégâts de force. Action bonus aux tours suivants : déplacez la lame de 9 m et faites jusqu'à 2 attaques. La lame traverse les objets et les barrières.",
-    "source": "TCoE"
   },
   {
     "name": "Lame de feu",
@@ -5297,23 +4650,6 @@
     ],
     "description": "Vous altérez le temps pour un maximum de six créatures de votre choix dans un cube de 12 mètres d'arête à portée. Chaque cible doit réussir un jet de sauvegarde de Sagesse ou être affectée par le sort pendant sa durée.<br>Une créature affectée voit sa vitesse divisée par deux, subit un malus de -2 à sa CA et à ses jets de sauvegarde de Dextérité et ne peut utiliser de réactions. À son tour, elle ne peut utiliser qu'une action ou une action bonus, pas les deux. Peu importe ses capacités ou objets magiques, la créature ne peut effectuer plus d'une attaque au corps à corps ou à distance pendant son tour.<br>Si la créature tente de lancer un sort qui a un temps d'incantation d'une action, lancer un d20. Sur un résultat supérieur ou égal à 11, le sort ne pourra pas prendre effet avant la fin de son prochain tour et la créature devra utiliser l'action de ce tour pour compléter le sort. Sinon, le sort est perdu.<br>Une créature affectée par ce sort effectue un jet de sauvegarde de Sagesse à la fin de chacun de ses tours. En cas de réussite, les effets du sort prennent fin.<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Leurre de foudre",
-    "level": 0,
-    "school": "évocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "personnelle (rayon de 4,50 mètres)",
-    "components": "V",
-    "duration": "instantanée",
-    "classes": [
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous créez un fouet de foudre qui frappe une créature de votre choix que vous pouvez voir à 4,50 mètres de vous. La cible doit réussir un jet de sauvegarde de Force ou être tirée de 3 mètres vers vous en ligne droite et subir 1d8 dégâts de foudre si elle est à 1,50 mètre de vous ou moins.<br>Les dégâts augmentent de 1d8 au niveau 5 (2d8), 11 (3d8) et 17 (4d8).",
-    "source": "TCoE"
   },
   {
     "name": "Lévitation",
@@ -5434,24 +4770,6 @@
     ],
     "description": "Vous tissez un lien télépathique unissant jusqu'à huit créatures consentantes de votre choix et à portée, chacune psychiquement liée aux autres pour toute la durée du sort. Les créatures ayant une valeur d'Intelligence inférieure ou égale à 2 ne peuvent pas être affectées par ce sort.<br>Jusqu'à ce que le sort prenne fin, les cibles peuvent communiquer télépathiquement via ce lien, qu'elles aient ou non une langue en commun. La communication est possible quelle que soit la distance qui sépare les cibles, mais elle ne fonctionne plus pour des créatures se trouvant sur différents plans d'existence.<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Linceul spirituel",
-    "level": 3,
-    "school": "nécromancie",
-    "ritual": false,
-    "castingTime": "1 action bonus",
-    "range": "personnelle",
-    "components": "V, S",
-    "duration": "concentration, jusqu'à 1 minute",
-    "classes": [
-      "Clerc",
-      "Magicien",
-      "Occultiste",
-      "Paladin"
-    ],
-    "description": "Vous invoquez des esprits de morts qui voltigent autour de vous. Pendant la durée, toute attaque que vous faites inflige 1d8 dégâts nécrotiques, radiants ou froids (choisis au lancer) supplémentaires. De plus, toute créature de votre choix qui commence son tour à 3 m de vous voit sa vitesse réduite de 3 m jusqu'au début de son prochain tour.<br>Aux niveaux supérieurs : +1d8 par 2 niveaux au-delà du 3e.",
-    "source": "TCoE"
   },
   {
     "name": "Localisation d'animaux ou de plantes",
@@ -5953,23 +5271,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Modeler l'eau",
-    "level": 0,
-    "school": "transmutation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "9 mètres",
-    "components": "S",
-    "duration": "instantanée ou 1 heure",
-    "classes": [
-      "Druide",
-      "Ensorceleur",
-      "Magicien"
-    ],
-    "description": "Vous choisissez une zone d'eau que vous pouvez voir à portée et qui tient dans un cube de 1,50 mètre de côté. Vous la manipulez de l'une des façons suivantes : vous déplacez ou changez le courant de l'eau jusqu'à 1,50 mètre dans n'importe quelle direction ; vous faites apparaître des formes simples dans l'eau qui se meuvent selon vos instructions pendant 1 heure ; vous changez la couleur ou l'opacité de l'eau pendant 1 heure ; vous gelez l'eau pendant 1 heure si elle ne contient pas de créature. Si vous lancez ce sort plusieurs fois, vous pouvez avoir jusqu'à deux de ses effets non instantanés actifs en même temps.",
-    "source": "XGtE"
-  },
-  {
     "name": "Modification d'apparence",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=modification-d-apparence",
     "level": 2,
@@ -6089,24 +5390,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Mot de pouvoir : douleur",
-    "level": 7,
-    "school": "enchantement",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "18 mètres",
-    "components": "V",
-    "duration": "instantanée",
-    "classes": [
-      "Barde",
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous prononcez un mot de pouvoir qui provoque chez une créature que vous pouvez voir des vagues de douleur intense. Si la cible a 100 points de vie ou moins, elle est sujette à une douleur handicapante. Tant que sous l'effet, sa vitesse ne peut excéder 3 m, elle a un désavantage aux jets d'attaque, tests de caractéristique et JS (sauf CON), et si elle lance un sort, elle doit réussir un JS de CON ou le sort est gaspillé. La cible fait un JS de CON à la fin de chacun de ses tours pour mettre fin à l'effet.",
-    "source": "XGtE"
-  },
-  {
     "name": "Mot de pouvoir douloureux",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=mot-de-pouvoir-douloureux",
     "level": 7,
@@ -6193,21 +5476,6 @@
     ],
     "description": "Vous prononcez un mot divin et un éclat brûlant jaillit de vous. Toutes les créatures de votre choix à portée et que vous pouvez voir doivent réussir un jet de sauvegarde de Constitution ou bien prendre 1d6 dégâts radiants.<br>Les dégâts du sort augmentent de 1d6 lorsque vous atteignez le niveau 5 (2d6), le niveau 11 (3d6) et le niveau 17 (4d6).<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Mot de rayonnement",
-    "level": 0,
-    "school": "évocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "1,50 mètre",
-    "components": "V, M (un symbole sacré)",
-    "duration": "instantanée",
-    "classes": [
-      "Clerc"
-    ],
-    "description": "Vous prononcez un mot divin, et un éclat brûlant de lumière jaillit de vous. Chaque créature de votre choix que vous pouvez voir à portée doit réussir un jet de sauvegarde de Constitution ou subir 1d6 dégâts radiants.<br>Les dégâts du sort augmentent de 1d6 lorsque vous atteignez le niveau 5 (2d6), le niveau 11 (3d6) et le niveau 17 (4d6).",
-    "source": "XGtE"
   },
   {
     "name": "Mot de retour",
@@ -6634,40 +5902,6 @@
     ],
     "description": "Vous prononcez une parole divine, emplie de la puissance qui a façonné le monde à l'aube de la création. Choisissez autant de créatures que vous le souhaitez parmi celles que vous voyez, dans la portée du sort. Chaque créature qui vous entend doit réussir un jet de sauvegarde de Charisme ou subir un effet selon la valeur actuelle de ses points de vie.<br>• 50 pv ou moins : assourdie pendant 1 minute<br>• 40 pv ou moins : assourdie et aveuglée pendant 10 minutes<br>• 30 pv ou moins : aveuglée, assourdie et étourdie pendant 1 heure<br>• 20 pv ou moins : tuée sur le coup<br>Indépendamment de ses points de vie actuels, un céleste, un élémentaire, une fée ou un fiélon qui échoue son jet est retourné à son plan d'origine (s'il n'y est pas déjà) et il ne peut revenir sur votre plan pendant 24 heures, peu importe le moyen, à l'exception du sort <em><a href=\"https://www.aidedd.org/dnd/sorts.php?vf=souhait\">souhait</a></em>.<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Pas de tonnerre",
-    "level": 3,
-    "school": "invocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "27 mètres",
-    "components": "V",
-    "duration": "instantanée",
-    "classes": [
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous vous téléportez vers un espace inoccupé que vous pouvez voir à portée. Immédiatement après votre disparition, un coup de tonnerre retentit et chaque créature dans un rayon de 3 m centrés sur l'espace que vous avez quitté doit faire un JS de CON, subissant 3d10 dégâts de tonnerre en cas d'échec ou la moitié en cas de réussite.<br>Aux niveaux supérieurs : +1d10 par niveau au-delà du 3e.",
-    "source": "XGtE"
-  },
-  {
-    "name": "Pas lointain",
-    "level": 5,
-    "school": "invocation",
-    "ritual": false,
-    "castingTime": "1 action bonus",
-    "range": "personnelle",
-    "components": "V",
-    "duration": "concentration, jusqu'à 1 minute",
-    "classes": [
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous vous téléportez jusqu'à 18 mètres vers un espace inoccupé que vous pouvez voir. À chacun de vos tours pour le restant de la durée, vous pouvez utiliser une action bonus pour vous téléporter de cette manière à nouveau.",
-    "source": "XGtE"
   },
   {
     "name": "Passage par les arbres",
@@ -7310,23 +6544,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Radiation nauséeuse",
-    "level": 4,
-    "school": "évocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "36 mètres",
-    "components": "V, S",
-    "duration": "concentration, jusqu'à 10 minutes",
-    "classes": [
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous émettez une lumière verdâtre, faiblement visible, dans une sphère de 9 m de rayon centrée sur un point à portée. La lumière se répand autour des coins. Quand une créature entre dans la zone pour la première fois lors d'un tour ou y débute son tour, elle doit faire un JS de CON ou subir 4d10 dégâts radiants et un niveau d'épuisement. En cas de réussite, la moitié des dégâts et pas d'épuisement. La créature n'est pas visible si elle est dans la zone (lumière faible).",
-    "source": "XGtE"
-  },
-  {
     "name": "Rappel à la vie",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=rappel-a-la-vie",
     "level": 5,
@@ -7482,23 +6699,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Raz de marée",
-    "level": 3,
-    "school": "invocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "36 mètres",
-    "components": "V, S, M (une goutte d'eau)",
-    "duration": "instantanée",
-    "classes": [
-      "Druide",
-      "Ensorceleur",
-      "Magicien"
-    ],
-    "description": "Vous invoquez une vague d'eau qui s'écrase sur une zone que vous choisissez à portée. La zone peut mesurer jusqu'à 9 m de long, 3 m de large et 3 m de haut. Chaque créature dans la zone doit faire un JS de DEX. En cas d'échec, la créature subit 4d8 dégâts contondants et est jetée à terre. En cas de réussite, la créature subit la moitié des dégâts et n'est pas jetée à terre. L'eau inonde aussi la zone, éteignant les flammes non protégées.",
-    "source": "XGtE"
-  },
-  {
     "name": "Raz-de-marée",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=raz-de-maree",
     "level": 3,
@@ -7549,23 +6749,6 @@
     ],
     "description": "Vous touchez un humanoïde mort ou une partie de cet humanoïde mort. À condition que l'humanoïde ne soit pas mort depuis plus de 10 jours, le sort crée un nouveau corps adulte pour cet humanoïde et appelle son âme pour qu'elle entre dans ce corps. Si l'âme de la cible n'est pas libre, ou si elle n'en a pas envie, le sort échoue.<br>La magie façonne un nouveau corps pour que la créature s'y installe, ce qui fait que la race de la créature peut changer. Le MD lance 1d100 et consulte la table ci-dessous pour déterminer quelle forme va prendre la créature lorsqu'elle reviendra à la vie, le MD peut sinon choisir la forme du corps.<br><table><tbody><tr><th class=\"center\">d100</th><th>Race</th></tr><tr><td class=\"center\">01-04</td><td>Drakéide</td></tr><tr><td class=\"center\">05-13</td><td>Nain des collines</td></tr><tr><td class=\"center\">14-21</td><td>Nain des montagnes</td></tr><tr><td class=\"center\">22-25</td><td>Elfe noir</td></tr><tr><td class=\"center\">26-34</td><td>Haut-elfe</td></tr><tr><td class=\"center\">35-42</td><td>Elfe des bois</td></tr><tr><td class=\"center\">43-46</td><td>Gnome des forêts</td></tr><tr><td class=\"center\">47-52</td><td>Gnome des roches</td></tr><tr><td class=\"center\">53-56</td><td>Demi-elfe</td></tr><tr><td class=\"center\">57-60</td><td>Demi-orc</td></tr><tr><td class=\"center\">61-68</td><td>Halfelin pied-léger</td></tr><tr><td class=\"center\">69-76</td><td>Halfelin robuste</td></tr><tr><td class=\"center\">77-96</td><td>Humain</td></tr><tr><td class=\"center\">97-00</td><td>Tieffelin</td></tr></tbody></table><br>La créature réincarnée se rappelle de sa vie passée. Elle conserve les capacités qu'elle possédait sous son ancienne forme ; elle change cependant de race, et change donc de traits raciaux en conséquence.<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Renforcement de compétence",
-    "level": 5,
-    "school": "transmutation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "contact",
-    "components": "V, S",
-    "duration": "concentration, jusqu'à 1 heure",
-    "classes": [
-      "Barde",
-      "Ensorceleur",
-      "Magicien"
-    ],
-    "description": "Vous touchez une créature et lui conférez l'expertise dans une compétence que vous choisissez. Jusqu'à la fin du sort, la créature double son bonus de maîtrise pour les tests de caractéristique qu'elle fait avec cette compétence.",
-    "source": "XGtE"
   },
   {
     "name": "Réparation",
@@ -7745,41 +6928,6 @@
     ],
     "description": "Vous touchez une créature morte depuis au plus une minute. Cette créature revient à la vie avec 1 point de vie. Ce sort ne peut ni ramener à la vie une créature morte de vieillesse ni restaurer des parties perdues du corps.<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Rêve du voile bleu",
-    "level": 5,
-    "school": "invocation",
-    "ritual": false,
-    "castingTime": "10 minutes",
-    "range": "6 mètres",
-    "components": "V, S, M (un objet magique ou consentant provenant du plan de destination)",
-    "duration": "6 heures",
-    "classes": [
-      "Barde",
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous et jusqu'à huit créatures consentantes à portée tombez inconscients et vous voyagez vers un autre plan d'existence. Le voyage prend 6 heures. Si le sort est dissipé ou terminé prématurément, vous vous réveillez à votre position de départ.",
-    "source": "TCoE"
-  },
-  {
-    "name": "Sables mouvants",
-    "level": 2,
-    "school": "évocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "18 mètres",
-    "components": "V, S",
-    "duration": "concentration, jusqu'à 1 minute",
-    "classes": [
-      "Druide",
-      "Ensorceleur",
-      "Magicien"
-    ],
-    "description": "Vous choisissez un carré de 1,50 m de sol à portée que vous pouvez voir. Le sol se transforme en sables mouvants pour la durée. JS de DEX pour chaque créature dans la zone ou qui entre dedans. Échec: enfoncée, vitesse = 0, 1d6 contondants/tour. Réussite : sort de la zone.",
-    "source": "XGtE"
   },
   {
     "name": "Sacre de la glace",
@@ -7998,23 +7146,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Semonce",
-    "level": 1,
-    "school": "abjuration",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "9 mètres",
-    "components": "V, S, M (7,50 mètres de corde)",
-    "duration": "8 heures",
-    "classes": [
-      "Druide",
-      "Magicien",
-      "Rôdeur"
-    ],
-    "description": "Alors que vous lancez ce sort, vous utilisez la corde pour créer un cercle d'un rayon de 1,50 mètre sur le sol ou le plancher. Lorsque vous terminez le lancer, la corde disparaît et le cercle devient un piège magique. Le piège est presque invisible et nécessite un test d'Intelligence (Investigation) contre votre DD de sauvegarde de sort pour être détecté. Le piège se déclenche quand une créature de taille P ou supérieure marche dessus. La créature doit réussir un JS de DEX ou être hissée dans les airs jusqu'à rester suspendue à 90 cm du sol. L'effet dure jusqu'à dissipation.",
-    "source": "XGtE"
-  },
-  {
     "name": "Sens animal",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=sens-animal",
     "level": 2,
@@ -8100,21 +7231,6 @@
     ],
     "description": "Transforme un objet de taille TP en une créature avec bras et jambes qui obéit au lanceur (+2 objets/niv).",
     "source": "AideDD"
-  },
-  {
-    "name": "Serviteur minuscule",
-    "level": 3,
-    "school": "transmutation",
-    "ritual": false,
-    "castingTime": "1 minute",
-    "range": "contact",
-    "components": "V, S",
-    "duration": "8 heures",
-    "classes": [
-      "Magicien"
-    ],
-    "description": "Vous touchez un ou plusieurs objets non magiques de taille TP et les animez. Chaque cible s'anime et devient une créature sous votre contrôle jusqu'à la fin du sort ou jusqu'à être réduit à 0 PV. Par une action bonus, vous pouvez ordonner mentalement à vos serviteurs un déplacement et une action. Vous pouvez animer un objet additionnel par niveau au-delà du 3e (max 10 niveau 9).",
-    "source": "XGtE"
   },
   {
     "name": "Sieste",
@@ -8486,24 +7602,6 @@
     "source": "AideDD"
   },
   {
-    "name": "Synapses statiques",
-    "level": 5,
-    "school": "enchantement",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "36 mètres",
-    "components": "V, S",
-    "duration": "instantanée",
-    "classes": [
-      "Barde",
-      "Ensorceleur",
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Vous déclenchez une explosion d'énergie psychique à un point à portée. Chaque créature dans une sphère de 6 m de rayon doit faire un JS d'INT, subissant 8d6 dégâts psychiques en cas d'échec ou la moitié en cas de réussite. En cas d'échec, une cible soustrait aussi 1d6 à ses jets d'attaque, tests de caractéristique et JS de CON pour maintenir la concentration pendant 1 minute. Elle peut refaire le JS à la fin de chaque tour.",
-    "source": "XGtE"
-  },
-  {
     "name": "Télékinésie",
     "url": "https://www.aidedd.org/dnd/sorts.php?vf=telekinesie",
     "level": 5,
@@ -8657,22 +7755,6 @@
     ],
     "description": "Des ténèbres magiques s'étendent d'un point de votre choix dans la portée du sort pour remplir une sphère de 4,50 mètres de rayon pour la durée du sort. Ces ténèbres contournent les coins. Une créature avec la vision dans le noir ne peut percer ces ténèbres et une lumière non magique ne peut y éclairer.<br>Si le point choisi est un objet que vous portez ou qui n'est pas porté ou transporté, les ténèbres émanent de l'objet et elles se déplacent avec lui. Recouvrir complètement la source des ténèbres avec un objet opaque, comme un bol ou un casque, bloque les ténèbres.<br>Si n'importe quelle portion de ce sort chevauche une portion de lumière créée par un sort de niveau 2 ou moins, le sort de lumière est alors dissipé.<br>",
     "source": "AideDD"
-  },
-  {
-    "name": "Ténèbres dévorantes",
-    "level": 8,
-    "school": "évocation",
-    "ritual": false,
-    "castingTime": "1 action",
-    "range": "45 mètres",
-    "components": "V, S, M (une larme de charbon de bois)",
-    "duration": "concentration, jusqu'à 10 minutes",
-    "classes": [
-      "Magicien",
-      "Occultiste"
-    ],
-    "description": "Des ténèbres magiques se répandent depuis un point à portée pour remplir une sphère de 18 m de rayon. Vision dans le noir ne fonctionne pas. Lumières non magiques ne marchent pas. Chaque créature qui débute son tour dans la zone doit faire un JS de SAG, subissant 8d8 dégâts psychiques en cas d'échec, ou la moitié en cas de réussite.",
-    "source": "XGtE"
   },
   {
     "name": "Ténèbres oppressantes",

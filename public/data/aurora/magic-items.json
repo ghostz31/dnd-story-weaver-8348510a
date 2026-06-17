@@ -1,0 +1,1215 @@
+{
+  "version": "1.0",
+  "description": "Base de données d'objets magiques D&D 5e SRD avec stats mécaniques pour le combat",
+  "items": {
+    "arc du serment": {
+      "name": "Arc du serment",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un paladin",
+      "description": "Arc long magique. Quand vous manquez une attaque, vous pouvez infliger 3d6 dégâts de foudre à la cible. Vous regagnez 1 emplacement de sort si vous réduisez une créature hostile à 0 PV avec cet arc.",
+      "damage": "1d8",
+      "damageType": "piercing",
+      "properties": [
+        "ammunition",
+        "heavy",
+        "two-handed"
+      ],
+      "range": {
+        "normal": 45,
+        "long": 180
+      },
+      "attackBonus": 0,
+      "damageBonus": 0,
+      "weight": 2,
+      "source": "Dungeon Master's Guide"
+    },
+    "bâton de feu": {
+      "name": "Bâton de feu",
+      "type": "weapon",
+      "rarity": "very-rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un ensorceleur, un druide, un magicien ou un occultiste",
+      "description": "Bâton magique. Attaque : +2 aux jets d'attaque et de dégâts. 10 charges. Lancer Boule de feu (3 charges), Rayon ardent (2 charges), Mur de feu (4 charges). Se régénère 1d6+4 charges à l'aube.",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d8",
+      "attackBonus": 2,
+      "damageBonus": 2,
+      "charges": 10,
+      "maxCharges": 10,
+      "chargesRecovery": "dawn",
+      "weight": 4,
+      "source": "Dungeon Master's Guide"
+    },
+    "bâton de givre": {
+      "name": "Bâton de givre",
+      "type": "weapon",
+      "rarity": "very-rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un ensorceleur, un druide, un magicien ou un occultiste",
+      "description": "Bâton magique. Attaque : +2 aux jets d'attaque et de dégâts. 10 charges. Lancer Cône de froid (5 charges), Mur de glace (4 charges), Tempête de neige (2 charges). Se régénère 1d6+4 charges à l'aube.",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d8",
+      "attackBonus": 2,
+      "damageBonus": 2,
+      "charges": 10,
+      "maxCharges": 10,
+      "chargesRecovery": "dawn",
+      "weight": 4,
+      "source": "Dungeon Master's Guide"
+    },
+    "bâton de tonnerre et de foudre": {
+      "name": "Bâton de tonnerre et de foudre",
+      "type": "weapon",
+      "rarity": "very-rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un ensorceleur, un druide, un magicien ou un occultiste",
+      "description": "Bâton magique. Attaque : +2 aux jets d'attaque et de dégâts. 10 charges. Lancer Foudre (3 charges), Tonnerre (2 charges), Boule de feu de foudre (4 charges). Se régénère 1d6+4 charges à l'aube.",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d8",
+      "attackBonus": 2,
+      "damageBonus": 2,
+      "charges": 10,
+      "maxCharges": 10,
+      "chargesRecovery": "dawn",
+      "weight": 4,
+      "source": "Dungeon Master's Guide"
+    },
+    "bâton de surpuissance": {
+      "name": "Bâton de surpuissance",
+      "type": "weapon",
+      "rarity": "legendary",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un ensorceleur, un druide, un magicien ou un occultiste",
+      "description": "Bâton magique très puissant. Attaque : +2 aux jets d'attaque et de dégâts. 20 charges. Peut absorber les sorts lancés contre vous. Se régénère 1d8+4 charges à l'aube.",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d8",
+      "attackBonus": 2,
+      "damageBonus": 2,
+      "charges": 20,
+      "maxCharges": 20,
+      "chargesRecovery": "dawn",
+      "weight": 4,
+      "source": "Dungeon Master's Guide"
+    },
+    "bâton de flétrissement": {
+      "name": "Bâton de flétrissement",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un clerc, un druide ou un occultiste",
+      "description": "Bâton magique. Attaque : +2 aux jets d'attaque et de dégâts. 3 charges. Action bonus pour infliger 2d10 nécrotiques supplémentaires. Se régénère 1d3 charges à l'aube.",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d8",
+      "attackBonus": 2,
+      "damageBonus": 2,
+      "charges": 3,
+      "maxCharges": 3,
+      "chargesRecovery": "dawn",
+      "weight": 4,
+      "source": "Dungeon Master's Guide"
+    },
+    "bâton du python": {
+      "name": "Bâton du python",
+      "type": "weapon",
+      "rarity": "uncommon",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un clerc, un druide ou un occultiste",
+      "description": "Bâton magique. Attaque : +1 aux jets d'attaque et de dégâts. Peut se transformer en python constricteur.",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d8",
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "weight": 4,
+      "source": "Dungeon Master's Guide"
+    },
+    "bâton de guérison": {
+      "name": "Bâton de guérison",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un bard, un clerc ou un druide",
+      "description": "Bâton magique. Attaque : +1 aux jets d'attaque et de dégâts. 10 charges. Lancer Soins (1 charge), Guérison des blessures (2 charges). Se régénère 1d6+4 charges à l'aube.",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d8",
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "charges": 10,
+      "maxCharges": 10,
+      "chargesRecovery": "dawn",
+      "weight": 4,
+      "source": "Dungeon Master's Guide"
+    },
+    "bâton percussif": {
+      "name": "Bâton percussif",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un bard, un clerc ou un druide",
+      "description": "Bâton magique. Attaque : +2 aux jets d'attaque et de dégâts. Les dégâts sont tonnerre. 5 charges. Lancer Cri (1 charge), Tonnerre (2 charges). Se régénère 1d4+1 charges à l'aube.",
+      "damage": "1d6",
+      "damageType": "thunder",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d8",
+      "attackBonus": 2,
+      "damageBonus": 2,
+      "charges": 5,
+      "maxCharges": 5,
+      "chargesRecovery": "dawn",
+      "weight": 4,
+      "source": "Dungeon Master's Guide"
+    },
+    "bâton d'envoûtement": {
+      "name": "Bâton d'envoûtement",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un barde, un ensorceleur ou un occultiste",
+      "description": "Bâton magique. Attaque : +1 aux jets d'attaque et de dégâts. 10 charges. Lancer Charme-personne (1 charge), Confusion (2 charges). Se régénère 1d6+4 charges à l'aube.",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d8",
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "charges": 10,
+      "maxCharges": 10,
+      "chargesRecovery": "dawn",
+      "weight": 4,
+      "source": "Dungeon Master's Guide"
+    },
+    "bâton de grand essaim": {
+      "name": "Bâton de grand essaim",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un clerc, un druide ou un occultiste",
+      "description": "Bâton magique. Attaque : +1 aux jets d'attaque et de dégâts. 10 charges. Lancer Nuage d'insectes (1 charge), Essaim (2 charges). Se régénère 1d6+4 charges à l'aube.",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d8",
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "charges": 10,
+      "maxCharges": 10,
+      "chargesRecovery": "dawn",
+      "weight": 4,
+      "source": "Dungeon Master's Guide"
+    },
+    "bâton des forêts": {
+      "name": "Bâton des forêts",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un ensorceleur, un druide ou un occultiste",
+      "description": "Bâton magique. Attaque : +1 aux jets d'attaque et de dégâts. 10 charges. Lancer Mur d'épines (2 charges). Se régénère 1d6+4 charges à l'aube.",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d8",
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "charges": 10,
+      "maxCharges": 10,
+      "chargesRecovery": "dawn",
+      "weight": 4,
+      "source": "Dungeon Master's Guide"
+    },
+    "bâton de la vipère": {
+      "name": "Bâton de la vipère",
+      "type": "weapon",
+      "rarity": "uncommon",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un clerc, un druide ou un occultiste",
+      "description": "Bâton magique. Attaque : +1 aux jets d'attaque et de dégâts. L'arme inflige 1d10 poison supplémentaires.",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d8",
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "damageExtra": "1d10 poison",
+      "weight": 4,
+      "source": "Dungeon Master's Guide"
+    },
+    "bâton du thaumaturge": {
+      "name": "Bâton du thaumaturge",
+      "type": "weapon",
+      "rarity": "uncommon",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un clerc",
+      "description": "Bâton magique pour clerc. Attaque : +1 aux jets d'attaque et de dégâts. Permet d'ignorer la composante matérielle des sorts de clerc.",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d8",
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "weight": 4,
+      "source": "Dungeon Master's Guide"
+    },
+    "dague venimeuse": {
+      "name": "Dague venimeuse",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": false,
+      "description": "Dague magique. +1 aux jets d'attaque et de dégâts. Cible doit réussir un JS CON 15 ou subir 2d10 dégâts de poison.",
+      "damage": "1d4",
+      "damageType": "piercing",
+      "properties": [
+        "finesse",
+        "light",
+        "thrown"
+      ],
+      "range": {
+        "normal": 6,
+        "long": 18
+      },
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "weight": 1,
+      "source": "Dungeon Master's Guide"
+    },
+    "épée ardente": {
+      "name": "Épée ardente",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Épée magique. Action bonus pour activer : flammes donnant +2d6 dégâts de feu supplémentaires et lumière vive dans un rayon de 12m.",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d10",
+      "attackBonus": 0,
+      "damageBonus": 0,
+      "damageExtra": "2d6 feu",
+      "weight": 3,
+      "source": "Dungeon Master's Guide"
+    },
+    "épée radieuse": {
+      "name": "Épée radieuse",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Épée longue magique. +2 aux jets d'attaque et de dégâts. Les dégâts sont radiants. Avantage contre les morts-vivants.",
+      "damage": "1d8",
+      "damageType": "radiant",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d10",
+      "attackBonus": 2,
+      "damageBonus": 2,
+      "weight": 3,
+      "source": "Dungeon Master's Guide"
+    },
+    "épée acérée": {
+      "name": "Épée d'acuité",
+      "type": "weapon",
+      "rarity": "very-rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Épée magique. +3 aux jets d'attaque et de dégâts. Critique sur 19-20. Si réduit à 0 PV, tranchage de membre.",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d10",
+      "attackBonus": 3,
+      "damageBonus": 3,
+      "weight": 3,
+      "source": "Dungeon Master's Guide"
+    },
+    "épée vengeresse": {
+      "name": "Épée vengeresse",
+      "type": "weapon",
+      "rarity": "legendary",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un paladin",
+      "description": "Épée magique. +3 aux jets d'attaque et de dégâts. +2d10 radiants contre fiélons et morts-vivants. Infligeant une blessure persistante.",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d10",
+      "attackBonus": 3,
+      "damageBonus": 3,
+      "damageExtra": "2d10 radiants (vs fiélons/morts-vivants)",
+      "weight": 3,
+      "source": "Dungeon Master's Guide"
+    },
+    "épée voleuse de vie": {
+      "name": "Épée voleuse de vie",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Épée magique. +1 aux jets d'attaque et de dégâts. Quand vous touchez, vous regagnez des PV égaux à la moitié des dégâts infligés (arrondi inférieur).",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d10",
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "weight": 3,
+      "source": "Dungeon Master's Guide"
+    },
+    "épée mordante": {
+      "name": "Épée mordante",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Épée magique. +1 aux jets d'attaque et de dégâts. +3d6 dégâts psychiques supplémentaires. Le porteur doit réussir un JS SAG 15 à chaque aube ou devenir hostile.",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d10",
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "damageExtra": "3d6 psychiques",
+      "weight": 3,
+      "source": "Dungeon Master's Guide"
+    },
+    "épée dansante": {
+      "name": "Épée dansante",
+      "type": "weapon",
+      "rarity": "very-rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Épée magique. +1 aux jets d'attaque et de dégâts. Action bonus pour la lancer (9m) : elle vole et attaque seule pendant 4 rounds.",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d10",
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "weight": 3,
+      "source": "Dungeon Master's Guide"
+    },
+    "épée de réponse": {
+      "name": "Épée de réponse",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Épée longue magique. +1 aux jets d'attaque et de dégâts. Réaction pour infliger 1d8 dégâts supplémentaires quand une créature vous touche au corps à corps.",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d10",
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "weight": 3,
+      "source": "Dungeon Master's Guide"
+    },
+    "épée vorpale": {
+      "name": "Épée vorpale",
+      "type": "weapon",
+      "rarity": "legendary",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Épée magique légendaire. +3 aux jets d'attaque et de dégâts. Sur un coup critique (nat 20), tranche la tête si la cible a 25 PV max ou moins.",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d10",
+      "attackBonus": 3,
+      "damageBonus": 3,
+      "weight": 3,
+      "source": "Dungeon Master's Guide"
+    },
+    "épée de lumière lunaire": {
+      "name": "Épée de lumière lunaire",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": false,
+      "description": "Épée magique. Action bonus pour allumer : dégâts radiants, lumière vive 9m. +1 aux jets d'attaque et de dégâts quand allumée.",
+      "damage": "1d8",
+      "damageType": "radiant",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d10",
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "weight": 3,
+      "source": "Dungeon Master's Guide"
+    },
+    "hache des seigneurs nains": {
+      "name": "Hache des seigneurs nains",
+      "type": "weapon",
+      "rarity": "legendary",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un nain",
+      "description": "Hache d'armes magique légendaire. +3 aux jets d'attaque et de dégâts. Dégâts supplémentaires contre les géants et les gobelinoïdes.",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d10",
+      "attackBonus": 3,
+      "damageBonus": 3,
+      "damageExtra": "2d8 vs géants/gobelinoïdes",
+      "weight": 4,
+      "source": "Dungeon Master's Guide"
+    },
+    "hache du berserker": {
+      "name": "Hache du berserker",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Hache magique. +1 aux jets d'attaque et de dégâts. Si vous réduisez une créature à 0 PV, attaque supplémentaire contre une autre créature à 1,50m.",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d10",
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "weight": 4,
+      "source": "Dungeon Master's Guide"
+    },
+    "marteau de lancer nain": {
+      "name": "Marteau de lancer nain",
+      "type": "weapon",
+      "rarity": "very-rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un nain",
+      "description": "Marteau de guerre magique. +3 aux jets d'attaque et de dégâts. Revient à la main après un lancer. 9m de portée.",
+      "damage": "1d8",
+      "damageType": "bludgeoning",
+      "properties": [
+        "versatile",
+        "thrown"
+      ],
+      "versatileDamage": "1d10",
+      "range": {
+        "normal": 6,
+        "long": 18
+      },
+      "attackBonus": 3,
+      "damageBonus": 3,
+      "weight": 2,
+      "source": "Dungeon Master's Guide"
+    },
+    "marteau de tonnerre": {
+      "name": "Marteau de tonnerre",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": false,
+      "description": "Maillet magique. +1 aux jets d'attaque et de dégâts. Dégâts de tonnerre. Action bonus pour frapper le sol : JS CON 15 ou étourdi.",
+      "damage": "2d6",
+      "damageType": "bludgeoning",
+      "properties": [
+        "heavy",
+        "two-handed"
+      ],
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "damageExtra": "tonnerre",
+      "weight": 10,
+      "source": "Dungeon Master's Guide"
+    },
+    "masse d'anéantissement": {
+      "name": "Masse d'anéantissement",
+      "type": "weapon",
+      "rarity": "legendary",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Masse d'armes magique légendaire. +3 aux jets d'attaque et de dégâts. 2d6 dégâts nécrotiques supplémentaires. Si réduit à 0 PV, mort.",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": [],
+      "attackBonus": 3,
+      "damageBonus": 3,
+      "damageExtra": "2d6 nécrotiques",
+      "weight": 4,
+      "source": "Dungeon Master's Guide"
+    },
+    "masse destructrice": {
+      "name": "Masse destructrice",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": false,
+      "description": "Masse d'armes magique. +1 aux jets d'attaque et de dégâts. Critique sur 19-20. Les dégâts critiques sont 3x les dés normaux.",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": [],
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "weight": 4,
+      "source": "Dungeon Master's Guide"
+    },
+    "masse terrifiante": {
+      "name": "Masse terrifiante",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Masse d'armes magique. +1 aux jets d'attaque et de dégâts. Si vous touchez, la cible doit réussir un JS SAG 15 ou être effrayée jusqu'à la fin de votre prochain tour.",
+      "damage": "1d6",
+      "damageType": "bludgeoning",
+      "properties": [],
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "weight": 4,
+      "source": "Dungeon Master's Guide"
+    },
+    "arme +1": {
+      "name": "Arme +1",
+      "type": "weapon",
+      "rarity": "uncommon",
+      "attunement": false,
+      "description": "Arme magique avec un bonus de +1 aux jets d'attaque et de dégâts.",
+      "damage": "varies",
+      "damageType": "varies",
+      "properties": [],
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "weight": 0,
+      "source": "Dungeon Master's Guide"
+    },
+    "arme +2": {
+      "name": "Arme +2",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": false,
+      "description": "Arme magique avec un bonus de +2 aux jets d'attaque et de dégâts.",
+      "damage": "varies",
+      "damageType": "varies",
+      "properties": [],
+      "attackBonus": 2,
+      "damageBonus": 2,
+      "weight": 0,
+      "source": "Dungeon Master's Guide"
+    },
+    "arme +3": {
+      "name": "Arme +3",
+      "type": "weapon",
+      "rarity": "very-rare",
+      "attunement": false,
+      "description": "Arme magique avec un bonus de +3 aux jets d'attaque et de dégâts.",
+      "damage": "varies",
+      "damageType": "varies",
+      "properties": [],
+      "attackBonus": 3,
+      "damageBonus": 3,
+      "weight": 0,
+      "source": "Dungeon Master's Guide"
+    },
+    "arme vicieuse": {
+      "name": "Arme vicieuse",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": false,
+      "description": "Arme magique. Quand vous obtenez un 20 sur un jet d'attaque, infligez 7 dégâts supplémentaires du type de l'arme.",
+      "damage": "varies",
+      "damageType": "varies",
+      "properties": [],
+      "attackBonus": 0,
+      "damageBonus": 0,
+      "damageExtra": "7 dégâts sur critique",
+      "weight": 0,
+      "source": "Dungeon Master's Guide"
+    },
+    "arme vigilante": {
+      "name": "Arme vigilante",
+      "type": "weapon",
+      "rarity": "very-rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Arme magique. +1 aux jets d'attaque et de dégâts. Donne l'initiative avantagée.",
+      "damage": "varies",
+      "damageType": "varies",
+      "properties": [],
+      "attackBonus": 1,
+      "damageBonus": 1,
+      "weight": 0,
+      "source": "Dungeon Master's Guide"
+    },
+    "lame flamboyante": {
+      "name": "Lame Flamboyante",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Action bonus pour activer : +2d6 dégâts de feu supplémentaires et lumière vive dans un rayon de 12m.",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d10",
+      "attackBonus": 0,
+      "damageBonus": 0,
+      "damageExtra": "2d6 feu",
+      "weight": 3,
+      "source": "Dungeon Master's Guide"
+    },
+    "marque de givre": {
+      "name": "Marque de Givre",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Action bonus pour activer : +1d6 dégâts de froid. Résistance au feu.",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d10",
+      "attackBonus": 0,
+      "damageBonus": 0,
+      "damageExtra": "1d6 froid",
+      "weight": 3,
+      "source": "Dungeon Master's Guide"
+    },
+    "lame solaire": {
+      "name": "Lame Solaire",
+      "type": "weapon",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Épée +2, dégâts radiants contre morts-vivants. Lumière 12m.",
+      "damage": "1d8",
+      "damageType": "radiant",
+      "properties": [
+        "finesse"
+      ],
+      "attackBonus": 2,
+      "damageBonus": 2,
+      "weight": 3,
+      "source": "Dungeon Master's Guide"
+    },
+    "vengeur sacré": {
+      "name": "Vengeur Sacré",
+      "type": "weapon",
+      "rarity": "legendary",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un paladin",
+      "description": "Arme +3. Aura 3m : alliés ont avantage aux JDS contre sorts.",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d10",
+      "attackBonus": 3,
+      "damageBonus": 3,
+      "weight": 3,
+      "source": "Dungeon Master's Guide"
+    },
+    "armure +1": {
+      "name": "Armure +1",
+      "type": "armor",
+      "rarity": "rare",
+      "attunement": false,
+      "description": "Armure magique conférant un bonus de +1 à la CA.",
+      "armorClass": 0,
+      "armorCategory": "medium",
+      "acBonus": 1,
+      "addDex": true,
+      "maxDex": 2,
+      "weight": 0,
+      "source": "Dungeon Master's Guide"
+    },
+    "armure +2": {
+      "name": "Armure +2",
+      "type": "armor",
+      "rarity": "very-rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Armure magique conférant un bonus de +2 à la CA.",
+      "armorClass": 0,
+      "armorCategory": "medium",
+      "acBonus": 2,
+      "addDex": true,
+      "maxDex": 2,
+      "weight": 0,
+      "source": "Dungeon Master's Guide"
+    },
+    "armure +3": {
+      "name": "Armure +3",
+      "type": "armor",
+      "rarity": "legendary",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Armure magique conférant un bonus de +3 à la CA.",
+      "armorClass": 0,
+      "armorCategory": "medium",
+      "acBonus": 3,
+      "addDex": true,
+      "maxDex": 2,
+      "weight": 0,
+      "source": "Dungeon Master's Guide"
+    },
+    "bouclier +1": {
+      "name": "Bouclier +1",
+      "type": "armor",
+      "rarity": "uncommon",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Bouclier magique conférant un bonus de +1 à la CA.",
+      "armorClass": 2,
+      "armorCategory": "shield",
+      "acBonus": 1,
+      "addDex": false,
+      "weight": 6,
+      "source": "Dungeon Master's Guide"
+    },
+    "bouclier +2": {
+      "name": "Bouclier +2",
+      "type": "armor",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Bouclier magique conférant un bonus de +2 à la CA.",
+      "armorClass": 2,
+      "armorCategory": "shield",
+      "acBonus": 2,
+      "addDex": false,
+      "weight": 6,
+      "source": "Dungeon Master's Guide"
+    },
+    "bouclier +3": {
+      "name": "Bouclier +3",
+      "type": "armor",
+      "rarity": "very-rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Bouclier magique conférant un bonus de +3 à la CA.",
+      "armorClass": 2,
+      "armorCategory": "shield",
+      "acBonus": 3,
+      "addDex": false,
+      "weight": 6,
+      "source": "Dungeon Master's Guide"
+    },
+    "cotte elfique": {
+      "name": "Cotte Elfique",
+      "type": "armor",
+      "rarity": "rare",
+      "attunement": false,
+      "description": "Cotte de mailles légère. CA 14 + DEX (max 2). Pas de désavantage de furtivité.",
+      "armorClass": 14,
+      "armorCategory": "medium",
+      "acBonus": 0,
+      "addDex": true,
+      "maxDex": 2,
+      "stealthDisadvantage": false,
+      "weight": 20,
+      "source": "Dungeon Master's Guide"
+    },
+    "armure de mithral": {
+      "name": "Armure de Mithral",
+      "type": "armor",
+      "rarity": "uncommon",
+      "attunement": false,
+      "description": "Pas de désavantage de furtivité, pas de bruit.",
+      "armorClass": 0,
+      "armorCategory": "medium",
+      "acBonus": 0,
+      "addDex": true,
+      "maxDex": 2,
+      "stealthDisadvantage": false,
+      "weight": 0,
+      "source": "Dungeon Master's Guide"
+    },
+    "anneau de protection": {
+      "name": "Anneau de Protection",
+      "type": "wondrous",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Bonus de +1 à la CA et aux jets de sauvegarde.",
+      "acBonus": 1,
+      "saveBonus": 1,
+      "weight": 0,
+      "source": "Dungeon Master's Guide"
+    },
+    "cape de protection": {
+      "name": "Cape de Protection",
+      "type": "wondrous",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Bonus de +1 à la CA et aux jets de sauvegarde.",
+      "acBonus": 1,
+      "saveBonus": 1,
+      "weight": 1,
+      "source": "Dungeon Master's Guide"
+    },
+    "ceinture de force des géants des collines": {
+      "name": "Ceinture de Force des Géants des collines",
+      "type": "wondrous",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Votre score de Force devient 21.",
+      "abilitySetTo": {
+        "str": 21
+      },
+      "weight": 1,
+      "source": "Dungeon Master's Guide"
+    },
+    "ceinture de force des géants de pierre": {
+      "name": "Ceinture de Force des Géants de pierre",
+      "type": "wondrous",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Votre score de Force devient 23.",
+      "abilitySetTo": {
+        "str": 23
+      },
+      "weight": 1,
+      "source": "Dungeon Master's Guide"
+    },
+    "ceinture de force des géants du gel": {
+      "name": "Ceinture de Force des Géants du gel",
+      "type": "wondrous",
+      "rarity": "very-rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Votre score de Force devient 25.",
+      "abilitySetTo": {
+        "str": 25
+      },
+      "weight": 1,
+      "source": "Dungeon Master's Guide"
+    },
+    "ceinture de force des géants du feu": {
+      "name": "Ceinture de Force des Géants du feu",
+      "type": "wondrous",
+      "rarity": "very-rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Votre score de Force devient 27.",
+      "abilitySetTo": {
+        "str": 27
+      },
+      "weight": 1,
+      "source": "Dungeon Master's Guide"
+    },
+    "ceinture de force des géants des nuages": {
+      "name": "Ceinture de Force des Géants des nuages",
+      "type": "wondrous",
+      "rarity": "legendary",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Votre score de Force devient 29.",
+      "abilitySetTo": {
+        "str": 29
+      },
+      "weight": 1,
+      "source": "Dungeon Master's Guide"
+    },
+    "ceinture de force des géants des tempêtes": {
+      "name": "Ceinture de Force des Géants des tempêtes",
+      "type": "wondrous",
+      "rarity": "legendary",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Votre score de Force devient 31.",
+      "abilitySetTo": {
+        "str": 31
+      },
+      "weight": 1,
+      "source": "Dungeon Master's Guide"
+    },
+    "gantelets de puissance d'ogre": {
+      "name": "Gantelets de Puissance d'Ogre",
+      "type": "wondrous",
+      "rarity": "uncommon",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Votre score de Force devient 19 s'il est inférieur.",
+      "abilitySetTo": {
+        "str": 19
+      },
+      "weight": 2,
+      "source": "Dungeon Master's Guide"
+    },
+    "bandeau d'intellect": {
+      "name": "Bandeau d'Intellect",
+      "type": "wondrous",
+      "rarity": "uncommon",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Votre score d'Intelligence devient 19 s'il est inférieur.",
+      "abilitySetTo": {
+        "int": 19
+      },
+      "weight": 0,
+      "source": "Dungeon Master's Guide"
+    },
+    "amulette de santé": {
+      "name": "Amulette de Santé",
+      "type": "wondrous",
+      "rarity": "uncommon",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Votre score de Constitution devient 19 s'il est inférieur.",
+      "abilitySetTo": {
+        "con": 19
+      },
+      "weight": 0,
+      "source": "Dungeon Master's Guide"
+    },
+    "cape de charisme": {
+      "name": "Cape de Charisme",
+      "type": "wondrous",
+      "rarity": "uncommon",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Votre score de Charisme devient 19 s'il est inférieur.",
+      "abilitySetTo": {
+        "cha": 19
+      },
+      "weight": 1,
+      "source": "Dungeon Master's Guide"
+    },
+    "bottes elfiques": {
+      "name": "Bottes Elfiques",
+      "type": "wondrous",
+      "rarity": "uncommon",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Vitesse +3m, avantage aux tests de Stealth.",
+      "speedBonus": 3,
+      "weight": 1,
+      "source": "Dungeon Master's Guide"
+    },
+    "bottes de vitesse": {
+      "name": "Bottes de Vitesse",
+      "type": "wondrous",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Vitesse +3m, action bonus pour Dash.",
+      "speedBonus": 3,
+      "weight": 1,
+      "source": "Dungeon Master's Guide"
+    },
+    "bottes volantes": {
+      "name": "Bottes Volantes",
+      "type": "wondrous",
+      "rarity": "very-rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Vous pouvez voler à votre vitesse de marche.",
+      "speedBonus": 0,
+      "weight": 1,
+      "source": "Dungeon Master's Guide"
+    },
+    "bottes d'enjambée et de bondissement": {
+      "name": "Bottes d'Enjambée et de Bondissement",
+      "type": "wondrous",
+      "rarity": "uncommon",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Vitesse +3m, bonds de 6m.",
+      "speedBonus": 3,
+      "weight": 1,
+      "source": "Dungeon Master's Guide"
+    },
+    "baguette du maître de guerre": {
+      "name": "Baguette du Maître de Guerre",
+      "type": "wondrous",
+      "rarity": "uncommon",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un ensorceleur ou un magicien",
+      "description": "Bonus de +1 aux jets d'attaque de sort et au DD de sauvegarde des sorts.",
+      "spellAttackBonus": 1,
+      "spellSaveDCBonus": 1,
+      "weight": 0,
+      "source": "Dungeon Master's Guide"
+    },
+    "bâton du pacte": {
+      "name": "Bâton du Pacte",
+      "type": "wondrous",
+      "rarity": "uncommon",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un occultiste",
+      "description": "Bonus de +1 aux jets d'attaque de sort et au DD de sauvegarde des sorts.",
+      "spellAttackBonus": 1,
+      "spellSaveDCBonus": 1,
+      "weight": 0,
+      "source": "Dungeon Master's Guide"
+    },
+    "bâton de puissance": {
+      "name": "Bâton de Puissance",
+      "type": "wondrous",
+      "rarity": "very-rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien avec un ensorceleur, un magicien ou un occultiste",
+      "description": "Bonus de +2 aux jets d'attaque de sort. 20 charges.",
+      "spellAttackBonus": 2,
+      "spellSaveDCBonus": 0,
+      "charges": 20,
+      "maxCharges": 20,
+      "chargesRecovery": "dawn",
+      "weight": 4,
+      "source": "Dungeon Master's Guide"
+    },
+    "perle de puissance": {
+      "name": "Perle de Puissance",
+      "type": "wondrous",
+      "rarity": "uncommon",
+      "attunement": false,
+      "description": "Récupération arcanique : regagnez 1 emplacement de sort de niveau 3.",
+      "charges": 1,
+      "maxCharges": 1,
+      "chargesRecovery": "dawn",
+      "weight": 0,
+      "source": "Dungeon Master's Guide"
+    },
+    "epee aceree": {
+      "name": "Épée acérée",
+      "type": "weapon",
+      "rarity": "very-rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Épée magique. +3 aux jets d'attaque et de dégâts. Critique sur 19-20. Si réduit à 0 PV, tranchage.",
+      "damage": "1d8",
+      "damageType": "slashing",
+      "properties": [
+        "versatile"
+      ],
+      "versatileDamage": "1d10",
+      "attackBonus": 3,
+      "damageBonus": 3,
+      "weight": 3,
+      "source": "Dungeon Master's Guide"
+    },
+    "amulette de bonne sante": {
+      "name": "Amulette de bonne santé",
+      "type": "wondrous",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "Votre Constitution passe à 19 tant que vous portez cette amulette.",
+      "abilitySetTo": {
+        "con": 19
+      },
+      "weight": 0,
+      "source": "Dungeon Master's Guide"
+    },
+    "baguette de detection de l'ennemi": {
+      "name": "Baguette de détection de l'ennemi",
+      "type": "wondrous",
+      "rarity": "rare",
+      "attunement": true,
+      "attunementDetails": "nécessite un lien",
+      "description": "7 charges. Action pour détecter les créatures hostiles dans 18m. Se régénère 1d7+1 charges à l'aube.",
+      "charges": 7,
+      "maxCharges": 7,
+      "chargesRecovery": "dawn",
+      "weight": 0,
+      "source": "Dungeon Master's Guide"
+    },
+    "dague": {
+      "name": "Dague",
+      "type": "weapon",
+      "rarity": "common",
+      "attunement": false,
+      "description": "Arme simple de corps à corps.",
+      "damage": "1d4",
+      "damageType": "piercing",
+      "properties": [
+        "finesse",
+        "light",
+        "thrown"
+      ],
+      "range": {
+        "normal": 6,
+        "long": 18
+      },
+      "weight": 1,
+      "source": "SRD"
+    },
+    "arbalete legere": {
+      "name": "Arbalète légère",
+      "type": "weapon",
+      "rarity": "common",
+      "attunement": false,
+      "description": "Arme simple à distance.",
+      "damage": "1d8",
+      "damageType": "piercing",
+      "properties": [
+        "ammunition",
+        "loading",
+        "two-handed"
+      ],
+      "range": {
+        "normal": 24,
+        "long": 96
+      },
+      "weight": 5,
+      "source": "SRD"
+    }
+  }
+}

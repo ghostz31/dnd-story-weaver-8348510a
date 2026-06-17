@@ -1,0 +1,3342 @@
+{
+  "version": "2.0.0",
+  "source": "PHB",
+  "count": 12,
+  "classes": [
+    {
+      "id": "ID_PHB_CLASS_BARBARIAN",
+      "name": "Barbare",
+      "nameEn": "Barbarian",
+      "source": "PHB",
+      "hitDice": 12,
+      "primaryAbility": [
+        "strength"
+      ],
+      "savingThrows": [
+        "strength",
+        "constitution"
+      ],
+      "startingEquipment": {
+        "options": [
+          [
+            {
+              "id": "ID_STARTOPT_BARBARIAN_1A",
+              "name": "Hache d'armes",
+              "items": [
+                "ID_WEAPON_GLAIVE"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_BARBARIAN_1B",
+              "name": "Arme de guerre",
+              "items": [
+                "ID_WEAPON_ANY_MARTIAL"
+              ],
+              "quantity": 1
+            }
+          ],
+          [
+            {
+              "id": "ID_STARTOPT_BARBARIAN_2A",
+              "name": "Deux hachettes",
+              "items": [
+                "ID_WEAPON_HANDAXE"
+              ],
+              "quantity": 2
+            },
+            {
+              "id": "ID_STARTOPT_BARBARIAN_2B",
+              "name": "Arme simple",
+              "items": [
+                "ID_WEAPON_ANY_SIMPLE"
+              ],
+              "quantity": 1
+            }
+          ]
+        ],
+        "fixed": [
+          "ID_EQUIPMENT_EXPLORER_PACK",
+          "ID_WEAPON_JAVELIN"
+        ]
+      },
+      "features": {
+        "1": [
+          {
+            "id": "ID_PHB_FEATURE_RAGE",
+            "name": "Rage",
+            "level": 1,
+            "description": "Combattez avec une férocité primale. Gagnez des dégâts bonus, résistance aux dégâts contondants/perforants/tranchants, avantage aux jets de Force.",
+            "uses": {
+              "count": 2,
+              "recovery": "long"
+            },
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_RAGE_RESISTANCE",
+                "condition": "while raging"
+              },
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_RAGE_DAMAGE_BONUS",
+                "condition": "while raging"
+              },
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_RAGE_ADVANTAGE_STR",
+                "condition": "while raging"
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_UNARMORED_DEFENSE_BARBARIAN",
+            "name": "Défense sans armure",
+            "level": 1,
+            "description": "CA = 10 + modificateur de DEX + modificateur de CON lorsque vous ne portez pas d'armure ni de bouclier.",
+            "rules": [
+              {
+                "type": "stat",
+                "stat": "ac",
+                "value": "$(dex:modifier) + $(con:modifier)",
+                "bonus": "racial",
+                "condition": "no armor or shield"
+              }
+            ]
+          }
+        ],
+        "2": [
+          {
+            "id": "ID_PHB_FEATURE_RECKLESS_ATTACK",
+            "name": "Attaque téméraire",
+            "level": 2,
+            "description": "Avantage sur vos jets d'attaque au corps-à-corps avec Force pendant le tour, mais les attaques contre vous ont l'avantage jusqu'à votre prochain tour.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_RECKLESS_ATTACK"
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_DANGER_SENSE",
+            "name": "Sens du danger",
+            "level": 2,
+            "description": "Avantage sur les jets de sauvegarde de Dextérité contre les effets visibles (pièges, sorts) si vous n'êtes pas aveuglé/assourdi/paralysé.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_DANGER_SENSE"
+              }
+            ]
+          }
+        ],
+        "3": [
+          {
+            "id": "ID_PHB_FEATURE_PRIMAL_PATH",
+            "name": "Voie primitive",
+            "level": 3,
+            "description": "Choisissez une voie primitive qui façonne la nature de votre rage.",
+            "rules": [
+              {
+                "type": "select",
+                "name": "Voie primitive",
+                "targetType": "archetype",
+                "count": 1,
+                "options": [
+                  "ID_PHB_SUBCLASS_BERSERKER",
+                  "ID_PHB_SUBCLASS_TOTEM_WARRIOR"
+                ]
+              }
+            ]
+          }
+        ],
+        "5": [
+          {
+            "id": "ID_PHB_FEATURE_EXTRA_ATTACK_BARBARIAN",
+            "name": "Attaque supplémentaire",
+            "level": 5,
+            "description": "Vous pouvez attaquer deux fois au lieu d'une lorsque vous utilisez l'action Attaquer.",
+            "rules": [
+              {
+                "type": "set",
+                "property": "actionsPerTurn",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_FAST_MOVEMENT",
+            "name": "Déplacement rapide",
+            "level": 5,
+            "description": "Votre vitesse augmente de 3 mètres (10 ft) tant que vous ne portez pas d'armure lourde.",
+            "rules": [
+              {
+                "type": "stat",
+                "stat": "speed",
+                "value": 3,
+                "bonus": "racial",
+                "condition": "no heavy armor"
+              }
+            ]
+          }
+        ],
+        "7": [
+          {
+            "id": "ID_PHB_FEATURE_FERAL_INSTINCT",
+            "name": "Instinct feral",
+            "level": 7,
+            "description": "Avantage aux jets d'initiative. Vous ne pouvez pas être surpris tant que vous n'êtes pas inconscient.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_FERAL_INSTINCT"
+              }
+            ]
+          }
+        ],
+        "9": [
+          {
+            "id": "ID_PHB_FEATURE_BRUTAL_CRITICAL",
+            "name": "Critique brutal",
+            "level": 9,
+            "description": "Vous lancez un dé de dégâts supplémentaire lors d'un coup critique (1 dé au niveau 9, 2 au niveau 13, 3 au niveau 17).",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_BRUTAL_CRITICAL_1"
+              }
+            ]
+          }
+        ],
+        "11": [
+          {
+            "id": "ID_PHB_FEATURE_RELENTLESS_RAGE",
+            "name": "Rage implacable",
+            "level": 11,
+            "description": "Si vous tombez à 0 PV alors que vous êtes enragé, faites un jet de sauvegarde de CON DD 10 pour rester à 1 PV.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_RELENTLESS_RAGE"
+              }
+            ]
+          }
+        ],
+        "15": [
+          {
+            "id": "ID_PHB_FEATURE_PERSISTENT_RAGE",
+            "name": "Rage persistante",
+            "level": 15,
+            "description": "Votre rage ne s'arrête que si vous êtes inconscient ou si vous choisissez de l'arrêter.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_PERSISTENT_RAGE"
+              }
+            ]
+          }
+        ],
+        "18": [
+          {
+            "id": "ID_PHB_FEATURE_INDOMITABLE_MIGHT",
+            "name": "Puissance indomptable",
+            "level": 18,
+            "description": "Si votre total pour un test de Force est inférieur à votre score de Force, utilisez votre score de Force à la place.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_INDOMITABLE_MIGHT"
+              }
+            ]
+          }
+        ],
+        "20": [
+          {
+            "id": "ID_PHB_FEATURE_PRIMAL_CHAMPION",
+            "name": "Champion primitif",
+            "level": 20,
+            "description": "Force et Constitution augmentent de 4 (max 24).",
+            "rules": [
+              {
+                "type": "stat",
+                "stat": "str",
+                "value": 4,
+                "bonus": "racial"
+              },
+              {
+                "type": "stat",
+                "stat": "con",
+                "value": 4,
+                "bonus": "racial"
+              }
+            ]
+          }
+        ]
+      },
+      "subclasses": [
+        {
+          "id": "ID_PHB_SUBCLASS_BERSERKER",
+          "name": "Chemin du berserker",
+          "nameEn": "Path of the Berserker",
+          "source": "PHB",
+          "description": "La voie du berserker est celle de la rage incontrôlée.",
+          "features": {
+            "3": [
+              {
+                "id": "ID_PHB_FEATURE_FRENZY",
+                "name": "Frénésie",
+                "level": 3,
+                "description": "Lorsque vous ragez, vous pouvez devenir frénétique pour faire une attaque bonus supplémentaire."
+              }
+            ],
+            "6": [
+              {
+                "id": "ID_PHB_FEATURE_MINDLESS_RAGE",
+                "name": "Rage inconsciente",
+                "level": 6,
+                "description": "Vous ne pouvez pas être charmé ou effrayé pendant que vous ragez."
+              }
+            ],
+            "10": [
+              {
+                "id": "ID_PHB_FEATURE_INTIMIDATING_PRESENCE",
+                "name": "Présence intimidante",
+                "level": 10,
+                "description": "Action pour effrayer une créature à 9 mètres. Jet de sauvegarde de Sagesse."
+              }
+            ],
+            "14": [
+              {
+                "id": "ID_PHB_FEATURE_RETALIATION",
+                "name": "Représailles",
+                "level": 14,
+                "description": "Réaction pour attaquer une créature qui vous blesse (si à 1,5 mètre)."
+              }
+            ]
+          }
+        },
+        {
+          "id": "ID_PHB_SUBCLASS_TOTEM_WARRIOR",
+          "name": "Chemin du guerrier totémique",
+          "nameEn": "Path of the Totem Warrior",
+          "source": "PHB",
+          "description": "Un guerrier qui canalise l'esprit des bêtes.",
+          "features": {
+            "3": [
+              {
+                "id": "ID_PHB_FEATURE_SPIRIT_SEEKER",
+                "name": "Chercheur d'esprits",
+                "level": 3,
+                "description": "Lancer détection des pièges et détection de la magie comme rituels."
+              },
+              {
+                "id": "ID_PHB_FEATURE_TOTEM_SPIRIT",
+                "name": "Esprit totémique",
+                "level": 3,
+                "description": "Choisissez un totem animal (ours, aigle, loup, etc.) qui vous confère des bénéfices."
+              }
+            ],
+            "6": [
+              {
+                "id": "ID_PHB_FEATURE_ASPECT_OF_THE_BEAST",
+                "name": "Aspect de la bête",
+                "level": 6,
+                "description": "Gagnez un trait basé sur votre totem."
+              }
+            ],
+            "10": [
+              {
+                "id": "ID_PHB_FEATURE_SPIRIT_WALKER",
+                "name": "Marcheur d'esprits",
+                "level": 10,
+                "description": "Lancer communion avec la nature comme un rituel."
+              }
+            ],
+            "14": [
+              {
+                "id": "ID_PHB_FEATURE_TOTEMIC_ATTUNEMENT",
+                "name": "Harmonie totémique",
+                "level": 14,
+                "description": "Gagnez un pouvoir puissant basé sur votre totem."
+              }
+            ]
+          }
+        }
+      ],
+      "resources": [
+        {
+          "id": "ID_RESOURCE_RAGES",
+          "name": "Rages",
+          "progression": {
+            "1": 2,
+            "2": 2,
+            "3": 3,
+            "4": 3,
+            "5": 3,
+            "6": 4,
+            "7": 4,
+            "8": 4,
+            "9": 4,
+            "10": 4,
+            "11": 4,
+            "12": 5,
+            "13": 5,
+            "14": 5,
+            "15": 5,
+            "16": 5,
+            "17": 6,
+            "18": 6,
+            "19": 6,
+            "20": 999
+          },
+          "recovery": "long"
+        }
+      ]
+    },
+    {
+      "id": "ID_PHB_CLASS_BARD",
+      "name": "Barde",
+      "nameEn": "Bard",
+      "source": "PHB",
+      "hitDice": 8,
+      "primaryAbility": [
+        "charisma"
+      ],
+      "savingThrows": [
+        "dexterity",
+        "charisma"
+      ],
+      "startingEquipment": {
+        "options": [
+          [
+            {
+              "id": "ID_STARTOPT_BARD_1A",
+              "name": "Rapière",
+              "items": [
+                "ID_WEAPON_RAPIER"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_BARD_1B",
+              "name": "Épée longue",
+              "items": [
+                "ID_WEAPON_LONGSWORD"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_BARD_1C",
+              "name": "Arme simple",
+              "items": [
+                "ID_WEAPON_ANY_SIMPLE"
+              ],
+              "quantity": 1
+            }
+          ],
+          [
+            {
+              "id": "ID_STARTOPT_BARD_2A",
+              "name": "Sac d'diplomate",
+              "items": [
+                "ID_EQUIPMENT_DIPLOMAT_PACK"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_BARD_2B",
+              "name": "Sac d'artiste",
+              "items": [
+                "ID_EQUIPMENT_ENTERTAINER_PACK"
+              ],
+              "quantity": 1
+            }
+          ]
+        ],
+        "fixed": [
+          "ID_WEAPON_DAGGER",
+          "ID_EQUIPMENT_LUTE",
+          "ID_ARMOR_LEATHER"
+        ]
+      },
+      "features": {
+        "1": [
+          {
+            "id": "ID_PHB_FEATURE_SPELLCASTING_BARD",
+            "name": "Incantation",
+            "level": 1,
+            "description": "Vous pouvez lancer des sorts de barde utilisant le Charisme comme caractéristique d'incantation.",
+            "rules": [
+              {
+                "type": "set",
+                "property": "spellcasting.ability",
+                "value": "cha"
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_BARDIC_INSPIRATION",
+            "name": "Inspiration bardique",
+            "level": 1,
+            "description": "Action bonus pour donner un d6 à une créature à 18 mètres qui peut l'ajouter à un jet d'attaque, de capacité ou de sauvegarde.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_BARDIC_INSPIRATION"
+              }
+            ],
+            "uses": {
+              "count": "level_based",
+              "recovery": "long"
+            }
+          }
+        ],
+        "2": [
+          {
+            "id": "ID_PHB_FEATURE_JACK_OF_ALL_TRADES",
+            "name": "Touche-à-tout",
+            "level": 2,
+            "description": "Ajoutez la moitié de votre bonus de maîtrise (arrondi au nombre inférieur) à tout test de capacité qui n'inclut pas déjà votre bonus de maîtrise."
+          },
+          {
+            "id": "ID_PHB_FEATURE_SONG_OF_REST",
+            "name": "Chant de repos",
+            "level": 2,
+            "description": "Lors d'un repos court, ceux qui regagnent des PV grâce à vos soins regagnent 1d6 PV supplémentaires.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_RESTFUL_SONG"
+              }
+            ]
+          }
+        ],
+        "3": [
+          {
+            "id": "ID_PHB_FEATURE_BARD_COLLEGE",
+            "name": "Collège de barde",
+            "level": 3,
+            "description": "Choisissez un collège de barde qui représente votre style de performance."
+          },
+          {
+            "id": "ID_PHB_FEATURE_EXPERTISE_BARD",
+            "name": "Expertise",
+            "level": 3,
+            "description": "Choisissez deux compétences que vous maîtrisez. Votre bonus de maîtrise est doublé pour ces compétences.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_BARD_EXPERTISE"
+              }
+            ]
+          }
+        ],
+        "5": [
+          {
+            "id": "ID_PHB_FEATURE_FONT_OF_INSPIRATION",
+            "name": "Source d'inspiration",
+            "level": 5,
+            "description": "Récupérez toutes vos utilisations d'inspiration bardique après un repos court ou long."
+          }
+        ],
+        "6": [
+          {
+            "id": "ID_PHB_FEATURE_COUNTERCHARM",
+            "name": "Contre-charme",
+            "level": 6,
+            "description": "Action pour offrir l'avantage aux jets de sauvegarde contre charmé/effrayé aux créatures à 9 mètres."
+          }
+        ],
+        "10": [
+          {
+            "id": "ID_PHB_FEATURE_MAGICAL_SECRETS_10",
+            "name": "Secrets magiques",
+            "level": 10,
+            "description": "Choisissez deux sorts de n'importe quelle classe. Ils comptent comme des sorts de barde."
+          },
+          {
+            "id": "ID_PHB_FEATURE_EXPERTISE_BARD_10",
+            "name": "Expertise (2)",
+            "level": 10,
+            "description": "Choisissez deux compétences supplémentaires pour l'expertise.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_BARD_EXPERTISE_2"
+              }
+            ]
+          }
+        ],
+        "14": [
+          {
+            "id": "ID_PHB_FEATURE_MAGICAL_SECRETS_14",
+            "name": "Secrets magiques",
+            "level": 14,
+            "description": "Choisissez deux sorts supplémentaires de n'importe quelle classe."
+          }
+        ],
+        "18": [
+          {
+            "id": "ID_PHB_FEATURE_MAGICAL_SECRETS_18",
+            "name": "Secrets magiques",
+            "level": 18,
+            "description": "Choisissez deux sorts supplémentaires de n'importe quelle classe."
+          }
+        ],
+        "20": [
+          {
+            "id": "ID_PHB_FEATURE_SUPERIOR_INSPIRATION",
+            "name": "Inspiration supérieure",
+            "level": 20,
+            "description": "Lorsque vous lancez votre initiative sans plus d'inspiration bardique, regagnez-en une utilisation."
+          }
+        ]
+      },
+      "subclasses": [
+        {
+          "id": "ID_PHB_SUBCLASS_LORE",
+          "name": "Collège du savoir",
+          "nameEn": "College of Lore",
+          "source": "PHB",
+          "description": "Les bardes du savoir collectionnent les secrets magiques.",
+          "features": {
+            "3": [
+              {
+                "id": "ID_PHB_FEATURE_BONUS_PROFICIENCIES_LORE",
+                "name": "Maîtrises bonus",
+                "level": 3,
+                "description": "Maîtrisez trois compétences de votre choix."
+              },
+              {
+                "id": "ID_PHB_FEATURE_CUTTING_WORDS",
+                "name": "Mots cinglants",
+                "level": 3,
+                "description": "Utilisez votre inspiration bardique pour réduire un jet d'attaque, de dégâts ou de capacité d'une créature."
+              }
+            ],
+            "6": [
+              {
+                "id": "ID_PHB_FEATURE_ADDITIONAL_MAGICAL_SECRETS",
+                "name": "Secrets magiques additionnels",
+                "level": 6,
+                "description": "Apprenez deux sorts supplémentaires de n'importe quelle classe."
+              }
+            ],
+            "14": [
+              {
+                "id": "ID_PHB_FEATURE_PEERLESS_SKILL",
+                "name": "Compétence sans pareille",
+                "level": 14,
+                "description": "Ajoutez un dé d'inspiration bardique à un test de capacité."
+              }
+            ]
+          }
+        },
+        {
+          "id": "ID_PHB_SUBCLASS_VALOR",
+          "name": "Collège de la vaillance",
+          "nameEn": "College of Valor",
+          "source": "PHB",
+          "description": "Les bardes de la vaillance sont des guerriers poètes.",
+          "features": {
+            "3": [
+              {
+                "id": "ID_PHB_FEATURE_BONUS_PROFICIENCIES_VALOR",
+                "name": "Maîtrises bonus",
+                "level": 3,
+                "description": "Maîtrisez les armures moyennes, les boucliers et les armes de guerre."
+              },
+              {
+                "id": "ID_PHB_FEATURE_COMBAT_INSPIRATION",
+                "name": "Inspiration au combat",
+                "level": 3,
+                "description": "Une créature avec inspiration bardique peut l'ajouter aux dégâts ou à sa CA."
+              }
+            ],
+            "6": [
+              {
+                "id": "ID_PHB_FEATURE_EXTRA_ATTACK_BARD",
+                "name": "Attaque supplémentaire",
+                "level": 6,
+                "description": "Vous pouvez attaquer deux fois au lieu d'une lorsque vous utilisez l'action Attaquer."
+              }
+            ],
+            "14": [
+              {
+                "id": "ID_PHB_FEATURE_BATTLE_MAGIC",
+                "name": "Magie de bataille",
+                "level": 14,
+                "description": "Après une attaque au corps-à-corps, vous pouvez lancer un sort à action bonus."
+              }
+            ]
+          }
+        }
+      ],
+      "spellcasting": {
+        "ability": "charisma",
+        "type": "full",
+        "slots": {},
+        "spellsKnown": {},
+        "ritualCasting": true,
+        "focus": "component-pouch"
+      },
+      "resources": [
+        {
+          "id": "ID_RESOURCE_BARDIC_INSPIRATION",
+          "name": "Inspiration bardique",
+          "progression": {
+            "1": 1,
+            "2": 1,
+            "3": 2,
+            "4": 2,
+            "5": 3,
+            "6": 3,
+            "7": 3,
+            "8": 3,
+            "9": 3,
+            "10": 4,
+            "11": 4,
+            "12": 4,
+            "13": 4,
+            "14": 4,
+            "15": 5,
+            "16": 5,
+            "17": 5,
+            "18": 5,
+            "19": 5,
+            "20": 5
+          },
+          "recovery": "short"
+        }
+      ]
+    },
+    {
+      "id": "ID_PHB_CLASS_CLERIC",
+      "name": "Clerc",
+      "nameEn": "Cleric",
+      "source": "PHB",
+      "hitDice": 8,
+      "primaryAbility": [
+        "wisdom"
+      ],
+      "savingThrows": [
+        "wisdom",
+        "charisma"
+      ],
+      "startingEquipment": {
+        "options": [
+          [
+            {
+              "id": "ID_STARTOPT_CLERIC_1A",
+              "name": "Masse d'armes",
+              "items": [
+                "ID_WEAPON_MACE"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_CLERIC_1B",
+              "name": "Marteau de guerre",
+              "items": [
+                "ID_WEAPON_WARHAMMER"
+              ],
+              "quantity": 1
+            }
+          ],
+          [
+            {
+              "id": "ID_STARTOPT_CLERIC_2A",
+              "name": "Armure de cuir",
+              "items": [
+                "ID_ARMOR_LEATHER"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_CLERIC_2B",
+              "name": "Armure de cuir clouté",
+              "items": [
+                "ID_ARMOR_STUDDED_LEATHER"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_CLERIC_2C",
+              "name": "Armure d'écailles",
+              "items": [
+                "ID_ARMOR_SCALE_MAIL"
+              ],
+              "quantity": 1
+            }
+          ]
+        ],
+        "fixed": [
+          "ID_WEAPON_DAGGER",
+          "ID_EQUIPMENT_EXPLORER_PACK"
+        ]
+      },
+      "features": {
+        "1": [
+          {
+            "id": "ID_PHB_FEATURE_SPELLCASTING_CLERIC",
+            "name": "Incantation",
+            "level": 1,
+            "description": "Vous pouvez lancer des sorts de clerc utilisant la Sagesse comme caractéristique d'incantation.",
+            "rules": [
+              {
+                "type": "set",
+                "property": "spellcasting.ability",
+                "value": "wis"
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_DIVINE_DOMAIN",
+            "name": "Domaine divin",
+            "level": 1,
+            "description": "Choisissez un domaine divin lié à votre divinité.",
+            "rules": [
+              {
+                "type": "select",
+                "name": "Choix de domaine",
+                "targetType": "subclass",
+                "count": 1
+              }
+            ]
+          }
+        ],
+        "2": [
+          {
+            "id": "ID_PHB_FEATURE_CHANNEL_DIVINITY",
+            "name": "Canalisation divine",
+            "level": 2,
+            "description": "Action pour canaliser l'énergie divine et créer divers effets magiques.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_CHANNEL_DIVINITY"
+              }
+            ],
+            "uses": {
+              "count": "1",
+              "recovery": "short"
+            }
+          },
+          {
+            "id": "ID_PHB_FEATURE_CHANNEL_DIVINITY_1_REST",
+            "name": "Canalisation divine (1/repos)",
+            "level": 2,
+            "description": "1 utilisation entre les repos courts ou longs.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_CHANNEL_DIVINITY_EXTRA"
+              }
+            ],
+            "uses": {
+              "count": "1",
+              "recovery": "short"
+            }
+          }
+        ],
+        "5": [
+          {
+            "id": "ID_PHB_FEATURE_DESTROY_UNDEAD",
+            "name": "Destruction des morts-vivants",
+            "level": 5,
+            "description": "Les morts-vivants de FP 1/2 ou moins sont détruits instantanément si ils échouent leur jet de sauvegarde contre votre renvoi."
+          }
+        ],
+        "8": [
+          {
+            "id": "ID_PHB_FEATURE_DIVINE_STRIKE",
+            "name": "Frappe divine",
+            "level": 8,
+            "description": "Une fois par tour, ajoutez 1d8 dégâts radiants à une attaque au corps-à-corps."
+          }
+        ],
+        "10": [
+          {
+            "id": "ID_PHB_FEATURE_DIVINE_INTERVENTION",
+            "name": "Intervention divine",
+            "level": 10,
+            "description": "Action pour demander à votre divinité d'intervenir. Jet de réussite en pourcentage = niveau de clerc.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_DIVINE_INTERVENTION"
+              }
+            ]
+          }
+        ],
+        "20": [
+          {
+            "id": "ID_PHB_FEATURE_IMPROVED_DIVINE_INTERVENTION",
+            "name": "Intervention divine améliorée",
+            "level": 20,
+            "description": "L'intervention divine réussit automatiquement."
+          }
+        ]
+      },
+      "subclasses": [
+        {
+          "id": "ID_PHB_SUBCLASS_KNOWLEDGE",
+          "name": "Domaine du savoir",
+          "nameEn": "Knowledge Domain",
+          "source": "PHB",
+          "description": "Les clercs du savoir sont les gardiens de la vérité.",
+          "features": {
+            "1": [
+              {
+                "id": "ID_PHB_FEATURE_BLESSINGS_OF_KNOWLEDGE",
+                "name": "Bénédictions du savoir",
+                "level": 1,
+                "description": "Maîtrisez deux compétences de la liste. Doublez votre bonus de maîtrise pour ces compétences."
+              }
+            ],
+            "2": [
+              {
+                "id": "ID_PHB_FEATURE_CHANNEL_DIVINITY_KNOWLEDGE_OF_THE_AGES",
+                "name": "Canalisation : Savoir des âges",
+                "level": 2,
+                "description": "Action pour gagner la maîtrise d'une compétence ou d'un outil pendant 10 minutes."
+              }
+            ],
+            "6": [
+              {
+                "id": "ID_PHB_FEATURE_CHANNEL_DIVINITY_READ_THOUGHTS",
+                "name": "Canalisation : Lecture des pensées",
+                "level": 6,
+                "description": "Lisez les pensées d'une créature à 18 mètres pendant 1 minute."
+              }
+            ],
+            "8": [
+              {
+                "id": "ID_PHB_FEATURE_POTENT_SPELLCASTING",
+                "name": "Incantation puissante",
+                "level": 8,
+                "description": "Ajoutez votre modificateur de Sagesse aux dégâts des sorts de clerc de niveau 0."
+              }
+            ],
+            "17": [
+              {
+                "id": "ID_PHB_FEATURE_VISIONS_OF_THE_PAST",
+                "name": "Visions du passé",
+                "level": 17,
+                "description": "Méditez 1 minute pour voir les événements passés d'un objet ou d'un lieu."
+              }
+            ]
+          }
+        },
+        {
+          "id": "ID_PHB_SUBCLASS_LIFE",
+          "name": "Domaine de la vie",
+          "nameEn": "Life Domain",
+          "source": "PHB",
+          "description": "Les clercs de la vie sont les guérisseurs par excellence.",
+          "features": {
+            "1": [
+              {
+                "id": "ID_PHB_FEATURE_DISCIPLE_OF_LIFE",
+                "name": "Disciple de la vie",
+                "level": 1,
+                "description": "Les sorts de soins rendent 2 + niveau du sort PV supplémentaires."
+              },
+              {
+                "id": "ID_PHB_FEATURE_BONUS_PROFICIENCY_LIFE",
+                "name": "Maîtrise bonus",
+                "level": 1,
+                "description": "Maîtrisez les armures lourdes."
+              }
+            ],
+            "2": [
+              {
+                "id": "ID_PHB_FEATURE_CHANNEL_DIVINITY_PRESERVE_LIFE",
+                "name": "Canalisation : Préservation de la vie",
+                "level": 2,
+                "description": "Action pour répartir 5 × niveau de clerc PV entre les créatures blessées à 9 mètres."
+              }
+            ],
+            "6": [
+              {
+                "id": "ID_PHB_FEATURE_BLESSED_HEALER",
+                "name": "Guérisseur béni",
+                "level": 6,
+                "description": "Lorsque vous lancez un sort de soins sur une autre créature, vous regagnez 3 + niveau du sort PV."
+              }
+            ],
+            "8": [
+              {
+                "id": "ID_PHB_FEATURE_DIVINE_STRIKE_LIFE",
+                "name": "Frappe divine",
+                "level": 8,
+                "description": "Ajoutez 1d8 dégâts radiants à une attaque au corps-à-corps une fois par tour."
+              }
+            ],
+            "17": [
+              {
+                "id": "ID_PHB_FEATURE_SUPREME_HEALING",
+                "name": "Soin suprême",
+                "level": 17,
+                "description": "Lorsque vous lancez un sort de soins, utilisez le maximum possible pour chaque dé."
+              }
+            ]
+          }
+        }
+      ],
+      "spellcasting": {
+        "ability": "wisdom",
+        "type": "full",
+        "slots": {},
+        "spellsPrepared": {
+          "formula": "$(level) + $(wisdom:modifier)",
+          "from": "domain"
+        },
+        "ritualCasting": true,
+        "focus": "holy-symbol"
+      },
+      "resources": [
+        {
+          "id": "ID_RESOURCE_CHANNEL_DIVINITY",
+          "name": "Canalisation divine",
+          "progression": {
+            "2": 1,
+            "3": 1,
+            "4": 1,
+            "5": 1,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2,
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 2,
+            "18": 3,
+            "19": 3,
+            "20": 3
+          },
+          "recovery": "short"
+        }
+      ]
+    },
+    {
+      "id": "ID_PHB_CLASS_FIGHTER",
+      "name": "Guerrier",
+      "nameEn": "Fighter",
+      "source": "PHB",
+      "hitDice": 10,
+      "primaryAbility": [
+        "strength",
+        "dexterity"
+      ],
+      "savingThrows": [
+        "strength",
+        "constitution"
+      ],
+      "startingEquipment": {
+        "options": [
+          [
+            {
+              "id": "ID_STARTOPT_FIGHTER_1A",
+              "name": "Cotte de mailles",
+              "items": [
+                "ID_ARMOR_CHAIN_MAIL"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_FIGHTER_1B",
+              "name": "Armures de cuir",
+              "items": [
+                "ID_ARMOR_LEATHER"
+              ],
+              "quantity": 1
+            }
+          ],
+          [
+            {
+              "id": "ID_STARTOPT_FIGHTER_2A",
+              "name": "Arme de guerre et bouclier",
+              "items": [
+                "ID_WEAPON_ANY_MARTIAL",
+                "ID_ARMOR_SHIELD"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_FIGHTER_2B",
+              "name": "Deux armes de guerre",
+              "items": [
+                "ID_WEAPON_ANY_MARTIAL"
+              ],
+              "quantity": 2
+            }
+          ]
+        ],
+        "fixed": [
+          "ID_WEAPON_LIGHT_CROSSBOW",
+          "ID_WEAPON_HANDAXE",
+          "ID_EQUIPMENT_DUNGEONEER_PACK"
+        ]
+      },
+      "features": {
+        "1": [
+          {
+            "id": "ID_PHB_FEATURE_FIGHTING_STYLE",
+            "name": "Style de combat",
+            "level": 1,
+            "description": "Choisissez un style de combat qui vous confère des bénéfices.",
+            "rules": [
+              {
+                "type": "select",
+                "name": "Style de combat",
+                "targetType": "feature",
+                "count": 1,
+                "options": [
+                  "ID_FIGHTING_STYLE_ARCHERY",
+                  "ID_FIGHTING_STYLE_DEFENSE",
+                  "ID_FIGHTING_STYLE_DUELING",
+                  "ID_FIGHTING_STYLE_GREAT_WEAPON",
+                  "ID_FIGHTING_STYLE_PROTECTION",
+                  "ID_FIGHTING_STYLE_TWO_WEAPON"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_SECOND_WIND",
+            "name": "Second souffle",
+            "level": 1,
+            "description": "Bonus action pour regagner 1d10 + niveau de guerrier PV. Une fois par repos court ou long.",
+            "uses": {
+              "count": 1,
+              "recovery": "short"
+            },
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_SECOND_WIND_HEAL"
+              }
+            ]
+          }
+        ],
+        "2": [
+          {
+            "id": "ID_PHB_FEATURE_ACTION_SURGE",
+            "name": "Déferlement d'action",
+            "level": 2,
+            "description": "Action pour faire une action supplémentaire ce tour. Une fois par repos court ou long.",
+            "uses": {
+              "count": 1,
+              "recovery": "short"
+            },
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_ACTION_SURGE_EXTRA_ACTION"
+              }
+            ]
+          }
+        ],
+        "3": [
+          {
+            "id": "ID_PHB_FEATURE_MARTIAL_ARCHETYPE",
+            "name": "Archétype martial",
+            "level": 3,
+            "description": "Choisissez un archétype martial qui représente votre approche du combat.",
+            "rules": [
+              {
+                "type": "select",
+                "name": "Archétype martial",
+                "targetType": "archetype",
+                "count": 1,
+                "options": [
+                  "ID_PHB_SUBCLASS_CHAMPION",
+                  "ID_PHB_SUBCLASS_BATTLE_MASTER",
+                  "ID_PHB_SUBCLASS_ELDRIKT_KNIGHT"
+                ]
+              }
+            ]
+          }
+        ],
+        "5": [
+          {
+            "id": "ID_PHB_FEATURE_EXTRA_ATTACK_FIGHTER",
+            "name": "Attaque supplémentaire",
+            "level": 5,
+            "description": "Vous pouvez attaquer deux fois au lieu d'une lorsque vous utilisez l'action Attaquer.",
+            "rules": [
+              {
+                "type": "set",
+                "property": "actionsPerTurn",
+                "value": 2
+              }
+            ]
+          }
+        ],
+        "9": [
+          {
+            "id": "ID_PHB_FEATURE_INDOMITABLE",
+            "name": "Indomptable",
+            "level": 9,
+            "description": "Relancez un jet de sauvegarde raté. Une fois par repos long.",
+            "uses": {
+              "count": 1,
+              "recovery": "long"
+            },
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_INDOMITABLE_REROLL"
+              }
+            ]
+          }
+        ],
+        "11": [
+          {
+            "id": "ID_PHB_FEATURE_EXTRA_ATTACK_FIGHTER_2",
+            "name": "Attaque supplémentaire (2)",
+            "level": 11,
+            "description": "Vous pouvez attaquer trois fois lorsque vous utilisez l'action Attaquer.",
+            "rules": [
+              {
+                "type": "set",
+                "property": "actionsPerTurn",
+                "value": 3
+              }
+            ]
+          }
+        ],
+        "13": [
+          {
+            "id": "ID_PHB_FEATURE_INDOMITABLE_2",
+            "name": "Indomptable (2)",
+            "level": 13,
+            "description": "Deux utilisations par repos long.",
+            "uses": {
+              "count": 2,
+              "recovery": "long"
+            }
+          }
+        ],
+        "17": [
+          {
+            "id": "ID_PHB_FEATURE_ACTION_SURGE_2",
+            "name": "Déferlement d'action (2)",
+            "level": 17,
+            "description": "Deux utilisations par repos court ou long.",
+            "uses": {
+              "count": 2,
+              "recovery": "short"
+            }
+          },
+          {
+            "id": "ID_PHB_FEATURE_INDOMITABLE_3",
+            "name": "Indomptable (3)",
+            "level": 17,
+            "description": "Trois utilisations par repos long.",
+            "uses": {
+              "count": 3,
+              "recovery": "long"
+            }
+          }
+        ],
+        "20": [
+          {
+            "id": "ID_PHB_FEATURE_EXTRA_ATTACK_FIGHTER_3",
+            "name": "Attaque supplémentaire (3)",
+            "level": 20,
+            "description": "Vous pouvez attaquer quatre fois lorsque vous utilisez l'action Attaquer.",
+            "rules": [
+              {
+                "type": "set",
+                "property": "actionsPerTurn",
+                "value": 4
+              }
+            ]
+          }
+        ]
+      },
+      "subclasses": [
+        {
+          "id": "ID_PHB_SUBCLASS_CHAMPION",
+          "name": "Champion",
+          "nameEn": "Champion",
+          "source": "PHB",
+          "description": "Un maître du combat physique.",
+          "features": {
+            "3": [
+              {
+                "id": "ID_PHB_FEATURE_IMPROVED_CRITICAL",
+                "name": "Critique amélioré",
+                "level": 3,
+                "description": "Vos attaques infligent un coup critique sur un 19 ou 20."
+              }
+            ],
+            "7": [
+              {
+                "id": "ID_PHB_FEATURE_REMARKABLE_ATHLETE",
+                "name": "Athlète remarquable",
+                "level": 7,
+                "description": "Ajoutez la moitié de votre bonus de maîtrise aux tests de Force, Dextérité ou Constitution sans bonus."
+              }
+            ],
+            "10": [
+              {
+                "id": "ID_PHB_FEATURE_ADDITIONAL_FIGHTING_STYLE",
+                "name": "Style de combat additionnel",
+                "level": 10,
+                "description": "Choisissez un deuxième style de combat."
+              }
+            ],
+            "15": [
+              {
+                "id": "ID_PHB_FEATURE_SUPERIOR_CRITICAL",
+                "name": "Critique supérieur",
+                "level": 15,
+                "description": "Vos attaques infligent un coup critique sur un 18, 19 ou 20."
+              }
+            ],
+            "18": [
+              {
+                "id": "ID_PHB_FEATURE_SURVIVOR",
+                "name": "Survivant",
+                "level": 18,
+                "description": "Au début de chaque tour, regagnez 5 + modificateur de Constitution PV si vous avez moins de la moitié de vos PV."
+              }
+            ]
+          }
+        },
+        {
+          "id": "ID_PHB_SUBCLASS_BATTLE_MASTER",
+          "name": "Maître de bataille",
+          "nameEn": "Battle Master",
+          "source": "PHB",
+          "description": "Un maître des manœuvres de combat.",
+          "features": {
+            "3": [
+              {
+                "id": "ID_PHB_FEATURE_COMBAT_SUPERIORITY",
+                "name": "Supériorité martiale",
+                "level": 3,
+                "description": "Apprenez trois manœuvres. Vous avez 4 dés de supériorité (d8)."
+              },
+              {
+                "id": "ID_PHB_FEATURE_STUDENT_OF_WAR",
+                "name": "Étudiant de la guerre",
+                "level": 3,
+                "description": "Maîtrisez un type d'outils d'artisan."
+              }
+            ],
+            "7": [
+              {
+                "id": "ID_PHB_FEATURE_KNOW_YOUR_ENEMY",
+                "name": "Connais ton ennemi",
+                "level": 7,
+                "description": "Pendant 1 minute d'observation, apprenez les capacités offensives/défensives d'une créature."
+              }
+            ],
+            "10": [
+              {
+                "id": "ID_PHB_FEATURE_IMPROVED_COMBAT_SUPERIORITY",
+                "name": "Supériorité améliorée",
+                "level": 10,
+                "description": "Dés de supériorité d10."
+              }
+            ],
+            "15": [
+              {
+                "id": "ID_PHB_FEATURE_RELENTLESS",
+                "name": "Implacable",
+                "level": 15,
+                "description": "Récupérez un dé de supériorité au début du tour si vous n'en avez plus."
+              }
+            ],
+            "18": [
+              {
+                "id": "ID_PHB_FEATURE_IMPROVED_COMBAT_SUPERIORITY_2",
+                "name": "Supériorité suprême",
+                "level": 18,
+                "description": "Dés de supériorité d12."
+              }
+            ]
+          }
+        },
+        {
+          "id": "ID_PHB_SUBCLASS_ELDRITCH_KNIGHT",
+          "name": "Chevalier occulte",
+          "nameEn": "Eldritch Knight",
+          "source": "PHB",
+          "description": "Un guerrier qui pratique la magie arcanique.",
+          "features": {
+            "3": [
+              {
+                "id": "ID_PHB_FEATURE_SPELLCASTING_FIGHTER",
+                "name": "Incantation",
+                "level": 3,
+                "description": "Vous connaissez deux tours de magie et trois sorts de niveau 1."
+              },
+              {
+                "id": "ID_PHB_FEATURE_WEAPON_BOND",
+                "name": "Lien d'arme",
+                "level": 3,
+                "description": "Rituel pour lier une arme. Vous ne pouvez pas être désarmé et pouvez invoquer l'arme."
+              }
+            ],
+            "7": [
+              {
+                "id": "ID_PHB_FEATURE_WAR_MAGIC",
+                "name": "Magie de guerre",
+                "level": 7,
+                "description": "Action pour attaquer + sort bonus, ou sort + attaque bonus."
+              }
+            ],
+            "10": [
+              {
+                "id": "ID_PHB_FEATURE_ELDRTICH_STRIKE",
+                "name": "Frappe occulte",
+                "level": 10,
+                "description": "Lorsque vous touchez avec une arme, désavantage au prochain jet de sauvegarde de la cible contre votre sort."
+              }
+            ],
+            "15": [
+              {
+                "id": "ID_PHB_FEATURE_WAR_MAGIC_IMPROVED",
+                "name": "Magie de guerre améliorée",
+                "level": 15,
+                "description": "Action pour attaquer + sort bonus + attaque bonus."
+              }
+            ],
+            "18": [
+              {
+                "id": "ID_PHB_FEATURE_IMPROVED_WEAPON_BOND",
+                "name": "Lien d'arme amélioré",
+                "level": 18,
+                "description": "Vous ne pouvez pas être désarmé. Résistance aux dégâts de la cible liée."
+              }
+            ]
+          }
+        }
+      ],
+      "resources": [
+        {
+          "id": "ID_RESOURCE_SECOND_WIND",
+          "name": "Second souffle",
+          "progression": {
+            "1": 1,
+            "2": 1,
+            "3": 1,
+            "4": 1,
+            "5": 1,
+            "6": 1,
+            "7": 1,
+            "8": 1,
+            "9": 1,
+            "10": 1,
+            "11": 1,
+            "12": 1,
+            "13": 1,
+            "14": 1,
+            "15": 1,
+            "16": 1,
+            "17": 1,
+            "18": 1,
+            "19": 1,
+            "20": 1
+          },
+          "recovery": "short"
+        },
+        {
+          "id": "ID_RESOURCE_ACTION_SURGE",
+          "name": "Déferlement d'action",
+          "progression": {
+            "2": 1,
+            "3": 1,
+            "4": 1,
+            "5": 1,
+            "6": 1,
+            "7": 1,
+            "8": 1,
+            "9": 1,
+            "10": 1,
+            "11": 1,
+            "12": 1,
+            "13": 1,
+            "14": 1,
+            "15": 1,
+            "16": 1,
+            "17": 2,
+            "18": 2,
+            "19": 2,
+            "20": 2
+          },
+          "recovery": "short"
+        },
+        {
+          "id": "ID_RESOURCE_INDOMITABLE",
+          "name": "Indomptable",
+          "progression": {
+            "9": 1,
+            "10": 1,
+            "11": 1,
+            "12": 1,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 3,
+            "18": 3,
+            "19": 3,
+            "20": 3
+          },
+          "recovery": "long"
+        }
+      ]
+    },
+    {
+      "id": "ID_PHB_CLASS_DRUID",
+      "name": "Druide",
+      "nameEn": "Druid",
+      "source": "PHB",
+      "hitDice": 8,
+      "primaryAbility": [
+        "wisdom"
+      ],
+      "savingThrows": [
+        "intelligence",
+        "wisdom"
+      ],
+      "startingEquipment": {
+        "options": [
+          [
+            {
+              "id": "ID_STARTOPT_DRUID_1A",
+              "name": "Bouclier",
+              "items": [
+                "ID_ARMOR_SHIELD"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_DRUID_1B",
+              "name": "Arme simple",
+              "items": [
+                "ID_WEAPON_ANY_SIMPLE"
+              ],
+              "quantity": 1
+            }
+          ],
+          [
+            {
+              "id": "ID_STARTOPT_DRUID_2A",
+              "name": "Cimeterre",
+              "items": [
+                "ID_WEAPON_SCIMITAR"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_DRUID_2B",
+              "name": "Arme de corps-à-corps simple",
+              "items": [
+                "ID_WEAPON_ANY_MELEE_SIMPLE"
+              ],
+              "quantity": 1
+            }
+          ]
+        ],
+        "fixed": [
+          "ID_EQUIPMENT_EXPLORER_PACK",
+          "ID_EQUIPMENT_DRUIDIC_FOCUS"
+        ]
+      },
+      "features": {
+        "1": [
+          {
+            "id": "ID_PHB_FEATURE_DRUIDIC",
+            "name": "Druidique",
+            "level": 1,
+            "description": "Vous connaissez le druidique, le langage secret des druides. Vous pouvez utiliser le druidique pour laisser des messages cachés."
+          },
+          {
+            "id": "ID_PHB_FEATURE_SPELLCASTING_DRUID",
+            "name": "Incantation",
+            "level": 1,
+            "description": "Vous pouvez lancer des sorts de druide utilisant la Sagesse comme caractéristique d'incantation.",
+            "rules": [
+              {
+                "type": "set",
+                "property": "spellcasting.ability",
+                "value": "wis"
+              }
+            ]
+          }
+        ],
+        "2": [
+          {
+            "id": "ID_PHB_FEATURE_WILD_SHAPE",
+            "name": "Forme sauvage",
+            "level": 2,
+            "description": "Action pour vous transformer en une bête que vous avez vue. FP max 1/4 (niv.2), 1/2 (niv.4), 1 (niv.8). 2 utilisations/repos court ou long.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_WILD_SHAPE"
+              }
+            ],
+            "uses": {
+              "count": "2",
+              "recovery": "short"
+            }
+          },
+          {
+            "id": "ID_PHB_FEATURE_DRUID_CIRCLE",
+            "name": "Cercle druidique",
+            "level": 2,
+            "description": "Choisissez un cercle druidique qui représente votre lien avec la nature.",
+            "rules": [
+              {
+                "type": "select",
+                "name": "Choix de cercle",
+                "targetType": "subclass",
+                "count": 1
+              }
+            ]
+          }
+        ],
+        "18": [
+          {
+            "id": "ID_PHB_FEATURE_TIMELESS_BODY",
+            "name": "Corps intemporel",
+            "level": 18,
+            "description": "Le vieillissement magique ne vous affecte plus et vous ne pouvez pas être vieilli par magie."
+          },
+          {
+            "id": "ID_PHB_FEATURE_BEAST_SPELLS",
+            "name": "Sorts de bête",
+            "level": 18,
+            "description": "Vous pouvez lancer la plupart de vos sorts de druide sous forme sauvage."
+          }
+        ],
+        "20": [
+          {
+            "id": "ID_PHB_FEATURE_ARCHDRUID",
+            "name": "Archidruide",
+            "level": 20,
+            "description": "Vous utilisez Forme sauvage un nombre illimité de fois. Ignorez les composantes verbales et somatiques des sorts de druide."
+          }
+        ]
+      },
+      "subclasses": [
+        {
+          "id": "ID_PHB_SUBCLASS_LAND",
+          "name": "Cercle de la terre",
+          "nameEn": "Circle of the Land",
+          "source": "PHB",
+          "description": "Un druide lié aux terres sauvages.",
+          "features": {
+            "2": [
+              {
+                "id": "ID_PHB_FEATURE_BONUS_CANTIP",
+                "name": "Sort mineur bonus",
+                "level": 2,
+                "description": "Apprenez un sort mineur de druide supplémentaire."
+              },
+              {
+                "id": "ID_PHB_FEATURE_NATURAL_RECOVERY",
+                "name": "Récupération naturelle",
+                "level": 2,
+                "description": "Au repos court, récupérez des emplacements de sort jusqu'à la moitié de votre niveau de druide (arrondi supérieur)."
+              }
+            ],
+            "3": [
+              {
+                "id": "ID_PHB_FEATURE_CIRCLE_SPELLS_LAND",
+                "name": "Sorts de cercle",
+                "level": 3,
+                "description": "Gagnez des sorts toujours préparés selon le terrain choisi (Arctique, Côtes, Désert, Forêt, Prairies, Montagne, Marais, Profondeurs, Outreterre)."
+              }
+            ],
+            "6": [
+              {
+                "id": "ID_PHB_FEATURE_LANDS_STRIDE",
+                "name": "Démarche des terres",
+                "level": 6,
+                "description": "Déplacement non entravé à travers les terrains difficiles non magiques. Avantage aux jets de sauvegarde contre les terrains difficiles magiques."
+              }
+            ],
+            "10": [
+              {
+                "id": "ID_PHB_FEATURE_NATURES_WARD",
+                "name": "Protection de la nature",
+                "level": 10,
+                "description": "Immunité aux charmes et à la peur des élémentaires et des fées."
+              }
+            ],
+            "14": [
+              {
+                "id": "ID_PHB_FEATURE_NATURES_SANCTUARY",
+                "name": "Sanctuaire de la nature",
+                "level": 14,
+                "description": "Lorsqu'une créature vous touche en combat, elle doit réussir un jet de sauvegarde de Sagesse ou choisir une autre cible."
+              }
+            ]
+          }
+        }
+      ],
+      "spellcasting": {
+        "ability": "wisdom",
+        "type": "full",
+        "slots": {},
+        "spellsPrepared": {
+          "formula": "$(level) + $(wisdom:modifier)",
+          "from": "class-list"
+        },
+        "ritualCasting": true,
+        "focus": "druidic"
+      },
+      "resources": [
+        {
+          "id": "ID_RESOURCE_WILD_SHAPE",
+          "name": "Forme sauvage",
+          "progression": {
+            "2": 2,
+            "3": 2,
+            "4": 2,
+            "5": 2,
+            "6": 2,
+            "7": 2,
+            "8": 2,
+            "9": 2,
+            "10": 2,
+            "11": 2,
+            "12": 2,
+            "13": 2,
+            "14": 2,
+            "15": 2,
+            "16": 2,
+            "17": 2,
+            "18": 2,
+            "19": 2,
+            "20": 999
+          },
+          "recovery": "short"
+        }
+      ]
+    },
+    {
+      "id": "ID_PHB_CLASS_MONK",
+      "name": "Moine",
+      "nameEn": "Monk",
+      "source": "PHB",
+      "hitDice": 8,
+      "primaryAbility": [
+        "dexterity",
+        "wisdom"
+      ],
+      "savingThrows": [
+        "strength",
+        "dexterity"
+      ],
+      "startingEquipment": {
+        "options": [
+          [
+            {
+              "id": "ID_STARTOPT_MONK_1A",
+              "name": "Épée courte",
+              "items": [
+                "ID_WEAPON_SHORTSWORD"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_MONK_1B",
+              "name": "Arme simple",
+              "items": [
+                "ID_WEAPON_ANY_SIMPLE"
+              ],
+              "quantity": 1
+            }
+          ],
+          [
+            {
+              "id": "ID_STARTOPT_MONK_2A",
+              "name": "Sac d'explorateur",
+              "items": [
+                "ID_EQUIPMENT_EXPLORER_PACK"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_MONK_2B",
+              "name": "Sac d'explorateur (2)",
+              "items": [
+                "ID_EQUIPMENT_EXPLORER_PACK"
+              ],
+              "quantity": 1
+            }
+          ]
+        ],
+        "fixed": [
+          "ID_WEAPON_DART",
+          "ID_WEAPON_DART",
+          "ID_WEAPON_DART",
+          "ID_WEAPON_DART",
+          "ID_WEAPON_DART",
+          "ID_WEAPON_DART",
+          "ID_WEAPON_DART",
+          "ID_WEAPON_DART",
+          "ID_WEAPON_DART",
+          "ID_WEAPON_DART"
+        ]
+      },
+      "features": {
+        "1": [
+          {
+            "id": "ID_PHB_FEATURE_UNARMORED_DEFENSE_MONK",
+            "name": "Défense sans armure",
+            "level": 1,
+            "description": "CA = 10 + mod DEX + mod SAG sans armure ni bouclier.",
+            "rules": [
+              {
+                "type": "stat",
+                "stat": "ac",
+                "value": "$(dex:modifier) + $(wis:modifier)",
+                "bonus": "racial",
+                "condition": "no armor or shield"
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_MARTIAL_ARTS",
+            "name": "Arts martiaux",
+            "level": 1,
+            "description": "Attaque à mains nues comme arme (d4 dégâts), bonus action pour une attaque à mains nues supplémentaire.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_MARTIAL_ARTS_UNARMED_STRIKE"
+              },
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_MARTIAL_ARTS_BONUS_ACTION"
+              }
+            ]
+          }
+        ],
+        "2": [
+          {
+            "id": "ID_PHB_FEATURE_KI",
+            "name": "Ki",
+            "level": 2,
+            "description": "Points de Ki pour utiliser des techniques spéciales. Nombre égal à votre niveau de moine.",
+            "uses": {
+              "count": "$(level)",
+              "recovery": "short"
+            },
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_KI_POINTS"
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_UNARMORED_MOVEMENT",
+            "name": "Déplacement sans armure",
+            "level": 2,
+            "description": "Vitesse +3m (10ft) sans armure ni bouclier. +3m aux niveaux 6, 10, 14, 18.",
+            "rules": [
+              {
+                "type": "stat",
+                "stat": "speed",
+                "value": 3,
+                "bonus": "racial",
+                "condition": "no armor or shield"
+              }
+            ]
+          }
+        ],
+        "3": [
+          {
+            "id": "ID_PHB_FEATURE_MONASTIC_TRADITION",
+            "name": "Tradition monacale",
+            "level": 3,
+            "description": "Choisissez une tradition monacale (Voie de la paume ouverte, Voie de l'ombre, Voie des quatre éléments).",
+            "rules": [
+              {
+                "type": "select",
+                "name": "Tradition monacale",
+                "targetType": "archetype",
+                "count": 1,
+                "options": [
+                  "ID_PHB_SUBCLASS_OPEN_HAND",
+                  "ID_PHB_SUBCLASS_SHADOW",
+                  "ID_PHB_SUBCLASS_FOUR_ELEMENTS"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_DEFLECT_MISSILES",
+            "name": "Déviation de projectiles",
+            "level": 3,
+            "description": "Réaction pour réduire les dégâts d'une arme à distance de 1d10 + mod DEX + niveau de moine. Si dégâts réduits à 0, attrapez le projectile.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_DEFLECT_MISSILES"
+              }
+            ]
+          }
+        ],
+        "4": [
+          {
+            "id": "ID_PHB_FEATURE_SLOW_FALL",
+            "name": "Chute lente",
+            "level": 4,
+            "description": "Réaction pour réduire les dégâts de chute de 5 × niveau de moine.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_SLOW_FALL"
+              }
+            ]
+          }
+        ],
+        "5": [
+          {
+            "id": "ID_PHB_FEATURE_EXTRA_ATTACK_MONK",
+            "name": "Attaque supplémentaire",
+            "level": 5,
+            "description": "Attaque deux fois avec l'action Attaquer.",
+            "rules": [
+              {
+                "type": "set",
+                "property": "actionsPerTurn",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_STUNNING_STRIKE",
+            "name": "Frappe étourdissante",
+            "level": 5,
+            "description": "Dépensez 1 point de Ki après avoir touché pour étourdir la cible jusqu'à la fin de votre prochain tour.",
+            "uses": {
+              "count": "$(level)",
+              "recovery": "short"
+            },
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_STUNNING_STRIKE"
+              }
+            ]
+          }
+        ],
+        "6": [
+          {
+            "id": "ID_PHB_FEATURE_KI_EMPOWERED_STRIKES",
+            "name": "Frappes imprégnées de ki",
+            "level": 6,
+            "description": "Vos attaques à mains nues comptent comme magiques pour résister aux résistances aux dégâts non magiques.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_KI_EMPOWERED_STRIKES"
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_UNARMORED_MOVEMENT_6",
+            "name": "Déplacement sans armure +3m",
+            "level": 6,
+            "description": "Bonus de vitesse passe à +6m (20ft).",
+            "rules": [
+              {
+                "type": "stat",
+                "stat": "speed",
+                "value": 3,
+                "bonus": "racial",
+                "condition": "no armor or shield"
+              }
+            ]
+          }
+        ],
+        "7": [
+          {
+            "id": "ID_PHB_FEATURE_EVASION",
+            "name": "Évasion",
+            "level": 7,
+            "description": "Avantages aux jets de sauvegarde de Dextérité contre les effets de zone. Pas de dégâts si réussi, demi-dégâts si échoué.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_EVASION"
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_STILLNESS_OF_MIND",
+            "name": "Calme intérieur",
+            "level": 7,
+            "description": "Action pour mettre fin à un effet vous charmant ou vous effrayant.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_STILLNESS_OF_MIND"
+              }
+            ]
+          }
+        ],
+        "10": [
+          {
+            "id": "ID_PHB_FEATURE_PURITY_OF_BODY",
+            "name": "Pureté du corps",
+            "level": 10,
+            "description": "Immunité aux maladies et aux poisons.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_PURITY_OF_BODY"
+              }
+            ]
+          }
+        ],
+        "13": [
+          {
+            "id": "ID_PHB_FEATURE_TONGUE_OF_THE_SUN_AND_MOON",
+            "name": "Langue du soleil et de la lune",
+            "level": 13,
+            "description": "Vous comprenez toutes les langues parlées et les créatures qui comprennent une langue peuvent comprendre vos paroles.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "language",
+                "targetId": "ID_LANGUAGE_ALL"
+              }
+            ]
+          }
+        ],
+        "14": [
+          {
+            "id": "ID_PHB_FEATURE_DIAMOND_SOUL",
+            "name": "Âme de diamant",
+            "level": 14,
+            "description": "Maîtrise de tous les jets de sauvegarde. Dépensez 1 point de Ki pour relancer un jet de sauvegarde raté.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "proficiency",
+                "targetId": "ID_SAVE_STR"
+              },
+              {
+                "type": "grant",
+                "targetType": "proficiency",
+                "targetId": "ID_SAVE_DEX"
+              },
+              {
+                "type": "grant",
+                "targetType": "proficiency",
+                "targetId": "ID_SAVE_CON"
+              },
+              {
+                "type": "grant",
+                "targetType": "proficiency",
+                "targetId": "ID_SAVE_INT"
+              },
+              {
+                "type": "grant",
+                "targetType": "proficiency",
+                "targetId": "ID_SAVE_WIS"
+              },
+              {
+                "type": "grant",
+                "targetType": "proficiency",
+                "targetId": "ID_SAVE_CHA"
+              }
+            ]
+          }
+        ],
+        "15": [
+          {
+            "id": "ID_PHB_FEATURE_TIMELESS_BODY_MONK",
+            "name": "Corps intemporel",
+            "level": 15,
+            "description": "Le vieillissement magique ne vous affecte plus et vous ne pouvez pas être vieilli par magie.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_TIMELESS_BODY"
+              }
+            ]
+          }
+        ],
+        "18": [
+          {
+            "id": "ID_PHB_FEATURE_EMPTY_BODY",
+            "name": "Corps vide",
+            "level": 18,
+            "description": "Action pour devenir invisible pendant 1 minute + résistance à tous les dégâts sauf force. Coûte 4 points de Ki.",
+            "uses": {
+              "count": "$(level)",
+              "recovery": "short"
+            },
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_EMPTY_BODY"
+              }
+            ]
+          }
+        ],
+        "20": [
+          {
+            "id": "ID_PHB_FEATURE_PERFECT_SELF",
+            "name": "Perfection absolue",
+            "level": 20,
+            "description": "Lorsque vous lancez votre initiative sans point de Ki, vous regagnez 4 points de Ki.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_PERFECT_SELF"
+              }
+            ]
+          }
+        ]
+      },
+      "subclasses": [],
+      "resources": [
+        {
+          "id": "ID_RESOURCE_KI",
+          "name": "Points de Ki",
+          "progression": {
+            "2": 2,
+            "3": 3,
+            "4": 4,
+            "5": 5,
+            "6": 6,
+            "7": 7,
+            "8": 8,
+            "9": 9,
+            "10": 10,
+            "11": 11,
+            "12": 12,
+            "13": 13,
+            "14": 14,
+            "15": 15,
+            "16": 16,
+            "17": 17,
+            "18": 18,
+            "19": 19,
+            "20": 20
+          },
+          "recovery": "short"
+        }
+      ]
+    },
+    {
+      "id": "ID_PHB_CLASS_PALADIN",
+      "name": "Paladin",
+      "nameEn": "Paladin",
+      "source": "PHB",
+      "hitDice": 10,
+      "primaryAbility": [
+        "strength",
+        "charisma"
+      ],
+      "savingThrows": [
+        "wisdom",
+        "charisma"
+      ],
+      "startingEquipment": {
+        "options": [
+          [
+            {
+              "id": "ID_STARTOPT_PALADIN_1A",
+              "name": "Arme de guerre et bouclier",
+              "items": [
+                "ID_WEAPON_ANY_MARTIAL",
+                "ID_ARMOR_SHIELD"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_PALADIN_1B",
+              "name": "Deux armes de guerre",
+              "items": [
+                "ID_WEAPON_ANY_MARTIAL"
+              ],
+              "quantity": 2
+            }
+          ],
+          [
+            {
+              "id": "ID_STARTOPT_PALADIN_2A",
+              "name": "Cinq javelines",
+              "items": [
+                "ID_WEAPON_JAVELIN"
+              ],
+              "quantity": 5
+            },
+            {
+              "id": "ID_STARTOPT_PALADIN_2B",
+              "name": "Arme simple de corps-à-corps",
+              "items": [
+                "ID_WEAPON_ANY_MELEE_SIMPLE"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_PALADIN_2C",
+              "name": "Arme simple à distance",
+              "items": [
+                "ID_WEAPON_ANY_RANGED_SIMPLE"
+              ],
+              "quantity": 1
+            }
+          ],
+          [
+            {
+              "id": "ID_STARTOPT_PALADIN_3A",
+              "name": "Sac d'aventurier",
+              "items": [
+                "ID_EQUIPMENT_DUNGEONEER_PACK"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_PALADIN_3B",
+              "name": "Sac d'explorateur",
+              "items": [
+                "ID_EQUIPMENT_EXPLORER_PACK"
+              ],
+              "quantity": 1
+            }
+          ]
+        ],
+        "fixed": [
+          "ID_ARMOR_CHAIN_MAIL",
+          "ID_WEAPON_LONGSWORD",
+          "ID_WEAPON_SHORTSWORD"
+        ]
+      },
+      "features": {
+        "1": [
+          {
+            "id": "ID_PHB_FEATURE_DIVINE_SENSE",
+            "name": "Perception divine",
+            "level": 1,
+            "description": "Action pour détecter les fiélons, les morts-vivants et les lieux consacrés ou profanés à 18 mètres.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_DIVINE_SENSE"
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_LAY_ON_HANDS",
+            "name": "Imposition des mains",
+            "level": 1,
+            "description": "Pool de PV = 5 × niveau de paladin. Action pour soigner ou dépenser 5 PV pour guérir maladie/poison.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_LAY_ON_HANDS"
+              }
+            ],
+            "uses": {
+              "count": "level_x5",
+              "recovery": "long"
+            }
+          }
+        ],
+        "2": [
+          {
+            "id": "ID_PHB_FEATURE_SPELLCASTING_PALADIN",
+            "name": "Incantation",
+            "level": 2,
+            "description": "Lanceur de sorts mi-portée (half-caster). N'apprenez pas de sorts de niveau 1 et 2 avant le niveau 2 et 5."
+          },
+          {
+            "id": "ID_PHB_FEATURE_DIVINE_SMITE",
+            "name": "Châtiment divin",
+            "level": 2,
+            "description": "Après avoir touché avec une arme de corps-à-corps, dépensez un emplacement de sort pour ajouter 2d8 dégâts radiants (+1d8 vs morts-vivants/fiélons).",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_DIVINE_SMITE"
+              }
+            ],
+            "uses": {
+              "count": "unlimited",
+              "recovery": "long"
+            }
+          },
+          {
+            "id": "ID_PHB_FEATURE_DIVINE_HEALTH",
+            "name": "Santé divine",
+            "level": 3,
+            "description": "Immunité aux maladies.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_DIVINE_HEALTH"
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_SACRED_OATH",
+            "name": "Serment sacré",
+            "level": 3,
+            "description": "Choisissez un serment sacré (Dévotion, Anciens, Vengeance).",
+            "rules": [
+              {
+                "type": "select",
+                "name": "Choix de serment",
+                "targetType": "subclass",
+                "count": 1
+              }
+            ]
+          }
+        ],
+        "5": [
+          {
+            "id": "ID_PHB_FEATURE_EXTRA_ATTACK_PALADIN",
+            "name": "Attaque supplémentaire",
+            "level": 5,
+            "description": "Attaque deux fois avec l'action Attaquer."
+          }
+        ],
+        "6": [
+          {
+            "id": "ID_PHB_FEATURE_AURA_OF_PROTECTION",
+            "name": "Aura de protection",
+            "level": 6,
+            "description": "Vous et les créatures alliées à 3m gagnez un bonus aux jets de sauvegarde égal à votre modificateur de Charisme (min +1)."
+          }
+        ],
+        "10": [
+          {
+            "id": "ID_PHB_FEATURE_AURA_OF_COURAGE",
+            "name": "Aura de courage",
+            "level": 10,
+            "description": "Vous et les créatures alliées à 3m ne pouvez pas être effrayées."
+          }
+        ],
+        "11": [
+          {
+            "id": "ID_PHB_FEATURE_IMPROVED_DIVINE_SMITE",
+            "name": "Châtiment divin amélioré",
+            "level": 11,
+            "description": "Attaques de corps-à-corps infligent 1d8 dégâts radiants supplémentaires.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_IMPROVED_DIVINE_SMITE"
+              }
+            ]
+          }
+        ],
+        "14": [
+          {
+            "id": "ID_PHB_FEATURE_CLEANSING_TOUCH",
+            "name": "Toucher purificateur",
+            "level": 14,
+            "description": "Action pour mettre fin à un sort sur vous ou une créature que vous touchez. Utilisations = mod CHA (min 1) par repos long."
+          }
+        ],
+        "18": [
+          {
+            "id": "ID_PHB_FEATURE_AURA_IMPROVEMENTS",
+            "name": "Aura améliorée",
+            "level": 18,
+            "description": "Rayon de vos auras passe à 9m."
+          }
+        ],
+        "20": [
+          {
+            "id": "ID_PHB_FEATURE_SACRED_OATH_FEATURE",
+            "name": "Capacité de serment niveau 20",
+            "level": 20,
+            "description": "Capacité ultime de votre serment sacré pendant 1 minute."
+          }
+        ]
+      },
+      "subclasses": [],
+      "spellcasting": {
+        "ability": "charisma",
+        "type": "half",
+        "slots": {},
+        "spellsPrepared": {
+          "formula": "$(charisma:modifier) + floor($(level)/2)",
+          "from": "class-list"
+        }
+      },
+      "resources": [
+        {
+          "id": "ID_RESOURCE_LAY_ON_HANDS",
+          "name": "Imposition des mains",
+          "progression": {
+            "1": 5,
+            "2": 10,
+            "3": 15,
+            "4": 20,
+            "5": 25,
+            "6": 30,
+            "7": 35,
+            "8": 40,
+            "9": 45,
+            "10": 50,
+            "11": 55,
+            "12": 60,
+            "13": 65,
+            "14": 70,
+            "15": 75,
+            "16": 80,
+            "17": 85,
+            "18": 90,
+            "19": 95,
+            "20": 100
+          },
+          "recovery": "long"
+        }
+      ]
+    },
+    {
+      "id": "ID_PHB_CLASS_RANGER",
+      "name": "Rôdeur",
+      "nameEn": "Ranger",
+      "source": "PHB",
+      "hitDice": 10,
+      "primaryAbility": [
+        "dexterity",
+        "wisdom"
+      ],
+      "savingThrows": [
+        "strength",
+        "dexterity"
+      ],
+      "startingEquipment": {
+        "options": [
+          [
+            {
+              "id": "ID_STARTOPT_RANGER_1A",
+              "name": "Cotte de mailles",
+              "items": [
+                "ID_ARMOR_SCALE_MAIL"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_RANGER_1B",
+              "name": "Armures de cuir",
+              "items": [
+                "ID_ARMOR_LEATHER"
+              ],
+              "quantity": 1
+            }
+          ],
+          [
+            {
+              "id": "ID_STARTOPT_RANGER_2A",
+              "name": "Deux épées courtes",
+              "items": [
+                "ID_WEAPON_SHORTSWORD"
+              ],
+              "quantity": 2
+            },
+            {
+              "id": "ID_STARTOPT_RANGER_2B",
+              "name": "Deux armes de corps-à-corps simples",
+              "items": [
+                "ID_WEAPON_ANY_MELEE_SIMPLE"
+              ],
+              "quantity": 2
+            }
+          ]
+        ],
+        "fixed": [
+          "ID_EQUIPMENT_DUNGEONEER_PACK"
+        ]
+      },
+      "features": {
+        "1": [
+          {
+            "id": "ID_PHB_FEATURE_FAVORED_ENEMY",
+            "name": "Ennemi juré",
+            "level": 1,
+            "description": "Avantage aux tests pour pister votre ennemi juré et aux tests de Sagesse (Survie) pour traquer.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_FAVORED_ENEMY"
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_NATURAL_EXPLORER",
+            "name": "Explorateur né",
+            "level": 1,
+            "description": "Avantage aux tests d'Intelligence ou de Sagesse liés à un type de terrain favori. Terrain difficile ne vous ralentit pas.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_NATURAL_EXPLORER"
+              }
+            ]
+          }
+        ],
+        "2": [
+          {
+            "id": "ID_PHB_FEATURE_SPELLCASTING_RANGER",
+            "name": "Incantation",
+            "level": 2,
+            "description": "Lanceur de sorts tiers (third-caster) utilisant la Sagesse.",
+            "rules": [
+              {
+                "type": "set",
+                "property": "spellcasting.ability",
+                "value": "wis"
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_FIGHTING_STYLE_RANGER",
+            "name": "Style de combat",
+            "level": 2,
+            "description": "Choisissez un style de combat (Archerie, Combat à deux armes, Défense, etc.)",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_FIGHTING_STYLE_RANGER"
+              }
+            ]
+          }
+        ],
+        "3": [
+          {
+            "id": "ID_PHB_FEATURE_RANGER_ARCHETYPE",
+            "name": "Archétype de rôdeur",
+            "level": 3,
+            "description": "Choisissez un archétype (Chasseur ou Maître des bêtes).",
+            "rules": [
+              {
+                "type": "select",
+                "name": "Choix d'archétype",
+                "targetType": "subclass",
+                "count": 1
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_PRIMEVAL_AWARENESS",
+            "name": "Conscience primitive",
+            "level": 3,
+            "description": "Action pour sentir la présence de certains types de créatures à 8km."
+          }
+        ],
+        "5": [
+          {
+            "id": "ID_PHB_FEATURE_EXTRA_ATTACK_RANGER",
+            "name": "Attaque supplémentaire",
+            "level": 5,
+            "description": "Attaque deux fois avec l'action Attaquer."
+          }
+        ],
+        "8": [
+          {
+            "id": "ID_PHB_FEATURE_LANDS_STRIDE_RANGER",
+            "name": "Démarche des terres",
+            "level": 8,
+            "description": "Déplacement non entravé à travers les terrains difficiles non magiques."
+          }
+        ],
+        "10": [
+          {
+            "id": "ID_PHB_FEATURE_HIDE_IN_PLAIN_SIGHT",
+            "name": "Se cacher en plein jour",
+            "level": 10,
+            "description": "Dépensez 1 minute pour vous camoufler dans les environnements naturels."
+          }
+        ],
+        "14": [
+          {
+            "id": "ID_PHB_FEATURE_VANISH",
+            "name": "Disparition",
+            "level": 14,
+            "description": "Action bonus pour vous cacher. Ne pouvez pas être tracés par des moyens magiques."
+          }
+        ],
+        "18": [
+          {
+            "id": "ID_PHB_FEATURE_FERAL_SENSES",
+            "name": "Sens félins",
+            "level": 18,
+            "description": "Avantage aux tests de Perception basés sur l'ouïe ou l'odorat."
+          }
+        ],
+        "20": [
+          {
+            "id": "ID_PHB_FEATURE_FOE_SLAYER",
+            "name": "Pourfendeur d'ennemis",
+            "level": 20,
+            "description": "Ajoutez votre modificateur de Sagesse (min +1) aux jets d'attaque ou de dégâts contre votre ennemi juré."
+          }
+        ]
+      },
+      "subclasses": [],
+      "spellcasting": {
+        "ability": "wisdom",
+        "type": "third",
+        "slots": {}
+      }
+    },
+    {
+      "id": "ID_PHB_CLASS_ROGUE",
+      "name": "Roublard",
+      "nameEn": "Rogue",
+      "source": "PHB",
+      "hitDice": 8,
+      "primaryAbility": [
+        "dexterity"
+      ],
+      "savingThrows": [
+        "dexterity",
+        "intelligence"
+      ],
+      "startingEquipment": {
+        "options": [
+          [
+            {
+              "id": "ID_STARTOPT_ROGUE_1A",
+              "name": "Rapière",
+              "items": [
+                "ID_WEAPON_RAPIER"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_ROGUE_1B",
+              "name": "Arme de guerre",
+              "items": [
+                "ID_WEAPON_SHORTSWORD"
+              ],
+              "quantity": 1
+            }
+          ],
+          [
+            {
+              "id": "ID_STARTOPT_ROGUE_2A",
+              "name": "Arc court et carquois",
+              "items": [
+                "ID_WEAPON_SHORTBOW",
+                "ID_EQUIPMENT_ARROWS"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_ROGUE_2B",
+              "name": "Arme simple à distance",
+              "items": [
+                "ID_WEAPON_ANY_RANGED_SIMPLE"
+              ],
+              "quantity": 1
+            }
+          ]
+        ],
+        "fixed": [
+          "ID_ARMOR_LEATHER",
+          "ID_WEAPON_DAGGER",
+          "ID_WEAPON_DAGGER",
+          "ID_EQUIPMENT_THIEVES_TOOLS",
+          "ID_EQUIPMENT_DUNGEONEER_PACK"
+        ]
+      },
+      "features": {
+        "1": [
+          {
+            "id": "ID_PHB_FEATURE_EXPERTISE_ROGUE",
+            "name": "Expertise",
+            "level": 1,
+            "description": "Bonus de maîtrise doublé pour deux compétences ou outils de votre choix.",
+            "rules": [
+              {
+                "type": "select",
+                "name": "Expertise (compétences)",
+                "targetType": "skill",
+                "count": 2,
+                "options": "any"
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_SNEAK_ATTACK",
+            "name": "Attaque sournoise",
+            "level": 1,
+            "description": "Ajoutez 1d6 dégâts (+1d6 tous les 2 niveaux) si vous avez l'avantage à l'attaque ou si une créature alliée est à 1,5m de la cible.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_SNEAK_ATTACK_DAMAGE"
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_THIEVES_CANT",
+            "name": "Argot des voleurs",
+            "level": 1,
+            "description": "Langage secret pour communiquer avec d'autres roublards.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "language",
+                "targetId": "ID_LANGUAGE_THIEVES_CANT"
+              }
+            ]
+          }
+        ],
+        "2": [
+          {
+            "id": "ID_PHB_FEATURE_CUNNING_ACTION",
+            "name": "Action rusée",
+            "level": 2,
+            "description": "Action bonus pour Se désengager, Se cacher ou Foncer.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_CUNNING_ACTION"
+              }
+            ]
+          }
+        ],
+        "3": [
+          {
+            "id": "ID_PHB_FEATURE_ROGUISH_ARCHETYPE",
+            "name": "Archétype de roublard",
+            "level": 3,
+            "description": "Choisissez un archétype (Assassin, Voleur, Arnaqueur).",
+            "rules": [
+              {
+                "type": "select",
+                "name": "Archétype de roublard",
+                "targetType": "archetype",
+                "count": 1,
+                "options": [
+                  "ID_PHB_SUBCLASS_ASSASSIN",
+                  "ID_PHB_SUBCLASS_THIEF",
+                  "ID_PHB_SUBCLASS_ARCANE_TRICKSTER"
+                ]
+              }
+            ]
+          }
+        ],
+        "5": [
+          {
+            "id": "ID_PHB_FEATURE_UNCANNY_DODGE",
+            "name": "Esquive instinctive",
+            "level": 5,
+            "description": "Réaction pour réduire les dégâts d'une attaque à vue de moitié.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_UNCANNY_DODGE"
+              }
+            ]
+          }
+        ],
+        "7": [
+          {
+            "id": "ID_PHB_FEATURE_EVASION_ROGUE",
+            "name": "Évasion",
+            "level": 7,
+            "description": "Avantages aux jets de sauvegarde de Dextérité contre les effets de zone.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_EVASION"
+              }
+            ]
+          }
+        ],
+        "11": [
+          {
+            "id": "ID_PHB_FEATURE_RELIABLE_TALENT",
+            "name": "Talent fiable",
+            "level": 11,
+            "description": "Résultats de 9 ou moins sur les tests de compétences maîtrisées comptent comme 10.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_RELIABLE_TALENT"
+              }
+            ]
+          }
+        ],
+        "14": [
+          {
+            "id": "ID_PHB_FEATURE_BLINDSENSE",
+            "name": "Perception aveugle",
+            "level": 14,
+            "description": "Perception de la présence de créatures invisibles à 3m.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_BLINDSENSE"
+              }
+            ]
+          }
+        ],
+        "15": [
+          {
+            "id": "ID_PHB_FEATURE_SLIPPERY_MIND",
+            "name": "Esprit insaisissable",
+            "level": 15,
+            "description": "Maîtrise des jets de sauvegarde de Sagesse.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "proficiency",
+                "targetId": "ID_SAVE_WIS"
+              }
+            ]
+          }
+        ],
+        "18": [
+          {
+            "id": "ID_PHB_FEATURE_ELUSIVE",
+            "name": "Insaisissable",
+            "level": 18,
+            "description": "Aucune attaque contre vous n'a l'avantage tant que vous n'êtes pas immobilisé.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_ELUSIVE"
+              }
+            ]
+          }
+        ],
+        "20": [
+          {
+            "id": "ID_PHB_FEATURE_STROKE_OF_LUCK",
+            "name": "Coup de chance",
+            "level": 20,
+            "description": "Transformez un échec en réussite sur un jet d'attaque ou de test de compétence une fois par repos court ou long.",
+            "uses": {
+              "count": 1,
+              "recovery": "short"
+            },
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "feature",
+                "targetId": "ID_STROKE_OF_LUCK"
+              }
+            ]
+          }
+        ]
+      },
+      "subclasses": []
+    },
+    {
+      "id": "ID_PHB_CLASS_SORCERER",
+      "name": "Ensorceleur",
+      "nameEn": "Sorcerer",
+      "source": "PHB",
+      "hitDice": 6,
+      "primaryAbility": [
+        "charisma"
+      ],
+      "savingThrows": [
+        "constitution",
+        "charisma"
+      ],
+      "startingEquipment": {
+        "options": [
+          [
+            {
+              "id": "ID_STARTOPT_SORCERER_1A",
+              "name": "Arbalète légère",
+              "items": [
+                "ID_WEAPON_LIGHT_CROSSBOW"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_SORCERER_1B",
+              "name": "Arme simple",
+              "items": [
+                "ID_WEAPON_ANY_SIMPLE"
+              ],
+              "quantity": 1
+            }
+          ],
+          [
+            {
+              "id": "ID_STARTOPT_SORCERER_2A",
+              "name": "Sac d'explorateur",
+              "items": [
+                "ID_EQUIPMENT_EXPLORER_PACK"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_SORCERER_2B",
+              "name": "Sac d'aventurier",
+              "items": [
+                "ID_EQUIPMENT_DUNGEONEER_PACK"
+              ],
+              "quantity": 1
+            }
+          ]
+        ],
+        "fixed": [
+          "ID_WEAPON_DAGGER",
+          "ID_WEAPON_DAGGER"
+        ]
+      },
+      "features": {
+        "1": [
+          {
+            "id": "ID_PHB_FEATURE_SPELLCASTING_SORCERER",
+            "name": "Incantation",
+            "level": 1,
+            "description": "Lanceur de sorts complet utilisant le Charisme.",
+            "rules": [
+              {
+                "type": "set",
+                "property": "spellcasting.ability",
+                "value": "cha"
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_SORCEROUS_ORIGIN",
+            "name": "Origine sorceline",
+            "level": 1,
+            "description": "Choisissez une origine (Lignée draconique ou Magie divine).",
+            "rules": [
+              {
+                "type": "select",
+                "name": "Choix d'origine",
+                "targetType": "subclass",
+                "count": 1
+              }
+            ]
+          }
+        ],
+        "2": [
+          {
+            "id": "ID_PHB_FEATURE_FONT_OF_MAGIC",
+            "name": "Source de magie",
+            "level": 2,
+            "description": "Points de sorcellerie pour créer des emplacements de sort ou utiliser la Métamagie.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_SORCERY_POINTS"
+              }
+            ],
+            "uses": {
+              "count": "level",
+              "recovery": "long"
+            }
+          },
+          {
+            "id": "ID_PHB_FEATURE_METAMAGIC",
+            "name": "Métamagie",
+            "level": 3,
+            "description": "Modifiez vos sorts avec des options comme Sort accru, Sort rapide, etc.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_METAMAGIC"
+              }
+            ]
+          }
+        ],
+        "20": [
+          {
+            "id": "ID_PHB_FEATURE_SORCEROUS_RESTORATION",
+            "name": "Restoration sorceline",
+            "level": 20,
+            "description": "Récupérez 4 points de sorcellerie à chaque repos court."
+          }
+        ]
+      },
+      "subclasses": [],
+      "spellcasting": {
+        "ability": "charisma",
+        "type": "full",
+        "slots": {},
+        "spellsKnown": {}
+      },
+      "resources": [
+        {
+          "id": "ID_RESOURCE_SORCERY_POINTS",
+          "name": "Points de sorcellerie",
+          "progression": {
+            "2": 2,
+            "3": 3,
+            "4": 4,
+            "5": 5,
+            "6": 6,
+            "7": 7,
+            "8": 8,
+            "9": 9,
+            "10": 10,
+            "11": 11,
+            "12": 12,
+            "13": 13,
+            "14": 14,
+            "15": 15,
+            "16": 16,
+            "17": 17,
+            "18": 18,
+            "19": 19,
+            "20": 20
+          },
+          "recovery": "long"
+        }
+      ]
+    },
+    {
+      "id": "ID_PHB_CLASS_WARLOCK",
+      "name": "Occultiste",
+      "nameEn": "Warlock",
+      "source": "PHB",
+      "hitDice": 8,
+      "primaryAbility": [
+        "charisma"
+      ],
+      "savingThrows": [
+        "wisdom",
+        "charisma"
+      ],
+      "startingEquipment": {
+        "options": [
+          [
+            {
+              "id": "ID_STARTOPT_WARLOCK_1A",
+              "name": "Arbalète légère",
+              "items": [
+                "ID_WEAPON_LIGHT_CROSSBOW"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_WARLOCK_1B",
+              "name": "Arme simple",
+              "items": [
+                "ID_WEAPON_ANY_SIMPLE"
+              ],
+              "quantity": 1
+            }
+          ],
+          [
+            {
+              "id": "ID_STARTOPT_WARLOCK_2A",
+              "name": "Sac de diplomate",
+              "items": [
+                "ID_EQUIPMENT_DIPLOMAT_PACK"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_WARLOCK_2B",
+              "name": "Sac d'aventurier",
+              "items": [
+                "ID_EQUIPMENT_DUNGEONEER_PACK"
+              ],
+              "quantity": 1
+            }
+          ]
+        ],
+        "fixed": [
+          "ID_ARMOR_LEATHER",
+          "ID_WEAPON_DAGGER",
+          "ID_WEAPON_DAGGER"
+        ]
+      },
+      "features": {
+        "1": [
+          {
+            "id": "ID_PHB_FEATURE_OTHERWORLDLY_PATRON",
+            "name": "Patron occulte",
+            "level": 1,
+            "description": "Choisissez un patron (Archifée, Diable, Grand Ancien).",
+            "rules": [
+              {
+                "type": "select",
+                "name": "Choix de patron",
+                "targetType": "subclass",
+                "count": 1
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_PACT_MAGIC",
+            "name": "Magie du pacte",
+            "level": 1,
+            "description": "Récupérez tous vos emplacements de pacte lors d'un repos court ou long.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_PACT_MAGIC"
+              }
+            ]
+          }
+        ],
+        "2": [
+          {
+            "id": "ID_PHB_FEATURE_ELDRITCH_INVOCATIONS",
+            "name": "Invocations occultes",
+            "level": 2,
+            "description": "Gagnez des pouvoirs magiques permanents. 2 au niveau 2, puis +1 aux niveaux 5, 7, 9, 12, 15, 18.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_ELDRITCH_INVOCATIONS"
+              }
+            ]
+          }
+        ],
+        "3": [
+          {
+            "id": "ID_PHB_FEATURE_PACT_BOON",
+            "name": "Avantage du pacte",
+            "level": 3,
+            "description": "Choisissez une bénédiction (Chaîne, Lame ou Tome).",
+            "rules": [
+              {
+                "type": "select",
+                "name": "Choix de pacte",
+                "targetType": "feature",
+                "count": 1
+              }
+            ]
+          }
+        ],
+        "11": [
+          {
+            "id": "ID_PHB_FEATURE_MYSTIC_ARCANUM",
+            "name": "Arcane mystique",
+            "level": 11,
+            "description": "Choisissez un sort de niveau 6, 7, 8 ou 9 utilisable une fois par repos long."
+          }
+        ],
+        "20": [
+          {
+            "id": "ID_PHB_FEATURE_ELDRITCH_MASTER",
+            "name": "Maître occulte",
+            "level": 20,
+            "description": "Récupérez tous vos emplacements de pacte avec une action bonus une fois par repos long."
+          }
+        ]
+      },
+      "subclasses": [],
+      "spellcasting": {
+        "ability": "charisma",
+        "type": "pact",
+        "slots": {}
+      }
+    },
+    {
+      "id": "ID_PHB_CLASS_WIZARD",
+      "name": "Magicien",
+      "nameEn": "Wizard",
+      "source": "PHB",
+      "hitDice": 6,
+      "primaryAbility": [
+        "intelligence"
+      ],
+      "savingThrows": [
+        "intelligence",
+        "wisdom"
+      ],
+      "startingEquipment": {
+        "options": [
+          [
+            {
+              "id": "ID_STARTOPT_WIZARD_1A",
+              "name": "Bâton",
+              "items": [
+                "ID_WEAPON_QUARTERSTAFF"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_WIZARD_1B",
+              "name": "Dague",
+              "items": [
+                "ID_WEAPON_DAGGER"
+              ],
+              "quantity": 1
+            }
+          ],
+          [
+            {
+              "id": "ID_STARTOPT_WIZARD_2A",
+              "name": "Sac d'explorateur",
+              "items": [
+                "ID_EQUIPMENT_EXPLORER_PACK"
+              ],
+              "quantity": 1
+            },
+            {
+              "id": "ID_STARTOPT_WIZARD_2B",
+              "name": "Sac d'aventurier",
+              "items": [
+                "ID_EQUIPMENT_DUNGEONEER_PACK"
+              ],
+              "quantity": 1
+            }
+          ]
+        ],
+        "fixed": [
+          "ID_SPELLBOOK",
+          "ID_EQUIPMENT_COMPONENT_POUCH"
+        ]
+      },
+      "features": {
+        "1": [
+          {
+            "id": "ID_PHB_FEATURE_SPELLCASTING_WIZARD",
+            "name": "Incantation",
+            "level": 1,
+            "description": "Lanceur de sorts complet utilisant l'Intelligence. Les sorts sont enregistrés dans un grimoire.",
+            "rules": [
+              {
+                "type": "set",
+                "property": "spellcasting.ability",
+                "value": "int"
+              }
+            ]
+          },
+          {
+            "id": "ID_PHB_FEATURE_ARCANE_RECOVERY",
+            "name": "Récupération arcanique",
+            "level": 1,
+            "description": "Au repos court, récupérez des emplacements de sort dont le total ≤ la moitié de votre niveau de magicien.",
+            "rules": [
+              {
+                "type": "grant",
+                "targetType": "trait",
+                "targetId": "ID_ARCANE_RECOVERY"
+              }
+            ],
+            "uses": {
+              "count": "level_half",
+              "recovery": "long"
+            }
+          }
+        ],
+        "2": [
+          {
+            "id": "ID_PHB_FEATURE_ARCANE_TRADITION",
+            "name": "Tradition arcanique",
+            "level": 2,
+            "description": "Choisissez une école de magie (Abjuration, Évocation, etc.) ou la Nécromancie.",
+            "rules": [
+              {
+                "type": "select",
+                "name": "Choix de tradition",
+                "targetType": "subclass",
+                "count": 1
+              }
+            ]
+          }
+        ],
+        "18": [
+          {
+            "id": "ID_PHB_FEATURE_SPELL_MASTERY",
+            "name": "Maîtrise des sorts",
+            "level": 18,
+            "description": "Lancez certains sorts de niveau 1 et 2 à volonté au niveau minimum."
+          }
+        ],
+        "20": [
+          {
+            "id": "ID_PHB_FEATURE_SIGNATURE_SPELLS",
+            "name": "Sorts emblématiques",
+            "level": 20,
+            "description": "Deux sorts de niveau 3 sont toujours préparés et peuvent être lancés au niveau 3 sans emplacement."
+          }
+        ]
+      },
+      "subclasses": [],
+      "spellcasting": {
+        "ability": "intelligence",
+        "type": "full",
+        "slots": {},
+        "spellsPrepared": {
+          "formula": "$(level) + $(intelligence:modifier)",
+          "from": "spellbook"
+        },
+        "ritualCasting": true
+      }
+    }
+  ]
+}

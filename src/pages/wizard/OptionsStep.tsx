@@ -1,50 +1,145 @@
+import { useState, useEffect, useMemo } from 'react'
 import { useWizard } from '../../contexts/WizardContext'
 import { WizardShell } from '../../components/WizardShell'
-import { subclasses } from '../../data/subclasses'
 import { CheckCircleIcon, StarIcon } from '@heroicons/react/24/solid'
 import { AsiSelector } from '../../components/AsiSelector'
-import { getClassASILevels } from '../../data/classFeatures'
 import { feats } from '../../data/feats'
 import type { AsiChoice } from '../../types/character'
+import { loadClasses } from '../../data/aurora-loader'
+import type { ClassV2 } from '../../types/aurora-v2'
 
-const subclassTriggerLevels: Record<string, number> = {
-    barbarian: 3,
-    bard: 3,
-    cleric: 1,
-    druid: 2,
-    fighter: 3,
-    monk: 3,
-    paladin: 3,
-    ranger: 3,
-    rogue: 3,
-    sorcerer: 1,
-    warlock: 1,
-    wizard: 2
+// Mapping des IDs de style de combat vers nom + description
+const FIGHTING_STYLE_MAP: Record<string, { name: string; description: string }> = {
+  ID_FIGHTING_STYLE_ARCHERY: {
+    name: 'Archerie',
+    description: '+2 aux jets d\'attaque avec des armes à distance.',
+  },
+  ID_FIGHTING_STYLE_DEFENSE: {
+    name: 'Défense',
+    description: '+1 à la CA si vous portez une armure.',
+  },
+  ID_FIGHTING_STYLE_DUELING: {
+    name: 'Duel',
+    description: '+2 aux dégâts si vous tenez une arme à une main et aucune autre arme.',
+  },
+  ID_FIGHTING_STYLE_GREAT_WEAPON: {
+    name: 'Combat à deux mains',
+    description: 'Relancez les 1 et 2 sur les dés de dégâts des armes à deux mains.',
+  },
+  ID_FIGHTING_STYLE_PROTECTION: {
+    name: 'Protection',
+    description: 'Imposez un désavantage à une attaque contre un allié proche si vous avez un bouclier.',
+  },
+  ID_FIGHTING_STYLE_TWO_WEAPON: {
+    name: 'Combat à deux armes',
+    description: 'Ajoutez votre modificateur de caractéristique aux dégâts de la seconde attaque.',
+  },
+  ID_FIGHTING_STYLE_RANGER: {
+    name: 'Défense',
+    description: '+1 à la CA si vous portez une armure.',
+  },
 }
 
-const fightingStyles = [
-    { id: 'archery', name: 'Archerie', description: '+2 aux jets d\'attaque avec des armes à distance.' },
-    { id: 'defense', name: 'Défense', description: '+1 à la CA si vous portez une armure.' },
-    { id: 'dueling', name: 'Duel', description: '+2 aux dégâts si vous tenez une arme à une main et aucune autre arme.' },
-    { id: 'gwf', name: 'Combat à deux mains', description: 'Relancez les 1 et 2 sur les dés de dégâts des armes à deux mains.' },
-    { id: 'protection', name: 'Protection', description: 'Improuvez un désavantage à une attaque contre un allié proche si vous avez un bouclier.' },
-    { id: 'twf', name: 'Combat à deux armes', description: 'Ajoutez votre modificateur de caractéristique aux dégâts de la seconde attaque.' }
-]
+function getAsiLevels(classId: string): number[] {
+  // IDs Aurora
+  const fighterIds = ['ID_PHB_CLASS_FIGHTER', 'fighter']
+  const rogueIds = ['ID_PHB_CLASS_ROGUE', 'rogue']
+
+  if (fighterIds.includes(classId)) {
+    return [4, 6, 8, 12, 14, 16, 19]
+  }
+  if (rogueIds.includes(classId)) {
+    return [4, 8, 10, 12, 16, 19]
+  }
+  return [4, 8, 12, 16, 19]
+}
+
+function getSubclassTriggerLevel(classId: string): number {
+  // Cleric and Sorcerer/Warlock choose at level 1
+  const earlyIds = ['ID_PHB_CLASS_CLERIC', 'ID_PHB_CLASS_SORCERER', 'ID_PHB_CLASS_WARLOCK', 'cleric', 'sorcerer', 'warlock']
+  if (earlyIds.includes(classId)) return 1
+
+  // Druid and Wizard at level 2
+  const level2Ids = ['ID_PHB_CLASS_DRUID', 'ID_PHB_CLASS_WIZARD', 'druid', 'wizard']
+  if (level2Ids.includes(classId)) return 2
+
+  // Most others at level 3
+  return 3
+}
+
+function getSubclassLabel(classId: string): string {
+  const map: Record<string, string> = {
+    ID_PHB_CLASS_CLERIC: 'Domaine Divin',
+    ID_PHB_CLASS_WIZARD: 'Tradition Arcanique',
+    ID_PHB_CLASS_PALADIN: 'Serment Sacré',
+    ID_PHB_CLASS_BARBARIAN: 'Voie primitive',
+    ID_PHB_CLASS_BARD: 'Collège',
+    ID_PHB_CLASS_DRUID: 'Cercle',
+    ID_PHB_CLASS_FIGHTER: 'Archétype martial',
+    ID_PHB_CLASS_MONK: 'Tradition monastique',
+    ID_PHB_CLASS_RANGER: 'Archétype de rôdeur',
+    ID_PHB_CLASS_ROGUE: 'Archétype de roublard',
+    ID_PHB_CLASS_SORCERER: 'Origine magique',
+    ID_PHB_CLASS_WARLOCK: 'Patron',
+  }
+  return map[classId] || 'Sous-classe'
+}
 
 export function OptionsStep() {
     const { character, updateCharacter } = useWizard()
     const { characterClass, level, classOptions } = character
 
+    const [auroraClass, setAuroraClass] = useState<ClassV2 | null>(null)
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        if (!characterClass) {
+            setLoading(false)
+            return
+        }
+        loadClasses().then(data => {
+            const raw = data.classes.find(c => c.id === characterClass.id)
+            if (raw) setAuroraClass(raw)
+            setLoading(false)
+        })
+    }, [characterClass])
+
+    // Subclass logic
+    const subclassTriggerLevel = characterClass ? getSubclassTriggerLevel(characterClass.id) : 3
+    const needsSubclass = characterClass ? level >= subclassTriggerLevel : false
+    const availableSubclasses = auroraClass?.subclasses || []
+
+    // Fighting style logic: scan class features for select rules with fighting style options
+    const fightingStyles = useMemo(() => {
+        if (!auroraClass) return []
+        const styles: { id: string; name: string; description: string }[] = []
+        for (const [lvl, featsArr] of Object.entries(auroraClass.features || {})) {
+            if (parseInt(lvl) > level) continue
+            for (const feat of featsArr) {
+                for (const rule of feat.rules || []) {
+                    if (
+                        rule.type === 'select' &&
+                        rule.targetType === 'feature' &&
+                        Array.isArray(rule.options)
+                    ) {
+                        for (const opt of rule.options) {
+                            const mapped = FIGHTING_STYLE_MAP[String(opt)]
+                            if (mapped) {
+                                styles.push({ id: String(opt), ...mapped })
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return styles.filter((s, i, arr) => arr.findIndex(x => x.id === s.id) === i)
+    }, [auroraClass, level])
+
     if (!characterClass) return null
 
-    const needsSubclass = level >= subclassTriggerLevels[characterClass.id]
-    const availableSubclasses = subclasses.filter(s => s.classId === characterClass.id)
+    const needsFightingStyle = fightingStyles.length > 0
 
-    const needsFightingStyle = (characterClass.id === 'fighter' && level >= 1) ||
-        (characterClass.id === 'paladin' && level >= 2) ||
-        (characterClass.id === 'ranger' && level >= 2)
-
-    const asiLevels = getClassASILevels(characterClass.id)
+    const asiLevels = getAsiLevels(characterClass.id)
     const reachedAsiLevels = asiLevels.filter(lvl => lvl <= level)
 
     const handleOptionSelect = (key: string, value: string) => {
@@ -65,7 +160,18 @@ export function OptionsStep() {
         })
     }
 
-    const hasChoices = needsSubclass || needsFightingStyle || reachedAsiLevels.length > 0
+    const isVariantHuman = character.subrace === 'ID_PHB_SUBRACE_VARIANT_HUMAN'
+    const hasChoices = needsSubclass || needsFightingStyle || reachedAsiLevels.length > 0 || isVariantHuman
+
+    if (loading) {
+        return (
+            <WizardShell title="Options de classe" subtitle="Chargement des données Aurora...">
+                <div className="flex items-center justify-center py-12">
+                    <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+                </div>
+            </WizardShell>
+        )
+    }
 
     if (!hasChoices) {
         return (
@@ -94,9 +200,7 @@ export function OptionsStep() {
                     <div className="space-y-4">
                         <h3 className="font-bold text-ink flex items-center gap-2">
                             <StarIcon className="w-5 h-5 text-secondary" />
-                            {characterClass.id === 'cleric' ? 'Domaine Divin' :
-                                characterClass.id === 'wizard' ? 'Tradition Arcanique' :
-                                    characterClass.id === 'paladin' ? 'Serment Sacré' : 'Sous-classe'}
+                            {getSubclassLabel(characterClass.id)}
                         </h3>
                         <div className="flex flex-col gap-3">
                             {availableSubclasses.map(sub => {
@@ -115,7 +219,7 @@ export function OptionsStep() {
                                             {isSelected && <CheckCircleIcon className="w-5 h-5 text-primary" />}
                                         </div>
                                         <p className="text-xs text-ink-muted leading-relaxed">
-                                            {sub.description}
+                                            {typeof sub.description === 'string' ? sub.description : ''}
                                         </p>
                                     </button>
                                 )
@@ -172,9 +276,29 @@ export function OptionsStep() {
                                     choice={character.asiChoices?.[asiLevel]}
                                     onChoiceChange={(choice) => handleAsiChange(asiLevel, choice)}
                                     availableFeats={feats}
+                                    character={character}
                                 />
                             ))}
                         </div>
+                    </div>
+                )}
+
+                {/* Humain Variante — Don de départ */}
+                {isVariantHuman && (
+                    <div className="space-y-4">
+                        <h3 className="font-bold text-ink flex items-center gap-2">
+                            <StarIcon className="w-5 h-5 text-secondary" />
+                            Don de l'Humain Variante
+                        </h3>
+                        <AsiSelector
+                            level={0}
+                            choice={character.asiChoices?.[0]}
+                            onChoiceChange={(choice) => handleAsiChange(0, choice)}
+                            availableFeats={feats}
+                            character={character}
+                            forceMode="feat"
+                            title="Don de départ"
+                        />
                     </div>
                 )}
             </div>

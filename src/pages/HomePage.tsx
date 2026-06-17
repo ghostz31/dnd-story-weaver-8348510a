@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { toast } from 'sonner'
 import { Link } from 'react-router-dom'
 import {
     PlusIcon,
@@ -10,11 +11,14 @@ import {
     ChevronRightIcon,
     ArrowRightOnRectangleIcon,
     TrashIcon,
-    XMarkIcon
+    ArrowUpTrayIcon,
+    DocumentDuplicateIcon,
 } from '@heroicons/react/24/outline'
 import { useAuth } from '../contexts/AuthContext'
-import { db } from '../lib/firebase'
-import { collection, query, getDocs, orderBy, deleteDoc, doc } from 'firebase/firestore'
+import { dataStore, type CharacterSummary } from '../lib/dataStore'
+import { CharacterAvatar } from '../components/CharacterAvatar'
+import { Dialog, DialogFooter } from '../components/ui/Dialog'
+import { importCharacterFromJSON, readUploadedJSON } from '../utils/characterImportExport'
 
 const MAX_CHARACTERS = 5
 
@@ -34,69 +38,12 @@ const classColors: Record<string, string> = {
     'Sorcier': '270 60% 55%',
 }
 
-// Types for character data
-interface CharacterSummary {
-    id: string;
-    name: string;
-    race: { name: string };
-    characterClass: { name: string };
-    level: number;
-    hp: number;
-}
-
-// Confirmation Modal Component
-function ConfirmModal({
-    isOpen,
-    title,
-    message,
-    confirmLabel,
-    onConfirm,
-    onCancel,
-}: {
-    isOpen: boolean
-    title: string
-    message: string
-    confirmLabel: string
-    onConfirm: () => void
-    onCancel: () => void
-}) {
-    if (!isOpen) return null
-
-    return (
-        <div className="modal-overlay" onClick={onCancel}>
-            <div
-                className="modal-content"
-                onClick={e => e.stopPropagation()}
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="modal-title"
-            >
-                <h3 id="modal-title" className="font-cinzel text-lg font-bold mb-2">{title}</h3>
-                <p className="text-ink-muted text-sm mb-6">{message}</p>
-                <div className="flex gap-3">
-                    <button
-                        onClick={onCancel}
-                        className="btn flex-1 bg-muted text-ink hover:bg-muted/80"
-                    >
-                        Annuler
-                    </button>
-                    <button
-                        onClick={onConfirm}
-                        className="btn flex-1 bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    >
-                        {confirmLabel}
-                    </button>
-                </div>
-            </div>
-        </div>
-    )
-}
-
 export function HomePage() {
     const { user, loading: authLoading, signInWithGoogle, logout, isAuthenticated } = useAuth()
     const [characters, setCharacters] = useState<CharacterSummary[]>([])
     const [loading, setLoading] = useState(true)
     const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null)
+    const fileInputRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
         const fetchCharacters = async () => {
@@ -106,15 +53,7 @@ export function HomePage() {
             }
 
             try {
-                const q = query(
-                    collection(db, 'users', user.uid, 'characters'),
-                    orderBy('createdAt', 'desc')
-                )
-                const querySnapshot = await getDocs(q)
-                const charData = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                })) as CharacterSummary[]
+                const charData = await dataStore.getAllCharacters(user.uid)
                 setCharacters(charData)
             } catch (error) {
                 console.error("Error fetching characters:", error)
@@ -128,12 +67,92 @@ export function HomePage() {
         }
     }, [user, authLoading])
 
+    const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file || !user) return
+
+        try {
+            const json = await readUploadedJSON(file)
+            const character = importCharacterFromJSON(json)
+
+            if (!character) {
+                toast.error('Format de fichier invalide. Assurez-vous d\'importer un JSON Besace valide.')
+                return
+            }
+
+            if (characters.length >= MAX_CHARACTERS) {
+                toast.error(`Limite de ${MAX_CHARACTERS} personnages atteinte. Supprimez un personnage avant d'en importer un nouveau.`)
+                return
+            }
+
+            // Save via data layer
+            const charAny = character as unknown as Record<string, unknown>
+            const newId = await dataStore.createCharacter(user.uid, charAny)
+
+            // Refresh list
+            const newChar: CharacterSummary = {
+                id: newId,
+                name: (charAny.name as string) || 'Personnage',
+                race: charAny.race as { name: string },
+                characterClass: charAny.characterClass as { name: string; id: string },
+                level: (charAny.level as number) || 1,
+                hp: (charAny.hp as number) || 10,
+                avatarUrl: charAny.avatarUrl as string,
+            }
+            setCharacters(prev => [newChar, ...prev])
+            toast.success(`${character.name} importé avec succès !`)
+        } catch (err) {
+            console.error('Import error:', err)
+            toast.error('Erreur lors de l\'importation. Vérifiez le format du fichier.')
+        } finally {
+            if (fileInputRef.current) {
+                fileInputRef.current.value = ''
+            }
+        }
+    }
+
+    const handleDuplicate = async (charId: string) => {
+        if (!user) return
+        if (characters.length >= MAX_CHARACTERS) {
+            toast.error(`Limite de ${MAX_CHARACTERS} personnages atteinte.`)
+            return
+        }
+
+        try {
+            const data = await dataStore.getCharacter(user.uid, charId)
+            if (!data) return
+
+            const cloneName = `${data.name} (copie)`
+
+            const newId = await dataStore.createCharacter(user.uid, {
+                ...data,
+                name: cloneName,
+            } as Record<string, unknown>)
+
+            const newChar: CharacterSummary = {
+                id: newId,
+                name: cloneName,
+                race: data.race as { name: string },
+                characterClass: data.characterClass as { name: string; id: string },
+                level: data.level,
+                hp: data.hp,
+                avatarUrl: data.avatarUrl,
+            }
+            setCharacters(prev => [newChar, ...prev])
+            toast.success(`${cloneName} créé avec succès !`)
+        } catch (err) {
+            console.error('Duplicate error:', err)
+            toast.error('Erreur lors de la duplication.')
+        }
+    }
+
     const handleDeleteCharacter = async () => {
         if (!user || !deleteTarget) return
 
         try {
-            await deleteDoc(doc(db, 'users', user.uid, 'characters', deleteTarget.id))
+            await dataStore.deleteCharacter(user.uid, deleteTarget.id)
             setCharacters(prev => prev.filter(c => c.id !== deleteTarget.id))
+            toast.success(`${deleteTarget.name} supprimé.`)
         } catch (error) {
             console.error('Error deleting character:', error)
         } finally {
@@ -172,7 +191,7 @@ export function HomePage() {
                     <div className="flex flex-col items-center gap-4">
                         <button
                             onClick={signInWithGoogle}
-                            className="btn text-base px-7 py-3.5 font-cinzel tracking-wider group bg-white text-gray-800 border border-gray-200 hover:border-primary/40 hover:shadow-md transition-colors flex items-center gap-3 shadow-sm"
+                            className="btn text-base px-7 py-3.5 font-cinzel tracking-wider group bg-card text-foreground border border hover:border-primary/40 hover:shadow-md transition-colors flex items-center gap-3 shadow-sm"
                         >
                             <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
                                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -230,6 +249,24 @@ export function HomePage() {
                                 <p className="text-sm text-ink-muted mt-2">Maximum {MAX_CHARACTERS} personnages</p>
                             </div>
                         )}
+
+                        {/* Import JSON */}
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept=".json,application/json"
+                            onChange={handleImport}
+                            className="hidden"
+                        />
+                        <button
+                            onClick={() => fileInputRef.current?.click()}
+                            className="btn btn-secondary text-sm px-5 py-2.5 flex items-center gap-2"
+                            disabled={characters.length >= MAX_CHARACTERS}
+                        >
+                            <ArrowUpTrayIcon className="w-4 h-4" />
+                            Importer un personnage
+                        </button>
+
                         <p className="text-xs text-ink-muted tabular-nums">
                             {characters.length} / {MAX_CHARACTERS} personnages
                         </p>
@@ -272,18 +309,35 @@ export function HomePage() {
                                         style={{ background: `hsl(${classColor})` }}
                                     />
 
+                                    {/* Duplicate button */}
+                                    <button
+                                        onClick={() => handleDuplicate(char.id)}
+                                        disabled={characters.length >= MAX_CHARACTERS}
+                                        className="absolute top-4 right-12 p-2 bg-primary/8 hover:bg-primary/15 rounded-lg transition-colors z-10 disabled:opacity-30 disabled:cursor-not-allowed"
+                                        aria-label={`Dupliquer ${char.name}`}
+                                        title="Dupliquer"
+                                    >
+                                        <DocumentDuplicateIcon className="w-4 h-4 text-primary/70" />
+                                    </button>
+
                                     {/* Delete button */}
                                     <button
                                         onClick={() => setDeleteTarget({ id: char.id, name: char.name })}
-                                        className="absolute top-4 right-3 p-2 bg-red-500/8 hover:bg-red-500/15 rounded-lg transition-colors z-10"
+                                        className="absolute top-4 right-3 p-2 bg-destructive/8 hover:bg-destructive/15 rounded-lg transition-colors z-10"
                                         aria-label={`Supprimer ${char.name}`}
                                     >
-                                        <TrashIcon className="w-4 h-4 text-red-500/70" />
+                                        <TrashIcon className="w-4 h-4 text-destructive/70" />
                                     </button>
 
-                                    <div className="flex justify-between items-start mb-4 pr-10 pt-1">
-                                        <div>
-                                            <h3 className="text-lg font-bold text-ink tracking-tight mb-0.5 group-hover:text-primary transition-colors">
+                                    <div className="flex items-center gap-3 pr-10 pt-1">
+                                        <CharacterAvatar
+                                            avatarUrl={char.avatarUrl}
+                                            name={char.name}
+                                            className={char.characterClass?.id}
+                                            size="sm"
+                                        />
+                                        <div className="min-w-0">
+                                            <h3 className="text-lg font-bold text-ink tracking-tight mb-0.5 group-hover:text-primary transition-colors truncate">
                                                 {char.name}
                                             </h3>
                                             <p className="text-sm text-ink-muted font-medium">
@@ -295,7 +349,9 @@ export function HomePage() {
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-1.5 text-xs text-ink-muted">
                                             <HeartIcon className="w-4 h-4" style={{ color: 'hsl(var(--color-hp-high))' }} aria-hidden="true" />
-                                            <span className="font-semibold tabular-nums" style={{ color: 'hsl(var(--color-hp-high))' }}>{char.hp} PV</span>
+                                            <span className="font-semibold tabular-nums" style={{ color: 'hsl(var(--color-hp-high))' }}>
+                                                {typeof char.hp === 'number' ? char.hp : (char.hp as { current: number }).current} PV
+                                            </span>
                                         </div>
                                         <Link
                                             to={`/character/${char.id}`}
@@ -349,14 +405,28 @@ export function HomePage() {
             </section>
 
             {/* Delete Confirmation Modal */}
-            <ConfirmModal
-                isOpen={!!deleteTarget}
+            <Dialog
+                open={!!deleteTarget}
+                onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}
                 title="Supprimer ce personnage ?"
-                message={`${deleteTarget?.name} sera supprimé définitivement. Cette action est irréversible.`}
-                confirmLabel="Supprimer"
-                onConfirm={handleDeleteCharacter}
-                onCancel={() => setDeleteTarget(null)}
-            />
+                description={`${deleteTarget?.name} sera supprimé définitivement. Cette action est irréversible.`}
+                variant="destructive"
+            >
+                <DialogFooter>
+                    <button
+                        onClick={() => setDeleteTarget(null)}
+                        className="btn flex-1 bg-muted text-ink hover:bg-muted/80"
+                    >
+                        Annuler
+                    </button>
+                    <button
+                        onClick={handleDeleteCharacter}
+                        className="btn flex-1 bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                        Supprimer
+                    </button>
+                </DialogFooter>
+            </Dialog>
         </div>
     )
 }

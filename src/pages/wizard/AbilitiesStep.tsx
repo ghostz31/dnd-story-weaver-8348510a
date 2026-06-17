@@ -28,6 +28,13 @@ export function AbilitiesStep() {
 
     const formatModifier = (mod: number) => (mod >= 0 ? `+${mod}` : `${mod}`)
 
+    const getPointBuyCost = (score: number) => {
+        const costs: Record<number, number> = {
+            8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9,
+        }
+        return costs[score] ?? 0
+    }
+
     // Get racial bonuses for display
     const racialBonuses = character.race?.abilityBonuses || {}
     const subrace = character.race?.subraces?.find(s => s.id === character.subrace)
@@ -65,10 +72,9 @@ export function AbilitiesStep() {
 
         if (newScore < 8 || newScore > 15) return
 
-        // Calculate point cost
-        const oldCost = currentScore > 13 ? 2 : 1
-        const newCost = newScore > 13 ? 2 : 1
-        const pointChange = delta > 0 ? newCost : -oldCost
+        const oldCost = getPointBuyCost(currentScore)
+        const newCost = getPointBuyCost(newScore)
+        const pointChange = newCost - oldCost
 
         if (pointsRemaining - pointChange < 0) return
 
@@ -145,10 +151,15 @@ export function AbilitiesStep() {
             {/* Point buy remaining */}
             {method === 'pointbuy' && (
                 <div className="text-center mb-8 p-3 bg-muted/30 rounded-lg border border-border/50">
-                    <span className="text-ink-muted">Points restants: </span>
-                    <span className="font-bold text-xl text-primary">
-                        {pointsRemaining}
-                    </span>
+                    <div className="flex items-center justify-center gap-2">
+                        <span className="text-ink-muted">Points utilisés :</span>
+                        <span className="font-bold text-xl text-primary">
+                            {27 - pointsRemaining} / 27
+                        </span>
+                    </div>
+                    <p className={`text-sm mt-1 ${pointsRemaining < 0 ? 'text-hp font-bold' : pointsRemaining === 0 ? 'text-warning font-bold' : 'text-ink-muted'}`}>
+                        {pointsRemaining === 0 ? 'Budget épuisé' : `${pointsRemaining} point${pointsRemaining > 1 ? 's' : ''} restant${pointsRemaining > 1 ? 's' : ''}`}
+                    </p>
                 </div>
             )}
 
@@ -217,7 +228,12 @@ export function AbilitiesStep() {
                                     >
                                         −
                                     </button>
-                                    <span className="w-8 text-center font-bold">{baseScore}</span>
+                                    <div className="w-10 text-center">
+                                        <span className="block font-bold">{baseScore}</span>
+                                        <span className="block text-[10px] text-ink-muted leading-none">
+                                            {getPointBuyCost(baseScore)} pts
+                                        </span>
+                                    </div>
                                     <button
                                         onClick={() => handlePointBuyChange(ability, 1)}
                                         disabled={baseScore >= 15 || pointsRemaining <= 0}

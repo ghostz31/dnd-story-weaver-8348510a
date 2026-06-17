@@ -92,15 +92,25 @@ export function isSpellcaster(characterClass: CharacterClass | null): boolean {
 
 /**
  * Retourne le type de gestion des sorts pour une classe:
- * - 'known': classe à sorts connus (Barde, Ensorceleur, Rôdeur, Occultiste) — nombre fixe via spellsKnown
- * - 'spellbook': Magicien — grimoire avec 6 + 2*(niveau-1) sorts
+ * - 'known': classe à sorts connus (Barde, Ensorceleur, Rôdeur, Occultiste, Magicien) — nombre fixe via spellsKnown
  * - 'prepared': classe à sorts préparés (Clerc, Druide, Paladin) — prépare mod+niveau depuis toute la liste
  */
-export function getSpellcastingType(characterClass: CharacterClass | null): 'known' | 'spellbook' | 'prepared' | null {
+export function getSpellcastingType(characterClass: CharacterClass | null): 'known' | 'prepared' | 'spellbook' | null {
     if (!characterClass?.spellcasting) return null
-    if (characterClass.id === 'wizard') return 'spellbook'
-    if (characterClass.spellcasting.spellsKnown) return 'known'
-    return 'prepared'
+    
+    // Magicien a un grimoire
+    if (characterClass.id === 'wizard') {
+        return 'spellbook'
+    }
+    
+    // Classes à sorts préparés (pas de choix de sorts au level-up)
+    const preparedClasses = ['cleric', 'druid', 'paladin']
+    if (preparedClasses.includes(characterClass.id)) {
+        return 'prepared'
+    }
+    
+    // Toutes les autres classes avec spellcasting ont des sortsKnown
+    return 'known'
 }
 
 /**

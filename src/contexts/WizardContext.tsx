@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useState, useMemo, type ReactNode } from 'react'
 import type { WizardStep, CharacterCreation } from '../types/character'
+import { validateWizardStep } from '../utils/wizard-validation'
 
 
 
@@ -10,6 +11,7 @@ interface WizardContextType {
     character: CharacterCreation
     updateCharacter: (updates: Partial<CharacterCreation>) => void
     canProceed: boolean
+    stepErrors: string[]
     nextStep: () => void
     prevStep: () => void
     resetWizard: () => void
@@ -33,6 +35,7 @@ const defaultCharacter: CharacterCreation = {
     classOptions: {},
     selectedSpells: [],
     asiChoices: {},
+    inventory: [],
 }
 
 const steps: WizardStep[] = ['name', 'race', 'class', 'abilities', 'proficiencies', 'options', 'spells', 'background', 'equipment', 'review']
@@ -47,32 +50,8 @@ export function WizardProvider({ children }: { children: ReactNode }) {
         setCharacter(prev => ({ ...prev, ...updates }))
     }
 
-    const canProceed = (() => {
-        switch (currentStep) {
-            case 'name':
-                return character.name.trim().length >= 2
-            case 'race':
-                return character.race !== null
-            case 'class':
-                return character.characterClass !== null
-            case 'abilities':
-                return true
-            case 'proficiencies':
-                return true
-            case 'options':
-                return true
-            case 'spells':
-                return true
-            case 'background':
-                return character.background !== null
-            case 'equipment':
-                return true
-            case 'review':
-                return true
-            default:
-                return false
-        }
-    })()
+    const stepErrors = useMemo(() => validateWizardStep(currentStep, character), [currentStep, character])
+    const canProceed = stepErrors.length === 0
 
     const nextStep = () => {
         const currentIndex = steps.indexOf(currentStep)
@@ -101,6 +80,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
                 character,
                 updateCharacter,
                 canProceed,
+                stepErrors,
                 nextStep,
                 prevStep,
                 resetWizard,

@@ -1,25 +1,45 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
-    HeartIcon,
-    ShieldCheckIcon,
-    BoltIcon,
-    ChevronLeftIcon,
-    MinusIcon,
-    PlusIcon,
     SparklesIcon,
     ArchiveBoxIcon,
+    ArrowDownTrayIcon,
+    ShareIcon,
     FireIcon,
-} from '@heroicons/react/24/solid'
+    CheckIcon,
+    ArrowPathIcon,
+    MoonIcon,
+} from '@heroicons/react/24/outline'
 import { useCharacter } from '../contexts/CharacterContext'
 import type { AbilityScores } from '../types/character'
+import type { InventoryItem } from '../types/inventory'
+import { downloadCharacterJSON } from '../utils/characterImportExport'
 
-// Liste complète des compétences D&D 5e avec leur caractéristique associée
+import { CharacterAvatar } from '../components/CharacterAvatar'
+import { Breadcrumb } from '../components/Breadcrumb'
+import {
+    HexStat,
+    CombatBadge,
+    HPBlock,
+    SensesDisplay,
+    SkillRow,
+    CollapsibleCard,
+    SavingThrowsSection,
+} from '../components/ui'
+
+const abilityLabels: Record<keyof AbilityScores, string> = {
+    str: 'FOR',
+    dex: 'DEX',
+    con: 'CON',
+    int: 'INT',
+    wis: 'SAG',
+    cha: 'CHA',
+}
+
 const allSkills: { name: string; ability: keyof AbilityScores }[] = [
     { name: 'Acrobaties', ability: 'dex' },
     { name: 'Arcanes', ability: 'int' },
     { name: 'Athlétisme', ability: 'str' },
-    { name: 'Discrétion', ability: 'dex' },
     { name: 'Dressage', ability: 'wis' },
     { name: 'Escamotage', ability: 'dex' },
     { name: 'Histoire', ability: 'int' },
@@ -30,31 +50,12 @@ const allSkills: { name: string; ability: keyof AbilityScores }[] = [
     { name: 'Perception', ability: 'wis' },
     { name: 'Perspicacité', ability: 'wis' },
     { name: 'Persuasion', ability: 'cha' },
-    { name: 'Religion', ability: 'int' },
     { name: 'Représentation', ability: 'cha' },
+    { name: 'Religion', ability: 'int' },
+    { name: 'Discrétion', ability: 'dex' },
     { name: 'Survie', ability: 'wis' },
     { name: 'Tromperie', ability: 'cha' },
 ]
-
-// Labels des caractéristiques
-const abilityLabels: Record<keyof AbilityScores, string> = {
-    str: 'FOR',
-    dex: 'DEX',
-    con: 'CON',
-    int: 'INT',
-    wis: 'SAG',
-    cha: 'CHA',
-}
-
-// Couleurs par caractéristique (CSS custom properties)
-const abilityColors: Record<keyof AbilityScores, string> = {
-    str: 'var(--stat-str)',
-    dex: 'var(--stat-dex)',
-    con: 'var(--stat-con)',
-    int: 'var(--stat-int)',
-    wis: 'var(--stat-wis)',
-    cha: 'var(--stat-cha)',
-}
 
 export function CharacterPage() {
     const { id } = useParams<{ id: string }>()
@@ -66,12 +67,24 @@ export function CharacterPage() {
         updateCurrentHp,
         getModifier,
         getTotalScore,
-        getSavingThrowBonus,
+        getSavingThrowBreakdown,
         getSkillBonus,
+        getSkillBreakdown,
+        getInitiativeBreakdown,
+        getACBreakdown,
         proficiencyBonus,
+        getFeatHpBonus,
+        getSpeed,
+        updateAvatar,
+        takeDamage,
+        updateTempHp,
+        enableSharing,
+        shortRest,
+        longRest,
     } = useCharacter()
 
-    const [showAllSkills, setShowAllSkills] = useState(false)
+    const [shareLoading, setShareLoading] = useState(false)
+    const [shareCopied, setShareCopied] = useState(false)
 
     useEffect(() => {
         if (id) {
@@ -83,10 +96,10 @@ export function CharacterPage() {
         return (
             <div className="flex flex-col gap-4 animate-fade-in pb-8">
                 <div className="card h-32 animate-pulse bg-muted/20" />
-                <div className="grid grid-cols-4 gap-3">
-                    <div className="card col-span-2 h-28 animate-pulse bg-muted/20" />
-                    <div className="card h-28 animate-pulse bg-muted/20" />
-                    <div className="card h-28 animate-pulse bg-muted/20" />
+                <div className="grid grid-cols-3 gap-3">
+                    {[...Array(6)].map((_, i) => (
+                        <div key={i} className="card h-28 animate-pulse bg-muted/20" />
+                    ))}
                 </div>
             </div>
         )
@@ -95,353 +108,371 @@ export function CharacterPage() {
     if (error || !character) {
         return (
             <div className="flex flex-col items-center justify-center h-64 text-center">
-                <p className="text-ink-muted mb-4">{error || 'Personnage introuvable'}</p>
+                <p className="text-muted-foreground mb-4">{error || 'Personnage introuvable'}</p>
                 <Link to="/" className="btn btn-primary">Retour à l'accueil</Link>
             </div>
         )
     }
 
     const currentHp = character.currentHp ?? character.hp
-    const maxHp = character.hp
-    const hpPercent = (currentHp / maxHp) * 100
+    const maxHp = character.hp + getFeatHpBonus()
+    const acBreakdown = getACBreakdown()
+    const ac = acBreakdown.total
+    const initiativeBreakdown = getInitiativeBreakdown()
+    const initiative = initiativeBreakdown.total
+    const speed = getSpeed()
 
-    const getHpStatus = (percent: number) => {
-        if (percent <= 25) return 'crit'
-        if (percent <= 50) return 'low'
-        if (percent <= 75) return 'med'
-        return 'high'
-    }
+    const abilities = Object.keys(abilityLabels) as Array<keyof AbilityScores>
 
-    const hpStatus = getHpStatus(hpPercent)
+    const isSaveProficient = (ability: keyof AbilityScores) =>
+        character.characterClass?.savingThrows?.includes(ability) || false
 
-    const getHpColor = (status: string) => {
-        const colors: Record<string, string> = {
-            crit: 'hsl(var(--color-hp-crit))',
-            low: 'hsl(var(--color-hp-low))',
-            med: 'hsl(var(--color-hp-med))',
-            high: 'hsl(var(--color-hp-high))',
-        }
-        return colors[status]
-    }
+    const getSkillCountByAbility = (ability: keyof AbilityScores) =>
+        allSkills.filter(s => s.ability === ability && character.skillProficiencies?.includes(s.name)).length
 
-    const formatModifier = (mod: number) => (mod >= 0 ? `+${mod}` : `${mod}`)
+    const passivePerception = 10 + getModifier('wis') +
+        (character.skillProficiencies?.includes('Perception') ? proficiencyBonus : 0)
+    const passiveInvestigation = 10 + getModifier('int') +
+        (character.skillProficiencies?.includes('Investigation') ? proficiencyBonus : 0)
+    const passiveInsight = 10 + getModifier('wis') +
+        (character.skillProficiencies?.includes('Perspicacité') ? proficiencyBonus : 0)
 
-    const handleHpChange = (delta: number) => {
-        const newHp = Math.max(0, Math.min(currentHp + delta, maxHp))
-        updateCurrentHp(newHp)
-    }
-
-    // Filtrer les compétences - afficher celles du personnage ou toutes
-    const displayedSkills = showAllSkills
-        ? allSkills
-        : allSkills.filter(skill => character.skillProficiencies?.includes(skill.name))
+    const attacks = character.attacks || []
+    const equippedItems: InventoryItem[] = character.inventory?.items?.filter(i => i.equipped || i.attuned) || []
 
     return (
-        <div className="flex flex-col gap-5 animate-fade-in pb-8">
-            {/* Header with back button */}
-            <header className="flex items-center gap-3 mb-1">
-                <Link to="/" className="touch-target -ml-2" aria-label="Retour à l'accueil">
-                    <ChevronLeftIcon className="w-6 h-6" style={{ color: 'hsl(var(--muted-foreground))' }} />
-                </Link>
+        <div className="flex flex-col gap-4 pb-8 animate-fade-in">
+            {/* HEADER — Avatars et infos */}
+            <header className="flex items-center gap-4 px-4 pt-4">
+                <CharacterAvatar
+                    avatarUrl={character.avatarUrl}
+                    name={character.name}
+                    className={character.characterClass?.id}
+                    size="lg"
+                    editable
+                    onUpload={async (url) => { await updateAvatar(url) }}
+                    onRemove={async () => { await updateAvatar('') }}
+                />
                 <div className="flex-1 min-w-0">
-                    <h1 className="font-cinzel text-2xl font-bold truncate">{character.name}</h1>
-                    <p className="text-ink-muted text-sm">
-                        {character.race?.name} • {character.characterClass?.name} niv. {character.level}
+                    <Breadcrumb items={[{ label: character.name }]} />
+                    <h1 className="font-bold text-xl md:text-2xl leading-tight truncate font-cinzel">
+                        {character.name}
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                        {character.race?.name} {character.characterClass?.name} • Niveau {character.level}
                     </p>
+                    <div className="flex items-center gap-2 mt-2">
+                        {character.level < 20 && (
+                            <Link to={`/level-up/${character.id}`} className="btn btn-secondary text-xs py-1 px-3">
+                                Monter de niveau
+                            </Link>
+                        )}
+                        <button
+                            onClick={async () => {
+                                if (shareLoading) return
+                                setShareLoading(true)
+                                try {
+                                    let code = character.shareCode
+                                    if (!code) {
+                                        code = await enableSharing()
+                                    }
+                                    if (code) {
+                                        await navigator.clipboard.writeText(code)
+                                        setShareCopied(true)
+                                        setTimeout(() => setShareCopied(false), 2000)
+                                    }
+                                } catch (err) {
+                                    console.error('Share error:', err)
+                                } finally {
+                                    setShareLoading(false)
+                                }
+                            }}
+                            className={`p-2 rounded-lg hover:bg-muted transition-colors ${character.shareCode ? 'text-hp-high' : 'text-muted-foreground'} ${shareLoading ? 'opacity-50 cursor-wait' : ''}`}
+                            title={character.shareCode ? 'Partage actif — cliquez pour copier le code' : 'Partager'}
+                        >
+                            {shareCopied ? (
+                                <CheckIcon className="w-4 h-4" />
+                            ) : (
+                                <ShareIcon className="w-4 h-4" />
+                            )}
+                        </button>
+                        <button
+                            onClick={() => downloadCharacterJSON(character as any)}
+                            className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
+                            title="Exporter"
+                        >
+                            <ArrowDownTrayIcon className="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
-                {character.level < 20 && (
-                    <Link
-                        to="/level-up"
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-r from-purple-500/15 to-pink-500/15 border border-purple-500/25 hover:from-purple-500/25 hover:to-pink-500/25 transition-colors"
-                    >
-                        <span className="text-yellow-400">✨</span>
-                        <span className="text-sm font-semibold text-purple-400">Niv+</span>
-                    </Link>
-                )}
             </header>
 
-            {/* ─── Combat Stats Row ─── */}
-            <div className="grid grid-cols-4 gap-3">
-                {/* HP — Hero Block */}
-                <div
-                    className="col-span-2 rounded-xl overflow-hidden border"
-                    style={{
-                        borderColor: `${getHpColor(hpStatus)}30`,
-                        background: `linear-gradient(135deg, ${getHpColor(hpStatus)}08, ${getHpColor(hpStatus)}15)`,
-                        boxShadow: `0 0 20px ${getHpColor(hpStatus)}10`
-                    }}
-                >
-                    <div
-                        className="px-4 py-3 flex items-center justify-between"
-                    >
-                        <div className="flex items-center gap-2">
-                            <HeartIcon
-                                className="w-5 h-5"
-                                style={{ color: getHpColor(hpStatus) }}
-                                aria-hidden="true"
-                            />
-                            <span className="font-semibold text-sm">PV</span>
+            {/* LAYOUT RESPONSIVE UNIQUE — stack mobile, 3-col desktop */}
+            <div className="px-4 grid grid-cols-1 lg:grid-cols-[minmax(0,280px)_1fr_minmax(0,320px)] gap-4 lg:gap-6">
+                {/* ─── COLONNE 1 (desktop) / éléments re-ordonnés en mobile ─── */}
+                <div className="contents lg:block lg:space-y-4">
+                    {/* Combat Badges — mobile first, puis ordonné après hex en desktop */}
+                    <div className="order-1 lg:order-none lg:hidden">
+                        <div className="flex justify-around py-4 bg-card rounded-xl border border-border">
+                            <CombatBadge type="ac" value={ac} label="AC" breakdown={acBreakdown} />
+                            <CombatBadge type="initiative" value={initiative} label="Initiative" breakdown={initiativeBreakdown} />
+                            <CombatBadge type="speed" value={speed} label="Speed" suffix="m" />
+                            <CombatBadge type="proficiency" value={proficiencyBonus} label="Proficiency" />
                         </div>
-                        <span
-                            className="stat-value text-xl font-bold"
-                            aria-live="polite"
-                            aria-label={`${currentHp} points de vie sur ${maxHp}`}
-                        >
-                            {currentHp}/{maxHp}
-                        </span>
                     </div>
-                    <div className="hp-bar mx-3" style={{ borderRadius: '5px' }}>
-                        <div
-                            className={`hp-bar-fill ${hpStatus}`}
-                            style={{ width: `${hpPercent}%` }}
-                            role="progressbar"
-                            aria-valuenow={currentHp}
-                            aria-valuemin={0}
-                            aria-valuemax={maxHp}
+
+                    {/* HP Block — mobile first */}
+                    <div className="order-2 lg:order-none lg:hidden">
+                        <HPBlock
+                            current={currentHp}
+                            max={maxHp}
+                            temp={character.tempHp ?? 0}
+                            onHeal={(amount) => updateCurrentHp(Math.min(currentHp + amount, maxHp))}
+                            onDamage={takeDamage}
+                            onSetTempHP={updateTempHp}
                         />
                     </div>
-                    {/* HP Controls */}
-                    <div className="flex items-center justify-center gap-2 px-3 py-2.5">
-                        <button
-                            onClick={() => handleHpChange(-5)}
-                            className="p-1.5 rounded-full bg-red-500/15 hover:bg-red-500/25 active:scale-95 transition-colors"
-                            aria-label="Retirer 5 PV"
-                        >
-                            <MinusIcon className="w-4 h-4 text-red-500" />
+
+                    {/* Conditions actives — mobile first */}
+                    {character.activeConditions && character.activeConditions.length > 0 && (
+                        <div className="order-2.5 lg:order-none lg:hidden flex flex-wrap gap-1.5 px-1">
+                            {character.activeConditions.map(cond => (
+                                <span key={cond} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium"
+                                    style={{ backgroundColor: 'hsl(var(--destructive) / 0.15)', color: 'hsl(var(--destructive))' }}>
+                                    {cond}
+                                </span>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Repos — mobile first */}
+                    <div className="order-3 flex gap-2 lg:order-none lg:hidden">
+                        <button onClick={shortRest} className="flex-1 btn btn-secondary text-sm py-2 flex items-center justify-center gap-2">
+                            <ArrowPathIcon className="w-4 h-4" /> Repos court
                         </button>
-                        <button
-                            onClick={() => handleHpChange(-1)}
-                            className="px-2.5 py-1 text-xs font-medium rounded-md bg-red-500/10 hover:bg-red-500/20 text-red-500 active:scale-95 transition-colors tabular-nums"
-                            aria-label="Retirer 1 PV"
-                        >
-                            −1
+                        <button onClick={longRest} className="flex-1 btn btn-secondary text-sm py-2 flex items-center justify-center gap-2">
+                            <MoonIcon className="w-4 h-4" /> Repos long
                         </button>
-                        <button
-                            onClick={() => handleHpChange(1)}
-                            className="px-2.5 py-1 text-xs font-medium rounded-md bg-green-500/10 hover:bg-green-500/20 text-green-500 active:scale-95 transition-colors tabular-nums"
-                            aria-label="Ajouter 1 PV"
-                        >
-                            +1
-                        </button>
-                        <button
-                            onClick={() => handleHpChange(5)}
-                            className="p-1.5 rounded-full bg-green-500/15 hover:bg-green-500/25 active:scale-95 transition-colors"
-                            aria-label="Ajouter 5 PV"
-                        >
-                            <PlusIcon className="w-4 h-4 text-green-500" />
-                        </button>
+                    </div>
+
+                    {/* Hex Stats */}
+                    <div className="order-4 lg:order-none">
+                        <div className="grid grid-cols-3 lg:grid-cols-2 gap-2">
+                            {abilities.map((ability) => (
+                                <HexStat
+                                    key={ability}
+                                    ability={ability}
+                                    score={getTotalScore(ability)}
+                                    modifier={getModifier(ability)}
+                                    isSaveProficient={isSaveProficient(ability)}
+                                    skillCount={getSkillCountByAbility(ability)}
+                                    label={abilityLabels[ability]}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Saving Throws */}
+                    <div className="order-5 lg:order-none">
+                        <SavingThrowsSection
+                            abilities={abilities}
+                            isProficient={isSaveProficient}
+                            getBreakdown={getSavingThrowBreakdown}
+                            abilityLabels={abilityLabels}
+                        />
+                    </div>
+
+                    {/* Senses */}
+                    <div className="order-6 lg:order-none">
+                        <SensesDisplay
+                            perception={passivePerception}
+                            investigation={passiveInvestigation}
+                            insight={passiveInsight}
+                        />
                     </div>
                 </div>
 
-                {/* AC */}
-                <div className="card-stat flex flex-col items-center justify-center py-4">
-                    <ShieldCheckIcon className="w-6 h-6 mb-1.5" style={{ color: 'hsl(var(--color-ac))' }} aria-hidden="true" />
-                    <span className="stat-value text-2xl font-bold">{character.ac}</span>
-                    <span className="stat-label mt-1">CA</span>
+                {/* ─── COLONNE 2 — Compétences + Spellcasting ─── */}
+                <div className="space-y-4">
+                    {/* Skills — collapsible mobile, flat desktop */}
+                    <div className="lg:hidden">
+                        <CollapsibleCard title="Compétences" badge={character.skillProficiencies?.length || 0}>
+                            <div className="space-y-0.5 max-h-60 overflow-y-auto">
+                                {allSkills.map((skill) => {
+                                    const isProf = character.skillProficiencies?.includes(skill.name)
+                                    return (
+                                        <SkillRow
+                                            key={skill.name}
+                                            name={skill.name}
+                                            ability={skill.ability}
+                                            abilityLabel={abilityLabels[skill.ability]}
+                                            bonus={getSkillBonus(skill.ability, !!isProf)}
+                                            isProficient={!!isProf}
+                                            breakdown={getSkillBreakdown(skill.name, skill.ability, !!isProf)}
+                                        />
+                                    )
+                                })}
+                            </div>
+                        </CollapsibleCard>
+                    </div>
+                    <div className="hidden lg:block">
+                        <div className="card p-4">
+                            <h2 className="text-sm font-bold uppercase text-muted-foreground mb-4 tracking-wider">
+                                Compétences
+                                <span className="ml-2 text-xs normal-case">
+                                    ({character.skillProficiencies?.length || 0} maîtrisées)
+                                </span>
+                            </h2>
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                                {allSkills.map((skill) => {
+                                    const isProf = character.skillProficiencies?.includes(skill.name)
+                                    return (
+                                        <SkillRow
+                                            key={skill.name}
+                                            name={skill.name}
+                                            ability={skill.ability}
+                                            abilityLabel={abilityLabels[skill.ability]}
+                                            bonus={getSkillBonus(skill.ability, !!isProf)}
+                                            isProficient={!!isProf}
+                                            breakdown={getSkillBreakdown(skill.name, skill.ability, !!isProf)}
+                                        />
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Spellcasting Summary — desktop uniquement */}
+                    {character.characterClass?.spellcasting && (
+                        <div className="hidden lg:block card p-4">
+                            <div className="flex items-center justify-between mb-3">
+                                <h2 className="text-sm font-bold uppercase text-muted-foreground tracking-wider">
+                                    Incantation
+                                </h2>
+                                <Link to="/spells" className="text-xs text-primary hover:underline">
+                                    Voir les sorts →
+                                </Link>
+                            </div>
+                            <div className="grid grid-cols-3 gap-3 text-center">
+                                <div className="bg-primary/5 rounded-lg p-2">
+                                    <div className="text-xl font-bold font-cinzel text-primary">
+                                        {8 + proficiencyBonus + (character.characterClass?.spellcasting?.ability ? getModifier(character.characterClass.spellcasting.ability) : 0)}
+                                    </div>
+                                    <div className="text-[10px] text-muted-foreground uppercase">DD</div>
+                                </div>
+                                <div className="bg-primary/5 rounded-lg p-2">
+                                    <div className="text-xl font-bold font-cinzel text-primary">
+                                        +{proficiencyBonus + (character.characterClass?.spellcasting?.ability ? getModifier(character.characterClass.spellcasting.ability) : 0)}
+                                    </div>
+                                    <div className="text-[10px] text-muted-foreground uppercase">Attaque</div>
+                                </div>
+                                <div className="bg-primary/5 rounded-lg p-2">
+                                    <div className="text-xl font-bold font-cinzel text-primary">
+                                        {character.knownSpells?.length || 0}
+                                    </div>
+                                    <div className="text-[10px] text-muted-foreground uppercase">Sorts</div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Quick Links — mobile */}
+                    <div className="lg:hidden grid grid-cols-3 gap-2">
+                        <Link to="/combat" className="card p-3 text-center hover:border-primary/50 transition-colors">
+                            <FireIcon className="w-6 h-6 mx-auto mb-1 text-primary" />
+                            <span className="text-sm font-medium">Combat</span>
+                            {attacks.length > 0 && (
+                                <span className="block text-xs text-muted-foreground mt-1">{attacks.length} attaques</span>
+                            )}
+                        </Link>
+                        <Link to="/spells" className="card p-3 text-center hover:border-primary/50 transition-colors">
+                            <SparklesIcon className="w-6 h-6 mx-auto mb-1 text-magic" />
+                            <span className="text-sm font-medium">Sorts</span>
+                        </Link>
+                        <Link to="/inventory" className="card p-3 text-center hover:border-primary/50 transition-colors">
+                            <ArchiveBoxIcon className="w-6 h-6 mx-auto mb-1 text-magic" />
+                            <span className="text-sm font-medium">Inventaire</span>
+                            {equippedItems.length > 0 && (
+                                <span className="block text-xs text-muted-foreground mt-1">{equippedItems.length} objets</span>
+                            )}
+                        </Link>
+                    </div>
                 </div>
 
-                {/* Initiative */}
-                <div className="card-stat flex flex-col items-center justify-center py-4">
-                    <BoltIcon className="w-6 h-6 mb-1.5" style={{ color: 'hsl(var(--color-gold))' }} aria-hidden="true" />
-                    <span className="stat-value text-2xl font-bold tabular-nums">
-                        {formatModifier(getModifier('dex'))}
-                    </span>
-                    <span className="stat-label mt-1">Init</span>
+                {/* ─── COLONNE 3 — Combat (desktop) ─── */}
+                <div className="hidden lg:block space-y-4">
+                    <div className="card p-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <CombatBadge type="ac" value={ac} label="CA" breakdown={acBreakdown} />
+                            <CombatBadge type="initiative" value={initiative} label="Initiative" breakdown={initiativeBreakdown} />
+                            <CombatBadge type="speed" value={speed} label="Vitesse" suffix="m" />
+                            <CombatBadge type="proficiency" value={proficiencyBonus} label="Maîtrise" />
+                        </div>
+                    </div>
+
+                    <HPBlock
+                        current={currentHp}
+                        max={maxHp}
+                        temp={character.tempHp ?? 0}
+                        onHeal={(amount) => updateCurrentHp(Math.min(currentHp + amount, maxHp))}
+                        onDamage={takeDamage}
+                        onSetTempHP={updateTempHp}
+                    />
+
+                    {character.activeConditions && character.activeConditions.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                            {character.activeConditions.map(cond => (
+                                <span key={cond} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium"
+                                    style={{ backgroundColor: 'hsl(var(--destructive) / 0.15)', color: 'hsl(var(--destructive))' }}>
+                                    {cond}
+                                </span>
+                            ))}
+                        </div>
+                    )}
+
+                    <div className="flex gap-2">
+                        <button onClick={shortRest} className="flex-1 btn btn-secondary text-sm py-2 flex items-center justify-center gap-2">
+                            <ArrowPathIcon className="w-4 h-4" /> Repos court
+                        </button>
+                        <button onClick={longRest} className="flex-1 btn btn-secondary text-sm py-2 flex items-center justify-center gap-2">
+                            <MoonIcon className="w-4 h-4" /> Repos long
+                        </button>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Link to="/combat" className="card p-3 flex items-center justify-between hover:border-primary/50 transition-colors">
+                            <div className="flex items-center gap-3">
+                                <FireIcon className="w-5 h-5 text-primary" />
+                                <div>
+                                    <div className="font-medium">Combat</div>
+                                    <div className="text-xs text-muted-foreground">{attacks.length} attaques configurées</div>
+                                </div>
+                            </div>
+                            <span className="text-muted-foreground">→</span>
+                        </Link>
+                        <Link to="/spells" className="card p-3 flex items-center justify-between hover:border-primary/50 transition-colors">
+                            <div className="flex items-center gap-3">
+                                <SparklesIcon className="w-5 h-5 text-magic" />
+                                <div>
+                                    <div className="font-medium">Sorts</div>
+                                    <div className="text-xs text-muted-foreground">{character.knownSpells?.length || 0} sorts connus</div>
+                                </div>
+                            </div>
+                            <span className="text-muted-foreground">→</span>
+                        </Link>
+                        <Link to="/inventory" className="card p-3 flex items-center justify-between hover:border-primary/50 transition-colors">
+                            <div className="flex items-center gap-3">
+                                <ArchiveBoxIcon className="w-5 h-5 text-magic" />
+                                <div>
+                                    <div className="font-medium">Inventaire</div>
+                                    <div className="text-xs text-muted-foreground">{equippedItems.length} objets équipés</div>
+                                </div>
+                            </div>
+                            <span className="text-muted-foreground">→</span>
+                        </Link>
+                    </div>
                 </div>
             </div>
-
-            {/* ─── Secondary Stats ─── */}
-            <div className="grid grid-cols-3 gap-3">
-                <div className="card-stat py-3">
-                    <span className="stat-label block mb-1">Vitesse</span>
-                    <span className="font-semibold tabular-nums">{character.race?.speed || 9}m</span>
-                </div>
-                <div className="card-stat py-3">
-                    <span className="stat-label block mb-1">Bonus Maîtrise</span>
-                    <span className="font-semibold tabular-nums" style={{ color: 'hsl(var(--primary))' }}>
-                        +{proficiencyBonus}
-                    </span>
-                </div>
-                <div className="card-stat py-3">
-                    <span className="stat-label block mb-1">Dés de vie</span>
-                    <span className="font-semibold tabular-nums">
-                        {character.level}d{character.characterClass?.hitDie || 8}
-                    </span>
-                </div>
-            </div>
-
-            {/* ─── Ability Scores ─── */}
-            <section>
-                <h2 className="section-header">Caractéristiques</h2>
-                <div className="grid grid-cols-3 gap-3 sm:grid-cols-6 stagger-children">
-                    {(Object.keys(abilityLabels) as Array<keyof AbilityScores>).map((ability) => {
-                        const isSave = character.characterClass?.savingThrows?.includes(ability) || false
-                        const score = getTotalScore(ability)
-                        const mod = getModifier(ability)
-                        const color = abilityColors[ability]
-                        return (
-                            <div
-                                key={ability}
-                                className="card-stat relative py-4"
-                                style={{
-                                    borderColor: `hsl(${color} / 0.25)`,
-                                    background: `linear-gradient(to bottom, hsl(${color} / 0.04), transparent)`
-                                }}
-                            >
-                                {isSave && (
-                                    <div
-                                        className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm"
-                                        style={{ background: `hsl(${color})`, color: 'white' }}
-                                        title="Jet de sauvegarde maîtrisé"
-                                        aria-label="Maîtrise de jet de sauvegarde"
-                                    >
-                                        ✓
-                                    </div>
-                                )}
-                                <span className="stat-label" style={{ color: `hsl(${color} / 0.8)` }}>
-                                    {abilityLabels[ability]}
-                                </span>
-                                <span className="stat-value text-2xl font-bold block mt-1 tabular-nums">
-                                    {score}
-                                </span>
-                                <span
-                                    className="stat-modifier text-sm mt-0.5 block tabular-nums"
-                                    style={{ color: `hsl(${color})` }}
-                                >
-                                    {formatModifier(mod)}
-                                </span>
-                            </div>
-                        )
-                    })}
-                </div>
-            </section>
-
-            {/* ─── Saving Throws ─── */}
-            <section>
-                <h2 className="section-header" data-color="ac">Jets de Sauvegarde</h2>
-                <div className="card">
-                    <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
-                        {(Object.keys(abilityLabels) as Array<keyof AbilityScores>).map((ability) => {
-                            const isProficient = character.characterClass?.savingThrows?.includes(ability) || false
-                            const bonus = getSavingThrowBonus(ability)
-                            return (
-                                <div key={ability} className="flex items-center justify-between py-1.5">
-                                    <div className="flex items-center gap-2.5">
-                                        <span className={`prof-dot ${isProficient ? 'active' : 'inactive'}`} />
-                                        <span className={isProficient ? 'font-medium' : 'text-ink-muted text-sm'}>
-                                            {abilityLabels[ability]}
-                                        </span>
-                                    </div>
-                                    <span
-                                        className="stat-modifier text-sm tabular-nums"
-                                        style={{ color: isProficient ? 'hsl(var(--primary))' : 'inherit' }}
-                                    >
-                                        {formatModifier(bonus)}
-                                    </span>
-                                </div>
-                            )
-                        })}
-                    </div>
-                </div>
-            </section>
-
-            {/* ─── Skills ─── */}
-            <section>
-                <h2 className="section-header" data-color="secondary">Compétences</h2>
-                <div className="card">
-                    <div className="divide-y divide-[hsl(var(--border)/0.3)]">
-                        {displayedSkills.map((skill) => {
-                            const isProficient = character.skillProficiencies?.includes(skill.name) || false
-                            const bonus = getSkillBonus(skill.ability, isProficient)
-                            return (
-                                <div key={skill.name} className="flex items-center justify-between py-2.5 first:pt-0 last:pb-0">
-                                    <div className="flex items-center gap-2.5 min-w-0">
-                                        <span className={`prof-dot ${isProficient ? 'active' : 'inactive'}`} />
-                                        <span className={`truncate ${isProficient ? 'font-medium' : 'text-ink-muted text-sm'}`}>
-                                            {skill.name}
-                                        </span>
-                                        <span className="text-xs text-ink-muted flex-shrink-0">
-                                            ({abilityLabels[skill.ability]})
-                                        </span>
-                                    </div>
-                                    <span
-                                        className="stat-modifier text-sm tabular-nums flex-shrink-0 ml-2"
-                                        style={{ color: isProficient ? 'hsl(var(--primary))' : 'inherit' }}
-                                    >
-                                        {formatModifier(bonus)}
-                                    </span>
-                                </div>
-                            )
-                        })}
-                    </div>
-                    <button
-                        onClick={() => setShowAllSkills(!showAllSkills)}
-                        className="w-full mt-4 pt-3 text-sm text-center font-medium border-t"
-                        style={{ borderColor: 'hsl(var(--border) / 0.5)', color: 'hsl(var(--primary))' }}
-                    >
-                        {showAllSkills ? 'Afficher mes maîtrises uniquement' : 'Voir toutes les compétences'} →
-                    </button>
-                </div>
-            </section>
-
-            {/* ─── Quick Navigation Cards ─── */}
-            <section className="flex flex-col gap-3">
-                <Link
-                    to="/inventory"
-                    className="card-interactive group"
-                >
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'hsl(var(--color-gold) / 0.12)' }}>
-                            <ArchiveBoxIcon className="w-5 h-5" style={{ color: 'hsl(var(--color-gold))' }} aria-hidden="true" />
-                        </div>
-                        <div>
-                            <h3 className="font-semibold text-sm">Inventaire</h3>
-                            <p className="text-xs text-ink-muted">
-                                Gérez vos objets et votre bourse
-                            </p>
-                        </div>
-                    </div>
-                    <ChevronLeftIcon className="w-5 h-5 rotate-180 text-ink-muted group-hover:translate-x-0.5 group-hover:text-primary transition-transform" aria-hidden="true" />
-                </Link>
-
-                <Link
-                    to="/combat"
-                    className="card-interactive group"
-                >
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'hsl(var(--destructive) / 0.1)' }}>
-                            <FireIcon className="w-5 h-5" style={{ color: 'hsl(var(--destructive))' }} aria-hidden="true" />
-                        </div>
-                        <div>
-                            <h3 className="font-semibold text-sm">Combat</h3>
-                            <p className="text-xs text-ink-muted">
-                                Attaques et actions au combat
-                            </p>
-                        </div>
-                    </div>
-                    <ChevronLeftIcon className="w-5 h-5 rotate-180 text-ink-muted group-hover:translate-x-0.5 group-hover:text-primary transition-transform" aria-hidden="true" />
-                </Link>
-
-                {character.characterClass?.spellcasting && (
-                    <Link
-                        to="/spells"
-                        className="card-interactive group"
-                    >
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'hsl(var(--color-xp) / 0.1)' }}>
-                                <SparklesIcon className="w-5 h-5" style={{ color: 'hsl(var(--color-xp))' }} aria-hidden="true" />
-                            </div>
-                            <div>
-                                <h3 className="font-semibold text-sm">Grimoire</h3>
-                                <p className="text-xs text-ink-muted">
-                                    Accédez à vos sorts de {character.characterClass.name}
-                                </p>
-                            </div>
-                        </div>
-                        <ChevronLeftIcon className="w-5 h-5 rotate-180 text-ink-muted group-hover:translate-x-0.5 group-hover:text-primary transition-transform" aria-hidden="true" />
-                    </Link>
-                )}
-            </section>
         </div>
     )
 }

@@ -1,7 +1,18 @@
 // Types pour l'inventaire du personnage
 
-export type ItemType = 'weapon' | 'armor' | 'gear' | 'consumable' | 'wondrous' | 'tool' | 'other'
+import type { AbilityScores } from './character'
+
+export type ItemType = 'weapon' | 'armor' | 'gear' | 'consumable' | 'wondrous' | 'tool' | 'questItem' | 'other'
 export type ItemRarity = 'common' | 'uncommon' | 'rare' | 'very-rare' | 'legendary' | 'artifact'
+
+export interface SpecialAbility {
+    name: string
+    description: string
+    activationType?: 'action' | 'bonusAction' | 'reaction' | 'free' | 'minute' | 'hour'
+    usesPerRest?: number
+    usesRemaining?: number
+    usesRecovery?: 'short' | 'long' | 'dawn'
+}
 
 export interface InventoryItem {
     id: string
@@ -16,6 +27,9 @@ export interface InventoryItem {
     attuned?: boolean     // est harmonisé
     description?: string
     value?: number        // en pièces d'or
+    charges?: number      // charges actuelles
+    maxCharges?: number   // charges maximales
+    chargesRecovery?: 'short' | 'long' | 'dawn'  // récupération des charges
 
     // Propriétés d'arme
     damage?: string       // ex: "1d8"
@@ -30,6 +44,20 @@ export interface InventoryItem {
     addDex?: boolean
     maxDex?: number
     stealthDisadvantage?: boolean
+
+    // Bonus magiques
+    attackBonus?: number        // bonus aux jets d'attaque (+1, +2, +3)
+    damageBonus?: number        // bonus aux dégâts (+1, +2, +3)
+    acBonus?: number             // bonus à la CA (+1, +2, etc.)
+    abilityBonus?: Partial<AbilityScores>  // bonus aux caractéristiques (ex: {cha: 2})
+    abilitySetTo?: Partial<AbilityScores>  // fixe une carac à une valeur min (ex: {str: 29})
+    saveBonus?: number           // bonus aux jets de sauvegarde
+    spellAttackBonus?: number    // bonus attaque de sort
+    spellSaveDCBonus?: number    // bonus DD de sauvegarde des sorts
+    speedBonus?: number           // bonus de vitesse en mètres
+    damageExtra?: string         // dégâts supplémentaires descriptifs (ex: "1d6 feu")
+    category?: 'weapon' | 'armor' | 'magicItem' | 'questItem' | 'gear' | 'consumable' | 'tool'
+    specialAbilities?: SpecialAbility[]
 }
 
 export interface Currency {
@@ -82,8 +110,22 @@ export const itemTypeIcons: Record<ItemType, string> = {
     consumable: '🧪',
     gear: '🎒',
     tool: '🔧',
+    questItem: '📜',
     other: '📦',
 }
+
+export const categoryLabels: Record<string, string> = {
+    weapon: 'Armes',
+    armor: 'Armures',
+    magicItem: 'Objets magiques',
+    questItem: 'Objets de quête',
+    gear: 'Équipement',
+    consumable: 'Consommables',
+    tool: 'Outils',
+    other: 'Autres',
+}
+
+export const MAX_ATTUNED_ITEMS = 3
 
 // Calcul du poids total des pièces
 export function calculateCoinWeight(currency: Currency): number {
