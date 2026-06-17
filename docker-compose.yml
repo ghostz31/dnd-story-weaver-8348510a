@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  dnd-story-weaver:
-    image: dnd-story-weaver:latest
-    container_name: dnd-story-weaver
+  trame:
+    image: trame:latest
+    container_name: trame
     restart: unless-stopped
     build:
       context: .

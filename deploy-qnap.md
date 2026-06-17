@@ -76,21 +76,21 @@ C'est la méthode qui évite l'erreur "Dockerfile not found".
 Si vous ne pouvez pas utiliser SSH, vous devez "apporter" l'image toute faite au NAS.
 
 1.  Sur votre PC (dans le dossier du projet) :
-    ```powershel
-    version: '3.8'
-    services:
-      dnd-story-weaver:
-        image: dnd-story-weaver:latest
-        container_name: dnd-story-weaver
-        restart: unless-stopl
-    docker build -t dnd-story-weaver:latest .
-    docker save -o dnd-story-weaver.tar dnd-story-weaver:latest
+    ```bash
+    docker build -t trame:latest .
+    docker save -o trame.tar trame:latest
     ```
-2.  Copiez le fichier `dnd-story-weaver.tar` sur le NAS (dans `/Container/Trame`).
+2.  Copiez le fichier `trame.tar` sur le NAS (dans `/Container/Trame`).
 3.  Dans **Container Station** > **Images** > **Import**, choisissez le fichier `.tar`.
 4.  Une fois l'image importée, retournez créer l'application avec ce YAML **modifié** (sans la ligne `build: .`):
 
-    ```yamlped
+    ```yaml
+    version: '3.8'
+    services:
+      trame:
+        image: trame:latest
+        container_name: trame
+        restart: unless-stopped
         # build: .  <-- LIGNE RETIRÉE
         environment:
           - PORT=8080

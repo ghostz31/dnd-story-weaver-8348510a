@@ -41,3 +41,6 @@ check_public_monsters.cjs
 
 # Local Netlify folder
 .netlify
+
+# Temporary scraping artifacts
+.tmp/
