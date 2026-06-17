@@ -1,12 +1,13 @@
 import React from 'react';
 import { EncounterParticipant } from '../lib/types';
-import { getAideDDMonsterSlug, getConditionInfo } from '../lib/EncounterUtils';
+import { getConditionInfo } from '../lib/EncounterUtils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Shield, Heart, Zap, ExternalLink, ChevronLeft, ChevronRight, Edit, Save, X, User, Book, Hash, Swords } from 'lucide-react';
 import { StatBlock } from './StatBlock';
+import { pushTrameCommand } from '../hooks/useBesaceSync';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -95,7 +96,7 @@ const MonsterDisplay: React.FC<{ participant: EncounterParticipant; onUpdate?: (
     if (isCollapsed) {
         // Vue condensée - Mode Combat
         return (
-            <div className="h-full overflow-y-auto custom-scrollbar p-2 bg-stone-100/50 relative">
+            <div className="h-full overflow-y-auto custom-scrollbar p-2 bg-muted/50 relative">
                 <Button
                     size="icon"
                     variant="ghost"
@@ -105,29 +106,33 @@ const MonsterDisplay: React.FC<{ participant: EncounterParticipant; onUpdate?: (
                 >
                     <ChevronRight className="h-5 w-5" />
                 </Button>
-                <div className="max-w-sm mx-auto bg-white/90 p-4 rounded-lg shadow-md border border-stone-200">
-                    <h3 className="text-lg font-bold text-stone-800 mb-3">{participant.name}</h3>
+                <div className="max-w-sm mx-auto bg-card/90 p-4 rounded-lg shadow-md border border-border">
+                    <h3 className="text-lg font-bold text-foreground mb-3">{participant.name}</h3>
                     <div className="grid grid-cols-2 gap-3 text-sm">
                         <div className="flex items-center gap-2">
-                            <Shield className="h-4 w-4 text-blue-500" />
+                            <Shield className="h-4 w-4 text-primary/80" />
                             <span className="font-semibold">CA:</span> {participant.ac}
                         </div>
                         <div className="flex items-center gap-2">
-                            <Heart className="h-4 w-4 text-red-500" />
+                            <Heart className="h-4 w-4 text-destructive/80" />
                             <span className="font-semibold">PV:</span>
                             <span>
                                 {participant.currentHp}/{typeof participant.maxHp === 'object' ? JSON.stringify(participant.maxHp) : participant.maxHp}
-                                {participant.tempHp ? <span className="text-blue-500 ml-1">(+{participant.tempHp})</span> : ''}
+                                {participant.tempHp ? (
+                                    <Badge variant="secondary" className="ml-1 px-1.5 py-0 text-[10px] font-semibold bg-[hsl(var(--status-info-bg))] text-[hsl(var(--status-info))] border-[hsl(var(--status-info))]/20">
+                                        +{participant.tempHp}
+                                    </Badge>
+                                ) : ''}
                             </span>
                         </div>
                     </div>
                     {monsterData.actions && monsterData.actions.length > 0 && (
-                        <div className="mt-4 pt-3 border-t border-stone-200">
-                            <h4 className="text-xs font-bold text-stone-600 uppercase mb-2">Action principale</h4>
-                            <div className="text-xs text-stone-700">
+                        <div className="mt-4 pt-3 border-t border-border">
+                            <h4 className="text-xs font-bold text-muted-foreground uppercase mb-2">Action principale</h4>
+                            <div className="text-xs text-foreground/90">
                                 <span className="font-semibold">{monsterData.actions[0].name}</span>
                                 {monsterData.actions[0].description && (
-                                    <p className="mt-1 text-stone-600 line-clamp-3">{monsterData.actions[0].description}</p>
+                                    <p className="mt-1 text-muted-foreground line-clamp-3">{monsterData.actions[0].description}</p>
                                 )}
                             </div>
                         </div>
@@ -138,7 +143,7 @@ const MonsterDisplay: React.FC<{ participant: EncounterParticipant; onUpdate?: (
     }
 
     return (
-        <div className="h-full overflow-y-auto custom-scrollbar p-2 bg-stone-100/50 relative">
+        <div className="h-full overflow-y-auto custom-scrollbar p-2 bg-muted/50 relative">
             <Button
                 size="icon"
                 variant="ghost"
@@ -149,17 +154,23 @@ const MonsterDisplay: React.FC<{ participant: EncounterParticipant; onUpdate?: (
                 <ChevronLeft className="h-5 w-5" />
             </Button>
             <div className="max-w-4xl mx-auto bg-white/50 min-h-full">
-                <StatBlock monster={monsterData} className="w-full shadow-md border-y md:border-x border-stone-200" hideImage={true} />
+                <StatBlock monster={monsterData} className="w-full shadow-md border-y md:border-x border-border" hideImage={true} />
             </div>
         </div>
     );
 };
 
 
+const COMMON_CONDITIONS = ['Aveuglé', 'Charmé', 'Effrayé', 'Empoisonné', 'Inconscient', 'Paralysé', 'Étourdi', 'À terre', 'Aveugle', 'Invisible', 'Concentré'];
+
 const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyond?: (id: string, url: string) => void; onUpdate?: (updates: Partial<EncounterParticipant>) => void; isCollapsed: boolean; onToggleCollapse: () => void }> = ({ participant, onLinkDndBeyond, onUpdate, isCollapsed, onToggleCollapse }) => {
     const [isLinking, setIsLinking] = React.useState(false);
     const [linkUrl, setLinkUrl] = React.useState('');
     const [localNotes, setLocalNotes] = React.useState(participant.notes || '');
+    const [showTempHpDialog, setShowTempHpDialog] = React.useState(false);
+    const [tempHpValueInput, setTempHpValueInput] = React.useState('');
+    const [showConditionDialog, setShowConditionDialog] = React.useState<'add' | 'remove' | null>(null);
+    const [conditionSelect, setConditionSelect] = React.useState('');
 
     // Edit Mode State
     const [isEditing, setIsEditing] = React.useState(false);
@@ -218,7 +229,7 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
     if (isCollapsed) {
         // Vue condensée pour joueur
         return (
-            <div className="h-full overflow-y-auto custom-scrollbar p-2 bg-blue-50/50 relative">
+            <div className="h-full overflow-y-auto custom-scrollbar p-2 bg-primary/5/50 relative">
                 <Button
                     size="icon"
                     variant="ghost"
@@ -228,28 +239,46 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                 >
                     <ChevronRight className="h-5 w-5" />
                 </Button>
-                <div className="max-w-sm mx-auto bg-white/90 p-4 rounded-lg shadow-md border border-blue-200">
-                    <h3 className="text-lg font-bold text-blue-800 mb-3">{participant.name}</h3>
-                    <div className="text-xs text-blue-600 mb-2">
+                <div className="max-w-sm mx-auto bg-card/90 p-4 rounded-lg shadow-md border border-primary/20">
+                    <h3 className="text-lg font-bold text-primary/90 mb-3">{participant.name}</h3>
+                    <div className="text-xs text-primary mb-2">
                         {participant.race} {participant.class} {participant.level ? `Niv. ${participant.level}` : ''}
                     </div>
                     <div className="grid grid-cols-2 gap-3 text-sm">
                         <div className="flex items-center gap-2">
-                            <Shield className="h-4 w-4 text-blue-500" />
+                            <Shield className="h-4 w-4 text-primary/80" />
                             <span className="font-semibold">CA:</span> {participant.ac}
                         </div>
                         <div className="flex items-center gap-2">
-                            <Heart className="h-4 w-4 text-red-500" />
+                            <Heart className="h-4 w-4 text-destructive/80" />
                             <span className="font-semibold">PV:</span>
                             <span>
                                 {participant.currentHp}/{participant.maxHp}
-                                {participant.tempHp ? <span className="text-blue-500 ml-1">(+{participant.tempHp})</span> : ''}
+                                {participant.tempHp ? (
+                                    <Badge variant="secondary" className="ml-1 px-1.5 py-0 text-[10px] font-semibold bg-[hsl(var(--status-info-bg))] text-[hsl(var(--status-info))] border-[hsl(var(--status-info))]/20">
+                                        +{participant.tempHp}
+                                    </Badge>
+                                ) : ''}
                             </span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Zap className="h-4 w-4 text-yellow-500" />
                             <span className="font-semibold">Init:</span> {participant.initiative}
                         </div>
+                        {participant.abilityScores && (
+                            <div className="col-span-2 flex gap-1.5 text-xs">
+                                {[
+                                    { l: 'FOR', v: participant.abilityScores.str },
+                                    { l: 'DEX', v: participant.abilityScores.dex },
+                                    { l: 'CON', v: participant.abilityScores.con },
+                                    { l: 'INT', v: participant.abilityScores.int },
+                                    { l: 'SAG', v: participant.abilityScores.wis },
+                                    { l: 'CHA', v: participant.abilityScores.cha },
+                                ].map(s => (
+                                    <span key={s.l} className="bg-white/60 px-1 py-0.5 rounded font-mono">{s.l} {s.v}</span>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -257,8 +286,8 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
     }
 
     return (
-        <Card className="w-full h-full flex flex-col overflow-hidden border-none shadow-none bg-blue-50/50 relative">
-            <CardHeader className="py-2 px-4 bg-blue-100 border-b">
+        <Card className="w-full h-full flex flex-col overflow-hidden border-none shadow-none bg-primary/5/50 relative">
+            <CardHeader className="py-2 px-4 bg-primary/10 border-b">
                 <div className="flex justify-between items-start">
                     <div className="flex-1">
                         {isEditing ? (
@@ -268,21 +297,21 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                                 className="font-bold text-lg h-8 mb-2"
                             />
                         ) : (
-                            <CardTitle className="text-lg font-bold text-blue-900 flex items-center gap-2">
+                            <CardTitle className="text-lg font-bold text-primary flex items-center gap-2">
                                 {participant.name}
                             </CardTitle>
                         )}
 
                         {!isEditing && (
-                            <div className="flex flex-wrap gap-2 text-sm text-blue-700 mt-1">
+                            <div className="flex flex-wrap gap-2 text-sm text-primary/80 mt-1">
                                 {(participant.race || participant.class || participant.level) ? (
                                     <>
                                         {participant.race && <Badge variant="secondary" className="bg-white/50">{participant.race}</Badge>}
                                         {participant.class && <Badge variant="secondary" className="bg-white/50">{participant.class}</Badge>}
-                                        {participant.level && <Badge variant="outline" className="bg-blue-50">Niveau {participant.level}</Badge>}
+                                        {participant.level && <Badge variant="outline" className="bg-primary/5">Niveau {participant.level}</Badge>}
                                     </>
                                 ) : (
-                                    <span className="text-blue-400 italic">Détails non définis</span>
+                                    <span className="text-primary/60 italic">Détails non définis</span>
                                 )}
                             </div>
                         )}
@@ -290,7 +319,7 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
 
                     <div className="flex gap-1">
                         {!participant.dndBeyondId && !isEditing && (
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-blue-600 hover:text-blue-800" onClick={handleStartEdit} title="Modifier">
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-primary hover:text-primary/90" onClick={handleStartEdit} title="Modifier">
                                 <Edit className="h-4 w-4" />
                             </Button>
                         )}
@@ -299,7 +328,7 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                                 <Button size="icon" variant="ghost" className="h-8 w-8 text-green-600 hover:text-green-800" onClick={handleSaveEdit} title="Sauvegarder">
                                     <Save className="h-4 w-4" />
                                 </Button>
-                                <Button size="icon" variant="ghost" className="h-8 w-8 text-red-600 hover:text-red-800" onClick={handleCancelEdit} title="Annuler">
+                                <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive" onClick={handleCancelEdit} title="Annuler">
                                     <X className="h-4 w-4" />
                                 </Button>
                             </>
@@ -308,21 +337,21 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                 </div>
 
                 {/* Zone de contrôle D&D Beyond */}
-                <div className="mt-2 pt-2 border-t border-blue-200">
+                <div className="mt-2 pt-2 border-t border-primary/20">
                     {participant.dndBeyondId ? (
                         <div className="flex flex-col gap-2">
                             <div className="flex items-center gap-2">
-                                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1">
+                                <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200 flex items-center gap-1">
                                     <Zap size={10} className="fill-green-700" /> Live Sync Actif
                                 </Badge>
-                                <span className="text-xs text-gray-400">ID: {participant.dndBeyondId}</span>
+                                <span className="text-xs text-muted-foreground/70">ID: {participant.dndBeyondId}</span>
                             </div>
                             <div className="flex gap-2">
                                 <a
                                     href={`https://www.dndbeyond.com/characters/${participant.dndBeyondId}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 flex items-center gap-1"
+                                    className="text-xs bg-primary text-white px-2 py-1 rounded hover:bg-primary/90 flex items-center gap-1"
                                 >
                                     <ExternalLink size={12} /> Fiche D&D Beyond
                                 </a>
@@ -332,13 +361,13 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                         <div className="flex flex-col gap-2">
                             {!isEditing && (
                                 <div className="flex justify-between items-center text-xs">
-                                    <div className="flex items-center gap-1 text-yellow-700 bg-yellow-50 px-2 py-1 rounded">
+                                    <div className="flex items-center gap-1 text-yellow-600 bg-yellow-500/10 px-2 py-1 rounded">
                                         <span>Mode Manuel</span>
                                     </div>
                                     {onLinkDndBeyond && !isLinking && (
                                         <button
                                             onClick={() => setIsLinking(true)}
-                                            className="ml-auto text-blue-600 hover:text-blue-800 underline flex items-center gap-1"
+                                            className="ml-auto text-primary hover:text-primary/90 underline flex items-center gap-1"
                                         >
                                             <ExternalLink size={10} /> Lier D&D Beyond
                                         </button>
@@ -347,8 +376,8 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                             )}
 
                             {isLinking && (
-                                <div className="flex flex-col gap-2 bg-white p-2 rounded shadow-sm border border-blue-200 mt-1">
-                                    <label className="text-xs font-semibold text-gray-700">URL du personnage :</label>
+                                <div className="flex flex-col gap-2 bg-white p-2 rounded shadow-sm border border-primary/20 mt-1">
+                                    <label className="text-xs font-semibold text-foreground/90">URL du personnage :</label>
                                     <div className="flex gap-2">
                                         <input
                                             type="text"
@@ -358,8 +387,8 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                                             className="text-xs border rounded p-1 flex-1"
                                             autoFocus
                                         />
-                                        <button onClick={handleLink} className="text-xs bg-blue-600 text-white px-2 py-1 rounded">OK</button>
-                                        <button onClick={() => setIsLinking(false)} className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">X</button>
+                                        <button onClick={handleLink} className="text-xs bg-primary text-white px-2 py-1 rounded">OK</button>
+                                        <button onClick={() => setIsLinking(false)} className="text-xs bg-muted/80 text-muted-foreground px-2 py-1 rounded">X</button>
                                     </div>
                                 </div>
                             )}
@@ -371,7 +400,7 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
 
                 {/* Infos Générales Édition */}
                 {isEditing && (
-                    <div className="grid grid-cols-3 gap-3 mb-6 bg-white p-3 rounded-lg border border-blue-100">
+                    <div className="grid grid-cols-3 gap-3 mb-6 bg-white p-3 rounded-lg border border-primary/10">
                         <div className="col-span-1">
                             <Label className="text-xs">Race</Label>
                             <Input value={editData.race as string} onChange={(e) => handleChange('race', e.target.value)} className="h-8 text-sm" placeholder="Ex: Elfe" />
@@ -389,8 +418,8 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
 
                 {/* Stats Vitales */}
                 <div className="grid grid-cols-3 gap-4 mb-6">
-                    <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm border border-blue-100 relative">
-                        <Shield className="w-8 h-8 text-blue-500 mb-2" />
+                    <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm border border-primary/10 relative">
+                        <Shield className="w-8 h-8 text-primary/80 mb-2" />
                         {isEditing ? (
                             <Input
                                 type="number"
@@ -399,12 +428,12 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                                 className="text-center font-bold text-lg h-10 w-20"
                             />
                         ) : (
-                            <span className="text-2xl font-bold text-gray-800">{participant.ac}</span>
+                            <span className="text-2xl font-bold text-foreground">{participant.ac}</span>
                         )}
-                        <span className="text-xs text-gray-500 uppercase tracking-wider mt-1">CA</span>
+                        <span className="text-xs text-muted-foreground uppercase tracking-wider mt-1">CA</span>
                     </div>
-                    <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm border border-blue-100">
-                        <Heart className="w-8 h-8 text-red-500 mb-2" />
+                    <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm border border-primary/10">
+                        <Heart className="w-8 h-8 text-destructive/80 mb-2" />
                         {isEditing ? (
                             <div className="flex flex-col gap-1 items-center">
                                 <div className="flex items-center gap-1">
@@ -423,29 +452,31 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                                     />
                                 </div>
                                 <div className="flex items-center gap-1">
-                                    <Label className="text-xs text-blue-500">Temp</Label>
+                                    <Label className="text-xs text-[hsl(var(--status-info))]">Temp</Label>
                                     <Input
                                         type="number"
                                         value={editData.tempHp || 0}
                                         onChange={(e) => handleChange('tempHp', parseInt(e.target.value) || 0)}
-                                        className="text-center text-sm h-8 w-16 border-blue-200"
+                                        className="text-center text-sm h-8 w-16 border-[hsl(var(--status-info))]/30 focus-visible:ring-[hsl(var(--status-info))]/30"
                                         placeholder="0"
                                     />
                                 </div>
                             </div>
                         ) : (
                             <div className="flex flex-col items-center">
-                                <span className="text-2xl font-bold text-gray-800">
-                                    {participant.currentHp} <span className="text-gray-400 text-lg">/ {participant.maxHp}</span>
+                                <span className="text-2xl font-bold text-foreground">
+                                    {participant.currentHp} <span className="text-muted-foreground/70 text-lg">/ {participant.maxHp}</span>
                                 </span>
                                 {participant.tempHp && participant.tempHp > 0 && (
-                                    <span className="text-sm font-bold text-blue-500">+{participant.tempHp} Temp</span>
+                                    <Badge variant="secondary" className="mt-1 px-2 py-0.5 text-xs font-semibold bg-[hsl(var(--status-info-bg))] text-[hsl(var(--status-info))] border-[hsl(var(--status-info))]/20">
+                                        <Shield className="h-3 w-3 mr-1" />+{participant.tempHp} PV temp.
+                                    </Badge>
                                 )}
                             </div>
                         )}
-                        <span className="text-xs text-gray-500 uppercase tracking-wider mt-1">PV</span>
+                        <span className="text-xs text-muted-foreground uppercase tracking-wider mt-1">PV</span>
                     </div>
-                    <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm border border-blue-100">
+                    <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm border border-primary/10">
                         <Zap className="w-8 h-8 text-yellow-500 mb-2" />
                         {isEditing ? (
                             <Input
@@ -455,27 +486,27 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                                 className="text-center font-bold text-lg h-10 w-20"
                             />
                         ) : (
-                            <span className="text-2xl font-bold text-gray-800">{participant.initiative}</span>
+                            <span className="text-2xl font-bold text-foreground">{participant.initiative}</span>
                         )}
-                        <span className="text-xs text-gray-500 uppercase tracking-wider mt-1">Initiative</span>
+                        <span className="text-xs text-muted-foreground uppercase tracking-wider mt-1">Initiative</span>
                     </div>
                 </div >
 
                 {/* Death Saves Checkboxes */}
                 {participant.currentHp <= 0 && (
-                    <div className="mb-6 bg-stone-100 p-4 rounded-lg border border-stone-300">
+                    <div className="mb-6 bg-muted p-4 rounded-lg border border-border/80">
                         <div className="flex items-center gap-2 mb-2">
-                            <Shield className="h-4 w-4 text-stone-600" />
-                            <h4 className="text-sm font-bold text-stone-700">Jets de Mort</h4>
+                            <Shield className="h-4 w-4 text-muted-foreground" />
+                            <h4 className="text-sm font-bold text-foreground/90">Jets de Mort</h4>
                         </div>
                         <div className="flex flex-col gap-2">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium text-green-700">Succès</span>
+                                <span className="text-sm font-medium text-green-600">Succès</span>
                                 <div className="flex gap-1">
                                     {[1, 2, 3].map(i => (
                                         <div
                                             key={i}
-                                            className={`w-4 h-4 rounded-full border border-green-500 cursor-pointer ${participant.deathSaves?.successes && participant.deathSaves.successes >= i ? 'bg-green-500' : 'bg-white'}`}
+                                            className={`w-4 h-4 rounded-full border border-green-600 cursor-pointer ${participant.deathSaves?.successes && participant.deathSaves.successes >= i ? 'bg-green-600' : 'bg-card'}`}
                                             onClick={() => {
                                                 const current = participant.deathSaves?.successes || 0;
                                                 const newVal = current >= i ? i - 1 : i;
@@ -486,12 +517,12 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                                 </div>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium text-red-700">Échecs</span>
+                                <span className="text-sm font-medium text-destructive/90">Échecs</span>
                                 <div className="flex gap-1">
                                     {[1, 2, 3].map(i => (
                                         <div
                                             key={i}
-                                            className={`w-4 h-4 rounded-full border border-red-500 cursor-pointer ${participant.deathSaves?.failures && participant.deathSaves.failures >= i ? 'bg-red-500' : 'bg-white'}`}
+                                            className={`w-4 h-4 rounded-full border border-destructive/80 cursor-pointer ${participant.deathSaves?.failures && participant.deathSaves.failures >= i ? 'bg-destructive/80' : 'bg-card'}`}
                                             onClick={() => {
                                                 const current = participant.deathSaves?.failures || 0;
                                                 const newVal = current >= i ? i - 1 : i;
@@ -506,23 +537,23 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                 )}
 
                 {/* Caractéristiques */}
-                {/* Caractéristiques - Toujours afficher pour les joueurs */}
                 <div className="grid grid-cols-6 gap-2 mb-6">
                     {[
-                        { label: 'FOR', key: 'str', val: isEditing ? editData.str : participant.str },
-                        { label: 'DEX', key: 'dex', val: isEditing ? editData.dex : participant.dex },
-                        { label: 'CON', key: 'con', val: isEditing ? editData.con : participant.con },
-                        { label: 'INT', key: 'int', val: isEditing ? editData.int : participant.int },
-                        { label: 'SAG', key: 'wis', val: isEditing ? editData.wis : participant.wis },
-                        { label: 'CHA', key: 'cha', val: isEditing ? editData.cha : participant.cha }
+                        { label: 'FOR', key: 'str', val: isEditing ? editData.str : (participant.abilityScores?.str ?? participant.str ?? 10), mod: participant.abilityModifiers?.str, save: participant.savingThrowProficiencies?.includes('str') },
+                        { label: 'DEX', key: 'dex', val: isEditing ? editData.dex : (participant.abilityScores?.dex ?? participant.dex ?? 10), mod: participant.abilityModifiers?.dex, save: participant.savingThrowProficiencies?.includes('dex') },
+                        { label: 'CON', key: 'con', val: isEditing ? editData.con : (participant.abilityScores?.con ?? participant.con ?? 10), mod: participant.abilityModifiers?.con, save: participant.savingThrowProficiencies?.includes('con') },
+                        { label: 'INT', key: 'int', val: isEditing ? editData.int : (participant.abilityScores?.int ?? participant.int ?? 10), mod: participant.abilityModifiers?.int, save: participant.savingThrowProficiencies?.includes('int') },
+                        { label: 'SAG', key: 'wis', val: isEditing ? editData.wis : (participant.abilityScores?.wis ?? participant.wis ?? 10), mod: participant.abilityModifiers?.wis, save: participant.savingThrowProficiencies?.includes('wis') },
+                        { label: 'CHA', key: 'cha', val: isEditing ? editData.cha : (participant.abilityScores?.cha ?? participant.cha ?? 10), mod: participant.abilityModifiers?.cha, save: participant.savingThrowProficiencies?.includes('cha') }
                     ].map((stat, idx) => {
                         const val = stat.val as number || 10;
-                        const mod = Math.floor((val - 10) / 2);
-                        const sign = mod >= 0 ? '+' : '';
+                        const calculatedMod = Math.floor((val - 10) / 2);
+                        const displayMod = stat.mod !== undefined ? stat.mod : calculatedMod;
+                        const sign = displayMod >= 0 ? '+' : '';
 
                         return (
-                            <div key={idx} className={`flex flex-col items-center p-2 rounded shadow-sm border ${isEditing ? 'bg-blue-50 border-blue-300' : 'bg-white border-gray-100'}`}>
-                                <span className="text-[10px] font-bold text-gray-500 mb-1">{stat.label}</span>
+                            <div key={idx} className={`flex flex-col items-center p-2 rounded shadow-sm border ${isEditing ? 'bg-primary/5 border-primary/30' : 'bg-card border-border/50'}`}>
+                                <span className="text-[10px] font-bold text-muted-foreground mb-1">{stat.label}</span>
                                 {isEditing ? (
                                     <Input
                                         type="number"
@@ -531,22 +562,54 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                                         className="h-8 text-center text-sm p-0 mb-1"
                                     />
                                 ) : (
-                                    <span className="text-lg font-bold text-gray-800">{val}</span>
+                                    <span className="text-lg font-bold text-foreground">{val}</span>
                                 )}
-                                <span className="text-xs text-blue-600 bg-white/50 px-1 rounded font-mono">{sign}{mod}</span>
+                                <span className={`text-xs px-1 rounded font-mono ${stat.save ? 'bg-green-600/10 text-green-600 font-bold' : 'bg-white/50 text-primary'}`}>
+                                    {sign}{displayMod}
+                                </span>
                             </div>
                         );
                     })}
                 </div>
 
+                {participant.proficiencyBonus && (
+                    <div className="flex items-center gap-2 mb-4 text-sm">
+                        <span className="text-muted-foreground font-medium">Bonus de maîtrise :</span>
+                        <Badge variant="outline" className="bg-primary/5 text-primary/80">+{participant.proficiencyBonus}</Badge>
+                    </div>
+                )}
+
+                {participant.equipmentSummary && participant.equipmentSummary.length > 0 && (
+                    <div className="mt-3">
+                        <h4 className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-wide mb-1">Équipement</h4>
+                        <div className="space-y-1">
+                            {participant.equipmentSummary.filter(e => e.equipped || e.attuned).map((item, idx) => (
+                                <div key={idx} className="flex items-center gap-2 text-xs">
+                                    {item.attuned && <span className="text-purple-400">◆</span>}
+                                    <span className={item.attuned ? 'text-purple-300' : 'text-muted-foreground/50'}>
+                                        {item.name}
+                                    </span>
+                                    {item.acBonus && <span className="text-primary/60">CA+{item.acBonus}</span>}
+                                    {item.attackBonus && <span className="text-destructive/60">ATK+{item.attackBonus}</span>}
+                                    {item.damageBonus && <span className="text-orange-400">DMG+{item.damageBonus}</span>}
+                                    {item.saveBonus && <span className="text-green-400">JDS+{item.saveBonus}</span>}
+                                    {item.abilityBonus && Object.entries(item.abilityBonus).map(([key, val]) => (
+                                        <span key={key} className="text-purple-400">{key.toUpperCase()}+{val}</span>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {/* Maitrises & Notes */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Maitrises - Affichées si non-Beyond */}
                     {!participant.dndBeyondId && (
-                        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                        <div className="bg-card p-4 rounded-lg shadow-sm border border-border/50">
                             <div className="flex items-center gap-2 mb-2">
-                                <Swords className="h-4 w-4 text-gray-600" />
-                                <h4 className="text-sm font-semibold text-gray-700">Maîtrises & Aptitudes</h4>
+                                <Swords className="h-4 w-4 text-muted-foreground" />
+                                <h4 className="text-sm font-semibold text-foreground/90">Maîtrises & Aptitudes</h4>
                             </div>
                             {isEditing ? (
                                 <Textarea
@@ -556,20 +619,20 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                                     placeholder="Armures, Armes, Outils, Langues, Dons..."
                                 />
                             ) : (
-                                <div className="text-sm text-gray-700 whitespace-pre-wrap min-h-[50px]">
-                                    {participant.proficiencies || <span className="text-gray-400 italic">Aucune maîtrise renseignée.</span>}
+                                <div className="text-sm text-foreground/90 whitespace-pre-wrap min-h-[50px]">
+                                    {participant.proficiencies || <span className="text-muted-foreground/70 italic">Aucune maîtrise renseignée.</span>}
                                 </div>
                             )}
                         </div>
                     )}
 
-                    <div className={`${participant.dndBeyondId ? 'col-span-2' : ''} bg-white p-4 rounded-lg shadow-sm border border-gray-100`}>
+                    <div className={`${participant.dndBeyondId ? 'col-span-2' : ''} bg-card p-4 rounded-lg shadow-sm border border-border/50`}>
                         <div className="flex items-center gap-2 mb-2">
-                            <Book className="h-4 w-4 text-gray-600" />
-                            <h4 className="text-sm font-semibold text-gray-700">Notes de session</h4>
+                            <Book className="h-4 w-4 text-muted-foreground" />
+                            <h4 className="text-sm font-semibold text-foreground/90">Notes de session</h4>
                         </div>
                         <textarea
-                            className="w-full text-sm p-2 border rounded resize-y min-h-[100px] text-gray-700 bg-transparent focus:ring-2 focus:ring-blue-200 focus:outline-none"
+                            className="w-full text-sm p-2 border rounded resize-y min-h-[100px] text-foreground/90 bg-transparent focus:ring-2 focus:ring-blue-200 focus:outline-none"
                             value={localNotes}
                             onChange={(e) => setLocalNotes(e.target.value)}
                             onBlur={() => onUpdate?.({ notes: localNotes })}
@@ -578,23 +641,11 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                     </div>
                 </div>
 
-                {/* Vitesse et Conditions existantes */}
-                {
-                    participant.speed && participant.speed.length > 0 && !isEditing && (
-                        <div className="flex gap-2 mt-4">
-                            {participant.speed.map((s: string, i: number) => (
-                                <Badge key={i} variant="outline" className="bg-white">
-                                    🦶 {s}
-                                </Badge>
-                            ))}
-                        </div>
-                    )
-                }
-
+                {/* Conditions existantes */}
                 {
                     participant.conditions && participant.conditions.length > 0 && (
-                        <div className="mt-4 bg-white p-4 rounded-lg shadow-sm border border-red-100">
-                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Conditions</h4>
+                        <div className="mt-4 bg-white p-4 rounded-lg shadow-sm border border-destructive/10">
+                            <h4 className="text-sm font-semibold text-foreground/90 mb-2">Conditions</h4>
                             <div className="flex flex-wrap gap-2">
                                 <TooltipProvider>
                                     {participant.conditions.map((condition, idx) => {
@@ -623,7 +674,156 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                         </div>
                     )
                 }
-            </CardContent >
+
+                {/* Actions MJ → Besace */}
+                {participant.besaceShareCode && participant.syncSource === 'besace' && (
+                    <div className="mt-3 px-3 py-2 bg-[hsl(var(--status-info-bg))] rounded border border-[hsl(var(--status-info))]/20">
+                        <h4 className="text-xs font-semibold text-[hsl(var(--status-info))] uppercase tracking-wide mb-2">Actions MJ → Besace</h4>
+                        <div className="flex flex-wrap gap-2">
+                            <button
+                                onClick={() => setShowTempHpDialog(true)}
+                                className="text-xs px-2 py-1 bg-[hsl(var(--status-info))]/10 text-[hsl(var(--status-info))] rounded hover:bg-[hsl(var(--status-info))]/20"
+                            >
+                                PV Temp.
+                            </button>
+                            <button
+                                onClick={() => { setConditionSelect(''); setShowConditionDialog('add'); }}
+                                className="text-xs px-2 py-1 bg-[hsl(var(--status-warning))]/10 text-[hsl(var(--status-warning))] rounded hover:bg-[hsl(var(--status-warning))]/20"
+                            >
+                                + Condition
+                            </button>
+                            <button
+                                onClick={() => { setConditionSelect(''); setShowConditionDialog('remove'); }}
+                                className="text-xs px-2 py-1 bg-[hsl(var(--status-danger))]/10 text-[hsl(var(--status-danger))] rounded hover:bg-[hsl(var(--status-danger))]/20"
+                            >
+                                - Condition
+                            </button>
+                        </div>
+
+                        {showTempHpDialog && (
+                            <div className="mt-2 flex items-center gap-2">
+                                <input
+                                    type="number"
+                                    value={tempHpValueInput}
+                                    onChange={(e) => setTempHpValueInput(e.target.value)}
+                                    placeholder="PV temp."
+                                    className="text-xs border rounded px-2 py-1 w-24 bg-background border-[hsl(var(--status-info))]/30 text-foreground placeholder-muted-foreground"
+                                    autoFocus
+                                    min={0}
+                                />
+                                <button
+                                    onClick={() => {
+                                        const val = parseInt(tempHpValueInput);
+                                        if (!isNaN(val) && val >= 0) {
+                                            pushTrameCommand(participant.besaceShareCode!, { type: 'updateTempHp', payload: { tempHp: val } });
+                                            setShowTempHpDialog(false);
+                                            setTempHpValueInput('');
+                                        }
+                                    }}
+                                    className="text-xs px-2 py-1 bg-[hsl(var(--status-info))] text-white rounded hover:opacity-90"
+                                >
+                                    OK
+                                </button>
+                                <button
+                                    onClick={() => { setShowTempHpDialog(false); setTempHpValueInput(''); }}
+                                    className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded hover:bg-muted/80"
+                                >
+                                    Annuler
+                                </button>
+                            </div>
+                        )}
+
+                        {showConditionDialog === 'add' && (
+                            <div className="mt-2 flex flex-col gap-2">
+                                <select
+                                    value={conditionSelect}
+                                    onChange={(e) => setConditionSelect(e.target.value)}
+                                    className="text-xs border rounded px-2 py-1 bg-background border-[hsl(var(--status-warning))]/30 text-foreground"
+                                >
+                                    <option value="">Choisir une condition…</option>
+                                    {COMMON_CONDITIONS.map(c => (
+                                        <option key={c} value={c}>{c}</option>
+                                    ))}
+                                </select>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => {
+                                            if (conditionSelect) {
+                                                pushTrameCommand(participant.besaceShareCode!, { type: 'addCondition', payload: { condition: conditionSelect } });
+                                                setShowConditionDialog(null);
+                                                setConditionSelect('');
+                                            }
+                                        }}
+                                        className="text-xs px-2 py-1 bg-[hsl(var(--status-warning))] text-white rounded hover:opacity-90"
+                                    >
+                                        Ajouter
+                                    </button>
+                                    <button
+                                        onClick={() => { setShowConditionDialog(null); setConditionSelect(''); }}
+                                        className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded hover:bg-muted/80"
+                                    >
+                                        Annuler
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {showConditionDialog === 'remove' && (
+                            <div className="mt-2 flex flex-col gap-2">
+                                {participant.conditions && participant.conditions.length > 0 ? (
+                                    <>
+                                        <div className="flex flex-wrap gap-1">
+                                            {participant.conditions.map((c, idx) => {
+                                                const condName = typeof c === 'string' ? c : c.name;
+                                                return (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => {
+                                                            pushTrameCommand(participant.besaceShareCode!, { type: 'removeCondition', payload: { condition: condName } });
+                                                            setShowConditionDialog(null);
+                                                        }}
+                                                        className="text-xs px-2 py-1 bg-[hsl(var(--status-danger))]/10 text-[hsl(var(--status-danger))] rounded hover:bg-[hsl(var(--status-danger))]/20"
+                                                    >
+                                                        {condName}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                        <button
+                                            onClick={() => { setShowConditionDialog(null); setConditionSelect(''); }}
+                                            className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded hover:bg-muted/80 self-start"
+                                        >
+                                            Annuler
+                                        </button>
+                                    </>
+                                ) : (
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs text-muted-foreground/70">Aucune condition active.</span>
+                                        <button
+                                            onClick={() => setShowConditionDialog(null)}
+                                            className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded hover:bg-muted/80"
+                                        >
+                                            Fermer
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
+                {
+                    participant.speed && participant.speed.length > 0 && !isEditing && (
+                        <div className="flex gap-2 mt-4">
+                            {participant.speed.map((s: string, i: number) => (
+                                <Badge key={i} variant="outline" className="bg-white">
+                                    🦶 {s}
+                                </Badge>
+                            ))}
+                        </div>
+                    )
+                }
+
+                </CardContent >
         </Card >
     );
 }

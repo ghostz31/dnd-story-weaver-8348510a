@@ -147,7 +147,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
             onClick={onLoginClick}
             disabled={isLoading}
           >
-            Déjà un compte? Se connecter
+            Déjà un compte ? Se connecter
           </Button>
         )}
       </CardFooter>

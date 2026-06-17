@@ -93,7 +93,7 @@ const EncounterTracker: React.FC = () => {
         description: `Code: ${shareCode}. Lien dans le presse-papiers.`
       });
     } catch (error) {
-      console.error('Partage erreur:', error);
+      console.error('Erreur de partage:', error);
       toast({ title: "Erreur", description: "Échec du partage.", variant: "destructive" });
     } finally {
       setSharingId(null);
@@ -246,20 +246,20 @@ const EncounterTracker: React.FC = () => {
 
 
   return (
-    <div className="w-full px-2 mx-auto py-2 pb-24 md:pb-2">
+    <div className="w-full px-2 mx-auto py-2 pb-20 md:pb-2">
       {/* Header - Responsive */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2 mb-3">
         <div className="min-w-0">
           <h1 className="text-lg md:text-2xl font-bold truncate">
             {encounter.name}
             {encounter.participants.length > 0 && (
-              <Badge className="ml-2 bg-blue-600">
+              <Badge className="ml-2 bg-primary">
                 Tour {encounter.round}, Initiative {encounter.currentTurn + 1}/{sortedParticipants.length}
               </Badge>
             )}
           </h1>
           <div className="flex items-center gap-4 mt-1">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               {encounter.participants.filter(p => p.isPC).length} personnages, {encounter.participants.filter(p => !p.isPC).length} monstres
             </p>
             {/* Jauge de difficulté */}
@@ -425,13 +425,13 @@ const EncounterTracker: React.FC = () => {
 
       {/* Résumé du tour actuel - Responsive */}
       {encounter.participants.length > 0 && (
-        <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-2 md:p-3 mb-3">
+        <div className="bg-primary/5 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 rounded-lg p-2 md:p-3 mb-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div className="min-w-0">
-              <h2 className="text-lg md:text-xl font-bold text-blue-800 dark:text-blue-200 truncate">
+              <h2 className="text-lg md:text-xl font-bold text-primary dark:text-primary/80 truncate">
                 Tour de {sortedParticipants[encounter.currentTurn]?.name || "?"}
               </h2>
-              <p className="text-xs md:text-sm text-blue-700 dark:text-blue-300">
+              <p className="text-xs md:text-sm text-primary/80 dark:text-primary/60">
                 {sortedParticipants[encounter.currentTurn]?.isPC ? "PJ" : "Monstre"} •
                 Init: {sortedParticipants[encounter.currentTurn]?.initiative || "?"} •
                 CA: {sortedParticipants[encounter.currentTurn]?.ac || "?"} •
@@ -440,7 +440,7 @@ const EncounterTracker: React.FC = () => {
             </div>
 
             <div className="flex flex-col items-start sm:items-end">
-              <div className="text-xs font-semibold text-blue-800 dark:text-blue-200 hidden sm:block">Actions disponibles</div>
+              <div className="text-xs font-semibold text-primary dark:text-primary/80 hidden sm:block">Actions disponibles</div>
               <div className="flex gap-1.5 mt-1 flex-wrap">
                 <Badge variant={sortedParticipants[encounter.currentTurn]?.hasUsedAction ? "outline" : "default"} className="text-xs">
                   Action
@@ -451,7 +451,7 @@ const EncounterTracker: React.FC = () => {
                 <Badge variant={sortedParticipants[encounter.currentTurn]?.hasUsedReaction ? "outline" : "destructive"} className="text-xs">
                   Réaction
                 </Badge>
-                <Badge variant="outline" className="bg-blue-100 dark:bg-blue-900 text-xs">
+                <Badge variant="outline" className="bg-primary/10 dark:bg-primary/20 text-xs">
                   Mvt: {sortedParticipants[encounter.currentTurn]?.remainingMovement || 0}
                 </Badge>
               </div>
@@ -459,7 +459,7 @@ const EncounterTracker: React.FC = () => {
           </div>
 
           {sortedParticipants[encounter.currentTurn]?.conditions.length > 0 && (
-            <div className="mt-2 pt-2 border-t border-blue-200">
+            <div className="mt-2 pt-2 border-t border-primary/20">
               <div className="text-sm font-semibold text-blue-800">Conditions:</div>
               <div className="flex flex-wrap gap-1 mt-1">
                 <TooltipProvider>
@@ -474,7 +474,7 @@ const EncounterTracker: React.FC = () => {
                             <IconComponent className="h-3 w-3" />
                             {conditionName}
                             {typeof condition !== 'string' && condition.duration > 0 && (
-                              <span className="ml-1 text-[10px] bg-blue-200 px-1 rounded">{condition.duration}</span>
+                              <span className="ml-1 text-[10px] bg-primary/20 px-1 rounded">{condition.duration}</span>
                             )}
                           </Badge>
                         </TooltipTrigger>
@@ -515,7 +515,7 @@ const EncounterTracker: React.FC = () => {
 
             <CardContent>
               {sortedParticipants.length === 0 ? (
-                <div className="text-center py-4 text-gray-500">
+                <div className="text-center py-4 text-muted-foreground">
                   Aucun participant dans cette rencontre. Ajoutez des personnages ou des monstres pour commencer.
                 </div>
               ) : (
@@ -673,7 +673,7 @@ const EncounterTracker: React.FC = () => {
                 onUpdate={handleUpdateActiveParticipant}
               />
             ) : (
-              <Card className="h-full flex items-center justify-center p-6 text-center text-gray-500">
+              <Card className="h-full flex items-center justify-center p-6 text-center text-muted-foreground">
                 <div>
                   <p>Commencez la rencontre pour voir les détails du combattant actif.</p>
                 </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, Sword, Users, Book, History, CreditCard, Check, PenTool } from 'lucide-react';
+import { Shield, Sword, Users, Book, History, PenTool } from 'lucide-react';
 import { useAuth } from '@/auth/AuthContext';
 import PageTransition from '@/components/layout/PageTransition';
 import { motion } from 'framer-motion';

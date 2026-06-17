@@ -47,7 +47,7 @@ const EncounterDifficultyGauge: React.FC<EncounterDifficultyGaugeProps> = ({ par
     // Déterminer l'icône
     const DifficultyIcon = () => {
         switch (difficulty.label) {
-            case 'Trivial': return <Shield className="w-4 h-4 mr-1 text-gray-500" />;
+            case 'Trivial': return <Shield className="w-4 h-4 mr-1 text-muted-foreground" />;
             case 'Facile': return <Shield className="w-4 h-4 mr-1" />;
             case 'Moyen': return <Zap className="w-4 h-4 mr-1" />;
             case 'Difficile': return <AlertTriangle className="w-4 h-4 mr-1" />;
@@ -69,7 +69,7 @@ const EncounterDifficultyGauge: React.FC<EncounterDifficultyGaugeProps> = ({ par
             <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <div className="relative w-full h-2.5 bg-gray-200 rounded-full overflow-hidden cursor-help">
+                        <div className="relative w-full h-2.5 bg-muted/80 rounded-full overflow-hidden cursor-help">
                             <div
                                 className={`h-full ${difficulty.color} transition-all duration-500 ease-out`}
                                 style={{ width: `${difficulty.percentage}%` }}

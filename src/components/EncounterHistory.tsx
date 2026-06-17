@@ -18,16 +18,7 @@ import { getEncounters, subscribeToEncounters, deleteEncounter, subscribeToFolde
 import { shareEncounter, getShareUrl } from '../lib/sharingApi';
 import { useAuth } from '../auth/AuthContext';
 import { Encounter, EncounterMonster, Party, EncounterFolder } from '../lib/types';
-
-// Fonction utilitaire pour générer des slugs AideDD corrects
-const getAideDDMonsterSlug = (name: string): string => {
-  // Convertir le nom en slug
-  return name.toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Enlever les accents
-    .replace(/ /g, '-')              // Remplacer les espaces par des tirets
-    .replace(/[^a-z0-9-]/g, '');     // Supprimer les caractères non alphanumériques
-};
+import { getAideDDMonsterSlug } from '../lib/monsterUtils';
 
 const EncounterHistory: React.FC = () => {
   const [savedEncounters, setSavedEncounters] = useState<Encounter[]>([]);
@@ -181,6 +172,7 @@ const EncounterHistory: React.FC = () => {
       : savedEncounters.filter(e => e.folderId === selectedFolderId);
 
   const handleDeleteEncounter = async (id: string) => {
+    if (!window.confirm("Supprimer définitivement cette rencontre ?")) return;
     try {
       setDeletingId(id);
       await deleteEncounter(id);
@@ -556,7 +548,7 @@ const EncounterHistory: React.FC = () => {
                               href={`https://www.aidedd.org/dnd/monstres.php?vf=${getAideDDMonsterSlug(monsterEntry.monster.name)}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-blue-600 hover:text-blue-800 hover:underline"
+                              className="text-primary hover:text-primary hover:underline"
                             >
                               {monsterEntry.monster.name}
                             </a>

@@ -4,6 +4,7 @@
  */
 
 import { Monster } from './types';
+import { generateUniqueId } from './monsterUtils';
 
 // Enrichir un monstre avec des données supplémentaires
 export function enrichMonster(monster: any): any {
@@ -836,11 +837,6 @@ export function mergeAideDDData(aideddData: any, existingMonster: any): any {
       source: "Monster Manual (SRD)",
       environment: ["désert"]
     };
-  }
-  
-  // Fonction utilitaire pour générer des identifiants uniques
-  function generateUniqueId() {
-    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   }
   
   // Traitement des actions - s'assurer que les champs 'desc' sont convertis en 'description'

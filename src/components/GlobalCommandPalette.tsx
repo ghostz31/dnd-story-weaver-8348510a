@@ -14,7 +14,7 @@ import { useMonsters } from '@/hooks/useMonsters';
 import { useMagicItems } from '@/hooks/useMagicItems';
 import { useRecentItems } from '@/hooks/useRecentItems';
 import { useFavorites } from '@/hooks/useFavorites';
-import { formatCR } from '@/lib/EncounterUtils';
+import { formatCR } from '@/lib/monsterUtils';
 
 export function GlobalCommandPalette() {
     const [open, setOpen] = useState(false);

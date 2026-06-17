@@ -8,16 +8,15 @@ import { useToast } from './use-toast';
 import { Encounter as EncounterType, EncounterParticipant, UrlMapping, MonsterNameMapping } from '../lib/types';
 import { updateFirestoreEncounter, updatePlayer, subscribeToParties } from '../lib/firebaseApi';
 import { useDnDBeyondLive } from '../hooks/useDnDBeyondLive';
+import { useBesaceSync, pushTrameCommand, registerLocalChange } from '../hooks/useBesaceSync';
 import {
     extractNumericHP,
     getConditionInfo,
     estimateDexModifier,
     calculateMovementSpeed,
-    getAideDDMonsterSlug,
-    // getAideDDMonsterName, // Not used directly logic-wise? Used by getAideDDMonsterSlug implicitly? No explicit export?
     createGenericMonster,
-    getAideDDMonsterName
 } from '../lib/EncounterUtils';
+import { getAideDDMonsterSlug, getAideDDMonsterName } from '../lib/monsterUtils';
 // fetchMonsterFromAideDD aliased as getMonsterFromAideDD in component
 import { fetchMonsterFromAideDD as getMonsterFromAideDD } from '../lib/api';
 // NEW Import
@@ -144,7 +143,7 @@ export const useEncounterManager = () => {
                 }
             } catch (e) {
                 console.error("Error loading encounter", e);
-                toast({ title: "Erreur", description: "Echec du chargement.", variant: "destructive" });
+                toast({ title: "Erreur", description: "Échec du chargement.", variant: "destructive" });
             }
         };
         loadData();
@@ -215,6 +214,13 @@ export const useEncounterManager = () => {
         enabled: true
     });
 
+    // Besace Sync
+    useBesaceSync({
+        participants: encounter.participants,
+        onUpdateParticipant: handleDndBeyondUpdate,
+        enabled: true
+    });
+
     // Real-time Party Synchronization
     // Subscribe to party changes and update player participants automatically
     useEffect(() => {
@@ -262,6 +268,9 @@ export const useEncounterManager = () => {
                                 level: player.level || p.level,
                                 proficiencies: player.proficiencies || p.proficiencies,
                                 dndBeyondId: player.dndBeyondId || p.dndBeyondId,
+                                besaceShareCode: player.besaceShareCode || p.besaceShareCode,
+                                syncSource: player.syncSource || p.syncSource,
+                                avatarUrl: player.avatarUrl || p.avatarUrl,
                                 // Preserve existing local state if not synced (or sync if available)
                                 conditions: p.conditions || [],
                                 tempHp: p.tempHp || 0
@@ -436,6 +445,9 @@ export const useEncounterManager = () => {
                             notes: '',
                             initiativeModifier: player.initiative,
                             dndBeyondId: player.dndBeyondId,
+                            besaceShareCode: player.besaceShareCode,
+                            syncSource: player.syncSource,
+                            avatarUrl: player.avatarUrl,
                             level: player.level,
                             race: player.race,
                             class: player.characterClass,
@@ -535,6 +547,9 @@ export const useEncounterManager = () => {
                             notes: '',
                             initiativeModifier: player.initiative,
                             dndBeyondId: player.dndBeyondId,
+                            besaceShareCode: player.besaceShareCode,
+                            syncSource: player.syncSource,
+                            avatarUrl: player.avatarUrl,
                             level: player.level,
                             race: player.race,
                             class: player.characterClass,
@@ -673,6 +688,11 @@ export const useEncounterManager = () => {
         const safeAmount = Number(amount);
         if (isNaN(safeAmount)) return;
 
+        // Calculate new HP values outside setEncounter for Besace sync
+        let besaceNewHp: number | undefined;
+        let besaceNewTempHp: number | undefined;
+        let besaceShareCode: string | undefined;
+
         setEncounter(prev => {
             const participant = prev.participants.find(p => p.id === id);
             if (!participant) return prev;
@@ -688,11 +708,9 @@ export const useEncounterManager = () => {
 
 
             if (isDamage) {
-                // Check for Concentration logic (UI side-effect inside hook, acceptable for this use-case)
                 if (participant.conditions?.some(c => (typeof c === 'string' ? c : c.name) === 'Concentré')) {
                     const damageVal = Math.abs(amount);
                     const dc = Math.max(10, Math.floor(damageVal / 2));
-                    // Immediate toast
                     toast({
                         title: "Jet de Concentration Requis !",
                         description: `${participant.name} a subi ${damageVal} dégâts alors qu'il était concentré.\nDD Constitution : ${dc}`,
@@ -712,7 +730,6 @@ export const useEncounterManager = () => {
                 } else {
                     newHp = Math.max(0, currentNumeric - damage);
                 }
-                // Check for Death Saves trigger logic if desired? Or just let UI handle it.
             } else if (isHeal) {
                 const maxNumeric = typeof participant.maxHp === 'string'
                     ? extractNumericHP(participant.maxHp)
@@ -720,13 +737,17 @@ export const useEncounterManager = () => {
                 newHp = Math.min(maxNumeric, currentNumeric + amount);
             }
 
-            // Log it
+            // Capture values for Besace sync (outside setEncounter)
+            if (participant.besaceShareCode && participant.syncSource === 'besace') {
+                besaceNewHp = newHp;
+                besaceNewTempHp = (participant.tempHp || 0) !== newTempHp ? newTempHp : undefined;
+                besaceShareCode = participant.besaceShareCode;
+            }
+
             const msg = isHeal
                 ? `${participant.name} soigne de ${amount} PV.`
                 : `${participant.name} subit ${Math.abs(amount)} dégâts.`;
 
-            // We need to return the new state, but we can't easily call addLogEntry here as it sets state too.
-            // We must update both in one go.
             const entry: CombatLogEntry = {
                 id: uuid(),
                 timestamp: Date.now(),
@@ -749,11 +770,31 @@ export const useEncounterManager = () => {
 
             };
         });
+
+        // Push HP changes back to Besace for synced characters
+        if (besaceShareCode && besaceNewHp !== undefined) {
+            registerLocalChange(besaceShareCode, {
+                currentHp: besaceNewHp,
+                tempHp: besaceNewTempHp,
+            });
+            pushTrameCommand(besaceShareCode, {
+                type: 'updateHp',
+                payload: { hp: besaceNewHp },
+            }).catch(err => console.error('Besace pushHp error:', err));
+            if (besaceNewTempHp !== undefined) {
+                pushTrameCommand(besaceShareCode, {
+                    type: 'updateTempHp',
+                    payload: { tempHp: besaceNewTempHp },
+                }).catch(err => console.error('Besace pushTempHp error:', err));
+            }
+        }
     };
 
     const updateHpBatch = (ids: string[], amount: number) => {
         const safeAmount = Number(amount);
         if (isNaN(safeAmount) || ids.length === 0) return;
+
+        const besaceUpdates: { shareCode: string; newHp: number; newTempHp?: number }[] = [];
 
         setEncounter(prev => {
             const isHeal = amount > 0;
@@ -802,6 +843,15 @@ export const useEncounterManager = () => {
                     newHp = Math.min(maxNumeric, currentNumeric + amount);
                 }
 
+                // Capture Besace sync data
+                if (p.besaceShareCode && p.syncSource === 'besace') {
+                    const update: { shareCode: string; newHp: number; newTempHp?: number } = { shareCode: p.besaceShareCode, newHp };
+                    if ((p.tempHp || 0) !== newTempHp) {
+                        update.newTempHp = newTempHp;
+                    }
+                    besaceUpdates.push(update);
+                }
+
                 const msg = isHeal
                     ? `${p.name} groupe soigne de ${amount} PV.`
                     : `${p.name} groupe subit ${Math.abs(amount)} dégâts.`;
@@ -827,6 +877,24 @@ export const useEncounterManager = () => {
                 participants: updatedParticipants
             };
         });
+
+        // Push HP changes back to Besace for synced characters
+        for (const update of besaceUpdates) {
+            registerLocalChange(update.shareCode, {
+                currentHp: update.newHp,
+                tempHp: update.newTempHp,
+            });
+            pushTrameCommand(update.shareCode, {
+                type: 'updateHp',
+                payload: { hp: update.newHp },
+            }).catch(err => console.error('Besace pushHp error:', err));
+            if (update.newTempHp !== undefined) {
+                pushTrameCommand(update.shareCode, {
+                    type: 'updateTempHp',
+                    payload: { tempHp: update.newTempHp },
+                }).catch(err => console.error('Besace pushTempHp error:', err));
+            }
+        }
     };
 
     const nextTurn = () => {
@@ -843,7 +911,16 @@ export const useEncounterManager = () => {
             nextIndex = (nextIndex + 1) % sortedParticipants.length;
             checked++;
             if (nextIndex === 0) newRound++;
-            if (checked > sortedParticipants.length) return; // All dead
+            if (checked > sortedParticipants.length) {
+                // All participants are dead — signal to the UI
+                setEncounter(prev => ({ ...prev, combatOver: true }));
+                toast({
+                    title: "Fin du combat",
+                    description: "Tous les participants sont morts ou hors combat.",
+                    variant: "destructive"
+                });
+                return;
+            } // All dead
         } while (sortedParticipants[nextIndex].currentHp <= 0);
 
         const nextId = sortedParticipants[nextIndex].id;
@@ -1059,9 +1136,9 @@ export const useEncounterManager = () => {
                 round: encounter.round,
                 combatLog: encounter.combatLog
             });
-            toast({ title: "Sauvegardé", description: "Etat sauvegardé." });
+            toast({ title: "Sauvegardé", description: "État sauvegardé." });
         } catch (e) {
-            toast({ title: "Erreur", description: "Echec sauvegarde.", variant: "destructive" });
+            toast({ title: "Erreur", description: "Échec de la sauvegarde.", variant: "destructive" });
         } finally { setIsSaving(false); }
     };
 
@@ -1086,6 +1163,10 @@ export const useEncounterManager = () => {
     };
 
     const updateParticipant = (id: string, updates: Partial<EncounterParticipant>) => {
+        let besaceShareCode: string | undefined;
+        let besaceNewHp: number | undefined;
+        let besaceNewTempHp: number | undefined;
+
         setEncounter(prev => {
             // Defensive coding: Force numeric types
             const safeUpdates = { ...updates };
@@ -1120,6 +1201,17 @@ export const useEncounterManager = () => {
                             });
                         }
                     }
+
+                    // Capture Besace sync data
+                    if (participant.besaceShareCode && participant.syncSource === 'besace' && (safeUpdates.currentHp !== undefined || safeUpdates.tempHp !== undefined)) {
+                        besaceShareCode = participant.besaceShareCode;
+                        if (safeUpdates.currentHp !== undefined) {
+                            besaceNewHp = safeUpdates.currentHp as number;
+                        }
+                        if (safeUpdates.tempHp !== undefined) {
+                            besaceNewTempHp = safeUpdates.tempHp as number;
+                        }
+                    }
                 }
             }
 
@@ -1128,6 +1220,26 @@ export const useEncounterManager = () => {
                 participants: prev.participants.map(p => p.id === id ? { ...p, ...safeUpdates } : p)
             };
         });
+
+        // Push HP changes back to Besace for synced characters
+        if (besaceShareCode && (besaceNewHp !== undefined || besaceNewTempHp !== undefined)) {
+            registerLocalChange(besaceShareCode, {
+                currentHp: besaceNewHp,
+                tempHp: besaceNewTempHp,
+            });
+            if (besaceNewHp !== undefined) {
+                pushTrameCommand(besaceShareCode, {
+                    type: 'updateHp',
+                    payload: { hp: besaceNewHp },
+                }).catch(err => console.error('Besace pushHp error:', err));
+            }
+            if (besaceNewTempHp !== undefined) {
+                pushTrameCommand(besaceShareCode, {
+                    type: 'updateTempHp',
+                    payload: { tempHp: besaceNewTempHp },
+                }).catch(err => console.error('Besace pushTempHp error:', err));
+            }
+        }
     };
 
     const moveParticipant = (id: string, direction: 'up' | 'down') => {

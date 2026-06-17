@@ -113,7 +113,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Ou (Accès Test)</span>
+              <span className="bg-background px-2 text-muted-foreground">Où (Accès Test)</span>
             </div>
           </div>
 
@@ -125,7 +125,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email (Test Only)</Label>
+              <Label htmlFor="email">Email (Test uniquement)</Label>
               <Input
                 id="email"
                 type="email"

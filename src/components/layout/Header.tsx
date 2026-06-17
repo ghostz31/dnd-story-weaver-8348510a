@@ -25,7 +25,6 @@ import {
   User,
   ChevronDown,
   LogIn,
-
   PenTool,
   Search,
   Scroll,
@@ -63,7 +62,7 @@ const Header: React.FC = () => {
         size={mobile ? "lg" : "sm"}
         asChild
         onClick={closeMenu}
-        className={`w-full justify-start md:w-auto touch-target interactive-tap ${isActive('/') ? 'text-primary font-semibold bg-accent' : 'text-muted-foreground'
+        className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${isActive('/') ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
           } ${mobile ? 'h-12 text-base' : ''}`}
       >
         <Link to="/" className="flex items-center">
@@ -72,11 +71,12 @@ const Header: React.FC = () => {
       </Button>
 
       <Button
-        variant={isActive('/parties') ? 'default' : 'ghost'}
+        variant="ghost"
         size={mobile ? "lg" : "sm"}
         asChild
         onClick={closeMenu}
-        className={`w-full justify-start md:w-auto touch-target interactive-tap ${mobile ? 'h-12 text-base' : ''}`}
+        className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${isActive('/parties') ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+          } ${mobile ? 'h-12 text-base' : ''}`}
       >
         <Link to="/parties" className="flex items-center">
           <Users className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Groupes
@@ -84,11 +84,12 @@ const Header: React.FC = () => {
       </Button>
 
       <Button
-        variant={isActive('/monsters') ? 'default' : 'ghost'}
+        variant="ghost"
         size={mobile ? "lg" : "sm"}
         asChild
         onClick={closeMenu}
-        className={`w-full justify-start md:w-auto touch-target interactive-tap ${mobile ? 'h-12 text-base' : ''}`}
+        className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${isActive('/monsters') ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+          } ${mobile ? 'h-12 text-base' : ''}`}
       >
         <Link to="/monsters" className="flex items-center">
           <Book className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Bestiaire
@@ -96,11 +97,12 @@ const Header: React.FC = () => {
       </Button>
 
       <Button
-        variant={isActive('/grimoire') ? 'default' : 'ghost'}
+        variant="ghost"
         size={mobile ? "lg" : "sm"}
         asChild
         onClick={closeMenu}
-        className={`w-full justify-start md:w-auto touch-target interactive-tap ${mobile ? 'h-12 text-base' : ''}`}
+        className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${isActive('/grimoire') ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+          } ${mobile ? 'h-12 text-base' : ''}`}
       >
         <Link to="/grimoire" className="flex items-center">
           <Scroll className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Grimoire
@@ -108,11 +110,12 @@ const Header: React.FC = () => {
       </Button>
 
       <Button
-        variant={isActive('/items') ? 'default' : 'ghost'}
+        variant="ghost"
         size={mobile ? "lg" : "sm"}
         asChild
         onClick={closeMenu}
-        className={`w-full justify-start md:w-auto touch-target interactive-tap ${mobile ? 'h-12 text-base' : ''}`}
+        className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${isActive('/items') ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+          } ${mobile ? 'h-12 text-base' : ''}`}
       >
         <Link to="/items" className="flex items-center">
           <Gem className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Objets
@@ -120,11 +123,12 @@ const Header: React.FC = () => {
       </Button>
 
       <Button
-        variant={isActive('/encounters') || isActive('/custom') ? 'default' : 'ghost'}
+        variant="ghost"
         size={mobile ? "lg" : "sm"}
         asChild
         onClick={closeMenu}
-        className={`w-full justify-start md:w-auto touch-target interactive-tap ${mobile ? 'h-12 text-base' : ''}`}
+        className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${(isActive('/encounters') || isActive('/custom')) ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+          } ${mobile ? 'h-12 text-base' : ''}`}
       >
         <Link to="/encounters" className="flex items-center">
           <PenTool className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Rencontres
@@ -132,11 +136,12 @@ const Header: React.FC = () => {
       </Button>
 
       <Button
-        variant={isActive('/history') ? 'default' : 'ghost'}
+        variant="ghost"
         size={mobile ? "lg" : "sm"}
         asChild
         onClick={closeMenu}
-        className={`w-full justify-start md:w-auto touch-target interactive-tap ${mobile ? 'h-12 text-base' : ''}`}
+        className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${isActive('/history') ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+          } ${mobile ? 'h-12 text-base' : ''}`}
       >
         <Link to="/history" className="flex items-center">
           <History className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Historique
@@ -196,6 +201,15 @@ const Header: React.FC = () => {
 
           {/* Menu utilisateur */}
           <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden touch-target h-10 w-10"
+              onClick={() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))}
+              title="Rechercher (⌘K)"
+            >
+              <Search className="h-5 w-5" />
+            </Button>
             <ModeToggle />
             {user ? (
               <DropdownMenu>
@@ -224,7 +238,7 @@ const Header: React.FC = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button variant="default" size="sm" onClick={() => navigate('/login')} className="flex items-center">
+              <Button variant="default" size="sm" onClick={() => navigate('/auth?mode=login')} className="flex items-center">
                 <LogIn className="mr-1 h-4 w-4" />
                 <span className="hidden sm:inline">Connexion</span>
               </Button>

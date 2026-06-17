@@ -21,19 +21,10 @@ import { getParties, canCreateEncounter, saveEncounter, getEncounters, deleteEnc
 import { Party, Monster, Encounter } from '../lib/types';
 import { useMonsters } from '../hooks/useMonsters';
 import { normalizeForSearch } from '../utils/stringUtils';
+import { formatCR, getAideDDMonsterSlug } from '../lib/monsterUtils';
 
 // Difficultés d'une rencontre
 const ENCOUNTER_DIFFICULTIES = ['easy', 'medium', 'hard', 'deadly'] as const;
-
-// Fonction utilitaire pour générer des slugs AideDD corrects
-const getAideDDMonsterSlug = (name: string): string => {
-  // Convertir le nom en slug
-  return name.toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Enlever les accents
-    .replace(/ /g, '-')              // Remplacer les espaces par des tirets
-    .replace(/[^a-z0-9-]/g, '');     // Supprimer les caractères non alphanumériques
-};
 
 const CustomEncounterGenerator: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -212,7 +203,7 @@ const CustomEncounterGenerator: React.FC = () => {
 
   // Supprimer une rencontre
   const handleDeleteEncounter = async (encounterId: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette rencontre?')) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette rencontre ?')) {
       return;
     }
 
@@ -241,18 +232,6 @@ const CustomEncounterGenerator: React.FC = () => {
     }
   };
 
-  // Formater le facteur de défi (CR)
-  const formatCR = (cr: number): string => {
-    if (cr < 1) {
-      // Pour les CR fractionnaires (1/8, 1/4, 1/2)
-      if (cr === 0.125) return '1/8';
-      if (cr === 0.25) return '1/4';
-      if (cr === 0.5) return '1/2';
-      return cr.toString();
-    }
-    return cr.toString();
-  };
-
   // Si l'utilisateur n'est pas authentifié
   if (!isAuthenticated) {
     return (
@@ -267,8 +246,8 @@ const CustomEncounterGenerator: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center py-10">
-          <Skull className="h-16 w-16 text-gray-300 mb-4" />
-          <p className="text-center text-gray-500 mb-4">
+          <Skull className="h-16 w-16 text-muted-foreground/50 mb-4" />
+          <p className="text-center text-muted-foreground mb-4">
             Vous devez être connecté pour accéder à cette fonctionnalité
           </p>
           <Button variant="default" asChild>
@@ -395,7 +374,7 @@ const CustomEncounterGenerator: React.FC = () => {
                                   href={`https://www.aidedd.org/dnd/monstres.php?vf=${getAideDDMonsterSlug(monster.name)}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-blue-600 hover:text-blue-800 hover:underline"
+                                  className="text-primary hover:text-primary hover:underline"
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   {monster.name}
@@ -426,9 +405,9 @@ const CustomEncounterGenerator: React.FC = () => {
                   <h3 className="text-base font-medium mb-3">Monstres de la rencontre</h3>
                   {monsterList.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-8 text-center border rounded-md">
-                      <Skull className="h-10 w-10 text-gray-300 mb-2" />
-                      <p className="text-gray-500 mb-2">Aucun monstre dans cette rencontre</p>
-                      <p className="text-gray-400 text-sm mb-4">
+                      <Skull className="h-10 w-10 text-muted-foreground/50 mb-2" />
+                      <p className="text-muted-foreground mb-2">Aucun monstre dans cette rencontre</p>
+                      <p className="text-muted-foreground/70 text-sm mb-4">
                         Recherchez et ajoutez des monstres pour créer votre rencontre
                       </p>
                     </div>
@@ -451,7 +430,7 @@ const CustomEncounterGenerator: React.FC = () => {
                                 href={`https://www.aidedd.org/dnd/monstres.php?vf=${getAideDDMonsterSlug(monster.name)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-blue-600 hover:text-blue-800 hover:underline"
+                                className="text-primary hover:text-primary hover:underline"
                               >
                                 {monster.name}
                               </a>
@@ -463,7 +442,7 @@ const CustomEncounterGenerator: React.FC = () => {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-red-500 hover:text-red-700"
+                                className="text-destructive/80 hover:text-destructive/90"
                                 onClick={() => removeMonster(monster.id)}
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -520,8 +499,8 @@ const CustomEncounterGenerator: React.FC = () => {
               </div>
             ) : encounters.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 text-center">
-                <FileText className="h-16 w-16 text-gray-300 mb-4" />
-                <p className="text-gray-500 mb-4">
+                <FileText className="h-16 w-16 text-muted-foreground/50 mb-4" />
+                <p className="text-muted-foreground mb-4">
                   Vous n'avez pas encore de rencontres sauvegardées
                 </p>
                 <Button
@@ -570,7 +549,7 @@ const CustomEncounterGenerator: React.FC = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-red-500 hover:text-red-700"
+                          className="text-destructive/80 hover:text-destructive/90"
                           onClick={() => handleDeleteEncounter(encounter.id)}
                         >
                           <Trash2 className="h-4 w-4" />

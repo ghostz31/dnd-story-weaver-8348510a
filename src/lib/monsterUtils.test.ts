@@ -30,10 +30,23 @@ describe('monsterUtils', () => {
             expect(getAideDDMonsterSlug('Âme en peine')).toBe('ame-en-peine');
         });
 
-        it('should remove special characters', () => {
-            expect(getAideDDMonsterSlug("Dragon d'or")).toBe('dragon-dor');
+        it('should convert apostrophes to dashes', () => {
+            expect(getAideDDMonsterSlug("Dragon d'or")).toBe('dragon-d-or');
             expect(getAideDDMonsterSlug("Kuo-toa")).toBe('kuo-toa'); // dashes are kept
             expect(getAideDDMonsterSlug("Kuo-toa!")).toBe('kuo-toa');
+        });
+
+        it('should handle special cases', () => {
+            expect(getAideDDMonsterSlug('Béhir')).toBe('behir');
+            expect(getAideDDMonsterSlug('Arbre éveillé')).toBe('arbre-eveille');
+            expect(getAideDDMonsterSlug('Dragon d\'ombre rouge, jeune')).toBe('dragon-d-ombre-rouge-jeune');
+            expect(getAideDDMonsterSlug('élémentaire du feu')).toBe('elementaire-du-feu');
+        });
+
+        it('should use urlMap when provided', () => {
+            const urlMap = { 'Monstre Custom': 'monstre-custom-special' };
+            expect(getAideDDMonsterSlug('Monstre Custom', urlMap)).toBe('monstre-custom-special');
+            expect(getAideDDMonsterSlug('Monstre Inconnu', urlMap)).toBe('monstre-inconnu');
         });
     });
 

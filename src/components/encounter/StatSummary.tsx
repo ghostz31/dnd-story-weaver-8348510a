@@ -62,7 +62,7 @@ const StatSummary: React.FC<StatSummaryProps> = ({
                     <h4 className="text-md font-medium mb-2">Personnages</h4>
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
-                            <thead className="bg-gray-100">
+                            <thead className="bg-muted">
                                 <tr>
                                     <th className="px-2 py-1 text-left">Nom</th>
                                     <th className="px-2 py-1 text-left">Classe</th>

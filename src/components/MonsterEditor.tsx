@@ -127,7 +127,7 @@ export const MonsterEditor: React.FC<MonsterEditorProps> = ({ initialData, onSav
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder="Selectionner un type" />
+                                                        <SelectValue placeholder="Sélectionner un type" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
@@ -243,7 +243,7 @@ export const MonsterEditor: React.FC<MonsterEditorProps> = ({ initialData, onSav
                                     name="ac"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Classe d'Armure (AC)</FormLabel>
+                                            <FormLabel>Classe d'Armure (CA)</FormLabel>
                                             <FormControl>
                                                 <Input type="number" {...field} onChange={e => { const v = parseInt(e.target.value); field.onChange(isNaN(v) ? 10 : v); }} />
                                             </FormControl>
@@ -256,7 +256,7 @@ export const MonsterEditor: React.FC<MonsterEditorProps> = ({ initialData, onSav
                                     name="hp"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Points de Vie (HP)</FormLabel>
+                                            <FormLabel>Points de Vie (PV)</FormLabel>
                                             <FormControl>
                                                 <Input type="number" {...field} onChange={e => { const v = parseInt(e.target.value); field.onChange(isNaN(v) ? 10 : v); }} />
                                             </FormControl>
@@ -316,7 +316,7 @@ export const MonsterEditor: React.FC<MonsterEditorProps> = ({ initialData, onSav
                                     name="savingThrows"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Jets de Sauvegarde</FormLabel>
+                                            <FormLabel>Jets de sauvegarde</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="ex: Dex +5, Con +4" {...field} />
                                             </FormControl>

@@ -74,12 +74,7 @@ export const StatBlock: React.FC<StatBlockProps> = ({ monster, className = '', l
     const abilityGridClasses = "grid grid-cols-3 gap-x-4 gap-y-4 mb-4 px-2";
 
     const imageContainerClasses = layoutMode === 'compact'
-        ? "w-full flex-shrink-0 animate-in fade-in slide-in-from-right-4 duration-700 order-first" // Image on top in compact mode? or bottom? typically top is better for narrow cards. Let's put it top by using order-first if we want. Or Keep bottom.
-        // User screenshot shows image on RIGHT (squishing text).
-        // Let's stick to flex-col which stacks them. Text first or Image first?
-        // Usually Statblock has Image floating or to side. If vertical, Image at bottom or top.
-        // Let's try Image at TOP for compact (like a card) or BOTTOM.
-        // Actually, pure Statblock usually keeps stats at top. Let's keep image at bottom for stacked.
+        ? "w-full flex-shrink-0 animate-in fade-in slide-in-from-right-4 duration-700"
         : "w-full lg:w-[320px] flex-shrink-0 animate-in fade-in slide-in-from-right-4 duration-700";
 
     return (
@@ -220,7 +215,7 @@ export const StatBlock: React.FC<StatBlockProps> = ({ monster, className = '', l
 
             {/* Image Section */}
             {!hideImage && monster.image && (
-                <div className="w-full lg:w-[320px] flex-shrink-0 animate-in fade-in slide-in-from-right-4 duration-700">
+                <div className={imageContainerClasses}>
                     <div className="border-[6px] border-double border-[#7A200D]/20 bg-white p-1 shadow-xl rounded-sm">
                         <img
                             src={monster.image}

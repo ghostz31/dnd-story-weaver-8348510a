@@ -122,11 +122,11 @@ const InitiativeModal: React.FC<InitiativeModalProps> = ({
                     {/* JOUEURS */}
                     {players.length > 0 && (
                         <div className="space-y-3">
-                            <h3 className="font-bold flex items-center text-blue-700 border-b pb-1">
+                            <h3 className="font-bold flex items-center text-primary border-b border-primary/20 pb-1">
                                 <UserIcon className="mr-2 h-4 w-4" /> Aventuriers
                             </h3>
                             {players.map(p => (
-                                <div key={p.id} className="grid grid-cols-12 gap-2 items-center bg-blue-50/50 p-2 rounded-md">
+                                <div key={p.id} className="grid grid-cols-12 gap-2 items-center bg-primary/5 p-2 rounded-md">
                                     <div className="col-span-6 font-medium truncate" title={p.name}>{p.name}</div>
                                     <div className="col-span-2 text-xs text-center text-muted-foreground">
                                         Dex: {p.dex} ({calculateModifier(p.dex) >= 0 ? '+' : ''}{calculateModifier(p.dex)})
@@ -150,11 +150,11 @@ const InitiativeModal: React.FC<InitiativeModalProps> = ({
                     {/* MONSTRES */}
                     {monsters.length > 0 && (
                         <div className="space-y-3">
-                            <h3 className="font-bold flex items-center text-red-700 border-b pb-1">
+                            <h3 className="font-bold flex items-center text-destructive border-b border-destructive/20 pb-1">
                                 <Skull className="mr-2 h-4 w-4" /> Adversaires
                             </h3>
                             {monsters.map(p => (
-                                <div key={p.id} className="grid grid-cols-12 gap-2 items-center bg-red-50/50 p-2 rounded-md">
+                                <div key={p.id} className="grid grid-cols-12 gap-2 items-center bg-destructive/5 p-2 rounded-md">
                                     <div className="col-span-6 font-medium truncate flex items-center gap-2">
                                         {p.image && <img src={p.image} className="w-6 h-6 rounded-full object-cover" />}
                                         <span title={p.name}>{p.name}</span>
@@ -181,7 +181,7 @@ const InitiativeModal: React.FC<InitiativeModalProps> = ({
 
                 <DialogFooter className="mt-6">
                     <Button variant="outline" onClick={() => onOpenChange(false)}>Annuler</Button>
-                    <Button onClick={handleConfirm} className="bg-red-600 hover:bg-red-700 text-white">
+                    <Button onClick={handleConfirm}>
                         Combat !
                     </Button>
                 </DialogFooter>

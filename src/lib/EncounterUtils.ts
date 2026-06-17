@@ -1,5 +1,5 @@
 import React from 'react';
-import { Monster, Party, Encounter, EncounterMonster, EncounterParticipant, UrlMapping, MonsterNameMapping, EncounterCondition } from './types';
+import { Monster, Party, Encounter, EncounterMonster, EncounterParticipant, EncounterCondition } from './types';
 import { v4 as uuidv4 } from 'uuid';
 import { EncounterSchema } from './schemas';
 import {
@@ -135,20 +135,6 @@ export const CONDITIONS = [
 ] as const;
 
 export type Condition = typeof CONDITIONS[number];
-
-/**
- * Format Challenge Rating for display (converts decimals to fractions)
- */
-export const formatCR = (cr: number | string | undefined): string => {
-    if (cr === undefined || cr === null) return '—';
-    const numCR = typeof cr === 'string' ? parseFloat(cr) : cr;
-    if (isNaN(numCR)) return String(cr);
-    if (numCR === 0) return '0';
-    if (numCR === 0.125) return '1/8';
-    if (numCR === 0.25) return '1/4';
-    if (numCR === 0.5) return '1/2';
-    return String(numCR);
-};
 
 // Interface pour les infos de condition
 export interface ConditionInfo {
@@ -303,7 +289,7 @@ export const extractNumericHP = (hpValue: string | number): number => {
 export const estimateDexModifier = (participant: EncounterParticipant): number => {
     if (!participant.isPC) {
         // Pour les monstres, utiliser le modificateur de DEX réel
-        return participant.dex ? Math.floor((participant.dex - 10) / 2) : 0;
+        return participant.dex ? calculateModifier(participant.dex) : 0;
     }
 
     // Pour les PJs, utiliser le modificateur explicite s'il existe
@@ -369,80 +355,6 @@ export const calculateMovementSpeed = (participant: EncounterParticipant): numbe
 
     // Si aucune information, retourner une valeur par défaut
     return 6;
-};
-
-// Fonction pour obtenir le nom exact pour AideDD (pour l'affichage)
-export const getAideDDMonsterName = (name: string, monsterNameMap: MonsterNameMapping = {}): string => {
-    // Vérifier d'abord dans le dictionnaire de correspondance
-    if (monsterNameMap[name]) {
-        return monsterNameMap[name];
-    }
-
-    // Règles spécifiques pour les cas non couverts par le dictionnaire
-    const nameWithCorrectAccents = name
-        .replace(/([Gg])eant(e?)/g, '$1éant$2')
-        .replace(/([Ee])lementaire/g, '$1lémentaire')
-        .replace(/([Ee])veille/g, '$1veillé')
-        .replace(/([Ee])lan/g, '$1lan')
-        .replace(/([Ee])pee/g, '$1pée')
-        .replace(/([Ee])pouvantail/g, '$1pouvantail');
-
-    return nameWithCorrectAccents;
-};
-
-
-// Fonction pour obtenir le slug URL pour AideDD
-export const getAideDDMonsterSlug = (name: string, urlMap: UrlMapping = {}): string => {
-    // 1. Chercher d'abord dans le dictionnaire d'URL
-    if (urlMap[name]) {
-        return urlMap[name]; // Retourne directement le slug sans encodage
-    }
-
-    // 2. Essayer avec le nom corrigé des accents
-    const nameWithCorrectAccents = getAideDDMonsterName(name, {});
-    if (urlMap[nameWithCorrectAccents]) {
-        return urlMap[nameWithCorrectAccents]; // Retourne directement le slug sans encodage
-    }
-
-    // 3. Cas spéciaux connus pour la correction manuelle
-    const specialCases: Record<string, string> = {
-        'Dragon d\'ombre rouge jeune': 'dragon-d-ombre-rouge-jeune',
-        'Dragon d\'ombre rouge, jeune': 'dragon-d-ombre-rouge-jeune',
-        'Dragon d\'ombre rouge': 'dragon-d-ombre-rouge-jeune',
-        'Dragon dombre rouge jeune': 'dragon-d-ombre-rouge-jeune',
-        'Béhir': 'behir',
-        'Behir': 'behir',
-        'Arbre éveillé': 'arbre-eveille',
-        'Balor': 'balor'
-    };
-
-    const normalizedName = name.trim();
-    if (specialCases[normalizedName]) {
-        return specialCases[normalizedName];
-    }
-
-    // 4. Si tout échoue, convertir manuellement en slug
-    // IMPORTANT: Ne pas utiliser encodeURIComponent, car le site attend un format avec tirets
-    let slug = name.toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, ''); // Enlever les accents
-
-    // Correction spéciale pour les apostrophes: 'd'ombre' devient 'd-ombre'
-    slug = slug.replace(/'(\w)/g, '-$1');
-
-    // Traitement spécial pour les apostrophes
-    slug = slug.replace(/([a-z])'([a-z])/g, '$1-$2');
-
-    // Remplacer les espaces par des tirets
-    slug = slug.replace(/ /g, '-');
-
-    // Supprimer les caractères non alphanumériques (sauf les tirets)
-    slug = slug.replace(/[^a-z0-9-]/g, '');
-
-    // Éviter les tirets consécutifs
-    slug = slug.replace(/-+/g, '-');
-
-    return slug;
 };
 
 // Création d'un monstre générique quand aucune information n'est trouvée
@@ -549,7 +461,7 @@ export const normalizeEncounterForEditing = (
     };
 };
 /**
- * Constantes pour le calcul de difficulte (DMG p. 82)
+ * Constantes pour le calcul de difficulté (DMG p. 82)
  */
 export const XP_THRESHOLDS_BY_LEVEL: Record<number, [number, number, number, number]> = {
     1: [25, 50, 75, 100],

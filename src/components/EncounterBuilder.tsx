@@ -61,6 +61,7 @@ const EncounterBuilder: React.FC = () => {
   const [newFolderName, setNewFolderName] = useState('');
   const [createFolderDialogOpen, setCreateFolderDialogOpen] = useState(false);
   const [localEncounters, setLocalEncounters] = useState<LocalEncounter[]>([]);
+  const [dragOverFolderId, setDragOverFolderId] = useState<string | null>(null);
 
   // Sync local encounters with repository data
   useEffect(() => {
@@ -420,6 +421,8 @@ const EncounterBuilder: React.FC = () => {
             conditions: [],
             notes: `${player.characterClass || ''} niveau ${player.level || 1}`,
             dndBeyondId: player.dndBeyondId,
+            besaceShareCode: player.besaceShareCode,
+            syncSource: player.syncSource || (player.dndBeyondId ? 'beyond' : player.besaceShareCode ? 'besace' : 'none'),
             // Extended stats
             str: player.str,
             dex: player.dex,
@@ -431,7 +434,10 @@ const EncounterBuilder: React.FC = () => {
             race: player.race,
             class: player.characterClass,
             level: player.level,
-            proficiencies: player.proficiencies
+            proficiencies: player.proficiencies,
+            avatarUrl: player.avatarUrl,
+            subclass: player.subclass,
+            background: player.background
           };
         }),
         // Monsters
@@ -618,9 +624,10 @@ const EncounterBuilder: React.FC = () => {
             variant={selectedFolderId === null ? "secondary" : "ghost"}
             size="sm"
             onClick={() => setSelectedFolderId(null)}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, null)}
-            className={`h-8 text-xs rounded-full px-4 ${selectedFolderId === null ? 'bg-gray-200 text-gray-800 font-medium' : 'text-gray-500'}`}
+            onDragOver={(e) => { handleDragOver(e); setDragOverFolderId('__all__'); }}
+            onDragLeave={() => setDragOverFolderId(null)}
+            onDrop={(e) => { setDragOverFolderId(null); handleDrop(e, null); }}
+            className={`h-8 text-xs rounded-full px-4 transition-all border-2 border-transparent ${selectedFolderId === null ? 'bg-muted text-foreground font-medium' : 'text-muted-foreground'} ${dragOverFolderId === '__all__' ? 'border-dashed border-primary bg-primary/5' : ''}`}
           >
             Tous
           </Button>
@@ -628,25 +635,27 @@ const EncounterBuilder: React.FC = () => {
             variant={selectedFolderId === 'none' ? "secondary" : "ghost"}
             size="sm"
             onClick={() => setSelectedFolderId('none')}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, null)} // 'none' technically means no folderId, so null acts same or we use specific handler logic
-            className={`h-8 text-xs rounded-full px-4 ${selectedFolderId === 'none' ? 'bg-gray-200 text-gray-800 font-medium' : 'text-gray-500'}`}
+            onDragOver={(e) => { handleDragOver(e); setDragOverFolderId('__none__'); }}
+            onDragLeave={() => setDragOverFolderId(null)}
+            onDrop={(e) => { setDragOverFolderId(null); handleDrop(e, null); }}
+            className={`h-8 text-xs rounded-full px-4 transition-all border-2 border-transparent ${selectedFolderId === 'none' ? 'bg-muted text-foreground font-medium' : 'text-muted-foreground'} ${dragOverFolderId === '__none__' ? 'border-dashed border-primary bg-primary/5' : ''}`}
           >
             Sans dossier
           </Button>
-          <div className="w-px h-6 bg-gray-300 mx-1 flex-shrink-0" />
+          <div className="w-px h-6 bg-border mx-1 flex-shrink-0" />
           {folders.map(folder => (
             <Button
               key={folder.id}
               variant={selectedFolderId === folder.id ? "secondary" : "ghost"}
               size="sm"
               onClick={() => setSelectedFolderId(folder.id)}
-              onDragOver={handleDragOver}
-              onDrop={(e) => handleDrop(e, folder.id)}
-              className={`h-8 text-xs rounded-full px-4 whitespace-nowrap transition-colors`}
+              onDragOver={(e) => { handleDragOver(e); setDragOverFolderId(folder.id); }}
+              onDragLeave={() => setDragOverFolderId(null)}
+              onDrop={(e) => { setDragOverFolderId(null); handleDrop(e, folder.id); }}
+              className={`h-8 text-xs rounded-full px-4 whitespace-nowrap transition-all border-2 border-transparent ${dragOverFolderId === folder.id ? 'border-dashed border-primary bg-primary/5' : ''}`}
               style={{
-                backgroundColor: selectedFolderId === folder.id ? (folder.color || '#e5e7eb') : undefined,
-                color: selectedFolderId === folder.id ? '#1f2937' : '#6b7280',
+                backgroundColor: selectedFolderId === folder.id && dragOverFolderId !== folder.id ? (folder.color || '#e5e7eb') : undefined,
+                color: selectedFolderId === folder.id && dragOverFolderId !== folder.id ? '#1f2937' : '#6b7280',
                 fontWeight: selectedFolderId === folder.id ? 500 : 400
               }}
             >
@@ -657,7 +666,7 @@ const EncounterBuilder: React.FC = () => {
             variant="outline"
             size="icon"
             onClick={() => setCreateFolderDialogOpen(true)}
-            className="h-8 w-8 rounded-full border-dashed border-gray-400 text-gray-500 hover:text-primary hover:border-primary flex-shrink-0 ml-auto"
+            className="h-8 w-8 rounded-full border-dashed border-muted-foreground text-muted-foreground hover:text-primary hover:border-primary flex-shrink-0 ml-auto"
             title="Nouveau dossier"
           >
             <Plus className="h-3 w-3" />
@@ -666,7 +675,7 @@ const EncounterBuilder: React.FC = () => {
 
         {filteredEncounters.length === 0 ? (
           <div className="text-center py-12 bg-white/40 rounded-lg border-2 border-dashed border-gray-200">
-            <p className="text-gray-500">Aucune rencontre trouvée.</p>
+            <p className="text-muted-foreground">Aucune rencontre trouvée.</p>
           </div>
         ) : (
           <ul className="space-y-3 pb-20 lg:pb-0">
@@ -689,11 +698,7 @@ const EncounterBuilder: React.FC = () => {
                     </h3>
 
                     <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                      <Badge variant="secondary" className={`text-[10px] h-5 px-1.5 font-normal ${encounter.difficulty === 'deadly' ? 'bg-red-100 text-red-700' :
-                        encounter.difficulty === 'hard' ? 'bg-orange-100 text-orange-700' :
-                          encounter.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                            'bg-green-100 text-green-700'
-                        }`}>
+                      <Badge variant="secondary" className={`text-[10px] h-5 px-1.5 font-normal badge-difficulty-${encounter.difficulty || 'trivial'}`}>
                         {encounter.difficulty === 'easy' ? 'Facile' :
                           encounter.difficulty === 'medium' ? 'Moyen' :
                             encounter.difficulty === 'hard' ? 'Difficile' :
@@ -709,12 +714,12 @@ const EncounterBuilder: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Actions overlay - always visible on mobile/active, hover on desktop */}
+                  {/* Actions overlay - always visible on mobile, hover on desktop */}
                   <div className="flex items-center gap-1">
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-gray-400 hover:text-blue-600 hover:bg-blue-50 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                      className="h-8 w-8 text-gray-400 hover:text-blue-600 hover:bg-blue-50 opacity-100 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 transition-opacity"
                       onClick={(e) => handleShare(e, encounter.id)}
                       title="Partager"
                     >
@@ -726,7 +731,7 @@ const EncounterBuilder: React.FC = () => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-gray-400 hover:text-gray-700 hover:bg-gray-100 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                          className="h-8 w-8 text-gray-400 hover:text-gray-700 hover:bg-gray-100 opacity-100 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 transition-opacity"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <Folder className="h-4 w-4" />
@@ -762,11 +767,11 @@ const EncounterBuilder: React.FC = () => {
                               toast({ title: "Supprimée", description: "Rencontre supprimée." });
                             }
                           } catch (err) {
-                            toast({ title: "Erreur", description: "Échec suppression.", variant: "destructive" });
+                            toast({ title: "Erreur", description: "Échec de la suppression.", variant: "destructive" });
                           }
                         }
                       }}
-                      className="h-8 w-8 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 translation-opacity"
+                      className="h-8 w-8 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100"
                       title="Supprimer"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -838,111 +843,24 @@ const EncounterBuilder: React.FC = () => {
 
         {/* Boutons d'action */}
         <div className="flex flex-col sm:flex-row justify-end gap-2">
-          <button
+          <Button
+            variant="outline"
             onClick={handleSaveEncounter}
-            className="w-full sm:w-auto px-4 py-2.5 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center justify-center touch-target"
             disabled={isSaving}
+            className="w-full sm:w-auto touch-target"
           >
-            <Save className="mr-2" />
+            <Save className="mr-2 h-4 w-4" />
             {isEditing ? "Mettre à jour" : "Enregistrer"}
-          </button>
+          </Button>
 
-          {/* Bouton pour lancer la rencontre */}
-          <button
+          <Button
             onClick={launchEncounter}
-            className="w-full sm:w-auto px-4 py-2.5 bg-red-600 text-white rounded hover:bg-red-700 flex items-center justify-center touch-target"
             disabled={!selectedMonsters.length || isSaving}
+            className="w-full sm:w-auto touch-target bg-primary hover:bg-primary/90"
           >
-            <Play className="mr-2" />
+            <Play className="mr-2 h-4 w-4" />
             <span className="hidden sm:inline">Lancer la</span> rencontre
-          </button>
-        </div>
-
-        {/* Dialogue de sauvegarde */}
-        <div className="flex flex-col gap-4 md:flex-row mt-4">
-          <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
-            <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full"
-                disabled={!selectedMonsters.length || isSaving}
-              >
-                <Save className="mr-2 h-4 w-4" />
-                Options de sauvegarde
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Sauvegarder la rencontre</DialogTitle>
-                <DialogDescription>
-                  Donnez un nom à cette rencontre pour la retrouver facilement.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="encounterName" className="text-right">
-                    Nom
-                  </Label>
-                  <Input
-                    id="encounterName"
-                    value={encounterName}
-                    onChange={(e) => setEncounterName(e.target.value)}
-                    className="col-span-3"
-                    placeholder="Embuscade gobeline, Combat final, etc."
-                  />
-                </div>
-                {selectedParty ? (
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right">Groupe</Label>
-                    <div className="col-span-3">
-                      <Badge variant="secondary">{selectedParty.name}</Badge>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <div className="col-span-4 text-amber-500 text-sm">
-                      Aucun groupe d'aventuriers sélectionné. La rencontre sera sauvegardée sans groupe associé.
-                    </div>
-                  </div>
-                )}
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label className="text-right">Difficulté</Label>
-                  <div className="col-span-3">
-                    <Badge className={
-                      difficulty === 'easy' ? 'bg-green-500' :
-                        difficulty === 'medium' ? 'bg-yellow-500' :
-                          difficulty === 'hard' ? 'bg-orange-500' :
-                            difficulty === 'deadly' ? 'bg-red-500' :
-                              'bg-gray-500'
-                    }>
-                      {difficulty === 'easy' ? 'Facile' :
-                        difficulty === 'medium' ? 'Moyen' :
-                          difficulty === 'hard' ? 'Difficile' :
-                            difficulty === 'deadly' ? 'Mortel' :
-                              'Trivial'}
-                    </Badge>
-                    <span className="ml-2 text-muted-foreground text-sm">{adjustedXP} XP ajustés</span>
-                  </div>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button
-                  type="submit"
-                  onClick={handleSaveEncounter}
-                  disabled={isSaving || !encounterName.trim()}
-                >
-                  {isSaving ? (
-                    <>
-                      <span className="animate-spin mr-2">⏳</span>
-                      Sauvegarde...
-                    </>
-                  ) : (
-                    'Sauvegarder'
-                  )}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          </Button>
         </div>
       </div>
 

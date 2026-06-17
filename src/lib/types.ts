@@ -28,8 +28,14 @@ export interface Player {
   cha?: number;
   speed?: string[]; // Vitesse (ex: ["9m", "Vol 18m"])
   initiative?: number; // Modificateur d'initiative
-  dndBeyondId?: string; // ID pour la synchro live
+  dndBeyondId?: string; // ID pour la synchro live D&D Beyond
+  besaceShareCode?: string; // Code de partage pour synchro live depuis Besace
+  syncSource?: 'beyond' | 'besace' | 'none'; // Source de synchronisation
   proficiencies?: string; // Maîtrises et aptitudes (texte libre)
+  avatarUrl?: string; // Avatar du personnage (Besace / custom)
+  tempHp?: number; // PV temporaires
+  subclass?: string; // Sous-classe
+  background?: string; // Historique
 }
 
 export interface Party {
@@ -123,6 +129,7 @@ export interface Encounter {
   round?: number;
   currentTurn?: number;
   isActive?: boolean;
+  combatOver?: boolean;    // Signal quand tous les participants sont morts
   folderId?: string;      // ID du dossier (optionnel)
   createdAt: string;
   updatedAt: string;
@@ -291,13 +298,15 @@ export interface EncounterParticipant {
   actions?: MonsterAction[];
   traits?: MonsterTrait[];
   legendaryActions?: { current: number; max: number };
-  dndBeyondId?: string; // ID pour la synchro live
-  initiativeModifier?: number;
+  dndBeyondId?: string; // ID pour la synchro live D&D Beyond
+  besaceShareCode?: string; // Code de partage pour synchro live depuis Besace
+  syncSource?: 'beyond' | 'besace' | 'none'; // Source de synchronisation
   hasUsedAction?: boolean;
   hasUsedBonusAction?: boolean;
   hasUsedReaction?: boolean;
   remainingMovement?: number;
   image?: string;
+  avatarUrl?: string; // Avatar du personnage (Besace)
   level?: number;
   xp?: number;
   reactions?: MonsterAction[];
@@ -313,7 +322,14 @@ export interface EncounterParticipant {
   challengeRating?: number;
   race?: string;
   class?: string;
+  subclass?: string;
+  background?: string;
   proficiencies?: string;
+  abilityScores?: { str: number; dex: number; con: number; int: number; wis: number; cha: number };
+  abilityModifiers?: { str: number; dex: number; con: number; int: number; wis: number; cha: number };
+  proficiencyBonus?: number;
+  savingThrowProficiencies?: string[];
+  equipmentSummary?: { name: string; type: string; equipped: boolean; attuned: boolean; rarity?: string; acBonus?: number; attackBonus?: number; damageBonus?: number; abilityBonus?: Partial<{ str: number; dex: number; con: number; int: number; wis: number; cha: number }>; saveBonus?: number }[];
 }
 
 export interface Spell {

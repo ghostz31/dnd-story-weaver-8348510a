@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import FilterPanel from '@/components/ui/FilterPanel';
+import QuickFilterBar from '@/components/ui/QuickFilterBar';
 import { Label } from '@/components/ui/label';
 import { useFavorites } from '../hooks/useFavorites';
 import { normalizeForSearch } from '../utils/stringUtils';
@@ -117,12 +118,12 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
 
     const getRarityColor = (rarity: string) => {
         switch (rarity.toLowerCase()) {
-            case 'commun': return 'bg-gray-200 text-gray-800';
-            case 'peu commun': return 'bg-green-100 text-green-800 border-green-200';
-            case 'rare': return 'bg-blue-100 text-blue-800 border-blue-200';
-            case 'très rare': return 'bg-purple-100 text-purple-800 border-purple-200';
-            case 'légendaire': return 'bg-orange-100 text-orange-800 border-orange-200';
-            default: return 'bg-gray-100 text-gray-800';
+            case 'commun': return 'bg-muted text-foreground border-border';
+            case 'peu commun': return 'bg-green-500/10 text-green-700 border-green-500/20';
+            case 'rare': return 'bg-blue-500/10 text-blue-700 border-blue-500/20';
+            case 'très rare': return 'bg-purple-500/10 text-purple-700 border-purple-500/20';
+            case 'légendaire': return 'bg-orange-500/10 text-orange-700 border-orange-500/20';
+            default: return 'bg-muted text-foreground border-border';
         }
     };
 
@@ -179,7 +180,7 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
                         variant={showFavoritesOnly ? "default" : "outline"}
                         size="icon"
                         onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-                        className={`h-11 w-11 md:h-10 md:w-10 flex-shrink-0 ${showFavoritesOnly ? 'bg-yellow-400 hover:bg-yellow-500 text-white border-yellow-500' : 'bg-white/50 text-gray-400'}`}
+                        className={`h-11 w-11 md:h-10 md:w-10 flex-shrink-0 ${showFavoritesOnly ? 'bg-yellow-400 hover:bg-yellow-500 text-white border-yellow-500' : 'bg-white/50 text-muted-foreground/70'}`}
                         title={showFavoritesOnly ? "Voir tous les objets" : "Voir mes favoris"}
                     >
                         <Star className={`h-5 w-5 ${showFavoritesOnly ? 'fill-current' : ''}`} />
@@ -188,61 +189,35 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
 
                 {/* Quick Filters */}
                 <div className="parchment-panel p-2 md:p-3 rounded-xl space-y-3">
-                    {/* Item Type Quick Filters - Horizontal scroll on mobile */}
-                    <div className="space-y-2">
-                        <Label className="text-xs font-cinzel font-bold text-muted-foreground">Type</Label>
-                        <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1 -mb-1">
-                            {[
-                                { label: 'Armes', value: 'Arme' },
-                                { label: 'Armures', value: 'Armure' },
-                                { label: 'Potions', value: 'Potion' },
-                                { label: 'Parchemins', value: 'Parchemin' },
-                                { label: 'Anneaux', value: 'Anneau' },
-                                { label: 'Baguettes', value: 'Baguette' },
-                                { label: 'Bâtons', value: 'Bâton' },
-                                { label: 'Sceptres', value: 'Sceptre' },
-                                { label: 'Merveilleux', value: 'Objet merveilleux' },
-                            ].map(({ label, value }) => (
-                                <Badge
-                                    key={value}
-                                    variant={quickFilterType === value ? 'default' : 'outline'}
-                                    className={`cursor-pointer transition-all whitespace-nowrap flex-shrink-0 touch-target active:scale-95 ${quickFilterType === value
-                                        ? 'bg-primary text-primary-foreground shadow-md'
-                                        : 'bg-white/50 hover:bg-primary/10'
-                                        }`}
-                                    onClick={() => setQuickFilterType(quickFilterType === value ? null : value)}
-                                >
-                                    {label}
-                                </Badge>
-                            ))}
-                        </div>
-                    </div>
+                    <QuickFilterBar
+                        title="Type"
+                        options={[
+                            { label: 'Armes', value: 'Arme' },
+                            { label: 'Armures', value: 'Armure' },
+                            { label: 'Potions', value: 'Potion' },
+                            { label: 'Parchemins', value: 'Parchemin' },
+                            { label: 'Anneaux', value: 'Anneau' },
+                            { label: 'Baguettes', value: 'Baguette' },
+                            { label: 'Bâtons', value: 'Bâton' },
+                            { label: 'Sceptres', value: 'Sceptre' },
+                            { label: 'Merveilleux', value: 'Objet merveilleux' },
+                        ]}
+                        selectedValue={quickFilterType}
+                        onSelect={setQuickFilterType}
+                    />
 
-                    {/* Rarity Quick Filters - Horizontal scroll on mobile */}
-                    <div className="space-y-2">
-                        <Label className="text-xs font-cinzel font-bold text-muted-foreground">Rareté</Label>
-                        <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1 -mb-1">
-                            {[
-                                { label: 'Commun', value: 'commun', color: 'bg-gray-200 text-gray-800' },
-                                { label: 'Peu commun', value: 'peu commun', color: 'bg-green-100 text-green-800' },
-                                { label: 'Rare', value: 'rare', color: 'bg-blue-100 text-blue-800' },
-                                { label: 'Très rare', value: 'très rare', color: 'bg-purple-100 text-purple-800' },
-                                { label: 'Légendaire', value: 'légendaire', color: 'bg-orange-100 text-orange-800' },
-                            ].map(({ label, value, color }) => (
-                                <Badge
-                                    key={value}
-                                    variant="outline"
-                                    className={`cursor-pointer transition-all whitespace-nowrap flex-shrink-0 touch-target active:scale-95 ${quickFilterRarity === value
-                                        ? `${color} shadow-md ring-2 ring-offset-1 ring-current`
-                                        : `${color} opacity-60`
-                                        }`}
-                                    onClick={() => setQuickFilterRarity(quickFilterRarity === value ? null : value)}
-                                >
-                                    {label}
-                                </Badge>
-                            ))}
-                        </div>
-                    </div>
+                    <QuickFilterBar
+                        title="Rareté"
+                        options={[
+                            { label: 'Commun', value: 'commun', color: 'bg-muted text-foreground border-border' },
+                            { label: 'Peu commun', value: 'peu commun', color: 'bg-green-500/10 text-green-700 border-green-500/20' },
+                            { label: 'Rare', value: 'rare', color: 'bg-blue-500/10 text-blue-700 border-blue-500/20' },
+                            { label: 'Très rare', value: 'très rare', color: 'bg-purple-500/10 text-purple-700 border-purple-500/20' },
+                            { label: 'Légendaire', value: 'légendaire', color: 'bg-orange-500/10 text-orange-700 border-orange-500/20' },
+                        ]}
+                        selectedValue={quickFilterRarity}
+                        onSelect={setQuickFilterRarity}
+                    />
                 </div>
 
                 <FilterPanel
@@ -341,7 +316,7 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
                                                 <Button
                                                     size="icon"
                                                     variant="ghost"
-                                                    className={`h-6 w-6 rounded-full ${isFav ? 'text-yellow-400 hover:text-yellow-500' : 'text-gray-300 hover:text-yellow-400 opacity-50 hover:opacity-100'} transition-all`}
+                                                    className={`h-6 w-6 rounded-full ${isFav ? 'text-yellow-400 hover:text-yellow-500' : 'text-muted-foreground/50 hover:text-yellow-400 opacity-50 hover:opacity-100'} transition-all`}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         toggleFavorite(item.id, item.name, 'item');
@@ -399,7 +374,7 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
                                                 e.stopPropagation();
                                                 toggleFavorite(selectedItem.id, selectedItem.name, 'item');
                                             }}
-                                            className={`h-8 w-8 rounded-full ${isFavorite(selectedItem.id, 'item') ? 'text-yellow-400 hover:text-yellow-500' : 'text-gray-400 hover:text-yellow-400'}`}
+                                            className={`h-8 w-8 rounded-full ${isFavorite(selectedItem.id, 'item') ? 'text-yellow-400 hover:text-yellow-500' : 'text-muted-foreground/70 hover:text-yellow-400'}`}
                                             title={isFavorite(selectedItem.id, 'item') ? "Retirer des favoris" : "Ajouter aux favoris"}
                                         >
                                             <Star className={`h-5 w-5 ${isFavorite(selectedItem.id, 'item') ? 'fill-current' : ''}`} />

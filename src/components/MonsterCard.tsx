@@ -4,8 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Shield, Image as ImageIcon, Skull, Zap, Eye, MessagesSquare, ScrollText, Swords } from 'lucide-react';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { getAideDDMonsterSlug } from '../lib/utils';
-import { formatCR } from '../lib/monsterUtils';
+import { formatCR, getMonsterImageUrl, getAideDDMonsterSlug } from '../lib/monsterUtils';
 import { EncounterMonster } from '../lib/types';
 
 // Traduire les tailles
@@ -52,26 +51,6 @@ const monsterTypeImages: { [key: string]: string } = {
   'Plante': '/images/monsters/plant.jpg',
   'Mort-vivant': '/images/monsters/undead.jpg',
   'Vase': '/images/monsters/ooze.jpg'
-};
-
-// Fonction pour obtenir l'URL de l'image du monstre
-const getMonsterImageUrl = (monster: any): string => {
-  // Essayer de trouver une image spécifique par nom
-  const slugName = monster.name.toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/ /g, '-')
-    .replace(/[^a-z0-9-]/g, '');
-
-  // Essayer d'utiliser une image spécifique (si elle existe)
-  const specificImageUrl = `/images/monsters/${slugName}.jpg`;
-
-  // Sinon utiliser une image générique basée sur le type
-  const genericImageUrl = monsterTypeImages[monster.type] || '/images/monsters/unknown.jpg';
-
-  // Si une image spécifique existe, l'utiliser, sinon utiliser l'image générique
-  // Note: ceci est une approximation, en production on vérifierait vraiment si le fichier existe
-  return specificImageUrl;
 };
 
 // Fonction pour formater les points de vie
@@ -318,12 +297,7 @@ export function MonsterCard({ monster, onSelect, isSelected = false }: MonsterCa
   };
 
   // Image handling
-  const getMonsterImageUrl = (monster: any) => {
-    if (monster.imageUrl) return monster.imageUrl;
-    // Fallback logic could be here
-    return '/images/monsters/unknown.jpg';
-  };
-  const imageUrl = getMonsterImageUrl(monster);
+  const imageUrl = getMonsterImageUrl(monster) || '/images/monsters/unknown.jpg';
 
 
   // Formatting names
@@ -373,11 +347,6 @@ export function MonsterCard({ monster, onSelect, isSelected = false }: MonsterCa
     return modifier >= 0 ? `+${modifier}` : `${modifier}`;
   };
 
-  const formatHP = (hp: any) => {
-    if (!hp) return "10";
-    return hp.toString(); // Simple implementation
-  }
-
   return (
     <div className={`parchment-card h-full flex flex-col group relative overflow-hidden rounded-xl ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-transparent' : ''}`}>
       {/* Image de fond avec dégradé */}
@@ -394,7 +363,7 @@ export function MonsterCard({ monster, onSelect, isSelected = false }: MonsterCa
         <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
           <h3 className="text-xl font-bold text-white font-cinzel leading-tight mb-1 truncate">{displayNames.main}</h3>
           {displayNames.sub && (
-            <p className="text-xs text-gray-300 italic truncate">{displayNames.sub}</p>
+            <p className="text-xs text-muted-foreground/50 italic truncate">{displayNames.sub}</p>
           )}
         </div>
 

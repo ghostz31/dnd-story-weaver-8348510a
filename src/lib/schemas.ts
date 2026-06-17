@@ -92,7 +92,16 @@ export const PlayerSchema = z.object({
     cha: z.number().optional(),
     speed: z.array(z.string()).optional(),
     initiative: z.number().optional(),
+    // Synchro
     dndBeyondId: z.string().optional(),
+    besaceShareCode: z.string().optional(),
+    syncSource: z.enum(['beyond', 'besace', 'none']).optional(),
+    proficiencies: z.string().optional(),
+    // Extras
+    avatarUrl: z.string().optional(),
+    tempHp: z.number().optional(),
+    subclass: z.string().optional(),
+    background: z.string().optional(),
 });
 
 export const PartySchema = z.object({

@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Sword, Skull, Plus, Minus, Square, User, Ghost, Link,
-    ArrowDown, Users, EyeOff, Smile, Droplets, Anchor, Clock, Brain, Eye, ShieldX, Zap, Heart
+    Sword, Skull, Plus, Minus, Square, User, Ghost,
+    ArrowDown, Users, EyeOff, Smile, Droplets, Anchor, Clock, Brain, Eye, ShieldX, Zap, Heart, Shield
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { EncounterParticipant } from '@/lib/types';
 import { CONDITIONS, getConditionInfo, extractNumericHP } from '@/lib/EncounterUtils';
 import { getMonsterImageUrl } from '@/lib/monsterUtils';
@@ -68,30 +69,30 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
         const hpPercentage = (participant.currentHp / numericMaxHp) * 100;
 
         if (participant.currentHp <= 0) {
-            return <Badge className="bg-gray-500">Mort</Badge>;
+            return <Badge variant="secondary" className="bg-muted text-muted-foreground">Mort</Badge>;
         } else if (hpPercentage <= 25) {
-            return <Badge className="bg-red-500">Critique</Badge>;
+            return <Badge className="bg-[hsl(var(--status-danger))] text-white">Critique</Badge>;
         } else if (hpPercentage <= 50) {
-            return <Badge className="bg-orange-500">Blessé</Badge>;
+            return <Badge className="bg-[hsl(var(--status-warning))] text-white">Blessé</Badge>;
         } else if (hpPercentage < 100) {
-            return <Badge className="bg-yellow-500">Touché</Badge>;
+            return <Badge className="bg-[hsl(var(--secondary))] text-secondary-foreground">Touché</Badge>;
         } else {
-            return <Badge className="bg-green-500">Indemne</Badge>;
+            return <Badge className="bg-[hsl(var(--status-success))] text-white">Indemne</Badge>;
         }
     };
 
     return (
         <div className="w-full overflow-x-auto pb-2">
-            <Table className="w-full min-w-[800px]">
+            <Table className="w-full min-w-[600px]">
                 <TableHeader>
                     <TableRow>
                         <TableHead className="w-[50px]">Tour</TableHead>
-                        <TableHead className="min-w-[200px]">Nom</TableHead>
+                        <TableHead className="min-w-[180px]">Nom</TableHead>
                         <TableHead className="w-[80px]">Init</TableHead>
                         <TableHead className="w-[60px]">CA</TableHead>
-                        <TableHead className="w-[100px]">PV</TableHead>
-                        <TableHead className="w-[180px]">État</TableHead>
-                        <TableHead className="w-[120px]">Actions</TableHead>
+                        <TableHead className="w-[120px]">PV</TableHead>
+                        <TableHead className="w-[200px] hidden lg:table-cell">État</TableHead>
+                        <TableHead className="w-[100px]">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -111,7 +112,7 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                     className={`
                     border-b transition-colors data-[state=selected]:bg-muted
                     cursor-pointer
-                    ${isCurrentTurn ? 'bg-blue-100 hover:bg-blue-200 border-l-4 border-blue-600 shadow-sm' : 'hover:bg-gray-50'}
+                    ${isCurrentTurn ? 'bg-primary/10 hover:bg-primary/20 border-l-4 border-primary shadow-sm' : 'hover:bg-muted/50'}
                     ${isSelected && !isCurrentTurn ? 'bg-amber-50 border-l-4 border-amber-400' : ''}
                   `}
                                     onClick={() => onSelect(participant.id)}
@@ -126,7 +127,7 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                     <TableCell>
                                         <div className="flex items-center gap-3">
                                             {/* Image ou Icône */}
-                                            <div className="flex-shrink-0 w-[60px] h-[60px] rounded-full overflow-hidden bg-gray-100 border border-gray-200 flex items-center justify-center shadow-sm">
+                                            <div className="flex-shrink-0 w-[60px] h-[60px] rounded-full overflow-hidden bg-muted border border-border flex items-center justify-center shadow-sm">
                                                 {(() => {
                                                     // Déterminer l'URL de l'image
                                                     let imageUrl: string | undefined;
@@ -157,9 +158,9 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                                 />
                                                                 <div className="hidden items-center justify-center w-full h-full">
                                                                     {participant.isPC ? (
-                                                                        <User className="h-6 w-6 text-gray-400" />
+                                                                        <User className="h-6 w-6 text-muted-foreground" />
                                                                     ) : (
-                                                                        <Ghost className="h-6 w-6 text-gray-400" />
+                                                                        <Ghost className="h-6 w-6 text-muted-foreground" />
                                                                     )}
                                                                 </div>
                                                             </>
@@ -170,9 +171,9 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                     return (
                                                         <div className="flex items-center justify-center w-full h-full">
                                                             {participant.isPC ? (
-                                                                <User className="h-6 w-6 text-gray-400" />
+                                                                <User className="h-6 w-6 text-muted-foreground" />
                                                             ) : (
-                                                                <Ghost className="h-6 w-6 text-gray-400" />
+                                                                <Ghost className="h-6 w-6 text-muted-foreground" />
                                                             )}
                                                         </div>
                                                     );
@@ -197,7 +198,7 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                                     size="icon"
                                                                     className={`h-6 w-6 p-0 flex-shrink-0 transition-all duration-300 ${participant.conditions.some(c => (typeof c === 'string' ? c : c.name) === 'Concentré')
                                                                         ? 'text-yellow-600 bg-yellow-100 hover:bg-yellow-200 hover:text-yellow-700 shadow-[0_0_10px_rgba(234,179,8,0.5)] border border-yellow-200'
-                                                                        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'}`}
+                                                                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
                                                                     onClick={(e) => {
                                                                         e.stopPropagation();
                                                                         onToggleCondition(participant.id, 'Concentré');
@@ -215,7 +216,7 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                             </div>
                                         </div>
                                         {participant.notes && (
-                                            <div className="text-xs text-gray-500">{participant.notes}</div>
+                                            <div className="text-xs text-muted-foreground">{participant.notes}</div>
                                         )}
                                     </TableCell>
                                     <TableCell>
@@ -281,52 +282,68 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                 >
                                                     <span className="font-extrabold">{extractNumericHP(participant.currentHp)}</span>/{extractNumericHP(participant.maxHp)}
                                                     {typeof participant.tempHp === 'number' && participant.tempHp > 0 && (
-                                                        <span className="text-xs text-blue-500 ml-1">+{participant.tempHp}</span>
+                                                        <Badge variant="secondary" className="ml-1.5 px-1.5 py-0 text-[10px] font-semibold bg-[hsl(var(--status-info-bg))] text-[hsl(var(--status-info))] border-[hsl(var(--status-info))]/20 hover:bg-[hsl(var(--status-info-bg))]">
+                                                            +{participant.tempHp}
+                                                        </Badge>
                                                     )}
                                                 </div>
                                             </div>
 
                                             {/* Interface de modification rapide */}
                                             {showHpModifier === participant.id && (
-                                                <div className="flex items-center space-x-1 p-1 bg-gray-50 rounded border" onClick={(e) => e.stopPropagation()}>
-                                                    <input
-                                                        type="number"
-                                                        value={hpModifierValue}
-                                                        onChange={(e) => onSetHpModifier(parseInt(e.target.value) || 1)}
-                                                        className="w-12 h-6 text-xs border rounded px-1"
-                                                        min="1"
-                                                        max="100"
-                                                    />
-                                                    <button
-                                                        onClick={() => {
-                                                            onUpdateHp(participant.id, hpModifierValue);
-                                                            onToggleHpModifier(null);
-                                                        }}
-                                                        className="flex items-center justify-center w-6 h-6 bg-green-500 hover:bg-green-600 text-white rounded"
-                                                        title={`Soigner ${hpModifierValue} PV`}
-                                                    >
-                                                        <Plus className="h-3 w-3" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => {
-                                                            onUpdateHp(participant.id, -hpModifierValue);
-                                                            onToggleHpModifier(null);
-                                                        }}
-                                                        className="flex items-center justify-center w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded"
-                                                        title={`Infliger ${hpModifierValue} dégâts`}
-                                                    >
-                                                        <Minus className="h-3 w-3" />
-                                                    </button>
-                                                    {onSetTempHp && (
+                                                <div className="flex flex-col gap-1" onClick={(e) => e.stopPropagation()}>
+                                                    <div className="flex items-center space-x-1 p-1 bg-muted rounded border">
+                                                        <input
+                                                            type="number"
+                                                            value={hpModifierValue}
+                                                            onChange={(e) => onSetHpModifier(parseInt(e.target.value) || 1)}
+                                                            className="w-12 h-6 text-xs border rounded px-1 bg-background"
+                                                            min="1"
+                                                            max="100"
+                                                        />
                                                         <button
                                                             onClick={() => {
-                                                                onSetTempHp(participant.id, hpModifierValue);
+                                                                onUpdateHp(participant.id, hpModifierValue);
                                                                 onToggleHpModifier(null);
                                                             }}
-                                                            className="flex items-center justify-center w-6 h-6 bg-blue-500 hover:bg-blue-600 text-white rounded"
-                                                            title={`Ajouter ${hpModifierValue} PV Temporaires`}
+                                                            className="flex items-center justify-center w-6 h-6 bg-[hsl(var(--status-success))] hover:opacity-90 text-white rounded"
+                                                            title={`Soigner ${hpModifierValue} PV`}
                                                         >
-                                                            <Zap className="h-3 w-3" />
+                                                            <Plus className="h-3 w-3" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => {
+                                                                onUpdateHp(participant.id, -hpModifierValue);
+                                                                onToggleHpModifier(null);
+                                                            }}
+                                                            className="flex items-center justify-center w-6 h-6 bg-[hsl(var(--status-danger))] hover:opacity-90 text-white rounded"
+                                                            title={`Infliger ${hpModifierValue} dégâts`}
+                                                        >
+                                                            <Minus className="h-3 w-3" />
+                                                        </button>
+                                                        {onSetTempHp && (
+                                                            <button
+                                                                onClick={() => {
+                                                                    onSetTempHp(participant.id, hpModifierValue);
+                                                                    onToggleHpModifier(null);
+                                                                }}
+                                                                className="flex items-center justify-center w-6 h-6 bg-[hsl(var(--status-info))] hover:opacity-90 text-white rounded"
+                                                                title={`Ajouter ${hpModifierValue} PV Temporaires`}
+                                                            >
+                                                                <Zap className="h-3 w-3" />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                    {typeof participant.tempHp === 'number' && participant.tempHp > 0 && onSetTempHp && (
+                                                        <button
+                                                            onClick={() => {
+                                                                onSetTempHp(participant.id, 0);
+                                                                onToggleHpModifier(null);
+                                                            }}
+                                                            className="flex items-center justify-center gap-1 w-full py-0.5 text-[10px] rounded bg-muted-foreground/10 text-muted-foreground hover:bg-muted-foreground/20 transition-colors"
+                                                            title="Retirer tous les PV temporaires"
+                                                        >
+                                                            <ShieldX className="h-3 w-3" /> Retirer {participant.tempHp} PV temp.
                                                         </button>
                                                     )}
                                                 </div>
@@ -334,8 +351,8 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                             
                                             {/* Boutons d'action de groupe pour les monstres multiples */}
                                             {showHpModifier === participant.id && !participant.isPC && onUpdateHpBatch && (
-                                                <div className="flex flex-col mt-1 bg-gray-50 border rounded p-1 text-xs">
-                                                    <span className="font-semibold text-gray-500 mb-1">Actions de groupe ({participants.filter(p => !p.isPC && p.id.substring(0, p.id.lastIndexOf('-')) === participant.id.substring(0, participant.id.lastIndexOf('-'))).length} cibles)</span>
+                                                <div className="flex flex-col mt-1 bg-muted border rounded p-1 text-xs">
+                                                    <span className="font-semibold text-muted-foreground mb-1">Actions de groupe ({participants.filter(p => !p.isPC && p.id.substring(0, p.id.lastIndexOf('-')) === participant.id.substring(0, participant.id.lastIndexOf('-'))).length} cibles)</span>
                                                     <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
                                                         <button
                                                             onClick={() => {
@@ -344,7 +361,7 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                                 onUpdateHpBatch(groupIds, hpModifierValue);
                                                                 onToggleHpModifier(null);
                                                             }}
-                                                            className="flex-1 flex items-center justify-center gap-1 bg-green-500 hover:bg-green-600 text-white rounded px-2 py-1"
+                                                            className="flex-1 flex items-center justify-center gap-1 bg-[hsl(var(--status-success))] hover:opacity-90 text-white rounded px-2 py-1"
                                                             title={`Soigner tout le groupe de ${hpModifierValue} PV`}
                                                         >
                                                             <Users className="h-3 w-3" /> <Plus className="h-3 w-3" />
@@ -356,7 +373,7 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                                 onUpdateHpBatch(groupIds, -hpModifierValue);
                                                                 onToggleHpModifier(null);
                                                             }}
-                                                            className="flex-1 flex items-center justify-center gap-1 bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1"
+                                                            className="flex-1 flex items-center justify-center gap-1 bg-[hsl(var(--status-danger))] hover:opacity-90 text-white rounded px-2 py-1"
                                                             title={`Infliger ${hpModifierValue} dégâts à tout le groupe`}
                                                         >
                                                             <Users className="h-3 w-3" /> <Minus className="h-3 w-3" />
@@ -373,7 +390,7 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                             />
                                         </div>
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell className="hidden lg:table-cell">
                                         <div className="flex flex-col gap-1 min-w-[180px]">
                                             {/* Badge de statut */}
                                             <div className="flex justify-start">
@@ -388,11 +405,10 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                         const conditionInfo = getConditionInfo(conditionName);
                                                         const IconComponent = conditionInfo.icon;
                                                         return (
-                                                            <TooltipProvider>
+                                                            <TooltipProvider key={typeof condition === 'string' ? condition : condition.id}>
                                                                 <Tooltip>
                                                                     <TooltipTrigger asChild>
                                                                         <Badge
-                                                                            key={typeof condition === 'string' ? condition : condition.id}
                                                                             variant="outline"
                                                                             className={`cursor-pointer text-xs flex items-center gap-1 ${conditionInfo.color} hover:opacity-75`}
                                                                             onClick={(e) => {
@@ -403,7 +419,7 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                                             <IconComponent className="h-3 w-3" />
                                                                             {conditionName}
                                                                             {typeof condition !== 'string' && condition.duration > 0 && (
-                                                                                <span className="ml-1 text-[10px] bg-gray-200 px-1 rounded">{condition.duration}</span>
+                                                                                <span className="ml-1 text-[10px] bg-gray-200 dark:bg-gray-700 px-1 rounded">{condition.duration}</span>
                                                                             )}
                                                                         </Badge>
                                                                     </TooltipTrigger>
@@ -418,46 +434,79 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                 </div>
                                             )}
 
-                                            {/* Menu déroulant pour ajouter de nouvelles conditions */}
-                                            <div className="w-full" onClick={(e) => e.stopPropagation()}>
-                                                <select
-                                                    className="w-full h-6 text-xs border rounded px-1 bg-white"
-                                                    onChange={(e) => {
-                                                        if (e.target.value) {
-                                                            onToggleCondition(participant.id, e.target.value);
-                                                            e.target.value = '';
-                                                        }
-                                                    }}
-                                                    defaultValue=""
-                                                >
-                                                    <option value="" disabled>+ Ajouter condition</option>
-                                                    {CONDITIONS.filter(conditionName => !participant.conditions.some(c => (typeof c === 'string' ? c : c.name) === conditionName)).map(condition => {
-                                                        return (
-                                                            <option key={condition} value={condition}>
-                                                                {condition}
-                                                            </option>
-                                                        );
-                                                    })}
-                                                </select>
+                                            {/* Popover grid pour ajouter/supprimer conditions */}
+                                            <div onClick={(e) => e.stopPropagation()}>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <Button variant="ghost" size="sm" className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground">
+                                                            + Conditions
+                                                        </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-64 p-2">
+                                                        <div className="text-xs font-bold mb-2 text-muted-foreground">Gérer les conditions</div>
+                                                        <div className="grid grid-cols-2 gap-1">
+                                                            {CONDITIONS.map(conditionName => {
+                                                                const isActive = participant.conditions.some(c => (typeof c === 'string' ? c : c.name) === conditionName);
+                                                                const info = getConditionInfo(conditionName);
+                                                                const Icon = info.icon;
+                                                                return (
+                                                                    <button
+                                                                        key={conditionName}
+                                                                        onClick={() => onToggleCondition(participant.id, conditionName)}
+                                                                        className={`flex items-center gap-1.5 px-2 py-1.5 rounded text-xs transition-colors ${isActive ? 'bg-primary/10 text-primary font-medium' : 'hover:bg-muted text-muted-foreground'}`}
+                                                                    >
+                                                                        <Icon className="h-3 w-3" />
+                                                                        {conditionName}
+                                                                    </button>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </PopoverContent>
+                                                </Popover>
                                             </div>
                                         </div>
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center space-x-0.5">
-                                            {!participant.isPC && (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="h-6 w-6 p-0"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        onOpenCreatureFrame(participant.id);
-                                                    }}
-                                                    title="Voir la page AideDD"
-                                                >
-                                                    <Link className="h-3 w-3" />
-                                                </Button>
-                                            )}
+                                            {/* Bouton conditions - visible sur petits écrans */}
+                                            <div className="lg:hidden" onClick={(e) => e.stopPropagation()}>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="h-6 w-6 p-0 relative"
+                                                            title="Conditions"
+                                                        >
+                                                            <ShieldX className="h-3 w-3" />
+                                                            {participant.conditions.length > 0 && (
+                                                                <span className="absolute -top-0.5 -right-0.5 h-2 w-2 bg-primary rounded-full" />
+                                                            )}
+                                                        </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-64 p-2">
+                                                        <div className="text-xs font-bold mb-2 text-muted-foreground">Conditions</div>
+                                                        <div className="grid grid-cols-2 gap-1">
+                                                            {CONDITIONS.map(conditionName => {
+                                                                const isActive = participant.conditions.some(c => (typeof c === 'string' ? c : c.name) === conditionName);
+                                                                const info = getConditionInfo(conditionName);
+                                                                const Icon = info.icon;
+                                                                return (
+                                                                    <button
+                                                                        key={conditionName}
+                                                                        onClick={() => onToggleCondition(participant.id, conditionName)}
+                                                                        className={`flex items-center gap-1.5 px-2 py-1.5 rounded text-xs transition-colors ${isActive ? 'bg-primary/10 text-primary font-medium' : 'hover:bg-muted text-muted-foreground'}`}
+                                                                    >
+                                                                        <Icon className="h-3 w-3" />
+                                                                        {conditionName}
+                                                                    </button>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </PopoverContent>
+                                                </Popover>
+                                            </div>
+
                                             <Button
                                                 variant="ghost"
                                                 size="sm"

@@ -69,6 +69,15 @@ service cloud.firestore {
       );
     }
 
+    // === Personnages partagés depuis Besace (Lecture publique authentifiée) ===
+    // Permet au MJ sur Trame de lire et d'envoyer des commandes en temps réel
+    match /shared_characters/{shareCode} {
+      allow read: if isAuthenticated();
+      // Écriture par Trame (envoi de commandes) et Besace (mise à jour du combat state)
+      allow create, update: if isAuthenticated();
+      allow delete: if isAuthenticated();
+    }
+
     // === Bloquer tout accès par défaut ===
     match /{document=**} {
       allow read, write: if false;

@@ -29,12 +29,12 @@ const CombatLog: React.FC<CombatLogProps> = ({ logs, className = "" }) => {
 
     const getIcon = (type: CombatLogEntry['type']) => {
         switch (type) {
-            case 'damage': return <Sword className="h-4 w-4 text-red-500" />;
+            case 'damage': return <Sword className="h-4 w-4 text-destructive/80" />;
             case 'heal': return <Heart className="h-4 w-4 text-green-500" />;
-            case 'death-save': return <Skull className="h-4 w-4 text-gray-800" />;
-            case 'turn': return <Clock className="h-4 w-4 text-blue-500" />;
+            case 'death-save': return <Skull className="h-4 w-4 text-foreground" />;
+            case 'turn': return <Clock className="h-4 w-4 text-primary/80" />;
             case 'condition': return <Activity className="h-4 w-4 text-orange-500" />;
-            default: return <AlertCircle className="h-4 w-4 text-gray-400" />;
+            default: return <AlertCircle className="h-4 w-4 text-muted-foreground/70" />;
         }
     };
 

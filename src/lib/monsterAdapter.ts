@@ -320,15 +320,3 @@ function translateSkill(skill: string): string {
   return skillTranslation[skill.toLowerCase()] || skill;
 }
 
-/**
- * Génère un slug pour l'URL AideDD à partir du nom du monstre
- * @param name Le nom du monstre
- * @returns Le slug pour l'URL
- */
-function getAideDDMonsterSlug(name: string): string {
-  return name.toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Enlever les accents
-    .replace(/ /g, '-')              // Remplacer les espaces par des tirets
-    .replace(/[^a-z0-9-]/g, '');     // Supprimer les caractères non alphanumériques
-} 

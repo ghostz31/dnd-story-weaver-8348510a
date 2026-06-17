@@ -17,7 +17,8 @@ export const useDnDBeyondLive = ({ participants, onUpdateHp, enabled }: UseDnDBe
         if (!enabled) return;
 
         // Filtrer les participants qui ont un ID D&D Beyond et ne sont PAS des monstres (pour l'instant que les joueurs)
-        const trackedParticipants = participants.filter(p => p.dndBeyondId && p.isPC);
+        // Seulement les participants avec syncSource 'beyond' ou sans syncSource (rétro-compatibilité)
+        const trackedParticipants = participants.filter(p => p.dndBeyondId && p.isPC && (!p.syncSource || p.syncSource === 'beyond'));
 
         if (trackedParticipants.length === 0) return;
 
@@ -51,7 +52,7 @@ export const useDnDBeyondLive = ({ participants, onUpdateHp, enabled }: UseDnDBe
                                 data = jsonData.data || jsonData;
                             }
                         } catch (e) {
-                            console.error(`[Sync] Echec total pour ${p.name}`, e);
+                            console.error(`[Sync] Échec total pour ${p.name}`, e);
                         }
                     }
 
@@ -59,77 +60,37 @@ export const useDnDBeyondLive = ({ participants, onUpdateHp, enabled }: UseDnDBe
 
                     const char = data;
 
-                    // --- Extraction Stats ---
-                    const stats = char.stats || [];
-                    const bonusStats = char.bonusStats || [];
-                    const overrideStats = char.overrideStats || [];
-
-                    const getStatValue = (index: number) => {
-                        if (overrideStats[index] && overrideStats[index].value) return overrideStats[index].value;
-                        return (stats[index]?.value || 10) + (bonusStats[index]?.value || 0);
-                    };
-
-                    const str = getStatValue(0);
-                    const dex = getStatValue(1);
-                    const con = getStatValue(2);
-                    const int = getStatValue(3);
-                    const wis = getStatValue(4);
-                    const cha = getStatValue(5);
-
-                    const conMod = Math.floor((con - 10) / 2);
-
-                    // --- Calcul PV ---
-                    let level = 0;
-                    if (char.classes) {
-                        level = char.classes.reduce((acc: number, cls: any) => acc + (cls.level || 0), 0);
-                    }
-
-                    let maxHp = 0;
-                    let currentHp = 0;
-                    if (char.overrideHitPoints) {
-                        maxHp = char.overrideHitPoints;
-                    } else {
-                        const base = char.baseHitPoints || 10;
-                        const bonus = char.bonusHitPoints || 0;
-                        maxHp = base + bonus + (conMod * level);
-                    }
-
-                    const removed = char.removedHitPoints || 0;
-                    currentHp = maxHp - removed;
-
-                    if (maxHp <= 0 && char.hitPoints) maxHp = char.hitPoints;
-                    if (currentHp <= 0 && char.currentHitPoints) currentHp = char.currentHitPoints;
-
-                    // --- Calcul CA (Nouveau) ---
-                    const newAc = calculateDndBeyondAC(char, { dex, con, wis });
+                    const extracted = extractCharacterFromBeyond(data, p.dndBeyondId);
 
                     // --- Vérification et Update ---
                     const updates: Partial<EncounterParticipant> = {};
                     let hasChanges = false;
                     const changeLog: string[] = [];
 
-                    if (currentHp !== p.currentHp || (maxHp !== p.maxHp && maxHp > 0)) {
-                        updates.currentHp = currentHp;
-                        updates.maxHp = maxHp;
+                    if (extracted.currentHp !== p.currentHp || (extracted.maxHp !== p.maxHp && extracted.maxHp > 0)) {
+                        updates.currentHp = extracted.currentHp;
+                        updates.maxHp = extracted.maxHp;
                         hasChanges = true;
-                        changeLog.push(`PV: ${currentHp}/${maxHp}`);
+                        changeLog.push(`PV: ${extracted.currentHp}/${extracted.maxHp}`);
                     }
 
                     // CA Update
                     // On ne met à jour que si différent et non nul
-                    if (newAc && newAc !== p.ac) {
-                        updates.ac = newAc;
+                    if (extracted.ac && extracted.ac !== p.ac) {
+                        updates.ac = extracted.ac;
                         hasChanges = true;
-                        changeLog.push(`CA: ${newAc}`);
+                        changeLog.push(`CA: ${extracted.ac}`);
                     }
 
                     // Si stats changent significativement (Optionnel, peut être lourd)
                     // On le fait car ça impacte les jets
-                    if (dex !== p.dex || con !== p.con) { // Juste exemples
-                        updates.str = str; updates.dex = dex; updates.con = con;
-                        updates.int = int; updates.wis = wis; updates.cha = cha;
+                    if (extracted.dex !== p.dex || extracted.con !== p.con) { 
+                        updates.str = extracted.str; updates.dex = extracted.dex; updates.con = extracted.con;
+                        updates.int = extracted.int; updates.wis = extracted.wis; updates.cha = extracted.cha;
                         hasChanges = true;
                     }
+
+
 
                     if (hasChanges) {
                         console.log(`Live Sync Update pour ${p.name}:`, changeLog);

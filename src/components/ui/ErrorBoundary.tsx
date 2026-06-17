@@ -38,19 +38,19 @@ class ErrorBoundary extends Component<Props, State> {
         if (this.state.hasError) {
             return (
                 <div className="flex items-center justify-center min-h-[50vh] p-4">
-                    <Card className="w-full max-w-md border-red-200 bg-red-50/50 backdrop-blur-sm shadow-xl">
+                    <Card className="w-full max-w-md border-destructive/20 bg-destructive/5 backdrop-blur-sm shadow-xl">
                         <CardHeader className="text-center">
-                            <div className="mx-auto mb-4 bg-red-100 p-3 rounded-full w-fit">
-                                <AlertTriangle className="h-8 w-8 text-red-600" />
+                            <div className="mx-auto mb-4 bg-destructive/10 p-3 rounded-full w-fit">
+                                <AlertTriangle className="h-8 w-8 text-destructive" />
                             </div>
-                            <CardTitle className="text-2xl text-red-800">Oops, une erreur est survenue !</CardTitle>
+                            <CardTitle className="text-2xl text-destructive">Oops, une erreur est survenue !</CardTitle>
                         </CardHeader>
                         <CardContent className="text-center space-y-4">
-                            <p className="text-gray-600">
+                            <p className="text-muted-foreground/90">
                                 L'application a rencontré un problème inattendu. Nous avons enregistré l'erreur.
                             </p>
                             {this.state.error && (
-                                <div className="bg-white/50 p-2 rounded text-xs font-mono text-red-500 overflow-auto max-h-32 text-left">
+                                <div className="bg-white/50 p-2 rounded text-xs font-mono text-destructive/80 overflow-auto max-h-32 text-left">
                                     {this.state.error.message}
                                 </div>
                             )}

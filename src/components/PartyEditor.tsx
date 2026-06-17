@@ -8,10 +8,11 @@ import { Textarea } from '../components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Alert, AlertDescription } from '../components/ui/alert';
+import { Badge } from '../components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { toast } from '../hooks/use-toast';
-import { Users, UserPlus, Trash2, Edit, Plus, Sword, AlertCircle, Save } from 'lucide-react';
+import { Users, UserPlus, Trash2, Edit, Plus, Sword, AlertCircle, Save, Check, Loader2 } from 'lucide-react';
 import {
   getParties,
   createParty,
@@ -23,33 +24,18 @@ import {
   canCreateParty,
   subscribeToParties
 } from '../lib/firebaseApi';
+import { db } from '../firebase/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import { Party, Player } from '../lib/types';
 
 import { useAuth } from '../auth/AuthContext';
-import { calculateDndBeyondAC } from '../lib/dndBeyondUtils';
+import { extractCharacterFromBeyond } from '../lib/dndBeyondUtils';
 
 // Classes de personnages D&D
 const CHARACTER_CLASSES = [
   'Barbare', 'Barde', 'Clerc', 'Druide', 'Ensorceleur', 'Guerrier',
   'Magicien', 'Moine', 'Occultiste', 'Paladin', 'Rôdeur', 'Roublard'
 ];
-
-// Correspondance entre les classes D&D Beyond (anglais) et françaises
-const CLASS_MAPPING: Record<string, string> = {
-  'Artificer': 'Artificier',
-  'Barbarian': 'Barbare',
-  'Bard': 'Barde',
-  'Cleric': 'Clerc',
-  'Druid': 'Druide',
-  'Fighter': 'Guerrier',
-  'Monk': 'Moine',
-  'Paladin': 'Paladin',
-  'Ranger': 'Rôdeur',
-  'Rogue': 'Roublard',
-  'Sorcerer': 'Ensorceleur',
-  'Warlock': 'Occultiste',
-  'Wizard': 'Magicien'
-};
 
 const PartyEditor: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -74,7 +60,9 @@ const PartyEditor: React.FC = () => {
     ac: 10,
     maxHp: 10,
     currentHp: 10,
-    dndBeyondId: '',
+dndBeyondId: '',
+    besaceShareCode: '',
+    syncSource: 'none' as const,
     str: 10,
     dex: 10,
     con: 10,
@@ -89,6 +77,52 @@ const PartyEditor: React.FC = () => {
   // État pour l'import D&D Beyond
   const [dndBeyondUrl, setDndBeyondUrl] = useState('');
   const [isImporting, setIsImporting] = useState(false);
+
+  // État pour la validation Besace
+  const [besaceCheckStatus, setBesaceCheckStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle');
+  const [besaceCheckError, setBesaceCheckError] = useState<string | null>(null);
+
+  const checkBesaceCode = async (code: string) => {
+    if (!code) return;
+    setBesaceCheckStatus('checking');
+    setBesaceCheckError(null);
+    try {
+      const docRef = doc(db, 'shared_characters', code);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists() && docSnap.data().active !== false) {
+        setBesaceCheckStatus('valid');
+        const data = docSnap.data();
+        
+        // Mettre à jour le formulaire avec les données de base de Besace
+        setNewPlayer(prev => ({
+          ...prev,
+          besaceShareCode: code,
+          syncSource: 'besace',
+          name: data.characterName || prev.name || '',
+          race: data.race || prev.race || '',
+          characterClass: data.className || prev.characterClass,
+          level: data.level || prev.level,
+          ac: data.ac || prev.ac,
+          maxHp: data.maxHp || prev.maxHp,
+          currentHp: data.currentHp || prev.currentHp,
+          avatarUrl: data.avatarUrl || prev.avatarUrl,
+        }));
+        
+        toast({
+          title: "Code Besace valide !",
+          description: `Connecté pour ${data.characterName || 'le personnage'}.`,
+          variant: "default"
+        });
+      } else {
+        setBesaceCheckStatus('invalid');
+        setBesaceCheckError("Code introuvable ou personnage inactif.");
+      }
+    } catch (e: any) {
+      console.error('Erreur getDoc Besace:', e);
+      setBesaceCheckStatus('invalid');
+      setBesaceCheckError(`Erreur technique: ${e.message || "Vérification impossible."}`);
+    }
+  };
 
   // Fonction de fallback pour extraire les données depuis le HTML de la page
   const tryHtmlScraping = async (url: string) => {
@@ -187,173 +221,38 @@ const PartyEditor: React.FC = () => {
       const characterData = await response.json();
       console.log('Données récupérées avec succès');
 
-      // Extraire les informations pertinentes
-      const character = characterData.data || characterData;
+      // Utiliser l'utilitaire centralisé pour extraire les données
+      const extracted = extractCharacterFromBeyond(characterData, characterId);
 
-      if (!character) {
-        throw new Error('Données du personnage non trouvées dans la réponse');
-      }
-
-      // 1. Extraire le nom
-      const name = character.name || 'Personnage';
-
-      // 2. Extraire la race
-      const race = character.race?.fullName || character.race?.baseName || '';
-
-      // 3. Extraire la classe et le niveau
-      let characterClass = 'Guerrier';
-      let level = 1;
-
-      if (character.classes && character.classes.length > 0) {
-        const primaryClass = character.classes[0];
-        const englishClassName = primaryClass.definition?.name || 'Fighter';
-        characterClass = CLASS_MAPPING[englishClassName] || englishClassName;
-        level = primaryClass.level || 1;
-
-        // Ajouter les niveaux des autres classes si multiclassage
-        for (let i = 1; i < character.classes.length; i++) {
-          level += character.classes[i].level || 0;
-        }
-      }
-
-      // 4. Extraire les caractéristiques (Base + Bonus + Modificateurs)
-      const stats = character.stats || [];
-      const bonusStats = character.bonusStats || [];
-      const overrideStats = character.overrideStats || [];
-
-      // Ordre D&D Beyond: STR(0), DEX(1), CON(2), INT(3), WIS(4), CHA(5)
-      const getStatValue = (index: number) => {
-        // Vérifier si une valeur de surcharge existe
-        if (overrideStats[index] && overrideStats[index].value) {
-          return overrideStats[index].value;
-        }
-
-        // Sinon: Base + Bonus
-        const base = (stats[index]?.value || 10);
-        const bonus = (bonusStats[index]?.value || 0);
-        return base + bonus;
-      };
-
-      const str = getStatValue(0);
-      const dex = getStatValue(1);
-      const con = getStatValue(2);
-      const int = getStatValue(3);
-      const wis = getStatValue(4);
-      const cha = getStatValue(5);
-
-      // 5. Extraire les PV
-      let maxHp = 10;
-      let currentHp = 10;
-
-      if (character.baseHitPoints) {
-        // Calcul un peu plus complexe pour les PV réels (Base + CON mod * Level + autres bonus)
-        // Pour simplifier, on prend ce qui est fourni ou une estimation
-        const conMod = Math.floor((con - 10) / 2);
-        maxHp = (character.baseHitPoints || 10) + (character.bonusHitPoints || 0) + (conMod * level);
-
-        // Vérifier si une surcharge de PV existe
-        if (character.overrideHitPoints) {
-          maxHp = character.overrideHitPoints;
-        }
-
-        currentHp = maxHp - (character.removedHitPoints || 0);
-      }
-      // Fallback sur d'autres champs si le calcul standard échoue
-      else if (character.hitPoints) {
-        maxHp = character.hitPoints;
-        currentHp = character.currentHitPoints || maxHp;
-      }
-
-      // 6. Extraire la CA avec la nouvelle utilitaire
-      const ac = calculateDndBeyondAC(character, { dex, con, wis });
-
-      // 7. Extraire la vitesse
-      const speedList: string[] = [];
-      if (character.race?.weightSpeeds?.normal?.walk) {
-        speedList.push(`${character.race.weightSpeeds.normal.walk} ft`);
-      }
-
-      // 8. Extraire l'initiative
-      const dexMod = Math.floor((dex - 10) / 2);
-      let initiative = dexMod;
-
-      if (character.modifiers?.race) {
-        character.modifiers.race.forEach((mod: any) => {
-          if (mod.subType === "initiative") initiative += mod.value;
-        });
-      }
-      if (character.modifiers?.class) {
-        character.modifiers.class.forEach((mod: any) => {
-          if (mod.subType === "initiative") initiative += mod.value;
-        });
-      }
-      if (character.modifiers?.feat) {
-        character.modifiers.feat.forEach((mod: any) => {
-          if (mod.subType === "initiative") initiative += mod.value;
-        });
-      }
-
-      // 9. Extraire les Maîtrises (Armures, Armes, Outils, Langues)
-      const proficienciesList: { type: string, name: string }[] = [];
-      const languagesList: string[] = [];
-
-      const processModifiers = (modifiers: any[]) => {
-        if (!modifiers) return;
-        modifiers.forEach((mod: any) => {
-          if (mod.type === "proficiency") {
-            proficienciesList.push({ type: mod.subType, name: mod.friendlySubtypeName });
-          } else if (mod.type === "language") {
-            languagesList.push(mod.friendlySubtypeName);
-          }
-        });
-      };
-
-      // Parcourir toutes les sources de modification
-      const modKeys = ['race', 'class', 'background', 'feat', 'item'];
-      modKeys.forEach(key => {
-        if (character.modifiers && character.modifiers[key]) {
-          processModifiers(character.modifiers[key]);
-        }
-      });
-
-      // Organiser les maîtrises
-      const armorProfs = proficienciesList.filter(p => p.type.includes('armor')).map(p => p.name).join(', ');
-      const weaponProfs = proficienciesList.filter(p => p.type.includes('weapon')).map(p => p.name).join(', ');
-      const toolProfs = proficienciesList.filter(p => p.type.includes('tool') || p.type.includes('kit') || p.type.includes('supplies')).map(p => p.name).join(', ');
-
-      let proficienciesText = "";
-      if (armorProfs) proficienciesText += `**Armures:** ${armorProfs}\n`;
-      if (weaponProfs) proficienciesText += `**Armes:** ${weaponProfs}\n`;
-      if (toolProfs) proficienciesText += `**Outils:** ${toolProfs}\n`;
-      if (languagesList.length > 0) proficienciesText += `**Langues:** ${languagesList.join(', ')}\n`;
-
-      console.log('Stats extraites:', { str, dex, con, int, wis, cha, ac, maxHp, proficiencies: proficienciesText });
+      console.log('Stats extraites:', extracted);
 
       // Mettre à jour le formulaire avec les données extraites
-      setNewPlayer({
-        name: name,
-        level: level,
-        characterClass: characterClass,
-        race: race,
-        ac: ac,
-        maxHp: maxHp,
-        currentHp: currentHp,
-        // Nouveaux champs
-        str: str,
-        dex: dex,
-        con: con,
-        int: int,
-        wis: wis,
-        cha: cha,
-        speed: speedList,
-        initiative: initiative,
+      setNewPlayer(prev => ({
+        ...prev,
+        name: extracted.name,
+        level: extracted.level,
+        characterClass: extracted.characterClass,
+        race: extracted.race,
+        ac: extracted.ac,
+        maxHp: extracted.maxHp,
+        currentHp: extracted.currentHp,
+        str: extracted.str,
+        dex: extracted.dex,
+        con: extracted.con,
+        int: extracted.int,
+        wis: extracted.wis,
+        cha: extracted.cha,
+        speed: extracted.speed,
+        initiative: extracted.initiative,
         dndBeyondId: characterId,
-        proficiencies: proficienciesText
-      });
+        syncSource: 'beyond' as const,
+        proficiencies: extracted.proficiencies,
+        subclass: extracted.subclass,
+      }));
 
       toast({
         title: "Import réussi !",
-        description: `Importé: ${name} (Niv ${level} ${characterClass}) - STR:${str} DEX:${dex}`,
+        description: `Importé: ${extracted.name} (Niv ${extracted.level} ${extracted.characterClass}) - STR:${extracted.str} DEX:${extracted.dex}`,
         variant: "default"
       });
 
@@ -488,7 +387,7 @@ const PartyEditor: React.FC = () => {
 
   // Gestion de la suppression d'un groupe
   const handleDeleteParty = async (partyId: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce groupe?')) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce groupe ?')) {
       return;
     }
 
@@ -563,9 +462,15 @@ const PartyEditor: React.FC = () => {
         name: '',
         level: 1,
         characterClass: 'Guerrier',
+        race: '',
         ac: 10,
         maxHp: 10,
-        currentHp: 10
+        currentHp: 10,
+        dndBeyondId: '',
+        besaceShareCode: '',
+        syncSource: 'none' as const,
+        str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10,
+        proficiencies: '',
       });
       setIsPlayerDialogOpen(false);
     }
@@ -618,9 +523,15 @@ const PartyEditor: React.FC = () => {
         name: '',
         level: 1,
         characterClass: 'Guerrier',
+        race: '',
         ac: 10,
         maxHp: 10,
-        currentHp: 10
+        currentHp: 10,
+        dndBeyondId: '',
+        besaceShareCode: '',
+        syncSource: 'none' as const,
+        str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10,
+        proficiencies: '',
       });
       setIsEditingPlayer(false);
       setEditingPlayerId(null);
@@ -632,7 +543,7 @@ const PartyEditor: React.FC = () => {
   const handleRemovePlayer = async (playerId: string) => {
     if (!selectedParty) return;
 
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce personnage?')) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce personnage ?')) {
       return;
     }
 
@@ -670,6 +581,7 @@ const PartyEditor: React.FC = () => {
       name: player.name,
       level: player.level,
       characterClass: player.characterClass,
+      race: player.race,
       ac: player.ac,
       maxHp: player.maxHp,
       currentHp: player.currentHp,
@@ -680,11 +592,22 @@ const PartyEditor: React.FC = () => {
       int: player.int || 10,
       wis: player.wis || 10,
       cha: player.cha || 10,
-      proficiencies: player.proficiencies || ''
+      proficiencies: player.proficiencies || '',
+      besaceShareCode: player.besaceShareCode || '',
+      syncSource: player.syncSource || (player.dndBeyondId ? 'beyond' : player.besaceShareCode ? 'besace' : 'none'),
+      speed: player.speed,
+      initiative: player.initiative,
+      avatarUrl: player.avatarUrl,
+      subclass: player.subclass,
+      background: player.background,
     });
     setEditingPlayerId(player.id);
     setIsEditingPlayer(true);
     setIsPlayerDialogOpen(true);
+    // Pré-remplir l'URL Beyond pour faciliter le re-import
+    if (player.dndBeyondId) {
+      setDndBeyondUrl(`https://www.dndbeyond.com/characters/${player.dndBeyondId}`);
+    }
   };
 
   // Ouvrir le dialogue d'édition de groupe
@@ -717,8 +640,8 @@ const PartyEditor: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center py-10">
-          <Users className="h-16 w-16 text-gray-300 mb-4" />
-          <p className="text-center text-gray-500 mb-4">
+          <Users className="h-16 w-16 text-muted-foreground/50 mb-4" />
+          <p className="text-center text-muted-foreground mb-4">
             Vous devez être connecté pour accéder à cette fonctionnalité
           </p>
           <Button variant="default" asChild>
@@ -846,7 +769,7 @@ const PartyEditor: React.FC = () => {
                     <div className="min-w-0">
                       <h3 className="text-base md:text-lg font-semibold flex items-center truncate">
                         {selectedParty.name}
-                        <span className="ml-2 text-xs md:text-sm font-normal text-gray-500">
+                        <span className="ml-2 text-xs md:text-sm font-normal text-muted-foreground">
                           (Niv. moy: {calculateAverageLevel(selectedParty)})
                         </span>
                       </h3>
@@ -864,7 +787,7 @@ const PartyEditor: React.FC = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="text-red-500 hover:text-red-700 touch-target"
+                        className="text-destructive/80 hover:text-destructive/90 touch-target"
                         onClick={() => handleDeleteParty(selectedParty.id)}
                       >
                         <Trash2 className="h-4 w-4 sm:mr-1" />
@@ -926,56 +849,138 @@ const PartyEditor: React.FC = () => {
                                 </TabsList>
 
                                 <TabsContent value="general" className="space-y-4 pt-4">
-                                  {/* Section D&D Beyond Import */}
-                                  {!isEditingPlayer && (
-                                    <div className="space-y-2 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                      <Label htmlFor="dndBeyondUrl" className="text-blue-800 font-semibold">
-                                        Import depuis D&D Beyond (optionnel)
-                                      </Label>
-                                      <div className="flex gap-2">
-                                        <Input
-                                          id="dndBeyondUrl"
-                                          placeholder="https://www.dndbeyond.com/characters/92791713"
-                                          value={dndBeyondUrl}
-                                          onChange={(e) => setDndBeyondUrl(e.target.value)}
-                                          className="flex-1"
-                                        />
-                                        <Button
-                                          type="button"
-                                          onClick={() => importFromDndBeyond(dndBeyondUrl)}
-                                          disabled={!dndBeyondUrl || isImporting}
-                                          className="bg-blue-600 hover:bg-blue-700"
-                                        >
-                                          {isImporting ? (
-                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                          ) : (
-                                            'Importer'
-                                          )}
-                                        </Button>
-                                        <Button
-                                          type="button"
-                                          variant="outline"
-                                          onClick={() => {
-                                            if (dndBeyondUrl) {
-                                              window.open(dndBeyondUrl, '_blank');
-                                              toast({
-                                                title: "Page ouverte",
-                                                description: "Copiez manuellement les informations depuis D&D Beyond dans les champs ci-dessous.",
-                                                variant: "default"
-                                              });
-                                            }
-                                          }}
-                                          disabled={!dndBeyondUrl}
-                                          className="border-blue-300 text-blue-600 hover:bg-blue-50"
-                                        >
-                                          Ouvrir
-                                        </Button>
-                                      </div>
-                                      <p className="text-xs text-blue-600">
-                                        Collez l'URL de votre personnage D&D Beyond pour remplir automatiquement les champs
-                                      </p>
+                                  <div className="space-y-4">
+                                    <Label className="text-base font-semibold">Source du personnage</Label>
+                                    <div className="flex gap-2">
+                                      <Button 
+                                        type="button"
+                                        variant={newPlayer.syncSource === 'beyond' ? 'default' : 'outline'} 
+                                        className={newPlayer.syncSource === 'beyond' ? 'bg-red-600 hover:bg-red-700 border-red-600' : 'border-border'}
+                                        onClick={() => setNewPlayer({...newPlayer, syncSource: 'beyond'})}
+                                      >
+                                        D&D Beyond
+                                      </Button>
+                                      <Button 
+                                        type="button"
+                                        variant={newPlayer.syncSource === 'besace' ? 'default' : 'outline'}
+                                        className={newPlayer.syncSource === 'besace' ? 'bg-indigo-600 hover:bg-indigo-700 border-indigo-600' : 'border-border'}
+                                        onClick={() => setNewPlayer({...newPlayer, syncSource: 'besace'})}
+                                      >
+                                        Besace
+                                      </Button>
+                                      <Button 
+                                        type="button"
+                                        variant={newPlayer.syncSource === 'none' ? 'default' : 'outline'}
+                                        className={newPlayer.syncSource === 'none' ? 'bg-slate-700 hover:bg-slate-800' : 'border-border'}
+                                        onClick={() => setNewPlayer({...newPlayer, syncSource: 'none'})}
+                                      >
+                                        Manuel
+                                      </Button>
                                     </div>
-                                  )}
+
+                                    {newPlayer.syncSource === 'beyond' && (
+                                      <div className="space-y-2 p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+                                        <Label htmlFor="dndBeyondUrl" className="text-destructive font-semibold">
+                                          URL ou ID du personnage Beyond
+                                        </Label>
+                                        <div className="flex gap-2">
+                                          <Input
+                                            id="dndBeyondUrl"
+                                            placeholder="ex: https://www.dndbeyond.com/characters/..."
+                                            value={dndBeyondUrl}
+                                            onChange={(e) => setDndBeyondUrl(e.target.value)}
+                                            className="flex-1 border-destructive/20 focus-visible:ring-red-500"
+                                          />
+                                          <Button
+                                            type="button"
+                                            onClick={() => importFromDndBeyond(dndBeyondUrl)}
+                                            disabled={!dndBeyondUrl || isImporting}
+                                            className="bg-red-600 hover:bg-red-700 text-white"
+                                          >
+                                            {isImporting ? (
+                                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                            ) : (
+                                              isEditingPlayer && newPlayer.dndBeyondId ? 'Rafraîchir' : 'Importer'
+                                            )}
+                                          </Button>
+                                        </div>
+                                        <p className="text-xs text-destructive/80">
+                                          Synchronisation en direct des PV et de la CA pendant le combat.
+                                        </p>
+                                      </div>
+                                    )}
+
+                                    {newPlayer.syncSource === 'besace' && (
+                                      <div className="space-y-2 p-4 bg-indigo-50 dark:bg-indigo-950/30 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                                        <Label htmlFor="besaceShareCode" className="text-indigo-800 dark:text-indigo-300 font-semibold">
+                                          Code de partage Besace
+                                        </Label>
+                                        <div className="flex gap-2">
+                                          <div className="relative flex-1">
+                                            <Input
+                                              id="besaceShareCode"
+                                              placeholder="Entrez le code à 6 caractères"
+                                              value={newPlayer.besaceShareCode || ''}
+                                              onChange={(e) => {
+                                                setNewPlayer({...newPlayer, besaceShareCode: e.target.value.toUpperCase()});
+                                                setBesaceCheckStatus('idle');
+                                              }}
+                                              maxLength={6}
+                                              className={`font-mono uppercase pr-10 transition-colors ${
+                                                besaceCheckStatus === 'valid'
+                                                  ? 'border-green-500 focus-visible:ring-green-500 bg-green-500/10 dark:bg-green-950/30'
+                                                  : besaceCheckStatus === 'invalid'
+                                                    ? 'border-red-500 focus-visible:ring-red-500 bg-destructive/10 dark:bg-red-950/30'
+                                                    : besaceCheckStatus === 'checking'
+                                                      ? 'border-indigo-300 focus-visible:ring-indigo-500'
+                                                      : 'border-indigo-200 focus-visible:ring-indigo-500'
+                                              }`}
+                                            />
+                                            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                              {besaceCheckStatus === 'checking' && (
+                                                <Loader2 className="h-4 w-4 text-indigo-500 animate-spin" />
+                                              )}
+                                              {besaceCheckStatus === 'valid' && (
+                                                <Check className="h-4 w-4 text-green-600" />
+                                              )}
+                                              {besaceCheckStatus === 'invalid' && (
+                                                <AlertCircle className="h-4 w-4 text-destructive/80" />
+                                              )}
+                                            </div>
+                                          </div>
+                                          <Button
+                                            type="button"
+                                            onClick={() => checkBesaceCode(newPlayer.besaceShareCode || '')}
+                                            disabled={!newPlayer.besaceShareCode || newPlayer.besaceShareCode.length < 5 || besaceCheckStatus === 'checking'}
+                                            className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                                          >
+                                            {besaceCheckStatus === 'checking' ? (
+                                              <Loader2 className="h-4 w-4 animate-spin" />
+                                            ) : (
+                                              'Connecter'
+                                            )}
+                                          </Button>
+                                        </div>
+                                        {besaceCheckStatus === 'valid' && (
+                                          <p className="text-xs text-green-600 dark:text-green-400 font-medium flex items-center">
+                                            <Check className="h-3 w-3 mr-1.5" />
+                                            Connecté avec succès. Synchronisation en temps réel.
+                                          </p>
+                                        )}
+                                        {besaceCheckStatus === 'invalid' && (
+                                          <p className="text-xs text-destructive dark:text-red-400 font-medium flex items-center">
+                                            <AlertCircle className="h-3 w-3 mr-1.5" />
+                                            {besaceCheckError || "Code invalide"}
+                                          </p>
+                                        )}
+                                        {besaceCheckStatus === 'idle' && (
+                                          <p className="text-xs text-indigo-600/80 dark:text-indigo-400/80">
+                                            Synchronisation en direct des PV, CA, Conditions avec l'app joueur Besace.
+                                          </p>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
 
                                   <div className="space-y-2">
                                     <Label htmlFor="playerName">Nom du personnage</Label>
@@ -997,22 +1002,72 @@ const PartyEditor: React.FC = () => {
                                     />
                                   </div>
 
-                                  <div className="space-y-2">
+<div className="space-y-2">
                                     <Label htmlFor="dndBeyondId">ID D&D Beyond (Optionnel)</Label>
                                     <div className="text-xs text-muted-foreground mb-1">
-                                      ID du personnage pour la synchronisation (ex: 123456)
+                                        ID du personnage pour la synchronisation (ex: 123456)
                                     </div>
                                     <Input
                                       id="dndBeyondId"
                                       placeholder="ex: 123456"
                                       value={newPlayer.dndBeyondId || ''}
                                       onChange={(e) => {
-                                        // Garder uniquement les chiffres
                                         const val = e.target.value.replace(/[^0-9]/g, '');
                                         setNewPlayer({ ...newPlayer, dndBeyondId: val });
                                       }}
+                                      disabled={newPlayer.syncSource === 'besace'}
                                     />
                                   </div>
+
+                                  <div className="space-y-2">
+                                    <Label>Source de synchronisation</Label>
+                                    <div className="flex gap-2">
+                                      <Button
+                                        type="button"
+                                        variant={newPlayer.syncSource === 'beyond' ? 'default' : 'outline'}
+                                        size="sm"
+                                        onClick={() => setNewPlayer({ ...newPlayer, syncSource: 'beyond', besaceShareCode: '' })}
+                                      >
+                                        D&D Beyond
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        variant={newPlayer.syncSource === 'besace' ? 'default' : 'outline'}
+                                        size="sm"
+                                        onClick={() => setNewPlayer({ ...newPlayer, syncSource: 'besace', dndBeyondId: '' })}
+                                      >
+                                        Besace
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        variant={(!newPlayer.syncSource || newPlayer.syncSource === 'none') ? 'default' : 'outline'}
+                                        size="sm"
+                                        onClick={() => setNewPlayer({ ...newPlayer, syncSource: 'none', dndBeyondId: '', besaceShareCode: '' })}
+                                      >
+                                        Aucune
+                                      </Button>
+                                    </div>
+                                  </div>
+
+                                  {newPlayer.syncSource === 'besace' && (
+                                    <div className="space-y-2">
+                                      <Label htmlFor="besaceShareCode">Code de partage Besace</Label>
+                                      <div className="text-xs text-muted-foreground mb-1">
+                                        Le joueur obtient ce code dans son application Besace (bouton Partager)
+                                      </div>
+                                      <Input
+                                        id="besaceShareCode"
+                                        placeholder="ex: ABC123"
+                                        value={newPlayer.besaceShareCode || ''}
+                                        onChange={(e) => {
+                                          const val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                                          setNewPlayer({ ...newPlayer, besaceShareCode: val });
+                                        }}
+                                        maxLength={6}
+                                        className="font-mono text-center text-lg tracking-widest"
+                                      />
+                                    </div>
+                                  )}
                                   <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                       <Label htmlFor="playerClass">Classe</Label>
@@ -1181,9 +1236,9 @@ const PartyEditor: React.FC = () => {
                     <CardContent className="p-0">
                       {selectedParty.players.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-8 text-center px-4">
-                          <UserPlus className="h-10 w-10 text-gray-300 mb-2" />
-                          <p className="text-gray-500 mb-2">Aucun personnage dans ce groupe</p>
-                          <p className="text-gray-400 text-sm mb-4">
+                          <UserPlus className="h-10 w-10 text-muted-foreground/50 mb-2" />
+                          <p className="text-muted-foreground mb-2">Aucun personnage dans ce groupe</p>
+                          <p className="text-muted-foreground/70 text-sm mb-4">
                             Ajoutez des personnages pour pouvoir créer des rencontres équilibrées
                           </p>
                           <Button
@@ -1208,61 +1263,73 @@ const PartyEditor: React.FC = () => {
                           </Button>
                         </div>
                       ) : (
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Nom</TableHead>
-                              <TableHead>Race</TableHead>
-                              <TableHead>Classe</TableHead>
-                              <TableHead>Niveau</TableHead>
-                              <TableHead>CA</TableHead>
-                              <TableHead>PV</TableHead>
-                              <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {selectedParty.players.map(player => (
-                              <TableRow key={player.id}>
-                                <TableCell className="font-medium">
-                                  {player.name}
-                                  {player.dndBeyondId && (
-                                    <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-100 text-red-800 border border-red-200">
-                                      Sync
-                                    </span>
-                                  )}
-                                </TableCell>
-                                <TableCell>{player.race || '-'}</TableCell>
-                                <TableCell>{player.characterClass}</TableCell>
-                                <TableCell>{player.level}</TableCell>
-                                <TableCell>{player.ac || '-'}</TableCell>
-                                <TableCell>
-                                  {player.currentHp !== undefined && player.maxHp !== undefined
-                                    ? `${player.currentHp}/${player.maxHp}`
-                                    : '-'}
-                                </TableCell>
-                                <TableCell className="text-right">
-                                  <div className="flex justify-end space-x-1">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => openEditPlayerDialog(player)}
-                                    >
-                                      <Edit className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="text-red-500 hover:text-red-700"
-                                      onClick={() => handleRemovePlayer(player.id)}
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 p-4">
+                          {selectedParty.players.map(player => (
+                            <div
+                              key={player.id}
+                              className="bg-card border border-border rounded-lg p-4 hover:shadow-md transition-all group"
+                            >
+                              <div className="flex items-start justify-between mb-3">
+                                <div className="flex items-center gap-3 min-w-0">
+                                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold flex-shrink-0">
+                                    {player.name.charAt(0).toUpperCase()}
                                   </div>
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
+                                  <div className="min-w-0">
+                                    <div className="font-medium truncate">{player.name}</div>
+                                    <div className="text-xs text-muted-foreground">
+                                      {player.race || 'Race inconnue'} • {player.characterClass}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex gap-1 flex-shrink-0">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    onClick={() => openEditPlayerDialog(player)}
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-destructive/80 hover:text-destructive/90 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    onClick={() => handleRemovePlayer(player.id)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </div>
+
+                              <div className="flex flex-wrap gap-2 mb-3">
+                                <Badge variant="secondary" className="text-xs">
+                                  Niv. {player.level}
+                                </Badge>
+                                <Badge variant="outline" className="text-xs">
+                                  CA {player.ac || '?'}
+                                </Badge>
+                                <Badge variant="outline" className="text-xs">
+                                  PV {player.currentHp !== undefined && player.maxHp !== undefined
+                                    ? `${player.currentHp}/${player.maxHp}`
+                                    : '?'}
+                                </Badge>
+                              </div>
+
+                              <div className="flex gap-1.5">
+                                {player.dndBeyondId && (
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-destructive/10 text-destructive border border-destructive/20 dark:bg-red-950 dark:text-red-300 dark:border-red-800">
+                                    Beyond
+                                  </span>
+                                )}
+                                {player.besaceShareCode && (
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800">
+                                    Besace
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       )}
                     </CardContent>
                   </Card>
@@ -1270,14 +1337,14 @@ const PartyEditor: React.FC = () => {
               ) : parties.length > 0 ? (
                 <div className="flex justify-center py-8 text-center">
                   <div className="max-w-md">
-                    <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500 mb-2">Sélectionnez un groupe pour le modifier</p>
+                    <Users className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+                    <p className="text-muted-foreground mb-2">Sélectionnez un groupe pour le modifier</p>
                   </div>
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-10 text-center">
-                  <Users className="h-16 w-16 text-gray-300 mb-4" />
-                  <p className="text-gray-500 mb-4">Vous n'avez pas encore de groupe d'aventuriers</p>
+                  <Users className="h-16 w-16 text-muted-foreground/50 mb-4" />
+                  <p className="text-muted-foreground mb-4">Vous n'avez pas encore de groupe d'aventuriers</p>
                   <Button
                     variant="default"
                     onClick={() => {

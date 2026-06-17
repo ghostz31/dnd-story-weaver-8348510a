@@ -49,7 +49,7 @@ Le traitement de vos données est basé sur :
 
 5. Destinataires des Données
 Vos données ne sont jamais vendues à des tiers. Elles ne sont partagées que de manière limitée :
-- Prestataires de services 기술 (Cloud) : Google Firebase (hébergement et authentification), Netlify (hébergement web).
+- Prestataires de services techniques (Cloud) : Google Firebase (hébergement et authentification), Netlify (hébergement web).
 - Autres utilisateurs : Uniquement les données que vous choisissez explicitement de partager via un lien public.
 
 6. Durée de Conservation

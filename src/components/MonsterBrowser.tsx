@@ -5,11 +5,12 @@ import { useAuth } from '../auth/AuthContext';
 import { toast } from '../hooks/use-toast';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { getAideDDMonsterSlug, getMonsterImageUrl } from '../lib/monsterUtils';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { getAideDDMonsterSlug, getMonsterImageUrl, formatCR } from '../lib/monsterUtils';
 import { useMonsters } from '../hooks/useMonsters';
 import FilterPanel from '@/components/ui/FilterPanel';
+import QuickFilterBar from '@/components/ui/QuickFilterBar';
 import { normalizeForSearch } from '../utils/stringUtils';
-import { formatCR } from '@/lib/EncounterUtils';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -34,6 +35,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
   const [visibleCount, setVisibleCount] = useState(50);
   const [filteredMonsters, setFilteredMonsters] = useState<Monster[]>([]);
   const [isDetailLoading, setIsDetailLoading] = useState(false);
+  const [showBulkAddConfirm, setShowBulkAddConfirm] = useState(false);
 
   // Filtres
   const [crMin, setCrMin] = useState<number | undefined>(undefined);
@@ -335,44 +337,43 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
     <div className="w-full">
       {/* Barre de recherche et header */}
       <div className="flex flex-col gap-3 mb-4">
-        <div className="parchment-panel p-2 md:p-3 rounded-xl flex flex-col md:flex-row gap-2 md:items-center">
-          <div className="flex gap-2 relative flex-1">
-            <Search className="absolute left-3 top-3 md:top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Rechercher un monstre (Golem, Dragon, Gobelin...)"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-white/50 h-11 md:h-10 text-base"
-            />
-            {(searchQuery) && (
+        <div className="parchment-panel p-2 md:p-3 rounded-xl flex flex-col gap-2">
+          <div className="flex flex-col md:flex-row gap-2 md:items-center">
+            <div className="flex gap-2 relative flex-1">
+              <Search className="absolute left-3 top-3 md:top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Rechercher un monstre (Golem, Dragon, Gobelin...)"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 bg-white/50 h-11 md:h-10 text-base"
+              />
+              {(searchQuery) && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-1 top-1.5 md:top-1 h-8 w-8 text-muted-foreground hover:text-foreground touch-target"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+
+            <div className="flex gap-2">
               <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setSearchQuery('')}
-                className="absolute right-1 top-1.5 md:top-1 h-8 w-8 text-muted-foreground hover:text-foreground touch-target"
+                onClick={handleCreateMonster}
+                className="flex-1 sm:flex-none bg-primary hover:bg-primary/90 text-white font-cinzel whitespace-nowrap touch-target"
               >
-                <X className="h-4 w-4" />
+                <Plus className="mr-1 md:mr-2 h-4 w-4" /> <span className="hidden sm:inline">Créer</span>
               </Button>
-            )}
+            </div>
           </div>
 
-          <div className="flex gap-2">
-            <Button
-              onClick={handleCreateMonster}
-              className="flex-1 sm:flex-none bg-primary hover:bg-primary/90 text-white font-cinzel whitespace-nowrap touch-target"
-            >
-              <Plus className="mr-1 md:mr-2 h-4 w-4" /> <span className="hidden sm:inline">Créer</span>
-            </Button>
-
-          </div>
-        </div>
-
-        {/* Quick Filters */}
-        <div className="parchment-panel p-2 md:p-3 rounded-xl space-y-3">
-          <div className="space-y-2">
-            <Label className="text-xs font-cinzel font-bold text-muted-foreground">Type de Monstre</Label>
-            <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1 -mb-1">
-              {[
+          {/* Quick Filters - intégrés dans le même panel */}
+          <div className="border-t border-border/20 pt-2">
+            <QuickFilterBar
+              title="Type de Monstre"
+              options={[
                 { label: 'Dragons', value: 'Dragon' },
                 { label: 'Morts-vivants', value: 'mort-vivant' },
                 { label: 'Humanoïdes', value: 'humanoïde' },
@@ -381,20 +382,10 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                 { label: 'Monstruosités', value: 'monstruosité' },
                 { label: 'Géants', value: 'géant' },
                 { label: 'Élémentaires', value: 'élémentaire' },
-              ].map(({ label, value }) => (
-                <Badge
-                  key={value}
-                  variant={quickFilterType === value ? 'default' : 'outline'}
-                  className={`cursor-pointer transition-all whitespace-nowrap flex-shrink-0 touch-target active:scale-95 ${quickFilterType === value
-                    ? 'bg-primary text-primary-foreground shadow-md'
-                    : 'bg-white/50 hover:bg-primary/10'
-                    }`}
-                  onClick={() => setQuickFilterType(quickFilterType === value ? null : value)}
-                >
-                  {label}
-                </Badge>
-              ))}
-            </div>
+              ]}
+              selectedValue={quickFilterType}
+              onSelect={setQuickFilterType}
+            />
           </div>
         </div>
 
@@ -468,7 +459,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
             </div>
 
             <div className="space-y-2">
-              <Label className="text-xs font-cinzel font-bold text-muted-foreground">Alignement (Experimental)</Label>
+              <Label className="text-xs font-cinzel font-bold text-muted-foreground">Alignement (Expérimental)</Label>
               <Select value={selectedAlignment} onValueChange={setSelectedAlignment}>
                 <SelectTrigger className="bg-white/50 h-9">
                   <SelectValue placeholder="Tous" />
@@ -489,7 +480,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                   checked={isCustom}
                   onCheckedChange={(checked) => setIsCustom(checked === true)}
                 />
-                <Label htmlFor="custom-filter" className="cursor-pointer font-bold text-blue-700">Mes Créations</Label>
+                <Label htmlFor="custom-filter" className="cursor-pointer font-bold text-primary">Mes Créations</Label>
               </div>
             </div>
           </div>
@@ -506,6 +497,10 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
             <div className="mb-4">
               <Button
                 onClick={() => {
+                  if (filteredMonsters.length > 5) {
+                    setShowBulkAddConfirm(true);
+                    return;
+                  }
                   if (onSelectMonster) {
                     const firstMonster = filteredMonsters[0];
                     onSelectMonster(firstMonster);
@@ -522,6 +517,37 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
               </Button>
             </div>
           )}
+
+          {/* Dialog de confirmation ajout massif */}
+          <Dialog open={showBulkAddConfirm} onOpenChange={setShowBulkAddConfirm}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Ajouter {filteredMonsters.length} monstres ?</DialogTitle>
+                <DialogDescription>
+                  Vous êtes sur le point d'ajouter <strong>{filteredMonsters.length}</strong> monstres d'un coup à votre rencontre. Confirmez-vous cette action ?
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setShowBulkAddConfirm(false)}>Annuler</Button>
+                <Button
+                  onClick={() => {
+                    if (onSelectMonster) {
+                      filteredMonsters.forEach(monster => onSelectMonster(monster));
+                    }
+                    setShowBulkAddConfirm(false);
+                    toast({
+                      title: "Monstres ajoutés",
+                      description: `${filteredMonsters.length} monstres ont été ajoutés à la rencontre.`,
+                      variant: "default"
+                    });
+                  }}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  Confirmer l'ajout
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
           <div className="overflow-y-auto pb-4 custom-scrollbar">
             {filteredMonsters.length > 0 ? (
@@ -750,7 +776,7 @@ const MonsterBrowser: React.FC<MonsterBrowserProps> = ({ onSelectMonster, isSele
                           size="sm"
                           onClick={() => handleShareMonster(selectedMonster)}
                           title="Partager cette créature"
-                          className="text-blue-600 hover:text-blue-700"
+                          className="text-primary hover:text-primary/80"
                         >
                           <Share2 className="w-4 h-4 mr-2" /> Partager
                         </Button>

@@ -22,7 +22,7 @@ const TurnControls: React.FC<TurnControlsProps> = ({
     return (
         <div className="flex items-center">
             <Button
-                variant="outline"
+                variant="default"
                 size="sm"
                 className="mr-2"
                 onClick={onRollInitiative}

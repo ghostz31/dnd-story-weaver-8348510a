@@ -298,8 +298,8 @@ const UserProfile: React.FC = () => {
                   <div className="space-y-2">
                     <Label>Email</Label>
                     <div className="flex items-center space-x-2">
-                      <Mail className="h-4 w-4 text-gray-500" />
-                      <div className="border rounded-md p-2 w-full bg-gray-50">
+                      <Mail className="h-4 w-4 text-muted-foreground" />
+                      <div className="border rounded-md p-2 w-full bg-muted/50">
                         {user.email}
                       </div>
                     </div>
@@ -309,8 +309,8 @@ const UserProfile: React.FC = () => {
                     <Label>Nom d'utilisateur</Label>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <UserCircle className="h-4 w-4 text-gray-500" />
-                        <div className="border rounded-md p-2 flex-grow bg-gray-50">
+                        <UserCircle className="h-4 w-4 text-muted-foreground" />
+                        <div className="border rounded-md p-2 flex-grow bg-muted/50">
                           {user.displayName || 'Non défini'}
                         </div>
                       </div>
@@ -329,11 +329,11 @@ const UserProfile: React.FC = () => {
                     {stats && (
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div>
-                          <p className="text-gray-500">Groupes créés</p>
+                          <p className="text-muted-foreground">Groupes créés</p>
                           <p className="font-medium">{stats.parties}/{isPremium ? '∞' : stats.maxParties}</p>
                         </div>
                         <div>
-                          <p className="text-gray-500">Rencontres sauvegardées</p>
+                          <p className="text-muted-foreground">Rencontres sauvegardées</p>
                           <p className="font-medium">{stats.encounters}/{isPremium ? '∞' : stats.maxEncounters}</p>
                         </div>
                       </div>
@@ -366,7 +366,7 @@ const UserProfile: React.FC = () => {
                     disabled={isLoading}
                     placeholder="Entrez votre mot de passe pour confirmer"
                   />
-                  <p className="text-xs text-gray-500">Pour des raisons de sécurité, veuillez entrer votre mot de passe actuel</p>
+                  <p className="text-xs text-muted-foreground">Pour des raisons de sécurité, veuillez entrer votre mot de passe actuel</p>
                 </div>
 
                 <Button type="submit" disabled={isLoading}>
@@ -404,7 +404,7 @@ const UserProfile: React.FC = () => {
                     onChange={(e) => setNewPassword(e.target.value)}
                     disabled={isLoading}
                   />
-                  <p className="text-xs text-gray-500">Le mot de passe doit contenir au moins 6 caractères</p>
+                  <p className="text-xs text-muted-foreground">Le mot de passe doit contenir au moins 6 caractères</p>
                 </div>
 
                 <div className="space-y-2">
@@ -437,7 +437,7 @@ const UserProfile: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-medium">Statistiques</h3>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     Utilisation de votre compte
                   </p>
                 </div>
@@ -447,11 +447,11 @@ const UserProfile: React.FC = () => {
                 <div className="space-y-2">
                   <ul className="text-sm space-y-1">
                     <li className="flex items-center">
-                      <span className="w-1 h-1 bg-gray-500 rounded-full mr-2"></span>
+                      <span className="w-1 h-1 bg-muted/500 rounded-full mr-2"></span>
                       {stats.parties} groupe(s) créé(s)
                     </li>
                     <li className="flex items-center">
-                      <span className="w-1 h-1 bg-gray-500 rounded-full mr-2"></span>
+                      <span className="w-1 h-1 bg-muted/500 rounded-full mr-2"></span>
                       {stats.encounters} rencontre(s) sauvegardée(s)
                     </li>
                   </ul>

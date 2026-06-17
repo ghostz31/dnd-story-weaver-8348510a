@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 // --- Types ---
 interface HpData {
@@ -70,7 +71,7 @@ export const HpEditor: React.FC<{
                         />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="tempHp" className="text-right">
+                        <Label htmlFor="tempHp" className="text-right text-[hsl(var(--status-info))]">
                             PV Temporaires
                         </Label>
                         <Input
@@ -78,7 +79,7 @@ export const HpEditor: React.FC<{
                             type="number"
                             value={data.tempHp || 0}
                             onChange={(e) => onDataChange({ ...data, tempHp: parseInt(e.target.value, 10) || 0 })}
-                            className="col-span-3 border-blue-200"
+                            className="col-span-3 border-[hsl(var(--status-info))]/30 focus-visible:ring-[hsl(var(--status-info))]/30"
                         />
                     </div>
                 </div>
@@ -176,14 +177,14 @@ export const NotesEditor: React.FC<{
                         <Label htmlFor="notes" className="text-right">
                             Notes
                         </Label>
-                        <textarea
+                        <Textarea
                             id="notes"
                             value={data.notes}
                             onChange={(e) => onDataChange({
                                 ...data,
                                 notes: e.target.value
                             })}
-                            className="col-span-3 min-h-[100px] p-2 border rounded-md"
+                            className="col-span-3 min-h-[100px]"
                             placeholder="Ajoutez des notes sur ce participant..."
                         />
                     </div>

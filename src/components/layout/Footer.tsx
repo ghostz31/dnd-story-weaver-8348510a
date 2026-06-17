@@ -51,7 +51,7 @@ const Footer: React.FC = () => {
                     </p>
                     <div className="flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                        <span className="text-xs font-medium">Systèmes Opérationnels</span>
+                        <span className="text-xs font-medium">Système opérationnel</span>
                     </div>
                 </div>
             </div>

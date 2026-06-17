@@ -11,17 +11,23 @@ interface SpellCardProps {
 }
 
 const getSchoolColor = (school: string) => {
+    const key = school.toLowerCase();
     const colors: Record<string, string> = {
+        'évocation': 'bg-red-100 text-red-800 border-red-200',
         'evocation': 'bg-red-100 text-red-800 border-red-200',
         'abjuration': 'bg-blue-100 text-blue-800 border-blue-200',
+        'invocation': 'bg-yellow-100 text-yellow-800 border-yellow-200',
         'conjuration': 'bg-yellow-100 text-yellow-800 border-yellow-200',
         'divination': 'bg-indigo-100 text-indigo-800 border-indigo-200',
+        'enchantement': 'bg-pink-100 text-pink-800 border-pink-200',
         'enchantment': 'bg-pink-100 text-pink-800 border-pink-200',
         'illusion': 'bg-purple-100 text-purple-800 border-purple-200',
-        'necromancy': 'bg-gray-100 text-gray-800 border-gray-200',
+        'nécromancie': 'bg-gray-100 text-gray-800 border-border',
+        'necromancie': 'bg-gray-100 text-gray-800 border-border',
+        'necromancy': 'bg-gray-100 text-gray-800 border-border',
         'transmutation': 'bg-green-100 text-green-800 border-green-200',
     };
-    return colors[school.toLowerCase()] || 'bg-gray-100 text-gray-800';
+    return colors[key] || 'bg-gray-100 text-gray-800';
 };
 
 // Parse material component for cost and consumption info
@@ -53,15 +59,15 @@ const SpellCard: React.FC<SpellCardProps> = ({ spell, className = '' }) => {
 
     return (
         <Card className={`h-full flex flex-col ${className}`}>
-            <CardHeader className="pb-2 bg-gray-50/50 rounded-t-xl">
+            <CardHeader className="pb-2 bg-muted/50 rounded-t-xl">
                 <div className="flex justify-between items-start">
                     <div>
-                        <CardTitle className="text-xl font-serif text-gray-900">{spell.name}</CardTitle>
+                        <CardTitle className="text-xl font-serif text-foreground">{spell.name}</CardTitle>
                         <div className="flex items-center mt-1 gap-2">
                             <Badge variant="outline" className={getSchoolColor(spell.school)}>
                                 {spell.school}
                             </Badge>
-                            <span className="text-sm text-gray-500 italic">
+                            <span className="text-sm text-muted-foreground italic">
                                 {spell.level === 0 ? 'Tour de magie' : `Niveau ${spell.level}`}
                             </span>
                             {spell.ritual && (
@@ -80,28 +86,28 @@ const SpellCard: React.FC<SpellCardProps> = ({ spell, className = '' }) => {
 
             <CardContent className="flex-1 p-0 overflow-hidden flex flex-col relative">
                 {/* Info Grid */}
-                <div className="grid grid-cols-2 gap-px bg-gray-200 border-b border-gray-200">
-                    <div className="bg-white p-3 flex flex-col gap-1">
-                        <div className="flex items-center text-xs text-gray-500 uppercase font-bold tracking-wider">
+                <div className="grid grid-cols-2 gap-px bg-border border-b border-border">
+                    <div className="bg-card p-3 flex flex-col gap-1">
+                        <div className="flex items-center text-xs text-muted-foreground uppercase font-bold tracking-wider">
                             <Clock className="w-3 h-3 mr-1" /> Incantation
                         </div>
                         <span className="text-sm font-medium">{spell.castingTime}</span>
                     </div>
-                    <div className="bg-white p-3 flex flex-col gap-1">
-                        <div className="flex items-center text-xs text-gray-500 uppercase font-bold tracking-wider">
+                    <div className="bg-card p-3 flex flex-col gap-1">
+                        <div className="flex items-center text-xs text-muted-foreground uppercase font-bold tracking-wider">
                             <MousePointer className="w-3 h-3 mr-1" /> Portée
                         </div>
                         <span className="text-sm font-medium">{spell.range}</span>
                     </div>
-                    <div className="bg-white p-3 flex flex-col gap-1">
-                        <div className="flex items-center justify-between text-xs text-gray-500 uppercase font-bold tracking-wider">
+                    <div className="bg-card p-3 flex flex-col gap-1">
+                        <div className="flex items-center justify-between text-xs text-muted-foreground uppercase font-bold tracking-wider">
                             <div className="flex items-center">
                                 <Box className="w-3 h-3 mr-1" /> Composantes
                             </div>
                             {hasLongMaterial && (
                                 <button
                                     onClick={() => setShowMaterialDetails(!showMaterialDetails)}
-                                    className="p-0.5 hover:bg-gray-100 rounded transition-colors"
+                                    className="p-0.5 hover:bg-muted rounded transition-colors"
                                     title={showMaterialDetails ? "Masquer les détails" : "Voir les détails"}
                                 >
                                     {showMaterialDetails ? (
@@ -116,8 +122,8 @@ const SpellCard: React.FC<SpellCardProps> = ({ spell, className = '' }) => {
                             {spell.components}
                         </span>
                     </div>
-                    <div className="bg-white p-3 flex flex-col gap-1">
-                        <div className="flex items-center text-xs text-gray-500 uppercase font-bold tracking-wider">
+                    <div className="bg-card p-3 flex flex-col gap-1">
+                        <div className="flex items-center text-xs text-muted-foreground uppercase font-bold tracking-wider">
                             <Hourglass className="w-3 h-3 mr-1" /> Durée
                         </div>
                         <span className="text-sm font-medium">{spell.duration}</span>
@@ -146,20 +152,20 @@ const SpellCard: React.FC<SpellCardProps> = ({ spell, className = '' }) => {
                 <ScrollArea className="flex-1 p-4">
                     <div
                         className="prose prose-sm prose-stone max-w-none 
-              prose-p:leading-relaxed prose-headings:font-serif prose-headings:text-gray-900
-              prose-li:marker:text-gray-400"
+              prose-p:leading-relaxed prose-headings:font-serif prose-headings:text-foreground
+              prose-li:marker:text-muted-foreground/70"
                         dangerouslySetInnerHTML={{ __html: spell.description }}
                     />
 
                     {/* Classes */}
                     {spell.classes && spell.classes.length > 0 && (
-                        <div className="mt-6 pt-4 border-t border-gray-100">
-                            <div className="flex items-center gap-2 mb-2 text-sm text-gray-500 font-medium">
+                        <div className="mt-6 pt-4 border-t border-border/50">
+                            <div className="flex items-center gap-2 mb-2 text-sm text-muted-foreground font-medium">
                                 <BookOpen className="w-4 h-4" /> Classes
                             </div>
                             <div className="flex flex-wrap gap-1">
                                 {spell.classes.map(cls => (
-                                    <Badge key={cls} variant="secondary" className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-normal">
+                                    <Badge key={cls} variant="secondary" className="bg-gray-100 hover:bg-border text-foreground/90 font-normal">
                                         {cls}
                                     </Badge>
                                 ))}

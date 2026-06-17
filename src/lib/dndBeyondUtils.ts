@@ -5,8 +5,7 @@
 // Types partiels pour la structure D&D Beyond
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-// Calcul du modificateur depuis le score
-export const calculateMod = (score: number) => Math.floor((score - 10) / 2);
+import { calculateModifier } from './EncounterUtils';
 
 /**
  * Calcule la CA (Armor Class) d'un personnage D&D Beyond
@@ -19,9 +18,9 @@ export const calculateDndBeyondAC = (character: any, statsPromises: { dex: numbe
         return overrideAC.value;
     }
 
-    const dexMod = calculateMod(statsPromises.dex);
-    const conMod = calculateMod(statsPromises.con);
-    const wisMod = calculateMod(statsPromises.wis);
+    const dexMod = calculateModifier(statsPromises.dex);
+    const conMod = calculateModifier(statsPromises.con);
+    const wisMod = calculateModifier(statsPromises.wis);
 
     // 2. Analyser l'inventaire pour l'armure et le bouclier équipés
     const inventory = character.inventory || [];
@@ -114,4 +113,191 @@ export const calculateDndBeyondAC = (character: any, statsPromises: { dex: numbe
     ac += miscBonus;
 
     return ac;
+};
+
+// Correspondance entre les classes D&D Beyond (anglais) et françaises
+export const CLASS_MAPPING: Record<string, string> = {
+    'Artificer': 'Artificier',
+    'Barbarian': 'Barbare',
+    'Bard': 'Barde',
+    'Cleric': 'Clerc',
+    'Druid': 'Druide',
+    'Fighter': 'Guerrier',
+    'Monk': 'Moine',
+    'Paladin': 'Paladin',
+    'Ranger': 'Rôdeur',
+    'Rogue': 'Roublard',
+    'Sorcerer': 'Ensorceleur',
+    'Warlock': 'Occultiste',
+    'Wizard': 'Magicien'
+};
+
+/**
+ * Données extraites d'un personnage D&D Beyond
+ */
+export interface DndBeyondCharacterData {
+    name: string;
+    race: string;
+    characterClass: string;
+    subclass?: string;
+    level: number;
+    ac: number;
+    maxHp: number;
+    currentHp: number;
+    tempHp: number;
+    str: number;
+    dex: number;
+    con: number;
+    int: number;
+    wis: number;
+    cha: number;
+    speed: string[];
+    initiative: number;
+    proficiencies: string;
+    dndBeyondId: string;
+}
+
+/**
+ * Extraire la valeur d'une caractéristique depuis les données brutes Beyond.
+ * Gère les overrides, stats de base, et bonus.
+ */
+export const getStatValue = (stats: any[], bonusStats: any[], overrideStats: any[], index: number): number => {
+    if (overrideStats?.[index]?.value) {
+        return overrideStats[index].value;
+    }
+    const base = stats?.[index]?.value || 10;
+    const bonus = bonusStats?.[index]?.value || 0;
+    return base + bonus;
+};
+
+/**
+ * Extraction centralisée d'un personnage D&D Beyond depuis les données brutes de l'API.
+ * Utilisé par PartyEditor (import initial) et useDnDBeyondLive (sync live).
+ */
+export const extractCharacterFromBeyond = (rawData: any, characterId: string): DndBeyondCharacterData => {
+    const character = rawData.data || rawData;
+
+    // 1. Nom
+    const name = character.name || 'Personnage';
+
+    // 2. Race
+    const race = character.race?.fullName || character.race?.baseName || '';
+
+    // 3. Classe, sous-classe et niveau
+    let characterClass = 'Guerrier';
+    let subclass: string | undefined;
+    let level = 1;
+
+    if (character.classes && character.classes.length > 0) {
+        const primaryClass = character.classes[0];
+        const englishClassName = primaryClass.definition?.name || 'Fighter';
+        characterClass = CLASS_MAPPING[englishClassName] || englishClassName;
+        subclass = primaryClass.subclassDefinition?.name;
+        level = primaryClass.level || 1;
+
+        for (let i = 1; i < character.classes.length; i++) {
+            level += character.classes[i].level || 0;
+        }
+    }
+
+    // 4. Caractéristiques
+    const stats = character.stats || [];
+    const bonusStats = character.bonusStats || [];
+    const overrideStats = character.overrideStats || [];
+
+    const str = getStatValue(stats, bonusStats, overrideStats, 0);
+    const dex = getStatValue(stats, bonusStats, overrideStats, 1);
+    const con = getStatValue(stats, bonusStats, overrideStats, 2);
+    const int = getStatValue(stats, bonusStats, overrideStats, 3);
+    const wis = getStatValue(stats, bonusStats, overrideStats, 4);
+    const cha = getStatValue(stats, bonusStats, overrideStats, 5);
+
+    // 5. PV
+    const conMod = calculateModifier(con);
+    let maxHp = 10;
+    let currentHp = 10;
+
+    if (character.overrideHitPoints) {
+        maxHp = character.overrideHitPoints;
+    } else if (character.baseHitPoints) {
+        maxHp = (character.baseHitPoints || 10) + (character.bonusHitPoints || 0) + (conMod * level);
+    } else if (character.hitPoints) {
+        maxHp = character.hitPoints;
+    }
+
+    const removed = character.removedHitPoints || 0;
+    currentHp = maxHp - removed;
+    if (currentHp < 0) currentHp = 0;
+
+    const tempHp = character.temporaryHitPoints || 0;
+
+    // 6. CA
+    const ac = calculateDndBeyondAC(character, { dex, con, wis });
+
+    // 7. Vitesse
+    const speedList: string[] = [];
+    if (character.race?.weightSpeeds?.normal?.walk) {
+        speedList.push(`${character.race.weightSpeeds.normal.walk} ft`);
+    }
+
+    // 8. Initiative
+    const dexMod = calculateModifier(dex);
+    let initiative = dexMod;
+
+    const modKeys = ['race', 'class', 'feat', 'item', 'background'];
+    modKeys.forEach(key => {
+        if (character.modifiers?.[key]) {
+            character.modifiers[key].forEach((mod: any) => {
+                if (mod.subType === 'initiative') initiative += mod.value;
+            });
+        }
+    });
+
+    // 9. Maîtrises
+    const proficienciesList: { type: string; name: string }[] = [];
+    const languagesList: string[] = [];
+
+    const processModifiers = (modifiers: any[]) => {
+        if (!modifiers) return;
+        modifiers.forEach((mod: any) => {
+            if (mod.type === 'proficiency') {
+                proficienciesList.push({ type: mod.subType, name: mod.friendlySubtypeName });
+            } else if (mod.type === 'language') {
+                languagesList.push(mod.friendlySubtypeName);
+            }
+        });
+    };
+
+    modKeys.forEach(key => {
+        if (character.modifiers?.[key]) {
+            processModifiers(character.modifiers[key]);
+        }
+    });
+
+    const armorProfs = proficienciesList.filter(p => p.type.includes('armor')).map(p => p.name).join(', ');
+    const weaponProfs = proficienciesList.filter(p => p.type.includes('weapon')).map(p => p.name).join(', ');
+    const toolProfs = proficienciesList.filter(p => p.type.includes('tool') || p.type.includes('kit') || p.type.includes('supplies')).map(p => p.name).join(', ');
+
+    let proficienciesText = '';
+    if (armorProfs) proficienciesText += `**Armures:** ${armorProfs}\n`;
+    if (weaponProfs) proficienciesText += `**Armes:** ${weaponProfs}\n`;
+    if (toolProfs) proficienciesText += `**Outils:** ${toolProfs}\n`;
+    if (languagesList.length > 0) proficienciesText += `**Langues:** ${languagesList.join(', ')}\n`;
+
+    return {
+        name,
+        race,
+        characterClass,
+        subclass,
+        level,
+        ac,
+        maxHp,
+        currentHp,
+        tempHp,
+        str, dex, con, int, wis, cha,
+        speed: speedList,
+        initiative,
+        proficiencies: proficienciesText,
+        dndBeyondId: characterId,
+    };
 };

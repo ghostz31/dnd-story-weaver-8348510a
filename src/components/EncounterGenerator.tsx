@@ -176,7 +176,7 @@ const EncounterGenerator = () => {
             <Sword className="w-5 h-5 text-primary" />
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold mb-2">Générateur de Rencontres Trame</h1>
-              <p className="text-gray-600">Créez des rencontres équilibrées pour vos aventures</p>
+              <p className="text-muted-foreground/90">Créez des rencontres équilibrées pour vos aventures</p>
             </div>
           </CardTitle>
           <CardDescription>

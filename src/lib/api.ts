@@ -1,5 +1,6 @@
 import { Monster, Player, Party, Encounter, EncounterMonster, getEncounterMultiplier, xpThresholds } from './types';
 import { v4 as uuid } from 'uuid';
+import { generateUniqueId, getAideDDMonsterSlug } from './monsterUtils';
 import { createMonsterDataIframe } from '../createMonsterDataIframe';
 
 // Local Storage Keys
@@ -255,11 +256,6 @@ export async function getMonstersAsync(): Promise<Monster[]> {
     console.error("Erreur lors de la récupération des monstres:", error);
     return [];
   }
-}
-
-// Fonction utilitaire pour générer des identifiants uniques
-function generateUniqueId(): string {
-  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
 // Fonction pour calculer l'XP à partir du CR
@@ -1440,56 +1436,6 @@ function adaptCompleteMonsterData(monsterData: any): any {
   console.log(`[adaptCompleteMonsterData] Returning ${result.name} with ${result.traits?.length || 0} traits, ${result.actions?.length || 0} actions`);
 
   return result;
-}
-
-// Fonction pour normaliser les noms de monstres en slugs utilisables dans les URLs
-export function getAideDDMonsterSlug(monsterName: string): string {
-  // Normaliser le nom pour recherche
-  const normalizedName = monsterName.trim();
-
-  // Vérifier les cas spéciaux
-  const specialCases: Record<string, string> = {
-    'Dragon d\'ombre rouge jeune': 'dragon-d-ombre-rouge-jeune',
-    'Dragon d\'ombre rouge, jeune': 'dragon-d-ombre-rouge-jeune',
-    'Dragon d\'ombre rouge': 'dragon-d-ombre-rouge-jeune',
-    'Dragon dombre rouge jeune': 'dragon-d-ombre-rouge-jeune',
-    'Béhir': 'behir',
-    'Behir': 'behir',
-    'Arbre éveillé': 'arbre-eveille',
-    'Balor': 'balor',
-    'Dragon d\'airain ancien': 'dragon-d-airain-ancien',
-    'Dragon d\'or ancien': 'dragon-d-or-ancien',
-    'Allosaure': 'allosaure',
-    'Allosaurus': 'allosaure',
-    'Androsphinx': 'androsphinx',
-    'Ankheg': 'ankheg'
-  };
-
-  if (specialCases[normalizedName]) {
-    return specialCases[normalizedName];
-  }
-
-  // Convertir en format URL si pas trouvé dans les cas spéciaux
-  let slug = normalizedName.toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, ''); // Enlever les accents
-
-  // Correction spéciale pour les apostrophes: 'd'ombre' devient 'd-ombre'
-  slug = slug.replace(/'(\w)/g, '-$1');
-
-  // Traitement spécial pour les apostrophes
-  slug = slug.replace(/([a-z])\'([a-z])/g, '$1-$2');
-
-  // Remplacer les espaces par des tirets
-  slug = slug.replace(/ /g, '-');
-
-  // Supprimer les caractères non alphanumériques (sauf les tirets)
-  slug = slug.replace(/[^a-z0-9-]/g, '');
-
-  // Éviter les tirets consécutifs
-  slug = slug.replace(/-+/g, '-');
-
-  return slug;
 }
 
 // Fonction pour initialiser la base de données complète

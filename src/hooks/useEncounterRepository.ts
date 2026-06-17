@@ -44,7 +44,7 @@ export const useEncounterRepository = () => {
                     unsubscribeEncounters = subscribeToEncounters(
                         (fetchedEncounters) => {
                             // Transformer avec les localParties en fallback immédiat ou fetchedParties si dispo (asynchrone)
-                            // Note: Comme les subscriptions sont async, on peut avoir une desynchro temporaire
+                            // Note: Comme les subscriptions sont async, on peut avoir une désynchronisation temporaire
                             // Idéalement on devrait combiner les streams, mais ici on fait au mieux
                             const currentParties = getLocalParties(); // Fallback
                             const transformed = transformLocalEncounters(fetchedEncounters, parties.length > 0 ? parties : currentParties);
