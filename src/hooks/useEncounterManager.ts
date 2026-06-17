@@ -1,27 +1,20 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { v4 as uuid } from 'uuid';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebase/firebase';
 import { useAuth } from '../auth/AuthContext';
 import { useToast } from './use-toast';
-import { Encounter as EncounterType, EncounterParticipant, UrlMapping, MonsterNameMapping } from '../lib/types';
-import { updateFirestoreEncounter, updatePlayer, subscribeToParties } from '../lib/firebaseApi';
-import { useDnDBeyondLive } from '../hooks/useDnDBeyondLive';
-import { useBesaceSync, pushTrameCommand, registerLocalChange } from '../hooks/useBesaceSync';
+import { EncounterParticipant, UrlMapping, MonsterNameMapping } from '../lib/types';
 import {
-    extractNumericHP,
-    getConditionInfo,
-    estimateDexModifier,
-    calculateMovementSpeed,
     createGenericMonster,
 } from '../lib/EncounterUtils';
-import { getAideDDMonsterSlug, getAideDDMonsterName } from '../lib/monsterUtils';
+import { getAideDDMonsterSlug } from '../lib/monsterUtils';
 // fetchMonsterFromAideDD aliased as getMonsterFromAideDD in component
 import { fetchMonsterFromAideDD as getMonsterFromAideDD } from '../lib/api';
-// NEW Import
-import { CombatLogEntry, EncounterCondition } from '../lib/types';
-import { migrateConditions } from '../lib/EncounterUtils';
+import type { EncounterState } from './encounter/types';
+import { useCombatConditions } from './encounter/useCombatConditions';
+import { useCombatLog } from './encounter/useCombatLog';
+import { useCombatSync } from './encounter/useCombatSync';
+import { useCombatTurn } from './encounter/useCombatTurn';
+import { useCombatHP } from './encounter/useCombatHP';
 
 export const useEncounterManager = () => {
     const { encounterId } = useParams<{ encounterId?: string }>();
@@ -30,16 +23,7 @@ export const useEncounterManager = () => {
     const { toast } = useToast();
 
     // --- State ---
-    const [encounter, setEncounter] = useState<{
-        id?: string;
-        name: string;
-        participants: EncounterParticipant[];
-        currentTurn: number;
-        round: number;
-        party?: { id: string; name: string };
-        combatLog: CombatLogEntry[];
-        folderId?: string;
-    }>({
+    const [encounter, setEncounter] = useState<EncounterState>({
         name: 'Rencontre',
         participants: [],
         currentTurn: 0,
@@ -71,536 +55,30 @@ export const useEncounterManager = () => {
         return [...encounter.participants].sort((a, b) => b.initiative - a.initiative);
     }, [encounter.participants]);
 
-    // --- Effects ---
-
-    // Load Maps (Name Map & URL Map)
-    useEffect(() => {
-        // Load Name Map
-        fetch('/data/aidedd-monster-name-mapping.json')
-            .then(res => res.json())
-            .then(data => setMonsterNameMap(data))
-            .catch(err => console.error("Error loading name map", err));
-
-        // Load URL Map
-        fetch('/data/aidedd-monster-names.txt')
-            .then(res => res.text())
-            .then(data => {
-                const lines = data.split('\n').filter(line => line.trim() !== '');
-                const mappings: UrlMapping = {};
-                lines.forEach(slug => {
-                    const readableName = slug
-                        .split('-')
-                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                        .join(' ')
-                        .replace(/([Gg])eant(e?)/g, '$1éant$2')
-                        .replace(/([Ee])lementaire/g, '$1lémentaire')
-                        .replace(/([Ee])veille/g, '$1veillé');
-                    mappings[readableName] = slug;
-                    const unaccented = readableName.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-                    if (unaccented !== readableName) mappings[unaccented] = slug;
-                });
-                setUrlMap(mappings);
-            })
-            .catch(err => console.error("Error loading URL map", err));
-    }, []);
-
-    // Load Encounter Logic (Session or Firestore or LocalStorage)
-    useEffect(() => {
-        if (encounter.participants.length > 0) return;
-
-        const loadData = async () => {
-            // Delay for sessionStorage
-            await new Promise(r => setTimeout(r, 500));
-
-            const searchParams = new URLSearchParams(window.location.search);
-            const source = searchParams.get('source');
-
-            try {
-                if (source === 'session') {
-                    const sessionData = sessionStorage.getItem('current_encounter');
-                    if (sessionData) {
-                        const parsed = JSON.parse(sessionData);
-                        if (parsed.participants?.length > 0) {
-                            setEncounter({
-                                name: parsed.name || "Rencontre",
-                                participants: parsed.participants,
-                                currentTurn: parsed.currentTurn || 0,
-                                round: parsed.round || 1,
-                                combatLog: parsed.combatLog || []
-                            });
-                            // Trust session data - do not force reload
-                            // The useEffect for defaults will catch any default-only monsters if needed
-                            toast({ title: "Rencontre chargée", description: `${parsed.name} chargée.` });
-                            return;
-                        }
-                    } else {
-                        toast({ title: "Erreur", description: "Aucune donnée de session.", variant: "destructive" });
-                        return;
-                    }
-                } else if (encounterId) {
-                    await loadSavedEncounter();
-                    return;
-                }
-            } catch (e) {
-                console.error("Error loading encounter", e);
-                toast({ title: "Erreur", description: "Échec du chargement.", variant: "destructive" });
-            }
-        };
-        loadData();
-    }, [encounterId]);
-
-    // Auto-load monster data on add OR if data is missing (Heal corrupted data)
-    useEffect(() => {
-        const monsterParticipants = encounter.participants.filter(p => !p.isPC);
-        if (monsterParticipants.length > 0) {
-            // Check for defaults OR missing actions (corrupted save)
-            // Note: Check for empty arrays too, as Zod/Serialization might have left them as []
-            const needsUpdate = monsterParticipants.filter(p =>
-                (p.maxHp === 10 && p.ac === 10) ||
-                ((!p.actions || p.actions.length === 0) && (!p.traits || p.traits.length === 0) && p.name !== 'Monstre')
-            );
-
-            if (needsUpdate.length > 0) {
-                console.log("Healing/Loading monster data for:", needsUpdate.map(p => p.name));
-                const loadData = async () => {
-                    for (const p of needsUpdate) await loadRealMonsterData(p.id);
-                };
-                loadData();
-            }
-        }
-    }, [encounter.participants.length, encounter.participants]); // Added dependency on participants content deep check effectively
-
     // Ref stable pour accéder aux participants sans dépendance dans useCallback
     const participantsRef = useRef(encounter.participants);
     useEffect(() => {
         participantsRef.current = encounter.participants;
     }, [encounter.participants]);
 
-    // Callback stable pour éviter de reset le timer du hook à chaque rendu
-    // Callback stable pour éviter de reset le timer du hook à chaque rendu
-    const handleDndBeyondUpdate = useCallback((id: string, updates: Partial<EncounterParticipant>) => {
-        const participant = participantsRef.current.find(p => p.id === id);
+    // --- Sub-hooks wiring ---
+    const { notifyConcentrationCheck, decrementConditionDurations, notifyStartOfTurnConditions } = useCombatConditions({ toast });
+    const { createLogEntry } = useCombatLog({ setEncounter });
 
-        // Concentration Check (Side Effect outside of setter)
-        if (participant && updates.currentHp !== undefined) {
-            const oldHp = typeof participant.currentHp === 'string' ? extractNumericHP(participant.currentHp) : participant.currentHp;
-            const newHpVal = typeof updates.currentHp === 'string' ? extractNumericHP(updates.currentHp) : updates.currentHp;
-
-            if (newHpVal < oldHp) {
-                if (participant.conditions?.some(c => (typeof c === 'string' ? c : c.name) === 'Concentré')) {
-                    const damageVal = oldHp - newHpVal;
-                    const dc = Math.max(10, Math.floor(damageVal / 2));
-
-                    toast({
-                        title: "Jet de Concentration Requis (Sync)",
-                        description: `${participant.name} a subi ${damageVal} dégâts (via D&D Beyond).\nDD Constitution : ${dc}`,
-                        variant: "destructive",
-                        duration: 6000
-                    });
-                }
-            }
-        }
-
-        setEncounter(prev => ({
-            ...prev,
-            participants: prev.participants.map(p => p.id === id ? { ...p, ...updates } : p)
-        }));
-    }, []);
-
-    // D&D Beyond Sync
-    useDnDBeyondLive({
-        participants: encounter.participants,
-        onUpdateHp: handleDndBeyondUpdate,
-        enabled: true
+    const { loadSavedEncounter, saveCurrentEncounterState } = useCombatSync({
+        encounter,
+        setEncounter,
+        encounterId,
+        isAuthenticated,
+        user,
+        toast,
+        setIsLoadingEncounter,
+        setIsSaving,
+        setMonsterNameMap,
+        setUrlMap,
+        participantsRef,
+        notifyConcentrationCheck,
     });
-
-    // Besace Sync
-    useBesaceSync({
-        participants: encounter.participants,
-        onUpdateParticipant: handleDndBeyondUpdate,
-        enabled: true
-    });
-
-    // Real-time Party Synchronization
-    // Subscribe to party changes and update player participants automatically
-    useEffect(() => {
-        if (!isAuthenticated || !encounter.party?.id) return;
-
-        console.log(`[PartySync] Subscribing to party ${encounter.party.id} for real-time updates`);
-
-        const unsubscribe = subscribeToParties(
-            (parties) => {
-                const currentParty = parties.find(p => p.id === encounter.party?.id);
-                if (!currentParty) {
-                    console.log('[PartySync] Party not found in subscription');
-                    return;
-                }
-
-                console.log('[PartySync] Party updated, syncing player stats...');
-
-                // Update player participants with latest party data
-                setEncounter(prev => ({
-                    ...prev,
-                    participants: prev.participants.map(p => {
-                        if (!p.isPC) return p;
-
-                        // Find matching player in updated party
-                        const player = currentParty.players.find(pl =>
-                            pl.id === p.id.replace('pc-', '') || pl.name === p.name
-                        );
-
-                        if (player) {
-                            console.log(`[PartySync] Updating ${p.name} with latest stats`);
-                            return {
-                                ...p,
-                                // Sync all player stats
-                                ac: player.ac || p.ac,
-                                maxHp: player.maxHp || p.maxHp,
-                                str: player.str,
-                                dex: player.dex,
-                                con: player.con,
-                                int: player.int,
-                                wis: player.wis,
-                                cha: player.cha,
-                                speed: player.speed,
-                                race: player.race || p.race,
-                                class: player.characterClass || p.class,
-                                level: player.level || p.level,
-                                proficiencies: player.proficiencies || p.proficiencies,
-                                dndBeyondId: player.dndBeyondId || p.dndBeyondId,
-                                besaceShareCode: player.besaceShareCode || p.besaceShareCode,
-                                syncSource: player.syncSource || p.syncSource,
-                                avatarUrl: player.avatarUrl || p.avatarUrl,
-                                // Preserve existing local state if not synced (or sync if available)
-                                conditions: p.conditions || [],
-                                tempHp: p.tempHp || 0
-                            };
-                        }
-                        return p;
-                    })
-                }));
-            },
-            (error) => {
-                console.error('[PartySync] Subscription error:', error);
-            }
-        );
-
-        return () => {
-            console.log('[PartySync] Unsubscribing from party updates');
-            unsubscribe();
-        };
-    }, [isAuthenticated, encounter.party?.id]);
-
-    // --- Auto-Save Mechanism (Retention Strategy) ---
-    const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-    useEffect(() => {
-        // 1. Immediate Session/Local Save (Synchronous)
-        // Helps with "Session Panic" - browser refresh recovery
-        if (encounter.participants.length > 0) {
-            const dataToSave = {
-                id: encounterId, // Can be undefined for session
-                name: encounter.name,
-                participants: encounter.participants,
-                currentTurn: encounter.currentTurn,
-                round: encounter.round,
-                party: encounter.party,
-                combatLog: encounter.combatLog, // Save log
-                updatedAt: new Date().toISOString()
-            };
-
-            // Session Storage (Temporary)
-            sessionStorage.setItem('current_encounter', JSON.stringify(dataToSave));
-
-            // Local Storage (Persistence)
-            if (encounterId) {
-                // Save specifics
-                localStorage.setItem(`encounter_${encounterId}`, JSON.stringify(dataToSave));
-
-                // Also update the main list if present (simplified)
-                try {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const all = JSON.parse(localStorage.getItem('dnd_encounters') || '[]');
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const idx = all.findIndex((e: any) => e.id === encounterId);
-                    if (idx >= 0) {
-                        all[idx] = { ...all[idx], ...dataToSave };
-                        localStorage.setItem('dnd_encounters', JSON.stringify(all));
-                    }
-                } catch (e) {
-                    console.error("Auto-save local list error", e);
-                }
-            }
-        }
-
-        // 2. Debounced Cloud Save (Firestore)
-        // Only if authenticated and we have an ID
-        if (isAuthenticated && encounterId) {
-            if (autoSaveTimeoutRef.current) clearTimeout(autoSaveTimeoutRef.current);
-
-            autoSaveTimeoutRef.current = setTimeout(async () => {
-                setIsSaving(true);
-                try {
-                    await updateFirestoreEncounter(encounterId, {
-                        name: encounter.name,
-                        participants: encounter.participants,
-                        currentTurn: encounter.currentTurn,
-                        round: encounter.round,
-                        combatLog: encounter.combatLog
-                    });
-                    // Optional: Subtle toast or indicator? Maybe too noisy.
-                    console.log("Auto-saved to Cloud");
-                } catch (err) {
-                    console.error("Auto-save Cloud failed", err);
-                } finally {
-                    setIsSaving(false);
-                }
-            }, 3000); // 3 seconds debounce
-        }
-
-        return () => {
-            if (autoSaveTimeoutRef.current) clearTimeout(autoSaveTimeoutRef.current);
-        };
-    }, [encounter, encounterId, isAuthenticated]);
-
-    // --- Actions ---
-
-    // Load Saved Encounter (Firestore/LocalStorage)
-    const loadSavedEncounter = async () => {
-        if (!encounterId) return;
-        setIsLoadingEncounter(true);
-        try {
-            if (isAuthenticated && user) {
-                const docRef = doc(db, 'users', user.uid, 'encounters', encounterId);
-                const snap = await getDoc(docRef);
-                if (snap.exists()) {
-                    const data = snap.data() as EncounterType;
-
-                    // Sync with latest party data if available
-                    let syncedParty = data.party;
-                    if (data.party?.id) {
-                        try {
-                            const partyRef = doc(db, 'users', user.uid, 'parties', data.party.id);
-                            const partySnap = await getDoc(partyRef);
-                            if (partySnap.exists()) {
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                syncedParty = { id: partySnap.id, ...partySnap.data() } as any;
-                                console.log("[loadSavedEncounter] Synced with latest party data");
-                            }
-                        } catch (e) {
-                            console.warn("Could not sync party", e);
-                        }
-                    }
-
-                    console.log("[loadSavedEncounter] Firestore data loaded:", {
-                        hasParticipants: !!data.participants && data.participants.length > 0,
-                        participantsCount: data.participants?.length || 0,
-                        hasMonsters: !!data.monsters,
-                        hasParty: !!syncedParty
-                    });
-
-                    let participants = data.participants || [];
-
-                    // Heal/Sync existing participants with current party stats
-                    if (participants.length > 0 && syncedParty && syncedParty.players) {
-                        participants = participants.map(p => {
-                            if (p.isPC) {
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                const player = syncedParty.players?.find((pl: any) =>
-                                    pl.id === p.id.replace('pc-', '') || pl.name === p.name
-                                );
-                                if (player) {
-                                    return {
-                                        ...p,
-                                        str: player.str,
-                                        dex: player.dex,
-                                        con: player.con,
-                                        int: player.int,
-                                        wis: player.wis,
-                                        cha: player.cha,
-                                        speed: player.speed,
-                                        race: player.race || p.race,
-                                        class: player.characterClass || p.class,
-                                        level: player.level || p.level
-                                    };
-                                }
-                            }
-                            return { ...p, conditions: migrateConditions(p.conditions) };
-                        });
-                    }
-
-                    // Only recreate participants if none exist AND we have source data
-                    if (participants.length === 0 && data.monsters && syncedParty) {
-                        console.log("[loadSavedEncounter] No participants found, creating from monsters and party");
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const playerParticipants = (syncedParty.players || []).map((player: any) => ({
-                            id: `pc-${player.id}`,
-                            name: player.name,
-                            initiative: Math.floor(Math.random() * 20) + 1,
-                            ac: player.ac || 10,
-                            currentHp: player.currentHp || player.maxHp || 10,
-                            maxHp: player.maxHp || 10,
-                            isPC: true,
-                            conditions: [],
-                            notes: '',
-                            initiativeModifier: player.initiative,
-                            dndBeyondId: player.dndBeyondId,
-                            besaceShareCode: player.besaceShareCode,
-                            syncSource: player.syncSource,
-                            avatarUrl: player.avatarUrl,
-                            level: player.level,
-                            race: player.race,
-                            class: player.characterClass,
-                            // Extended
-                            str: player.str, dex: player.dex, con: player.con, int: player.int, wis: player.wis, cha: player.cha, speed: player.speed
-                        } as EncounterParticipant));
-
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const monsterParticipants = data.monsters.flatMap(({ monster, quantity }: any) =>
-                            Array.from({ length: quantity }, (_, idx) => ({
-                                id: `monster-${monster.id}-${idx}`,
-                                name: `${monster.name} ${quantity > 1 ? String.fromCharCode(65 + idx) : ''}`.trim(),
-                                initiative: Math.floor(Math.random() * 20) + 1,
-                                ac: monster.ac || 10,
-                                currentHp: monster.hp || 10,
-                                maxHp: monster.hp || 10,
-                                isPC: false,
-                                conditions: [],
-                                notes: "",
-                                cr: monster.cr,
-                                type: monster.type,
-                                size: monster.size
-                            } as EncounterParticipant))
-                        );
-                        participants = [...playerParticipants, ...monsterParticipants];
-                    } else if (participants.length > 0) {
-                        console.log("[loadSavedEncounter] Using existing participants with full data");
-                    }
-                    setEncounter({
-                        id: encounterId,
-                        name: data.name,
-                        participants,
-                        currentTurn: data.currentTurn || 0,
-                        round: data.round || 1,
-                        party: syncedParty,
-                        combatLog: data.combatLog || [],
-                        folderId: data.folderId
-                    });
-                    toast({ title: "Chargée", description: "Rencontre chargée et synchronisée." });
-                } else {
-                    throw new Error("Introuvable (Firestore)");
-                }
-            } else {
-                // LocalStorage
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const savedEncounters = JSON.parse(localStorage.getItem('dnd_encounters') || '[]');
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const found = savedEncounters.find((e: any) => e.id === encounterId);
-                // Also check specific key
-                const specific = localStorage.getItem(`encounter_${encounterId}`);
-                const data = specific ? JSON.parse(specific) : found;
-
-                if (data) {
-                    let participants = data.participants || [];
-
-                    // Heal/Sync existing participants with party stats (Local/Session)
-                    if (participants.length > 0 && data.party && data.party.players) {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        participants = participants.map((p: any) => {
-                            if (p.isPC) {
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                const player = data.party.players.find((pl: any) =>
-                                    (pl.id && p.id.includes(pl.id)) || pl.name === p.name
-                                );
-                                if (player) {
-                                    return {
-                                        ...p,
-                                        str: player.str,
-                                        dex: player.dex,
-                                        con: player.con,
-                                        int: player.int,
-                                        wis: player.wis,
-                                        cha: player.cha,
-                                        speed: player.speed,
-                                        race: player.race || p.race,
-                                        class: player.characterClass || p.class,
-                                        level: player.level || p.level,
-                                        proficiencies: player.proficiencies || p.proficiencies
-                                    };
-                                }
-                            }
-                            return { ...p, conditions: migrateConditions(p.conditions) };
-                        });
-                    }
-                    if (participants.length === 0 && data.monsters && data.party) {
-                        // Same init logic... (can extract to helper?)
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const playerParticipants = (data.party.players || []).map((player: any) => ({
-                            id: `pc-${player.id}`,
-                            name: player.name,
-                            initiative: Math.floor(Math.random() * 20) + 1,
-                            ac: player.ac || 10,
-                            currentHp: extractNumericHP(player.currentHp || player.maxHp || 10),
-                            maxHp: extractNumericHP(player.maxHp || 10),
-                            isPC: true,
-                            conditions: [],
-                            notes: '',
-                            initiativeModifier: player.initiative,
-                            dndBeyondId: player.dndBeyondId,
-                            besaceShareCode: player.besaceShareCode,
-                            syncSource: player.syncSource,
-                            avatarUrl: player.avatarUrl,
-                            level: player.level,
-                            race: player.race,
-                            class: player.characterClass,
-                            // Extended
-                            str: player.str, dex: player.dex, con: player.con, int: player.int, wis: player.wis, cha: player.cha, speed: player.speed
-                        } as EncounterParticipant));
-
-                        const monsterParticipants = data.monsters.flatMap(({ monster, quantity }: any) =>
-                            Array.from({ length: quantity }, (_, idx) => ({
-                                id: `monster-${monster.id}-${idx}`,
-                                name: `${monster.name} ${quantity > 1 ? String.fromCharCode(65 + idx) : ''}`.trim(),
-                                initiative: Math.floor(Math.random() * 20) + 1,
-                                ac: monster.ac || 10,
-                                currentHp: extractNumericHP(monster.hp || 10),
-                                maxHp: extractNumericHP(monster.hp || 10),
-                                isPC: false,
-                                conditions: [],
-                                notes: "",
-                                cr: monster.cr,
-                                type: monster.type,
-                                size: monster.size
-                            } as EncounterParticipant))
-                        );
-                        participants = [...playerParticipants, ...monsterParticipants];
-                    }
-
-                    setEncounter({
-                        name: data.name,
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        participants: participants.map((p: any) => ({
-                            ...p,
-                            currentHp: extractNumericHP(p.currentHp),
-                            maxHp: extractNumericHP(p.maxHp)
-                        })),
-                        currentTurn: data.currentTurn || 0,
-                        round: data.round || 1,
-                        party: data.party ? { id: data.party.id, name: data.party.name } : undefined,
-                        combatLog: data.combatLog || []
-                    });
-                    toast({ title: "Chargée", description: "Rencontre locale chargée." });
-                } else {
-                    throw new Error("Introuvable (Local)");
-                }
-            }
-        } catch (err) {
-            console.error(err);
-            toast({ title: "Erreur", description: "Impossible de charger.", variant: "destructive" });
-        } finally {
-            setIsLoadingEncounter(false);
-        }
-    };
 
     const findMonsterDetails = async (name: string, forceRefresh = false) => {
         try {
@@ -668,407 +146,26 @@ export const useEncounterManager = () => {
         }
     };
 
-    // Actions implementation
-    const addLogEntry = (type: CombatLogEntry['type'], message: string, sourceId?: string, targetId?: string) => {
-        const entry: CombatLogEntry = {
-            id: uuid(),
-            timestamp: Date.now(),
-            type,
-            message,
-            sourceId,
-            targetId
-        };
-        setEncounter(prev => ({
-            ...prev,
-            combatLog: [entry, ...prev.combatLog].slice(0, 100) // Limit to 100 entries
-        }));
-    };
+    // Auto-load monster data on add OR if data is missing (Heal corrupted data)
+    useEffect(() => {
+        const monsterParticipants = encounter.participants.filter(p => !p.isPC);
+        if (monsterParticipants.length > 0) {
+            // Check for defaults OR missing actions (corrupted save)
+            // Note: Check for empty arrays too, as Zod/Serialization might have left them as []
+            const needsUpdate = monsterParticipants.filter(p =>
+                (p.maxHp === 10 && p.ac === 10) ||
+                ((!p.actions || p.actions.length === 0) && (!p.traits || p.traits.length === 0) && p.name !== 'Monstre')
+            );
 
-    const updateHp = (id: string, amount: number) => {
-        const safeAmount = Number(amount);
-        if (isNaN(safeAmount)) return;
-
-        // Calculate new HP values outside setEncounter for Besace sync
-        let besaceNewHp: number | undefined;
-        let besaceNewTempHp: number | undefined;
-        let besaceShareCode: string | undefined;
-
-        setEncounter(prev => {
-            const participant = prev.participants.find(p => p.id === id);
-            if (!participant) return prev;
-
-            const currentNumeric = typeof participant.currentHp === 'string'
-                ? extractNumericHP(participant.currentHp)
-                : participant.currentHp;
-
-            let newHp = currentNumeric;
-            let newTempHp = participant.tempHp || 0;
-            const isHeal = amount > 0;
-            const isDamage = amount < 0;
-
-
-            if (isDamage) {
-                if (participant.conditions?.some(c => (typeof c === 'string' ? c : c.name) === 'Concentré')) {
-                    const damageVal = Math.abs(amount);
-                    const dc = Math.max(10, Math.floor(damageVal / 2));
-                    toast({
-                        title: "Jet de Concentration Requis !",
-                        description: `${participant.name} a subi ${damageVal} dégâts alors qu'il était concentré.\nDD Constitution : ${dc}`,
-                        variant: "destructive",
-                        duration: 6000
-                    });
-                }
-
-                const damage = Math.abs(amount);
-                if (newTempHp > 0) {
-                    const absorbed = Math.min(newTempHp, damage);
-                    newTempHp -= absorbed;
-                    const remainingDamage = damage - absorbed;
-                    if (remainingDamage > 0) {
-                        newHp = Math.max(0, currentNumeric - remainingDamage);
-                    }
-                } else {
-                    newHp = Math.max(0, currentNumeric - damage);
-                }
-            } else if (isHeal) {
-                const maxNumeric = typeof participant.maxHp === 'string'
-                    ? extractNumericHP(participant.maxHp)
-                    : participant.maxHp;
-                newHp = Math.min(maxNumeric, currentNumeric + amount);
-            }
-
-            // Capture values for Besace sync (outside setEncounter)
-            if (participant.besaceShareCode && participant.syncSource === 'besace') {
-                besaceNewHp = newHp;
-                besaceNewTempHp = (participant.tempHp || 0) !== newTempHp ? newTempHp : undefined;
-                besaceShareCode = participant.besaceShareCode;
-            }
-
-            const msg = isHeal
-                ? `${participant.name} soigne de ${amount} PV.`
-                : `${participant.name} subit ${Math.abs(amount)} dégâts.`;
-
-            const entry: CombatLogEntry = {
-                id: uuid(),
-                timestamp: Date.now(),
-                type: isHeal ? 'heal' : 'damage',
-                message: msg,
-                targetId: id
-            };
-
-            return {
-                ...prev,
-                combatLog: [entry, ...prev.combatLog].slice(0, 100),
-                participants: prev.participants.map(p => {
-                    if (p.id !== id) return p;
-                    return {
-                        ...p,
-                        currentHp: newHp,
-                        tempHp: newTempHp
-                    };
-                })
-
-            };
-        });
-
-        // Push HP changes back to Besace for synced characters
-        if (besaceShareCode && besaceNewHp !== undefined) {
-            registerLocalChange(besaceShareCode, {
-                currentHp: besaceNewHp,
-                tempHp: besaceNewTempHp,
-            });
-            pushTrameCommand(besaceShareCode, {
-                type: 'updateHp',
-                payload: { hp: besaceNewHp },
-            }).catch(err => console.error('Besace pushHp error:', err));
-            if (besaceNewTempHp !== undefined) {
-                pushTrameCommand(besaceShareCode, {
-                    type: 'updateTempHp',
-                    payload: { tempHp: besaceNewTempHp },
-                }).catch(err => console.error('Besace pushTempHp error:', err));
-            }
-        }
-    };
-
-    const updateHpBatch = (ids: string[], amount: number) => {
-        const safeAmount = Number(amount);
-        if (isNaN(safeAmount) || ids.length === 0) return;
-
-        const besaceUpdates: { shareCode: string; newHp: number; newTempHp?: number }[] = [];
-
-        setEncounter(prev => {
-            const isHeal = amount > 0;
-            const isDamage = amount < 0;
-            let logEntries: CombatLogEntry[] = [];
-            const newLogTime = Date.now();
-            let entryCount = 0;
-
-            const updatedParticipants = prev.participants.map(p => {
-                if (!ids.includes(p.id)) return p;
-
-                const currentNumeric = typeof p.currentHp === 'string'
-                    ? extractNumericHP(p.currentHp)
-                    : p.currentHp;
-
-                let newHp = currentNumeric;
-                let newTempHp = p.tempHp || 0;
-
-                if (isDamage) {
-                    if (p.conditions?.some(c => (typeof c === 'string' ? c : c.name) === 'Concentré')) {
-                        const damageVal = Math.abs(amount);
-                        const dc = Math.max(10, Math.floor(damageVal / 2));
-                        toast({
-                            title: "Jet de Concentration Requis !",
-                            description: `${p.name} a subi ${damageVal} dégâts alors qu'il était concentré.\nDD Constitution : ${dc}`,
-                            variant: "destructive",
-                            duration: 6000
-                        });
-                    }
-
-                    const damage = Math.abs(amount);
-                    if (newTempHp > 0) {
-                        const absorbed = Math.min(newTempHp, damage);
-                        newTempHp -= absorbed;
-                        const remainingDamage = damage - absorbed;
-                        if (remainingDamage > 0) {
-                            newHp = Math.max(0, currentNumeric - remainingDamage);
-                        }
-                    } else {
-                        newHp = Math.max(0, currentNumeric - damage);
-                    }
-                } else if (isHeal) {
-                    const maxNumeric = typeof p.maxHp === 'string'
-                        ? extractNumericHP(p.maxHp)
-                        : p.maxHp;
-                    newHp = Math.min(maxNumeric, currentNumeric + amount);
-                }
-
-                // Capture Besace sync data
-                if (p.besaceShareCode && p.syncSource === 'besace') {
-                    const update: { shareCode: string; newHp: number; newTempHp?: number } = { shareCode: p.besaceShareCode, newHp };
-                    if ((p.tempHp || 0) !== newTempHp) {
-                        update.newTempHp = newTempHp;
-                    }
-                    besaceUpdates.push(update);
-                }
-
-                const msg = isHeal
-                    ? `${p.name} groupe soigne de ${amount} PV.`
-                    : `${p.name} groupe subit ${Math.abs(amount)} dégâts.`;
-
-                logEntries.push({
-                    id: uuid() + `_${entryCount++}`,
-                    timestamp: newLogTime,
-                    type: isHeal ? 'heal' : 'damage',
-                    message: msg,
-                    targetId: p.id
-                });
-
-                return {
-                    ...p,
-                    currentHp: newHp,
-                    tempHp: newTempHp
+            if (needsUpdate.length > 0) {
+                console.log("Healing/Loading monster data for:", needsUpdate.map(p => p.name));
+                const loadData = async () => {
+                    for (const p of needsUpdate) await loadRealMonsterData(p.id);
                 };
-            });
-
-            return {
-                ...prev,
-                combatLog: [...logEntries, ...prev.combatLog].slice(0, 100),
-                participants: updatedParticipants
-            };
-        });
-
-        // Push HP changes back to Besace for synced characters
-        for (const update of besaceUpdates) {
-            registerLocalChange(update.shareCode, {
-                currentHp: update.newHp,
-                tempHp: update.newTempHp,
-            });
-            pushTrameCommand(update.shareCode, {
-                type: 'updateHp',
-                payload: { hp: update.newHp },
-            }).catch(err => console.error('Besace pushHp error:', err));
-            if (update.newTempHp !== undefined) {
-                pushTrameCommand(update.shareCode, {
-                    type: 'updateTempHp',
-                    payload: { tempHp: update.newTempHp },
-                }).catch(err => console.error('Besace pushTempHp error:', err));
+                loadData();
             }
         }
-    };
-
-    const nextTurn = () => {
-        if (sortedParticipants.length === 0) return;
-        let nextIndex = encounter.currentTurn;
-        let newRound = encounter.round;
-        if (newRound === 1 && nextIndex === 0) {
-            // Init actions
-            setEncounter(prev => ({ ...prev, participants: prev.participants.map(p => ({ ...p, hasUsedAction: false, hasUsedBonusAction: false, hasUsedReaction: false, remainingMovement: calculateMovementSpeed(p) })) }));
-        }
-
-        let checked = 0;
-        do {
-            nextIndex = (nextIndex + 1) % sortedParticipants.length;
-            checked++;
-            if (nextIndex === 0) newRound++;
-            if (checked > sortedParticipants.length) {
-                // All participants are dead — signal to the UI
-                setEncounter(prev => ({ ...prev, combatOver: true }));
-                toast({
-                    title: "Fin du combat",
-                    description: "Tous les participants sont morts ou hors combat.",
-                    variant: "destructive"
-                });
-                return;
-            } // All dead
-        } while (sortedParticipants[nextIndex].currentHp <= 0);
-
-        const nextId = sortedParticipants[nextIndex].id;
-        const nextParticipant = sortedParticipants[nextIndex];
-
-        // --- Condition Notifications (Start of Turn) ---
-        if (nextParticipant.conditions && nextParticipant.conditions.length > 0) {
-            const conditionsToNotify = nextParticipant.conditions.map(c => {
-                const info = getConditionInfo(c);
-                return { name: typeof c === 'string' ? c : c.name, info };
-            });
-
-            // 1. Critical Start-of-Turn Effects
-            const startEffects = conditionsToNotify.filter(c => c.info.timing === 'start');
-            startEffects.forEach(effect => {
-                toast({
-                    title: `Effet de Début de Tour: ${effect.name}`,
-                    description: `${nextParticipant.name}: ${effect.info.description.split('\n')[0]}`,
-                    variant: "destructive"
-                });
-            });
-
-            // 2. General Reminder (if not just start effects)
-            const otherConditions = conditionsToNotify.filter(c => c.info.timing !== 'start');
-            if (otherConditions.length > 0) {
-                otherConditions.forEach(c => {
-                    toast({
-                        title: `Rappel Condition: ${c.name} (${nextParticipant.name})`,
-                        description: c.info.description,
-                        duration: 6000
-                    });
-                });
-            }
-        }
-
-        // Log turn change
-        const turnMsg = `Tour de ${sortedParticipants[nextIndex].name} (Round ${newRound})`;
-
-        setEncounter(prev => {
-            // Handle Condition Duration Decrement on Turn Start
-            const participantWithDecrementedConditions = sortedParticipants[nextIndex];
-            // Logic: Check existing participant in state, not sorted (which might be stale).
-            // Actually, we should map over all.
-            const updatedParticipants = prev.participants.map(p => {
-                if (p.id === nextId) {
-                    // Found the one starting turn
-                    // Decrement conditions
-                    const newConditions = p.conditions.map(c => {
-                        if (c.duration > 0) return { ...c, duration: c.duration - 1 };
-                        return c;
-                    }).filter(c => c.duration !== 0); // Remove expired
-
-                    // Report expired?
-                    const expired = p.conditions.filter(c => c.duration > 0).filter(c => c.duration - 1 === 0);
-                    // We can't log easily inside map, but this simple logic handles removal.
-
-                    return {
-                        ...p,
-                        hasUsedAction: false,
-                        hasUsedBonusAction: false,
-                        hasUsedReaction: false,
-                        remainingMovement: calculateMovementSpeed(p),
-                        conditions: newConditions
-                    };
-                }
-                return p;
-            });
-
-            const entry: CombatLogEntry = {
-                id: uuid(),
-                timestamp: Date.now(),
-                type: 'turn',
-                message: turnMsg,
-                sourceId: nextId
-            };
-
-            return {
-                ...prev,
-                currentTurn: nextIndex,
-                round: newRound,
-                participants: updatedParticipants,
-                combatLog: [entry, ...prev.combatLog].slice(0, 100)
-            };
-        });
-
-        setSelectedParticipantId(null);
-        // Iframe logic
-        const active = sortedParticipants[nextIndex];
-        if (!active.isPC) openCreatureFrame(active.id);
-        else { setShowCreatureFrame(false); setSelectedCreatureUrl(null); }
-    };
-
-    const previousTurn = () => {
-        if (sortedParticipants.length === 0) return;
-        let prevIndex = encounter.currentTurn;
-        let newRound = encounter.round;
-        let checked = 0;
-        do {
-            prevIndex = prevIndex === 0 ? sortedParticipants.length - 1 : prevIndex - 1;
-            checked++;
-            if (prevIndex === sortedParticipants.length - 1 && newRound > 1) newRound--;
-            if (checked > sortedParticipants.length) return;
-        } while (sortedParticipants[prevIndex].currentHp <= 0);
-
-        // Reset actions for prev? Logic in original was "Reset actions of PREVIOUS participant" which is confusing, it presumably meant "Start of turn Logic for the participant we landed on"?
-        // Original code: resetActionsForParticipant(prevParticipantId). Yes.
-        const prevId = sortedParticipants[prevIndex].id;
-        setEncounter(prev => ({
-            ...prev,
-            currentTurn: prevIndex,
-            round: newRound,
-            participants: prev.participants.map(p => p.id === prevId ? {
-                ...p, hasUsedAction: false, hasUsedBonusAction: false, hasUsedReaction: false, remainingMovement: calculateMovementSpeed(p)
-            } : p)
-        }));
-        setSelectedParticipantId(null);
-        const active = sortedParticipants[prevIndex];
-        if (!active.isPC) openCreatureFrame(active.id);
-        else { setShowCreatureFrame(false); setSelectedCreatureUrl(null); }
-    };
-
-    const rollInitiativeForAll = () => {
-        if (!encounter.participants) return;
-        const updated = encounter.participants.map(p => {
-            if (p.isPC) return { ...p, initiative: p.initiative || 0, initiativeModifier: p.initiativeModifier || 0 };
-            const mod = p.dex ? Math.floor((p.dex - 10) / 2) : 0;
-            return { ...p, initiative: Math.floor(Math.random() * 20) + 1 + mod, initiativeModifier: mod };
-        });
-        // Sort
-        updated.sort((a, b) => {
-            if (b.initiative !== a.initiative) return b.initiative - a.initiative;
-            const aDex = a.dex ? Math.floor((a.dex - 10) / 2) : 0;
-            const bDex = b.dex ? Math.floor((b.dex - 10) / 2) : 0;
-            return bDex - aDex;
-        });
-        setEncounter(prev => ({ ...prev, participants: updated, currentTurn: 0 }));
-        toast({ title: "Initiative lancée", description: "Ordre mis à jour." });
-    };
-
-    const openCreatureFrame = async (id: string) => {
-        const p = encounter.participants.find(x => x.id === id);
-        if (!p || p.isPC) return;
-        const slug = getAideDDMonsterSlug(p.name, urlMap);
-        setSelectedCreatureUrl(`https://www.aidedd.org/dnd/monstres.php?vf=${slug}`);
-        setShowCreatureFrame(true);
-        // also load details
-        await loadMonsterOnDemand(id);
-    };
+    }, [encounter.participants.length, encounter.participants]); // Added dependency on participants content deep check effectively
 
     const loadMonsterOnDemand = async (id: string) => {
         setLoadingDetails(true);
@@ -1108,38 +205,18 @@ export const useEncounterManager = () => {
         setLoadingDetails(false);
     };
 
-    const resetEncounter = () => {
-        setEncounter(prev => ({
-            ...prev,
-            currentTurn: 0,
-            round: 1,
-            participants: prev.participants.map(p => ({
-                ...p, currentHp: p.maxHp, conditions: [], hasUsedAction: false, hasUsedBonusAction: false, hasUsedReaction: false, remainingMovement: calculateMovementSpeed(p)
-            }))
-        }));
-        setShowCreatureFrame(false);
-        setSelectedCreatureUrl(null);
+    const openCreatureFrame = async (id: string) => {
+        const p = encounter.participants.find(x => x.id === id);
+        if (!p || p.isPC) return;
+        const slug = getAideDDMonsterSlug(p.name, urlMap);
+        setSelectedCreatureUrl(`https://www.aidedd.org/dnd/monstres.php?vf=${slug}`);
+        setShowCreatureFrame(true);
+        // also load details
+        await loadMonsterOnDemand(id);
     };
 
     const removeParticipant = (id: string) => {
         setEncounter(prev => ({ ...prev, participants: prev.participants.filter(p => p.id !== id) }));
-    };
-
-    const saveCurrentEncounterState = async () => {
-        if (!isAuthenticated || !encounterId) return;
-        setIsSaving(true);
-        try {
-            await updateFirestoreEncounter(encounterId, {
-                name: encounter.name,
-                participants: encounter.participants,
-                currentTurn: encounter.currentTurn,
-                round: encounter.round,
-                combatLog: encounter.combatLog
-            });
-            toast({ title: "Sauvegardé", description: "État sauvegardé." });
-        } catch (e) {
-            toast({ title: "Erreur", description: "Échec de la sauvegarde.", variant: "destructive" });
-        } finally { setIsSaving(false); }
     };
 
     const addPlayerCharacter = (newPC: { name: string, initiative: number, ac: number, hp: number }) => {
@@ -1162,108 +239,27 @@ export const useEncounterManager = () => {
         setEncounter(prev => ({ ...prev, participants: [...prev.participants, newP] }));
     };
 
-    const updateParticipant = (id: string, updates: Partial<EncounterParticipant>) => {
-        let besaceShareCode: string | undefined;
-        let besaceNewHp: number | undefined;
-        let besaceNewTempHp: number | undefined;
+    // --- Combat Turn ---
+    const { nextTurn, previousTurn, rollInitiativeForAll, moveParticipant, resetEncounter } = useCombatTurn({
+        encounter,
+        setEncounter,
+        sortedParticipants,
+        toast,
+        setSelectedParticipantId,
+        setShowCreatureFrame,
+        setSelectedCreatureUrl,
+        openCreatureFrame,
+        decrementConditionDurations,
+        notifyStartOfTurnConditions,
+        createLogEntry,
+    });
 
-        setEncounter(prev => {
-            // Defensive coding: Force numeric types
-            const safeUpdates = { ...updates };
-            if (safeUpdates.currentHp !== undefined && typeof safeUpdates.currentHp === 'string') {
-                safeUpdates.currentHp = parseInt(safeUpdates.currentHp) || 0;
-            }
-            if (safeUpdates.maxHp !== undefined && typeof safeUpdates.maxHp === 'string' && /^\d+$/.test(safeUpdates.maxHp)) {
-                safeUpdates.maxHp = parseInt(safeUpdates.maxHp);
-            }
-            if (safeUpdates.initiative !== undefined) {
-                safeUpdates.initiative = Number(safeUpdates.initiative);
-            }
-
-            // Check for concentration if HP is changing
-            if (safeUpdates.currentHp !== undefined) {
-                const participant = prev.participants.find(p => p.id === id);
-                if (participant) {
-                    const currentHp = typeof participant.currentHp === 'string' ? extractNumericHP(participant.currentHp) : participant.currentHp;
-                    const newHp = safeUpdates.currentHp as number;
-
-                    // If taking damage
-                    if (newHp < currentHp) {
-                        if (participant.conditions?.some(c => (typeof c === 'string' ? c : c.name) === 'Concentré')) {
-                            const damageVal = currentHp - newHp;
-                            const dc = Math.max(10, Math.floor(damageVal / 2));
-
-                            toast({
-                                title: "Jet de Concentration Requis !",
-                                description: `${participant.name} a subi ${damageVal} dégâts alors qu'il était concentré.\nDD Constitution : ${dc}`,
-                                variant: "destructive",
-                                duration: 6000
-                            });
-                        }
-                    }
-
-                    // Capture Besace sync data
-                    if (participant.besaceShareCode && participant.syncSource === 'besace' && (safeUpdates.currentHp !== undefined || safeUpdates.tempHp !== undefined)) {
-                        besaceShareCode = participant.besaceShareCode;
-                        if (safeUpdates.currentHp !== undefined) {
-                            besaceNewHp = safeUpdates.currentHp as number;
-                        }
-                        if (safeUpdates.tempHp !== undefined) {
-                            besaceNewTempHp = safeUpdates.tempHp as number;
-                        }
-                    }
-                }
-            }
-
-            return {
-                ...prev,
-                participants: prev.participants.map(p => p.id === id ? { ...p, ...safeUpdates } : p)
-            };
-        });
-
-        // Push HP changes back to Besace for synced characters
-        if (besaceShareCode && (besaceNewHp !== undefined || besaceNewTempHp !== undefined)) {
-            registerLocalChange(besaceShareCode, {
-                currentHp: besaceNewHp,
-                tempHp: besaceNewTempHp,
-            });
-            if (besaceNewHp !== undefined) {
-                pushTrameCommand(besaceShareCode, {
-                    type: 'updateHp',
-                    payload: { hp: besaceNewHp },
-                }).catch(err => console.error('Besace pushHp error:', err));
-            }
-            if (besaceNewTempHp !== undefined) {
-                pushTrameCommand(besaceShareCode, {
-                    type: 'updateTempHp',
-                    payload: { tempHp: besaceNewTempHp },
-                }).catch(err => console.error('Besace pushTempHp error:', err));
-            }
-        }
-    };
-
-    const moveParticipant = (id: string, direction: 'up' | 'down') => {
-        const index = sortedParticipants.findIndex(p => p.id === id);
-        if (index === -1) return;
-
-        const targetIndex = direction === 'up' ? index - 1 : index + 1;
-        if (targetIndex < 0 || targetIndex >= sortedParticipants.length) return;
-
-        const target = sortedParticipants[targetIndex];
-        const current = sortedParticipants[index];
-
-        // Swap initiatives
-        const newInitiativeCurrent = target.initiative;
-        const newInitiativeTarget = current.initiative;
-
-        const updated = encounter.participants.map(p => {
-            if (p.id === current.id) return { ...p, initiative: newInitiativeCurrent };
-            if (p.id === target.id) return { ...p, initiative: newInitiativeTarget };
-            return p;
-        });
-
-        setEncounter(prev => ({ ...prev, participants: updated }));
-    };
+    // --- Combat HP ---
+    const { updateHp, updateHpBatch, updateParticipant } = useCombatHP({
+        setEncounter,
+        notifyConcentrationCheck,
+        createLogEntry,
+    });
 
     return {
         encounter,
