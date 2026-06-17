@@ -8,6 +8,7 @@
  */
 
 import type { Character } from '../types/character'
+import { getFeatById } from '../data/feats'
 
 // ============================================================================
 // TYPES DE VALIDATION
@@ -156,9 +157,7 @@ function validateFeats(character: Character, result: ValidationResult): void {
   const feats = character.feats || []
   
   feats.forEach((featId: string) => {
-    // Vérifier que le don existe
-    // Note: Pour l'instant, on accepte tous les dons (mode permissif)
-    const featExists = true // TODO: vérifier contre la liste des dons
+    const featExists = getFeatById(featId) !== undefined
     
     if (!featExists) {
       result.warnings.push({
