@@ -42,7 +42,7 @@ export default function App() {
           <Stack.Screen
             name="Home"
             component={HomeScreen}
-            options={{ title: 'D&D Story Weaver' }}
+            options={{ title: 'Trame' }}
           />
           <Stack.Screen
             name="EncounterTracker"

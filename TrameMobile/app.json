@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "D&D Story Weaver Mobile",
+    "name": "Trame Mobile",
     "slug": "trame-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -27,8 +27,6 @@
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
-    "plugins": [
-      "expo-router"
-    ]
+    "plugins": []
   }
 }
