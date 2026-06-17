@@ -44,3 +44,4 @@ check_public_monsters.cjs
 
 # Temporary scraping artifacts
 .tmp/
+*.tsbuildinfo
