@@ -1,73 +1,92 @@
-# React + TypeScript + Vite
+# Besace — Gestionnaire de personnages D&D 5e
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Application web pour créer et gérer des personnages pour Donjons & Dragons 5e.
+Communique avec [Trame](../Trame) (gestionnaire de rencontres) via la collection
+Firestore `shared_characters` pour le combat en temps réel.
 
-Currently, two official plugins are available:
+## Fonctionnalités
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Création de personnages guidée (wizard 10 étapes : race, classe, capacités, sorts, équipement…)
+- Feuille de personnage complète avec calculs automatiques (CA, initiative, bonus de maîtrise)
+- Gestion du niveau supérieur (ASI, choix de sous-classe, nouveaux sorts)
+- Système de combat avec actions, bonus, réactions, conditions, épuisement
+- Gestion de l'inventaire avec objets magiques (Aurora Builder)
+- Lanceur de dés persistant
+- Partage de personnages via codes courts pour sync combat avec Trame
+- Mode test (sans Firebase) pour E2E
 
-## React Compiler
+## Stack technique
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19 + TypeScript + Vite 7
+- Tailwind CSS v4 (via `@tailwindcss/vite`)
+- React Router v7
+- Zustand 5 (state persisté localStorage)
+- Firebase 12 (Auth + Firestore)
+- Vitest (unitaires) + Playwright (E2E)
 
-## Expanding the ESLint configuration
+## Installation
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cp .env.example .env   # renseigner les variables Firebase, ou skip pour le test mode
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+**Mode test** (sans Firebase) : `VITE_TEST_MODE=true npm run dev`
+Utilise un user factice (`test-user-001`) et `localStorage` au lieu de Firestore.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Émulateurs Firebase (optionnel, nécessite Java) :
+```bash
+firebase emulators:start
+VITE_USE_FIRESTORE_EMULATOR=true npm run dev
 ```
+
+## Scripts
+
+| Commande | Description |
+|----------|-------------|
+| `npm run dev` | Vite dev server (port 5173) |
+| `npm run build` | Typecheck (`tsc -b`) + build production |
+| `npm run lint` | ESLint 9 flat config |
+| `npm test` | Vitest (unitaires, jsdom) |
+| `npm run test:watch` | Vitest watch mode |
+| `npm run test:e2e` | Playwright (nécessite Vite sur :5173 + `VITE_TEST_MODE=true`) |
+| `npm run test:daemon` | Vite test mode + cycles E2E en continu |
+| `npm run preview` | Preview du build production |
+
+**Tester un fichier unitaire :** `npx vitest run src/utils/combat-engine.test.ts`
+
+## Architecture
+
+```
+src/
+  main.tsx          → StrictMode > AuthProvider > BrowserRouter > App
+  App.tsx           → Route tree (11 pages + 10 étapes wizard)
+  contexts/         → AuthContext, CharacterContext, WizardContext
+  stores/           → combatStore, diceStore (Zustand 5, persisté localStorage)
+  lib/              → firebase.ts, combatSync.ts (sync Trame), dataStore.ts
+  types/            → character, combat, inventory, levelup, spells, aurora-v2
+  utils/            → combat-engine, conditions-engine, rules-engine, feat-effects
+  data/             → classFeatures, classes, races, feats, subclasses, spells
+  hooks/            → useAuroraData, useSettings, useDarkMode
+  components/       → composants UI + ui/ (primitives) + combat/ + spells/
+  pages/            → HomePage, CharacterPage, CombatSheetPage, InventoryPage, ...
+  pages/wizard/     → 10 étapes (NameStep, RaceStep, ClassStep, ...)
+
+public/data/        → Aurora Builder JSON (spells, feats, items, invocations)
+scripts/            → convert-aurora.ts + parsers/ (XML Aurora → JSON)
+tests/e2e/          → 9 scénarios Playwright + page objects + daemon
+```
+
+## Conventions clés
+
+- **Toute l'UI et les commentaires sont en français**
+- **Zustand `persist`** : combat et dés survivent au refresh via localStorage
+- **CharacterContext** est la source de vérité du personnage chargé
+- **Sync combat** : les personnages partagés sont dans Firestore `shared_characters`,
+  accessibles via codes de 6 caractères
+- **Pipeline Aurora Builder** : `scripts/convert-aurora.ts` convertit le XML depuis
+  [aurorabuilder/elements](https://github.com/aurorabuilder/elements) vers JSON dans `public/data/`
+
+## Licence
+
+MIT
