@@ -3,62 +3,7 @@ import { doc, onSnapshot, type Unsubscribe } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { EncounterParticipant } from '../lib/types';
 import { toast } from '@/hooks/use-toast';
-
-interface AbilityScoreMap {
-    str: number;
-    dex: number;
-    con: number;
-    int: number;
-    wis: number;
-    cha: number;
-}
-
-interface EquipmentSummaryItem {
-    name: string;
-    type: string;
-    equipped: boolean;
-    attuned: boolean;
-    rarity?: string;
-    acBonus?: number;
-    attackBonus?: number;
-    damageBonus?: number;
-    abilityBonus?: Partial<AbilityScoreMap>;
-    saveBonus?: number;
-}
-
-interface CombatState {
-    characterId: string;
-    characterName: string;
-    race: string;
-    className: string;
-    level: number;
-    currentHp: number;
-    maxHp: number;
-    tempHp: number;
-    ac: number;
-    conditions: string[];
-    deathSaves: { successes: number; failures: number };
-    hitDiceUsed: number;
-    hitDiceMax: number;
-    hitDieSize: number;
-    spellSlotsUsed: number[];
-    spellSlotsMax: number[];
-    avatarUrl?: string;
-abilityScores?: AbilityScoreMap;
-    abilityModifiers?: AbilityScoreMap;
-    proficiencyBonus?: number;
-    speed?: number;
-    savingThrows?: string[];
-    equipmentSummary?: EquipmentSummaryItem[];
-}
-
-interface TrameCommand {
-    id: string;
-    type: 'updateTempHp' | 'addCondition' | 'removeCondition' | 'updateLevel' | 'updateHp' | 'addInspiration';
-    payload: Record<string, unknown>;
-    timestamp: number;
-    processed?: boolean;
-}
+import { type FirestoreCombatState as CombatState, type TrameCommand } from '@trame-besace/shared-types';
 
 function shallowEqual(a: unknown, b: unknown): boolean {
     if (a === b) return true;

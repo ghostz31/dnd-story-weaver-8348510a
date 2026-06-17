@@ -1,81 +1,98 @@
 rules_version = '2';
+
+// Règles Firestore unifiées pour Trame + Besace.
+// Source unique — déployée sur les deux projets.
+// Voir packages/shared-types pour les types correspondants.
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    // === Règles de sécurité Firestore pour le projet Trame ===
-    
-    // Fonction helper pour vérifier l'authentification
+
     function isAuthenticated() {
       return request.auth != null;
     }
-    
-    // Fonction helper pour vérifier que l'utilisateur accède à ses propres données
+
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
-    
-    // === Données utilisateur (Strictement Privé) ===
-    // /!\ CRITIQUE : Seul l'utilisateur propriétaire peut lire ou écrire ses données.
-    // Cela protège l'email, les préférences, et surtout les liens D&D Beyond.
+
+    function isSharedCharOwner() {
+      return isAuthenticated() && resource.data.ownerId == request.auth.uid;
+    }
+
+    function isSharedCharCreator() {
+      return isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
+    }
+
+    // === Données utilisateur (strictement privé) ===
     match /users/{userId} {
       allow read, write: if isOwner(userId);
-      
-      // Sous-collections de l'utilisateur (Héritent de la protection, mais explicité pour clarté)
-      // Les liens D&D Beyond sont souvent dans 'participants' au sein des encounters ou parties.
+
       match /parties/{partyId} {
         allow read, write: if isOwner(userId);
       }
-      
+
       match /encounters/{encounterId} {
         allow read, write: if isOwner(userId);
       }
-      
+
       match /monsters/{monsterId} {
         allow read, write: if isOwner(userId);
       }
 
-      // Règle "catch-all" pour toutes autres sous-collections futures de l'utilisateur
+      match /characters/{characterId} {
+        allow read, write: if isOwner(userId);
+      }
+
       match /{document=**} {
         allow read, write: if isOwner(userId);
       }
     }
-    
-    // === Collection globale de monstres (Lecture publique authentifiée, Écriture Admin) ===
-    // Ces données ne contiennent PAS d'infos utilisateurs privées.
+
+    // === Collection globale de monstres (Trame) ===
     match /monsters/{monsterId} {
       allow read: if isAuthenticated();
-      // Écriture restreinte aux admins uniquement
       allow write: if isAuthenticated() && request.auth.token.admin == true;
     }
-    
-    // === Partage de Rencontres et Monstres (Lecture publique, Écriture Auth) ===
+
+    // === Partage de rencontres (Trame) ===
     match /shared_encounters/{shareId} {
       allow read: if true;
       allow create: if isAuthenticated();
-      // Seul le propriétaire ou une incrémentation du compteur de copie est autorisé
       allow update: if isAuthenticated() && (
-        resource.data.ownerId == request.auth.uid || 
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['copiedCount']) && 
-         request.resource.data.copiedCount > resource.data.copiedCount)
+        resource.data.ownerId == request.auth.uid ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['copiedCount']) &&
+          request.resource.data.copiedCount > resource.data.copiedCount)
       );
     }
-    
+
+    // === Partage de monstres (Trame) ===
     match /shared_monsters/{shareId} {
       allow read: if true;
       allow create: if isAuthenticated();
       allow update: if isAuthenticated() && (
-        resource.data.ownerId == request.auth.uid || 
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['copiedCount']) && 
-         request.resource.data.copiedCount > resource.data.copiedCount)
+        resource.data.ownerId == request.auth.uid ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['copiedCount']) &&
+          request.resource.data.copiedCount > resource.data.copiedCount)
       );
     }
 
-    // === Personnages partagés depuis Besace (Lecture publique authentifiée) ===
-    // Permet au MJ sur Trame de lire et d'envoyer des commandes en temps réel
+    // === Personnages partagés depuis Besace (sync combat avec Trame) ===
+    // Lecture : tout utilisateur authentifié (le MJ sur Trame lit les stats).
+    // Création : seul le propriétaire du personnage (Besace).
+    // Update : le propriétaire (Besace met à jour le combat state)
+    //          OU n'importe quel authentifié pour le champ `commands` uniquement
+    //          (Trame MJ envoie des commandes via arrayUnion).
+    // Delete : seul le propriétaire.
     match /shared_characters/{shareCode} {
       allow read: if isAuthenticated();
-      // Écriture par Trame (envoi de commandes) et Besace (mise à jour du combat state)
-      allow create, update: if isAuthenticated();
-      allow delete: if isAuthenticated();
+      allow create: if isSharedCharCreator();
+      allow delete: if isSharedCharOwner();
+      allow update: if isSharedCharOwner() ||
+        (
+          isAuthenticated() &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['commands', 'updatedAt']) &&
+          request.resource.data.commands.size() >= resource.data.commands.size()
+        );
     }
 
     // === Bloquer tout accès par défaut ===

@@ -41,6 +41,7 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@trame-besace/shared-types": path.resolve(__dirname, "../packages/shared-types/index.ts"),
     },
   },
   test: {
