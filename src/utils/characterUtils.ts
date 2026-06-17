@@ -1,5 +1,4 @@
-import type { Character, CharacterCreation, AbilityScores } from '../types/character'
-import type { StoredCharacter } from '../contexts/CharacterContext'
+import type { Character, CharacterCreation, AbilityScores, StoredCharacter } from '../types/character'
 import { getFeatById } from '../data/feats'
 
 export function getFinalAbilityScores(character: Character | CharacterCreation | StoredCharacter): AbilityScores {

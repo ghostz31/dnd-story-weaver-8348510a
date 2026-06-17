@@ -1,15 +1,11 @@
-import type { ReactNode } from 'react'
+import { Outlet } from 'react-router-dom'
 import { BottomNav } from './BottomNav'
 import { DesktopSidebar } from './DesktopSidebar'
 import { TutorialOverlay } from './TutorialOverlay'
 import { Toaster } from './ui/Toaster'
 import { useSettings } from '../hooks/useSettings'
 
-interface LayoutProps {
-    children: ReactNode
-}
-
-export function Layout({ children }: LayoutProps) {
+export function Layout() {
     const { settings, completeTutorial, setTutorialStep } = useSettings()
 
     const showTutorial = !settings.tutorialCompleted && settings.tutorialStep < 5
@@ -24,7 +20,7 @@ export function Layout({ children }: LayoutProps) {
                 className="flex-1 overflow-y-auto px-4 pt-4 lg:pt-6 lg:px-8 lg:pb-6"
                 style={{ paddingBottom: 'calc(80px + var(--safe-bottom))' }}
             >
-                {children}
+                <Outlet />
             </main>
 
             {/* Bottom navigation — mobile only */}

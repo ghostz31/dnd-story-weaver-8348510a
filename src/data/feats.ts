@@ -3,7 +3,7 @@
 // Sources : PHB, XGtE, TCoE
 // ─────────────────────────────────────────────
 
-import type { FeatEffects } from '../utils/feat-effects'
+import type { FeatEffects } from '../types/feat'
 
 export type FeatSource = 'PHB' | 'XGtE' | 'TCoE'
 

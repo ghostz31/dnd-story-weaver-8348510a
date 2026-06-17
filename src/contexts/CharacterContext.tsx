@@ -3,7 +3,7 @@ import { useAuth } from './AuthContext'
 import { dataStore } from '../lib/dataStore'
 import { serverTimestamp } from 'firebase/firestore'
 import { publishCombatState, generateShareCode, unpublishCombatState, subscribeToTrameCommands, clearTrameCommands } from '../lib/combatSync'
-import type { Character, Race, CharacterClass, AbilityScores, SessionNote } from '../types/character'
+import type { Character, Race, CharacterClass, AbilityScores, SessionNote, StoredCharacter, DeathSaves, BonusSource, BonusBreakdown } from '../types/character'
 import type { InventoryItem, Currency, CharacterInventory } from '../types/inventory'
 import type { Attack } from '../types/combat'
 import type { LevelUpChoices, LevelUpInfo } from '../types/levelup'
@@ -17,88 +17,10 @@ import { computeFeatEffects } from '../utils/feat-effects'
 import { normalizeClassId, normalizeRaceId } from '../utils/feature-helpers'
 import { getClassFeaturesAtLevel } from '../data/classFeatures'
 
+// Re-export pour compatibilité des imports existants
+export type { StoredCharacter, DeathSaves, BonusSource, BonusBreakdown }
+
 const SELECTED_CHAR_KEY = 'besace-selected-character'
-
-// Jets de sauvegarde contre la mort
-export interface DeathSaves {
-    successes: number
-    failures: number
-}
-
-// ─── Breakdown des bonus (détail du calcul) ───
-export interface BonusSource {
-    label: string
-    value: number
-}
-
-export interface BonusBreakdown {
-    total: number
-    sources: BonusSource[]
-}
-
-// Type complet du personnage stocké en Firestore
-export interface StoredCharacter {
-    id: string
-    name: string
-    race: Race | null
-    subrace: string | null
-    characterClass: CharacterClass | null
-    abilityScores: AbilityScores
-    background: string | null
-    skillProficiencies: string[]
-    alignment: string
-    personalityTraits: string
-    ideals: string
-    bonds: string
-    flaws: string
-    hp: number
-    currentHp?: number
-    tempHp?: number
-    ac: number
-    level: number
-    userId: string
-    createdAt: unknown
-    updatedAt: unknown
-    // Inventaire
-    inventory?: CharacterInventory
-    // Emplacements de sorts utilisés (par niveau: index 0 = niveau 1)
-    spellSlotsUsed?: number[]
-    // Attaques configurées
-    attacks?: Attack[]
-    // Sous-classe et Sorts
-    subclass?: string
-    knownSpells?: string[]
-    preparedSpells?: string[]
-    // Feats et Choix ASI
-    feats?: string[]
-    asiChoices?: Record<number, AsiChoice>
-    // Avatar du personnage (base64 data URL)
-    avatarUrl?: string
-    // Jets de sauvegarde contre la mort
-    deathSaves?: DeathSaves
-    // Dés de vie utilisés
-    hitDiceUsed?: number
-    // Conditions actives
-    activeConditions?: string[]
-    // Code de partage pour sync avec Trame
-    shareCode?: string
-    // Niveau d'épuisement (1-6)
-    exhaustionLevel?: number
-    // Ressources de classe utilisées
-    classResourcesUsed?: Record<string, number>
-    // Métamagie choisie (Ensorceleur)
-    metamagicChoices?: string[]
-    // Attribution des bonus raciaux libres TCoE
-    customAbilityBonuses?: Partial<AbilityScores>
-    // Options de classe (style de combat, etc.)
-    classOptions?: Record<string, string>
-    // Toggles de dons actifs (ex: GWM, Sharpshooter)
-    featToggles?: Record<string, boolean>
-    // Compétences avec expertise (double bonus de maîtrise)
-    expertiseSkills?: string[]
-    // Notes de session
-    sessionNotes?: SessionNote[]
-}
 
 interface CharacterContextType {
     character: StoredCharacter | null

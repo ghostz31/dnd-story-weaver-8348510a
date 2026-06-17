@@ -1,4 +1,5 @@
-import { useCharacter, type StoredCharacter } from '../../contexts/CharacterContext'
+import { useCharacter } from '../../contexts/CharacterContext'
+import type { StoredCharacter } from '../../types/character'
 import { getAvailableToggles } from '../../utils/feat-effects'
 
 interface FeatTogglesBarProps {

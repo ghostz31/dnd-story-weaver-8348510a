@@ -2,8 +2,7 @@
  * Adapter: convert StoredCharacter (Firestore format) to Character (Combat Engine format)
  */
 
-import type { Character, Race, CharacterClass, AbilityScores } from '../types/character'
-import type { StoredCharacter } from '../contexts/CharacterContext'
+import type { Character, Race, CharacterClass, AbilityScores, StoredCharacter } from '../types/character'
 import { getProficiencyBonus } from './rules-engine'
 
 export function storedCharacterToCombatCharacter(stored: StoredCharacter): Character {

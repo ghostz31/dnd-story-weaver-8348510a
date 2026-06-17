@@ -1,5 +1,6 @@
 // Types for D&D 5e Character
-import type { InventoryItem, Currency } from './inventory'
+import type { InventoryItem, Currency, CharacterInventory } from './inventory'
+import type { Attack } from './combat'
 
 export interface AbilityScores {
     str: number
@@ -266,7 +267,7 @@ export interface Spell {
     concentration?: boolean
 }
 
-// Wizard steps type
+    // Wizard steps type
 export type WizardStep =
     | 'name'
     | 'race'
@@ -278,3 +279,66 @@ export type WizardStep =
     | 'background'
     | 'equipment'
     | 'review'
+
+// ─── Types pour le combat et le stockage ───
+
+export interface DeathSaves {
+    successes: number
+    failures: number
+}
+
+export interface BonusSource {
+    label: string
+    value: number
+}
+
+export interface BonusBreakdown {
+    total: number
+    sources: BonusSource[]
+}
+
+// Type complet du personnage stocké en Firestore
+export interface StoredCharacter {
+    id: string
+    name: string
+    race: Race | null
+    subrace: string | null
+    characterClass: CharacterClass | null
+    abilityScores: AbilityScores
+    background: string | null
+    skillProficiencies: string[]
+    alignment: string
+    personalityTraits: string
+    ideals: string
+    bonds: string
+    flaws: string
+    hp: number
+    currentHp?: number
+    tempHp?: number
+    ac: number
+    level: number
+    userId: string
+    createdAt: unknown
+    updatedAt: unknown
+    inventory?: CharacterInventory
+    spellSlotsUsed?: number[]
+    attacks?: Attack[]
+    subclass?: string
+    knownSpells?: string[]
+    preparedSpells?: string[]
+    feats?: string[]
+    asiChoices?: Record<number, AsiChoice>
+    avatarUrl?: string
+    deathSaves?: DeathSaves
+    hitDiceUsed?: number
+    activeConditions?: string[]
+    shareCode?: string
+    exhaustionLevel?: number
+    classResourcesUsed?: Record<string, number>
+    metamagicChoices?: string[]
+    customAbilityBonuses?: Partial<AbilityScores>
+    classOptions?: Record<string, string>
+    featToggles?: Record<string, boolean>
+    expertiseSkills?: string[]
+    sessionNotes?: SessionNote[]
+}
