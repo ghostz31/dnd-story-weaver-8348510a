@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc -b --noEmit",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -31,6 +33,7 @@
     "react-router-dom": "^7.13.0",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
+    "@trame-besace/shared-types": "*",
     "zustand": "^5.0.12"
   },
   "devDependencies": {

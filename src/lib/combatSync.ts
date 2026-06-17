@@ -1,73 +1,16 @@
 import { db } from './firebase'
 import { doc, setDoc, updateDoc, serverTimestamp, onSnapshot, arrayUnion, getDoc, type Unsubscribe } from 'firebase/firestore'
+import {
+  type CombatState,
+  type TrameCommand,
+  type SharedCharacterDocument,
+  MAX_ATTUNED_SLOTS,
+  generateShareCode,
+} from '@trame-besace/shared-types'
 
-export interface AbilityScoreMap {
-    str: number
-    dex: number
-    con: number
-    int: number
-    wis: number
-    cha: number
-}
-
-export interface EquipmentSummaryItem {
-    name: string
-    type: string
-    equipped: boolean
-    attuned: boolean
-    rarity?: string
-    acBonus?: number
-    attackBonus?: number
-    damageBonus?: number
-    abilityBonus?: Partial<AbilityScoreMap>
-    saveBonus?: number
-}
-
-export interface CombatState {
-    characterId: string
-    characterName: string
-    race: string
-    className: string
-    level: number
-    currentHp: number
-    maxHp: number
-    tempHp: number
-    ac: number
-    conditions: string[]
-    deathSaves: { successes: number; failures: number }
-    hitDiceUsed: number
-    hitDiceMax: number
-    hitDieSize: number
-    spellSlotsUsed: number[]
-    spellSlotsMax: number[]
-    avatarUrl?: string
-    abilityScores: AbilityScoreMap
-    abilityModifiers: AbilityScoreMap
-    proficiencyBonus: number
-    speed: number
-    savingThrows: string[]
-    equipmentSummary: EquipmentSummaryItem[]
-    updatedAt: unknown
-}
-
-export interface TrameCommand {
-    id: string
-    type: 'updateTempHp' | 'addCondition' | 'removeCondition' | 'updateLevel' | 'updateHp' | 'addInspiration'
-    payload: Record<string, unknown>
-    timestamp: number
-    processed?: boolean
-}
-
-export const MAX_ATTUNED_SLOTS = 3
-
-export function generateShareCode(): string {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-    let code = ''
-    for (let i = 0; i < 6; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length))
-    }
-    return code
-}
+// Re-export pour compatibilité des importants existants
+export type { CombatState, TrameCommand, AbilityScoreMap, EquipmentSummaryItem } from '@trame-besace/shared-types'
+export { MAX_ATTUNED_SLOTS, generateShareCode }
 
 function stripUndefined(obj: unknown): unknown {
     if (Array.isArray(obj)) return obj.map(stripUndefined)

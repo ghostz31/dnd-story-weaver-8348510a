@@ -1,6 +1,12 @@
 rules_version = '2';
+
+// Règles Firestore unifiées pour Trame + Besace.
+// Source unique — déployée sur les deux projets.
+// Voir packages/shared-types pour les types correspondants.
+
 service cloud.firestore {
   match /databases/{database}/documents {
+
     function isAuthenticated() {
       return request.auth != null;
     }
@@ -9,9 +15,29 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // === Données utilisateur ===
+    function isSharedCharOwner() {
+      return isAuthenticated() && resource.data.ownerId == request.auth.uid;
+    }
+
+    function isSharedCharCreator() {
+      return isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
+    }
+
+    // === Données utilisateur (strictement privé) ===
     match /users/{userId} {
       allow read, write: if isOwner(userId);
+
+      match /parties/{partyId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /encounters/{encounterId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /monsters/{monsterId} {
+        allow read, write: if isOwner(userId);
+      }
 
       match /characters/{characterId} {
         allow read, write: if isOwner(userId);
@@ -22,14 +48,56 @@ service cloud.firestore {
       }
     }
 
-    // === Personnages partagés (synchro Trame) ===
-    // Lecture publique authentifiée (le MJ lit les stats de combat)
-    // Écriture uniquement par le propriétaire du personnage
+    // === Collection globale de monstres (Trame) ===
+    match /monsters/{monsterId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && request.auth.token.admin == true;
+    }
+
+    // === Partage de rencontres (Trame) ===
+    match /shared_encounters/{shareId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (
+        resource.data.ownerId == request.auth.uid ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['copiedCount']) &&
+          request.resource.data.copiedCount > resource.data.copiedCount)
+      );
+    }
+
+    // === Partage de monstres (Trame) ===
+    match /shared_monsters/{shareId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (
+        resource.data.ownerId == request.auth.uid ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['copiedCount']) &&
+          request.resource.data.copiedCount > resource.data.copiedCount)
+      );
+    }
+
+    // === Personnages partagés depuis Besace (sync combat avec Trame) ===
+    // Lecture : tout utilisateur authentifié (le MJ sur Trame lit les stats).
+    // Création : seul le propriétaire du personnage (Besace).
+    // Update : le propriétaire (Besace met à jour le combat state)
+    //          OU n'importe quel authentifié pour le champ `commands` uniquement
+    //          (Trame MJ envoie des commandes via arrayUnion).
+    // Delete : seul le propriétaire.
     match /shared_characters/{shareCode} {
       allow read: if isAuthenticated();
-      allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
-      allow update: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
-      allow delete: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
+      allow create: if isSharedCharCreator();
+      allow delete: if isSharedCharOwner();
+      allow update: if isSharedCharOwner() ||
+        (
+          isAuthenticated() &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['commands', 'updatedAt']) &&
+          request.resource.data.commands.size() >= resource.data.commands.size()
+        );
+    }
+
+    // === Bloquer tout accès par défaut ===
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
