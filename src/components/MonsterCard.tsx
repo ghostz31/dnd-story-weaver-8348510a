@@ -351,8 +351,10 @@ export function MonsterCard({ monster, onSelect, isSelected = false, variant = '
 
   // Variante compacte: image 64×64 à gauche, infos à droite, bouton "Ajouter" icône-only (M6)
   if (variant === 'compact') {
+    // Un monstre est considéré "légendaire" si son CR ≥ 20 ou qu'il dispose d'actions légendaires
+    const isLegendary = monster.cr >= 20 || (Array.isArray(monster.legendaryActions) && monster.legendaryActions.length > 0);
     return (
-      <div className={`parchment-card flex items-center gap-3 p-2 rounded-lg group relative overflow-hidden ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-transparent' : ''}`}>
+      <div className={`parchment-card monster-card flex items-center gap-3 p-2 rounded-lg group relative overflow-hidden ${isLegendary ? 'legendary-item' : ''} ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-transparent' : ''}`}>
         {/* Image 64×64 à gauche */}
         <div className="relative h-16 w-16 flex-shrink-0 rounded-md overflow-hidden bg-muted">
           <img
@@ -406,8 +408,11 @@ export function MonsterCard({ monster, onSelect, isSelected = false, variant = '
     );
   }
 
+  // Un monstre est considéré "légendaire" si son CR ≥ 20 ou qu'il dispose d'actions légendaires
+  const isLegendary = monster.cr >= 20 || (Array.isArray(monster.legendaryActions) && monster.legendaryActions.length > 0);
+
   return (
-    <div className={`parchment-card h-full flex flex-col group relative overflow-hidden rounded-xl ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-transparent' : ''}`}>
+    <div className={`parchment-card monster-card h-full flex flex-col group relative overflow-hidden rounded-xl ${isLegendary ? 'legendary-item' : ''} ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-transparent' : ''}`}>
       {/* Image de fond avec dégradé */}
       <div className="relative h-48 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />

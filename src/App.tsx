@@ -23,6 +23,7 @@ const EncounterTracker = lazy(() => import('./components/EncounterTracker'));
 const EncounterHistory = lazy(() => import('./components/EncounterHistory'));
 const PartyEditor = lazy(() => import('./components/PartyEditor'));
 const UserProfile = lazy(() => import('./components/auth/UserProfile'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 
 const PageLoader = () => (
   <div className="container mx-auto px-4 py-8 space-y-4">
@@ -76,6 +77,7 @@ function App() {
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/cookies" element={<CookiesPage />} />
                 <Route path="/news" element={<NewsPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
 
                 {/* Routes protégées */}
                 <Route path="/profile" element={

@@ -300,10 +300,12 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {filteredItems.map(item => {
                             const isFav = isFavorite(item.id, 'item');
+                            // Liseré doré animé sur les objets légendaires (effet désactivable)
+                            const isLegendary = item.rarity.toLowerCase() === 'légendaire';
                             return (
                                 <Card
                                     key={item.id}
-                                    className="cursor-pointer hover:shadow-md transition-all hover:scale-[1.01] bg-white/60 border-border/30 hover:border-primary/30 group relative"
+                                    className={`cursor-pointer hover:shadow-md transition-all hover:scale-[1.01] bg-white/60 border-border/30 hover:border-primary/30 group relative ${isLegendary ? 'legendary-item' : ''}`}
                                     onClick={() => setSelectedItem(item)}
                                 >
                                     <CardHeader className="p-4 pb-2">
@@ -359,7 +361,7 @@ const MagicItemBrowser: React.FC<Props> = ({ onSelectItem, className = '' }) => 
                     onClick={() => setSelectedItem(null)}
                 >
                     <Card
-                        className="parchment-panel w-full md:max-w-3xl h-full md:h-auto md:max-h-[90vh] overflow-hidden flex flex-col shadow-2xl animate-in slide-in-from-bottom md:fade-in md:zoom-in-95 duration-200 border-none cursor-default md:rounded-xl rounded-none"
+                        className={`parchment-panel w-full md:max-w-3xl h-full md:h-auto md:max-h-[90vh] overflow-hidden flex flex-col shadow-2xl animate-in slide-in-from-bottom md:fade-in md:zoom-in-95 duration-200 border-none cursor-default md:rounded-xl rounded-none ${selectedItem.rarity.toLowerCase() === 'légendaire' ? 'legendary-item' : ''}`}
                         onClick={(e) => e.stopPropagation()}
                     >
                         <CardHeader className="bg-primary/5 border-b border-border/20 p-4">

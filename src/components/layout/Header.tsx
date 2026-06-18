@@ -31,7 +31,8 @@ import {
   Menu,
   X,
   Gem,
-  Library
+  Library,
+  Settings
 } from 'lucide-react';
 import { ModeToggle } from '@/components/ModeToggle';
 
@@ -225,6 +226,17 @@ const Header: React.FC = () => {
               <Search className="h-5 w-5" />
             </Button>
             <ModeToggle />
+            <Button
+              variant="ghost"
+              size="icon"
+              asChild
+              className="touch-target h-10 w-10"
+              title="Paramètres"
+            >
+              <Link to="/settings" aria-label="Paramètres">
+                <Settings className="h-5 w-5" />
+              </Link>
+            </Button>
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

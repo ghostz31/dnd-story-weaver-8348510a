@@ -123,7 +123,7 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                     className={`
                     border-b transition-colors data-[state=selected]:bg-muted
                     cursor-pointer
-                    ${isCurrentTurn ? 'bg-primary/10 hover:bg-primary/20 border-l-4 border-primary shadow-sm' : 'hover:bg-muted/50'}
+                    ${isCurrentTurn ? 'bg-primary/10 hover:bg-primary/20 border-l-4 border-primary shadow-sm combatant-active' : 'hover:bg-muted/50'}
                     ${!isCurrentTurn && participant.isPC ? 'bg-blue-950/5 dark:bg-blue-950/20' : ''}
                     ${!isCurrentTurn && !participant.isPC ? 'bg-red-950/5 dark:bg-red-950/20' : ''}
                     ${participant.currentHp <= 0 ? 'opacity-50 grayscale' : ''}

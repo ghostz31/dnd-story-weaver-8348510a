@@ -27,5 +27,5 @@
       "@trame-besace/shared-types": ["../packages/shared-types/index.ts"]
     }
   },
-  "include": ["src", "../packages/shared-types/index.ts"]
+  "include": ["src", "../packages/shared-types/index.ts", "../packages/shared-types/use-effects.ts", "../packages/shared-types/use-effects-hook.ts"]
 }

@@ -273,7 +273,7 @@ const EncounterTracker: React.FC = () => {
             {encounter.name}
             {encounter.participants.length > 0 && (
               <Badge className="ml-2 bg-primary">
-                Tour {encounter.round}, Initiative {encounter.currentTurn + 1}/{sortedParticipants.length}
+                <span className="round-counter">Tour {encounter.round}</span>, Initiative {encounter.currentTurn + 1}/{sortedParticipants.length}
               </Badge>
             )}
           </h1>

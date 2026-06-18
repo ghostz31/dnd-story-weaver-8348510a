@@ -45,7 +45,7 @@ const ConditionPicker: React.FC<ConditionPickerProps> = ({
                   <TooltipTrigger asChild>
                     <button
                       onClick={() => onToggle(conditionName)}
-                      className={`relative h-6 w-6 rounded-full flex items-center justify-center cursor-pointer transition-opacity hover:opacity-75 ${conditionInfo.color} border bg-background/80`}
+                      className={`relative h-6 w-6 rounded-full flex items-center justify-center cursor-pointer transition-opacity hover:opacity-75 ${conditionInfo.color} border bg-background/80 condition-active`}
                       aria-label={`${conditionName}${duration > 0 ? ` (${duration} tours restants)` : ''} - cliquer pour retirer`}
                       aria-pressed={true}
                     >
