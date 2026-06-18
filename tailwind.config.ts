@@ -30,7 +30,7 @@ export default {
 		extend: {
 			fontFamily: {
 				cinzel: ['Cinzel', 'serif'],
-				inter: ['Inter', 'sans-serif'],
+				body: ['Spectral', 'serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',

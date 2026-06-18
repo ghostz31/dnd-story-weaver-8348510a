@@ -53,7 +53,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 function App() {
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <div className="flex flex-col min-h-screen bg-background text-foreground font-inter">
+      <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
         <Header />
         <GlobalCommandPalette />
 

@@ -1,5 +1,5 @@
 /* eslint-disable */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Spectral:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -140,15 +140,15 @@
   }
 
   body {
-    @apply bg-background text-foreground font-inter antialiased;
+    @apply bg-background text-foreground font-body antialiased;
   }
 
   .font-cinzel {
     font-family: 'Cinzel', serif;
   }
 
-  .font-inter {
-    font-family: 'Inter', sans-serif;
+  .font-body {
+    font-family: 'Spectral', serif;
   }
 }
 
