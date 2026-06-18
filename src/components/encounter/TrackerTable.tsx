@@ -113,21 +113,26 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                     border-b transition-colors data-[state=selected]:bg-muted
                     cursor-pointer
                     ${isCurrentTurn ? 'bg-primary/10 hover:bg-primary/20 border-l-4 border-primary shadow-sm' : 'hover:bg-muted/50'}
-                    ${isSelected && !isCurrentTurn ? 'bg-amber-50 border-l-4 border-amber-400' : ''}
+                    ${!isCurrentTurn && participant.isPC ? 'bg-blue-950/5 dark:bg-blue-950/20' : ''}
+                    ${!isCurrentTurn && !participant.isPC ? 'bg-red-950/5 dark:bg-red-950/20' : ''}
+                    ${participant.currentHp <= 0 ? 'opacity-50 grayscale' : ''}
+                    ${isSelected && !isCurrentTurn ? 'ring-2 ring-amber-400 bg-amber-50 border-l-4 border-amber-400' : ''}
                   `}
                                     onClick={() => onSelect(participant.id)}
                                 >
                                     <TableCell>
                                         {isCurrentTurn && (
                                             <div className="flex justify-center">
-                                                <Sword className="h-5 w-5 text-blue-600 animate-pulse" />
+                                                <div className="relative">
+                                                    <Sword className="h-5 w-5 text-primary drop-shadow-[0_0_8px_hsl(var(--primary)/0.6)] animate-pulse" />
+                                                </div>
                                             </div>
                                         )}
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-3">
                                             {/* Image ou Icône */}
-                                            <div className="flex-shrink-0 w-[60px] h-[60px] rounded-full overflow-hidden bg-muted border border-border flex items-center justify-center shadow-sm">
+                                            <div className="flex-shrink-0 w-10 h-10 rounded-full overflow-hidden bg-muted border border-border flex items-center justify-center shadow-sm">
                                                 {(() => {
                                                     // Déterminer l'URL de l'image
                                                     let imageUrl: string | undefined;

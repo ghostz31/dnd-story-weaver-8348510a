@@ -15,9 +15,9 @@ const AbilityScore = ({ label, score }: { label: string; score?: number }) => {
     const modStr = mod >= 0 ? `+${mod}` : `${mod}`;
 
     return (
-        <div className="flex flex-col items-center text-[#7A200D]">
+        <div className="flex flex-col items-center text-[hsl(var(--statblock-accent))]">
             <span className="font-bold text-sm">{label}</span>
-            <span className="text-sm font-sans text-black whitespace-nowrap">
+            <span className="text-sm font-sans text-foreground whitespace-nowrap">
                 {val} ({modStr})
             </span>
         </div>
@@ -27,9 +27,9 @@ const AbilityScore = ({ label, score }: { label: string; score?: number }) => {
 const PropertyLine = ({ label, value }: { label: string; value?: string | number | React.ReactNode }) => {
     if (value === undefined || value === null || value === '') return null;
     return (
-        <div className="text-[13.5px] leading-snug text-black mb-1">
-            <span className="font-bold text-[#7A200D]">{label} </span>
-            <span className="text-black">{value}</span>
+        <div className="text-[13.5px] leading-snug text-foreground mb-1">
+            <span className="font-bold text-[hsl(var(--statblock-accent))]">{label} </span>
+            <span className="text-foreground">{value}</span>
         </div>
     );
 };
@@ -80,35 +80,35 @@ export const StatBlock: React.FC<StatBlockProps> = ({ monster, className = '', l
     return (
         <div className={containerClasses}>
             {/* Main Stat Block */}
-            <div className="flex-1 w-full bg-[#FDF1DC] border-[2px] border-[#E69A28] p-5 shadow-sm font-sans text-black relative">
+            <div className="flex-1 w-full bg-[hsl(var(--statblock-bg))] border-2 border-[hsl(var(--statblock-border))] p-5 shadow-sm font-sans text-foreground relative">
                 {/* Header Section (Full Width) */}
                 <div className="mb-4">
-                    <h1 className="font-cinzel text-3xl font-bold text-[#7A200D] tracking-wide uppercase leading-none mb-1">
+                    <h1 className="font-cinzel text-3xl font-bold text-[hsl(var(--statblock-accent))] tracking-wide uppercase leading-none mb-1">
                         {monster.name}
                     </h1>
                     {monster.originalName && monster.originalName !== monster.name && (
-                        <div className="italic text-sm text-[#7A200D] mb-1">
+                        <div className="italic text-sm text-[hsl(var(--statblock-accent))] mb-1">
                             [ {monster.originalName} ]
                         </div>
                     )}
-                    <div className="italic text-sm text-black">
+                    <div className="italic text-sm text-foreground">
                         {monster.type} {monster.subtype ? `(${monster.subtype})` : ''} de taille {monster.size}, {monster.alignment}
                     </div>
                 </div>
 
-                <Separator className="bg-[#7A200D] h-[2px] mb-4 opacity-80" />
+                <Separator className="bg-[hsl(var(--statblock-accent))] h-[2px] mb-4 opacity-80" />
 
                 <div className="space-y-4">
                     {/* STATS SECTION */}
                     <div>
                         {/* Stats: AC, HP, Speed */}
-                        <div className="space-y-1 mb-4 text-[#7A200D]">
+                        <div className="space-y-1 mb-4 text-[hsl(var(--statblock-accent))]">
                             <PropertyLine label="Classe d'Armure" value={monster.ac} />
                             <PropertyLine label="Points de Vie" value={`${monster.hp}`} />
                             <PropertyLine label="Vitesse" value={speedDisplay} />
                         </div>
 
-                        <Separator className="bg-[#7A200D] h-[2px] mb-4 opacity-80" />
+                        <Separator className="bg-[hsl(var(--statblock-accent))] h-[2px] mb-4 opacity-80" />
 
                         {/* Ability Scores */}
                         <div className={abilityGridClasses}>
@@ -120,7 +120,7 @@ export const StatBlock: React.FC<StatBlockProps> = ({ monster, className = '', l
                             <AbilityScore label="CHA" score={monster.cha} />
                         </div>
 
-                        <Separator className="bg-[#7A200D] h-[2px] mb-4 opacity-80" />
+                        <Separator className="bg-[hsl(var(--statblock-accent))] h-[2px] mb-4 opacity-80" />
 
                         {/* Skills & Details */}
                         <div className="space-y-1 mb-4 text-[13.5px]">
@@ -136,16 +136,16 @@ export const StatBlock: React.FC<StatBlockProps> = ({ monster, className = '', l
                         </div>
                     </div>
 
-                    <Separator className="bg-[#7A200D] h-[2px] mb-4 opacity-80" />
+                    <Separator className="bg-[hsl(var(--statblock-accent))] h-[2px] mb-4 opacity-80" />
 
                     {/* ABILITIES & ACTIONS SECTION */}
                     <div>
                         {/* Traits */}
                         {monster.traits && monster.traits.length > 0 && (
-                            <div className="space-y-3 mb-6 text-[#7A200D]">
+                            <div className="space-y-3 mb-6 text-[hsl(var(--statblock-accent))]">
                                 {monster.traits.map((trait, idx) => (
-                                    <div key={idx} className="text-[13.5px] leading-relaxed text-black">
-                                        <span className="font-bold italic text-black">{trait.name}. </span>
+                                    <div key={idx} className="text-[13.5px] leading-relaxed text-foreground">
+                                        <span className="font-bold italic text-foreground">{trait.name}. </span>
                                         <span dangerouslySetInnerHTML={{ __html: formatDescription(trait.desc || (trait as any).description) }} />
                                     </div>
                                 ))}
@@ -155,13 +155,13 @@ export const StatBlock: React.FC<StatBlockProps> = ({ monster, className = '', l
                         {/* Actions */}
                         {monster.actions && monster.actions.length > 0 && (
                             <div className="mb-6">
-                                <h2 className="font-sans text-lg font-normal border-b border-[#7A200D] text-[#7A200D] mb-3 uppercase tracking-wide">
+                                <h2 className="font-sans text-lg font-normal border-b border-[hsl(var(--statblock-accent))] text-[hsl(var(--statblock-accent))] mb-3 uppercase tracking-wide">
                                     Actions
                                 </h2>
                                 <div className="space-y-3">
                                     {monster.actions.map((action, idx) => (
                                         <div key={idx} className="text-[13.5px] leading-relaxed">
-                                            <span className="font-bold italic text-black">{action.name}. </span>
+                                            <span className="font-bold italic text-foreground">{action.name}. </span>
                                             <span dangerouslySetInnerHTML={{ __html: formatDescription(action.desc || (action as any).description) }} />
                                         </div>
                                     ))}
@@ -172,13 +172,13 @@ export const StatBlock: React.FC<StatBlockProps> = ({ monster, className = '', l
                         {/* Reactions */}
                         {monster.reactions && monster.reactions.length > 0 && (
                             <div className="mb-6">
-                                <h2 className="font-sans text-lg font-normal border-b border-[#7A200D] text-[#7A200D] mb-3 uppercase tracking-wide">
+                                <h2 className="font-sans text-lg font-normal border-b border-[hsl(var(--statblock-accent))] text-[hsl(var(--statblock-accent))] mb-3 uppercase tracking-wide">
                                     Réactions
                                 </h2>
                                 <div className="space-y-3">
                                     {monster.reactions.map((reaction, idx) => (
                                         <div key={idx} className="text-[13.5px] leading-relaxed">
-                                            <span className="font-bold italic text-black">{reaction.name}. </span>
+                                            <span className="font-bold italic text-foreground">{reaction.name}. </span>
                                             <span dangerouslySetInnerHTML={{ __html: formatDescription(reaction.desc || (reaction as any).description) }} />
                                         </div>
                                     ))}
@@ -189,16 +189,16 @@ export const StatBlock: React.FC<StatBlockProps> = ({ monster, className = '', l
                         {/* Legendary Actions */}
                         {monster.legendaryActions && monster.legendaryActions.length > 0 && (
                             <div className="mb-6">
-                                <h2 className="font-sans text-lg font-normal border-b border-[#7A200D] text-[#7A200D] mb-3 uppercase tracking-wide">
+                                <h2 className="font-sans text-lg font-normal border-b border-[hsl(var(--statblock-accent))] text-[hsl(var(--statblock-accent))] mb-3 uppercase tracking-wide">
                                     Actions Légendaires
                                 </h2>
-                                <p className="text-[13.5px] mb-3 text-black">
+                                <p className="text-[13.5px] mb-3 text-foreground">
                                     La créature peut effectuer 3 actions légendaires, en choisissant parmi les options suivantes. Une seule action légendaire peut être utilisée à la fois et uniquement à la fin du tour d'une autre créature. La créature récupère les actions légendaires dépensées au début de son tour.
                                 </p>
                                 <div className="space-y-3">
                                     {monster.legendaryActions.map((action, idx) => (
                                         <div key={idx} className="text-[13.5px] leading-relaxed">
-                                            <span className="font-bold italic text-black">{action.name}. </span>
+                                            <span className="font-bold italic text-foreground">{action.name}. </span>
                                             <span dangerouslySetInnerHTML={{ __html: formatDescription(action.desc || (action as any).description) }} />
                                         </div>
                                     ))}
@@ -208,7 +208,7 @@ export const StatBlock: React.FC<StatBlockProps> = ({ monster, className = '', l
                     </div>
                 </div>
 
-                <div className="mt-4 pt-2 border-t border-[#7A200D]/30 text-xs text-[#7A200D]/70 font-sans">
+                <div className="mt-4 pt-2 border-t border-[hsl(var(--statblock-accent))]/30 text-xs text-[hsl(var(--statblock-accent))]/70 font-sans">
                     Source: {monster.source || "Base de données"}
                 </div>
             </div>
@@ -216,7 +216,7 @@ export const StatBlock: React.FC<StatBlockProps> = ({ monster, className = '', l
             {/* Image Section */}
             {!hideImage && monster.image && (
                 <div className={imageContainerClasses}>
-                    <div className="border-[6px] border-double border-[#7A200D]/20 bg-white p-1 shadow-xl rounded-sm">
+                    <div className="border-[6px] border-double border-[hsl(var(--statblock-accent))]/20 bg-card p-1 shadow-xl rounded-sm">
                         <img
                             src={monster.image}
                             alt={monster.name}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardTitle, CardHeader, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -243,7 +243,16 @@ const EncounterTracker: React.FC = () => {
     }
   };
 
-
+  // Raccourcis clavier combat : →/n = tour suivant, ←/p = tour précédent
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) return;
+      if (e.key === 'ArrowRight' || e.key === 'n') actions.nextTurn();
+      if (e.key === 'ArrowLeft' || e.key === 'p') actions.previousTurn();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [actions]);
 
   return (
     <div className="w-full px-2 mx-auto py-2 pb-20 md:pb-2">

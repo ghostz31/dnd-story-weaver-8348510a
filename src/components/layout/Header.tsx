@@ -65,7 +65,7 @@ const Header: React.FC = () => {
         className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${isActive('/') ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
           } ${mobile ? 'h-12 text-base' : ''}`}
       >
-        <Link to="/" className="flex items-center">
+        <Link to="/" className="flex items-center" aria-current={isActive('/') ? 'page' : undefined}>
           <Home className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Accueil
         </Link>
       </Button>
@@ -78,7 +78,7 @@ const Header: React.FC = () => {
         className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${isActive('/parties') ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
           } ${mobile ? 'h-12 text-base' : ''}`}
       >
-        <Link to="/parties" className="flex items-center">
+        <Link to="/parties" className="flex items-center" aria-current={isActive('/parties') ? 'page' : undefined}>
           <Users className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Groupes
         </Link>
       </Button>
@@ -91,7 +91,7 @@ const Header: React.FC = () => {
         className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${isActive('/monsters') ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
           } ${mobile ? 'h-12 text-base' : ''}`}
       >
-        <Link to="/monsters" className="flex items-center">
+        <Link to="/monsters" className="flex items-center" aria-current={isActive('/monsters') ? 'page' : undefined}>
           <Book className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Bestiaire
         </Link>
       </Button>
@@ -104,7 +104,7 @@ const Header: React.FC = () => {
         className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${isActive('/grimoire') ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
           } ${mobile ? 'h-12 text-base' : ''}`}
       >
-        <Link to="/grimoire" className="flex items-center">
+        <Link to="/grimoire" className="flex items-center" aria-current={isActive('/grimoire') ? 'page' : undefined}>
           <Scroll className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Grimoire
         </Link>
       </Button>
@@ -117,7 +117,7 @@ const Header: React.FC = () => {
         className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${isActive('/items') ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
           } ${mobile ? 'h-12 text-base' : ''}`}
       >
-        <Link to="/items" className="flex items-center">
+        <Link to="/items" className="flex items-center" aria-current={isActive('/items') ? 'page' : undefined}>
           <Gem className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Objets
         </Link>
       </Button>
@@ -130,7 +130,7 @@ const Header: React.FC = () => {
         className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${(isActive('/encounters') || isActive('/custom')) ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
           } ${mobile ? 'h-12 text-base' : ''}`}
       >
-        <Link to="/encounters" className="flex items-center">
+        <Link to="/encounters" className="flex items-center" aria-current={(isActive('/encounters') || isActive('/custom')) ? 'page' : undefined}>
           <PenTool className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Rencontres
         </Link>
       </Button>
@@ -143,7 +143,7 @@ const Header: React.FC = () => {
         className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${isActive('/history') ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
           } ${mobile ? 'h-12 text-base' : ''}`}
       >
-        <Link to="/history" className="flex items-center">
+        <Link to="/history" className="flex items-center" aria-current={isActive('/history') ? 'page' : undefined}>
           <History className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Historique
         </Link>
       </Button>

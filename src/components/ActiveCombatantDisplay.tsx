@@ -147,13 +147,13 @@ const MonsterDisplay: React.FC<{ participant: EncounterParticipant; onUpdate?: (
             <Button
                 size="icon"
                 variant="ghost"
-                className="absolute top-2 right-2 z-10 h-8 w-8 bg-white/80 hover:bg-white shadow-sm"
+                className="absolute top-2 right-2 z-10 h-8 w-8 bg-card/80 hover:bg-accent shadow-sm"
                 onClick={onToggleCollapse}
                 title="Réduire le panneau"
             >
                 <ChevronLeft className="h-5 w-5" />
             </Button>
-            <div className="max-w-4xl mx-auto bg-white/50 min-h-full">
+            <div className="max-w-4xl mx-auto bg-card/50 min-h-full">
                 <StatBlock monster={monsterData} className="w-full shadow-md border-y md:border-x border-border" hideImage={true} />
             </div>
         </div>
@@ -229,7 +229,7 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
     if (isCollapsed) {
         // Vue condensée pour joueur
         return (
-            <div className="h-full overflow-y-auto custom-scrollbar p-2 bg-primary/5/50 relative">
+            <div className="h-full overflow-y-auto custom-scrollbar p-2 bg-primary/5 relative">
                 <Button
                     size="icon"
                     variant="ghost"
@@ -275,7 +275,7 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                                     { l: 'SAG', v: participant.abilityScores.wis },
                                     { l: 'CHA', v: participant.abilityScores.cha },
                                 ].map(s => (
-                                    <span key={s.l} className="bg-white/60 px-1 py-0.5 rounded font-mono">{s.l} {s.v}</span>
+                                    <span key={s.l} className="bg-muted/60 px-1 py-0.5 rounded font-mono">{s.l} {s.v}</span>
                                 ))}
                             </div>
                         )}
@@ -286,7 +286,7 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
     }
 
     return (
-        <Card className="w-full h-full flex flex-col overflow-hidden border-none shadow-none bg-primary/5/50 relative">
+        <Card className="w-full h-full flex flex-col overflow-hidden border-none shadow-none bg-primary/5 relative">
             <CardHeader className="py-2 px-4 bg-primary/10 border-b">
                 <div className="flex justify-between items-start">
                     <div className="flex-1">
@@ -306,8 +306,8 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                             <div className="flex flex-wrap gap-2 text-sm text-primary/80 mt-1">
                                 {(participant.race || participant.class || participant.level) ? (
                                     <>
-                                        {participant.race && <Badge variant="secondary" className="bg-white/50">{participant.race}</Badge>}
-                                        {participant.class && <Badge variant="secondary" className="bg-white/50">{participant.class}</Badge>}
+                                        {participant.race && <Badge variant="secondary" className="bg-card/50">{participant.race}</Badge>}
+                                        {participant.class && <Badge variant="secondary" className="bg-card/50">{participant.class}</Badge>}
                                         {participant.level && <Badge variant="outline" className="bg-primary/5">Niveau {participant.level}</Badge>}
                                     </>
                                 ) : (
@@ -376,7 +376,7 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                             )}
 
                             {isLinking && (
-                                <div className="flex flex-col gap-2 bg-white p-2 rounded shadow-sm border border-primary/20 mt-1">
+                                <div className="flex flex-col gap-2 bg-card p-2 rounded shadow-sm border border-primary/20 mt-1">
                                     <label className="text-xs font-semibold text-foreground/90">URL du personnage :</label>
                                     <div className="flex gap-2">
                                         <input
@@ -400,7 +400,7 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
 
                 {/* Infos Générales Édition */}
                 {isEditing && (
-                    <div className="grid grid-cols-3 gap-3 mb-6 bg-white p-3 rounded-lg border border-primary/10">
+                    <div className="grid grid-cols-3 gap-3 mb-6 bg-card p-3 rounded-lg border border-primary/10">
                         <div className="col-span-1">
                             <Label className="text-xs">Race</Label>
                             <Input value={editData.race as string} onChange={(e) => handleChange('race', e.target.value)} className="h-8 text-sm" placeholder="Ex: Elfe" />
@@ -418,7 +418,7 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
 
                 {/* Stats Vitales */}
                 <div className="grid grid-cols-3 gap-4 mb-6">
-                    <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm border border-primary/10 relative">
+                    <div className="flex flex-col items-center p-4 bg-card rounded-lg shadow-sm border border-primary/10 relative">
                         <Shield className="w-8 h-8 text-primary/80 mb-2" />
                         {isEditing ? (
                             <Input
@@ -432,7 +432,7 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                         )}
                         <span className="text-xs text-muted-foreground uppercase tracking-wider mt-1">CA</span>
                     </div>
-                    <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm border border-primary/10">
+                    <div className="flex flex-col items-center p-4 bg-card rounded-lg shadow-sm border border-primary/10">
                         <Heart className="w-8 h-8 text-destructive/80 mb-2" />
                         {isEditing ? (
                             <div className="flex flex-col gap-1 items-center">
@@ -476,7 +476,7 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                         )}
                         <span className="text-xs text-muted-foreground uppercase tracking-wider mt-1">PV</span>
                     </div>
-                    <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm border border-primary/10">
+                    <div className="flex flex-col items-center p-4 bg-card rounded-lg shadow-sm border border-primary/10">
                         <Zap className="w-8 h-8 text-yellow-500 mb-2" />
                         {isEditing ? (
                             <Input
@@ -564,7 +564,7 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                                 ) : (
                                     <span className="text-lg font-bold text-foreground">{val}</span>
                                 )}
-                                <span className={`text-xs px-1 rounded font-mono ${stat.save ? 'bg-green-600/10 text-green-600 font-bold' : 'bg-white/50 text-primary'}`}>
+                                <span className={`text-xs px-1 rounded font-mono ${stat.save ? 'bg-green-600/10 text-green-600 font-bold' : 'bg-muted/60 text-primary'}`}>
                                     {sign}{displayMod}
                                 </span>
                             </div>
@@ -644,7 +644,7 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                 {/* Conditions existantes */}
                 {
                     participant.conditions && participant.conditions.length > 0 && (
-                        <div className="mt-4 bg-white p-4 rounded-lg shadow-sm border border-destructive/10">
+                        <div className="mt-4 bg-card p-4 rounded-lg shadow-sm border border-destructive/10">
                             <h4 className="text-sm font-semibold text-foreground/90 mb-2">Conditions</h4>
                             <div className="flex flex-wrap gap-2">
                                 <TooltipProvider>
@@ -815,7 +815,7 @@ const PlayerDisplay: React.FC<{ participant: EncounterParticipant; onLinkDndBeyo
                     participant.speed && participant.speed.length > 0 && !isEditing && (
                         <div className="flex gap-2 mt-4">
                             {participant.speed.map((s: string, i: number) => (
-                                <Badge key={i} variant="outline" className="bg-white">
+                                <Badge key={i} variant="outline" className="bg-card">
                                     🦶 {s}
                                 </Badge>
                             ))}

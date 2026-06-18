@@ -60,7 +60,7 @@ const EncounterDifficultyGauge: React.FC<EncounterDifficultyGaugeProps> = ({ par
         <div className="flex flex-col gap-1 min-w-[200px]">
             <div className="flex items-center justify-between mb-1">
                 <span className="text-xs font-semibold text-muted-foreground">Difficulté</span>
-                <Badge className={`${difficulty.color} text-white hover:${difficulty.color} border-none`}>
+                <Badge className={`${difficulty.color} text-white hover:opacity-90 border-none`}>
                     <DifficultyIcon />
                     {difficulty.label}
                 </Badge>

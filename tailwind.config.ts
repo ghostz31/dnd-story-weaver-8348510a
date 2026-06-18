@@ -63,12 +63,21 @@ export default {
 					DEFAULT: 'hsl(var(--popover))',
 					foreground: 'hsl(var(--popover-foreground))'
 				},
-				card: {
-					DEFAULT: 'hsl(var(--card))',
-					foreground: 'hsl(var(--card-foreground))'
-				},
+			card: {
+				DEFAULT: 'hsl(var(--card))',
+				foreground: 'hsl(var(--card-foreground))'
 			},
-			borderRadius: {
+			glass: {
+				DEFAULT: 'hsl(var(--glass))',
+				foreground: 'hsl(var(--glass-foreground))',
+				border: 'hsl(var(--glass-border))',
+			},
+		},
+		boxShadow: {
+			glow: '0 0 20px hsl(var(--primary) / 0.4)',
+			'glow-lg': '0 0 40px hsl(var(--primary) / 0.6)',
+		},
+		borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)',

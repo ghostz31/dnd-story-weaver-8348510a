@@ -29,8 +29,6 @@ const Footer: React.FC = () => {
                         <div className="flex flex-col gap-3">
                             <h3 className="font-semibold text-foreground text-sm uppercase tracking-wider">Communauté</h3>
                             <Link to="/news" className="text-sm hover:text-primary transition-colors">Actualités</Link>
-                            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-sm hover:text-primary transition-colors">GitHub</a>
-                            <a href="#" className="text-sm hover:text-primary transition-colors">Discord</a>
                         </div>
                     </div>
 

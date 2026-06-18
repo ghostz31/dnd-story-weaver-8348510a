@@ -25,8 +25,13 @@ const PartyEditor = lazy(() => import('./components/PartyEditor'));
 const UserProfile = lazy(() => import('./components/auth/UserProfile'));
 
 const PageLoader = () => (
-  <div className="flex justify-center items-center min-h-[60vh]">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+  <div className="container mx-auto px-4 py-8 space-y-4">
+    <div className="h-8 w-64 bg-muted/40 rounded animate-pulse" />
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="h-48 w-full bg-muted/30 rounded-xl animate-pulse" />
+      ))}
+    </div>
   </div>
 );
 

@@ -58,6 +58,11 @@
     --glass-foreground: 220 10% 18%;
     --glass-border: 45 50% 60%;
 
+    /* StatBlock Theme (Parchment Classic) */
+    --statblock-bg: 40 30% 95%;
+    --statblock-border: 38 78% 47%;
+    --statblock-accent: 5 78% 27%;
+
     /* Semantic Status Colors */
     --status-success: 142 72% 29%;
     --status-success-bg: 142 76% 92%;
@@ -112,6 +117,11 @@
     --glass-foreground: 40 10% 90%;
     --glass-border: 220 12% 30%;
 
+    /* StatBlock Theme - Dark Mode (Stone & Torchlight) */
+    --statblock-bg: 220 12% 15%;
+    --statblock-border: 38 60% 55%;
+    --statblock-accent: 20 80% 60%;
+
     /* Semantic Status Colors - Dark Mode */
     --status-success: 142 71% 60%;
     --status-success-bg: 142 76% 15%;
@@ -152,6 +162,12 @@
   .fantasy-glass:hover {
     @apply border-primary/30 bg-background/70;
   }
+
+  /* Custom Scrollbar - fin et discret */
+  .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 3px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.5); }
 
   /* Panels & Cards */
   .parchment-panel {

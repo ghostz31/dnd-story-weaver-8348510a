@@ -178,7 +178,7 @@ export const getConditionInfo = (condition: string | EncounterCondition): Condit
         },
         'Empoigné': { // Correspond à "Agrippé" sur AideDD
             icon: Anchor,
-            color: 'text-brown-600 border-brown-600',
+            color: 'text-amber-800 border-amber-800 dark:text-amber-600 dark:border-amber-600',
             description: '• La vitesse d\'une créature agrippée passe à 0, et elle ne peut bénéficier d\'aucun bonus à sa vitesse.\n• L\'état prend fin si l\'empoigneur est incapable d\'agir.\n• L\'état se termine si un effet met la créature hors de portée (ex: violentée par une onde de choc).'
         },
         'Entravé': {
