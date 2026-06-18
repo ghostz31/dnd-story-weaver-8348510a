@@ -115,24 +115,24 @@ export function InventoryPage() {
                 </h3>
                 <div className="grid grid-cols-5 gap-2 text-center">
                     {[
-                        { key: 'pp', label: 'PP', color: '#E5E4E2' },
-                        { key: 'gp', label: 'PO', color: '#FFD700' },
-                        { key: 'ep', label: 'PE', color: '#C0C0C0' },
-                        { key: 'sp', label: 'PA', color: '#C0C0C0' },
-                        { key: 'cp', label: 'PC', color: '#B87333' },
+                        { key: 'pp', label: 'PP', color: 'hsl(220 6% 78%)', text: 'hsl(220 14% 12%)' },
+                        { key: 'gp', label: 'PO', color: 'hsl(var(--color-gold))', text: 'hsl(220 14% 12%)' },
+                        { key: 'ep', label: 'PE', color: 'hsl(220 6% 65%)', text: 'hsl(220 14% 12%)' },
+                        { key: 'sp', label: 'PA', color: 'hsl(220 6% 55%)', text: 'hsl(220 14% 12%)' },
+                        { key: 'cp', label: 'PC', color: 'hsl(25 60% 45%)', text: 'hsl(40 30% 96%)' },
                     ].map((coin) => (
                         <div key={coin.key} className="flex flex-col items-center">
                             <div
-                                className="w-10 h-10 rounded-full mb-1 flex items-center justify-center font-cinzel font-bold text-sm"
+                                className="w-10 h-10 rounded-full mb-1 flex items-center justify-center font-cinzel font-bold text-sm border border-border"
                                 style={{
-                                    background: `linear-gradient(135deg, ${coin.color}, ${coin.color}80)`,
-                                    color: coin.key === 'pp' || coin.key === 'ep' || coin.key === 'sp' ? '#333' : '#000',
-                                    boxShadow: '0 2px 4px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.5)'
+                                    background: `linear-gradient(135deg, ${coin.color}, hsl(from ${coin.color} h s l / 0.7))`,
+                                    color: coin.text,
+                                    boxShadow: 'var(--shadow-sm), inset 0 1px 2px hsl(0 0% 100% / 0.15)'
                                 }}
                             >
                                 {currency[coin.key as keyof Currency]}
                             </div>
-                            <span className="text-xs text-ink-muted">{coin.label}</span>
+                            <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{coin.label}</span>
                         </div>
                     ))}
                 </div>

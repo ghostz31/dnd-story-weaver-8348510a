@@ -1,4 +1,10 @@
 import { useState } from 'react'
+import {
+  BoltIcon,
+  HandRaisedIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+} from '@heroicons/react/24/outline'
 import { DiceRollButton } from '../../components/DiceRollButton'
 import { formatAttackBonus, type ResolvedAction } from '../../utils/combat-engine'
 import { formatResourceMax } from '../../utils/feature-helpers'
@@ -35,10 +41,23 @@ export function CombatActionCard({ action, onUse, actionsUsedThisTurn }: { actio
       <div className="p-3">
         {/* Header */}
         <div className="flex items-center justify-between gap-2 mb-2">
-          <div className="min-w-0">
-            <h3 className="font-bold text-base">{action.name}</h3>
-            <p className="text-[11px] text-muted-foreground">
-              {action.source.name} • {getActionTypeLabel(action.actionType)}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <h3 className="font-bold text-base truncate">{action.name}</h3>
+              <span
+                className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full shrink-0"
+                style={{
+                  color,
+                  backgroundColor: `hsl(from ${color} h s l / 0.12)`,
+                }}
+              >
+                {action.actionType === 'bonus' && <BoltIcon className="w-3 h-3" aria-hidden />}
+                {action.actionType === 'reaction' && <HandRaisedIcon className="w-3 h-3" aria-hidden />}
+                {getActionTypeLabel(action.actionType)}
+              </span>
+            </div>
+            <p className="text-[11px] text-muted-foreground truncate">
+              {action.source.name}
             </p>
           </div>
           {hasResource && (
@@ -120,15 +139,18 @@ export function CombatActionCard({ action, onUse, actionsUsedThisTurn }: { actio
           <button
             onClick={onUse}
             disabled={!canUse}
+            aria-label={`Utiliser ${action.name}`}
             className={`btn btn-sm flex-1 ${canUse ? 'btn-primary' : 'btn-disabled'}`}
           >
-            {canUse ? 'Utiliser' : 'Indisponible'}
+            {canUse ? 'Utiliser' : actionTypeUsed ? 'Utilisé (tour)' : 'Épuisé'}
           </button>
-          <button 
+          <button
             onClick={() => setExpanded(!expanded)}
+            aria-label={expanded ? 'Réduire les détails' : 'Afficher les détails'}
+            aria-expanded={expanded}
             className="btn btn-ghost btn-sm px-3"
           >
-            {expanded ? '▲' : '▼'}
+            {expanded ? <ChevronUpIcon className="w-4 h-4" /> : <ChevronDownIcon className="w-4 h-4" />}
           </button>
         </div>
         

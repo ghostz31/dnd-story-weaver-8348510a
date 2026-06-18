@@ -97,10 +97,15 @@ export function HPBlock({ current, max, temp, onHeal, onDamage, onSetTempHP }: H
       </div>
 
       {/* Barre */}
-      <div className="h-2 bg-muted rounded-full overflow-hidden">
+      <div className="hp-bar-container">
         <div
-          className="h-full rounded-full transition-all duration-500"
-          style={{ width: `${Math.min(hpPercent, 100)}%`, backgroundColor: color }}
+          className={`hp-bar-fill ${getHpStatus()}`}
+          style={{ width: `${Math.min(hpPercent, 100)}%` }}
+          role="progressbar"
+          aria-valuenow={current}
+          aria-valuemin={0}
+          aria-valuemax={max}
+          aria-label="Points de vie"
         />
       </div>
 
@@ -109,6 +114,7 @@ export function HPBlock({ current, max, temp, onHeal, onDamage, onSetTempHP }: H
         <button
           onClick={handleQuickDamage}
           disabled={!inputValue}
+          aria-label="Infliger des dégâts"
           className="w-10 h-9 rounded-lg bg-hp-crit/15 text-destructive font-bold text-lg hover:bg-hp-crit/25 transition-colors disabled:opacity-30 shrink-0"
         >
           −
@@ -117,11 +123,13 @@ export function HPBlock({ current, max, temp, onHeal, onDamage, onSetTempHP }: H
           type="number"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
+          aria-label="Montant de soins ou de dégâts"
           className="input flex-1 text-center text-sm h-9"
         />
         <button
           onClick={handleQuickHeal}
           disabled={!inputValue}
+          aria-label="Soigner"
           className="w-10 h-9 rounded-lg bg-hp-high/15 text-hp-high font-bold text-lg hover:bg-hp-high/25 transition-colors disabled:opacity-30 shrink-0"
         >
           +
@@ -133,6 +141,7 @@ export function HPBlock({ current, max, temp, onHeal, onDamage, onSetTempHP }: H
         <ShieldCheckIcon className="w-4 h-4 text-ac shrink-0" />
         <button
           onClick={() => onSetTempHP(Math.max(0, temp - 1))}
+          aria-label="Diminuer PV temporaires"
           className="w-8 h-8 rounded bg-ac/10 text-ac font-bold hover:bg-ac/20 transition-colors"
         >
           −
@@ -146,6 +155,7 @@ export function HPBlock({ current, max, temp, onHeal, onDamage, onSetTempHP }: H
             onChange={(e) => setTempEditValue(e.target.value)}
             onBlur={commitTempEdit}
             onKeyDown={handleTempKeyDown}
+            aria-label="PV temporaires"
             className="input w-16 text-center text-sm font-bold text-ac h-8 px-1"
             style={{
               appearance: 'none',
@@ -156,6 +166,7 @@ export function HPBlock({ current, max, temp, onHeal, onDamage, onSetTempHP }: H
         ) : (
           <button
             onClick={startTempEdit}
+            aria-label={`PV temporaires: ${temp}, cliquer pour modifier`}
             className="text-sm font-bold text-ac w-8 h-8 text-center hover:bg-ac/10 rounded transition-colors"
           >
             {temp}
@@ -164,6 +175,7 @@ export function HPBlock({ current, max, temp, onHeal, onDamage, onSetTempHP }: H
 
         <button
           onClick={() => onSetTempHP(temp + 1)}
+          aria-label="Augmenter PV temporaires"
           className="w-8 h-8 rounded bg-ac/10 text-ac font-bold hover:bg-ac/20 transition-colors"
         >
           +
@@ -171,6 +183,7 @@ export function HPBlock({ current, max, temp, onHeal, onDamage, onSetTempHP }: H
         {temp > 0 && (
           <button
             onClick={() => onSetTempHP(0)}
+            aria-label="Retirer PV temporaires"
             className="w-8 h-8 rounded bg-muted text-muted-foreground font-bold hover:bg-muted/80 transition-colors"
             title="Retirer"
           >

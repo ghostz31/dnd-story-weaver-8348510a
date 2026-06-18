@@ -44,10 +44,13 @@
   --color-glass-border: hsl(var(--glass-border));
 
   /* Custom D&D Colors */
+  --color-hp: hsl(var(--color-hp-crit));
   --color-hp-crit: hsl(var(--color-hp-crit));
   --color-hp-low: hsl(var(--color-hp-low));
   --color-hp-med: hsl(var(--color-hp-med));
   --color-hp-high: hsl(var(--color-hp-high));
+  --color-warning: hsl(var(--color-hp-med));
+  --color-rage: hsl(0 72% 51%);
   --color-ac: hsl(var(--color-ac));
   --color-gold: hsl(var(--color-gold));
   --color-xp: hsl(var(--color-xp));
@@ -151,6 +154,9 @@
     --color-hp-low: 25 95% 50%;
     --color-hp-med: 45 93% 47%;
     --color-hp-high: 142 71% 42%;
+    --color-hp: var(--color-hp-crit);
+    --color-warning: var(--color-hp-med);
+    --color-rage: 0 72% 51%;
     --color-ac: 210 65% 52%;
     --color-gold: 45 85% 48%;
     --color-xp: 280 65% 55%;
@@ -238,6 +244,9 @@
     --color-hp-low: 25 95% 55%;
     --color-hp-med: 45 93% 50%;
     --color-hp-high: 142 76% 48%;
+    --color-hp: var(--color-hp-crit);
+    --color-warning: var(--color-hp-med);
+    --color-rage: 0 78% 62%;
     --color-magic: 40 95% 58%;
 
     /* Dark mode glows */
@@ -281,21 +290,6 @@
 }
 
 @layer components {
-
-  /* ─── Fantasy Glass ─── */
-  .fantasy-glass {
-    background: hsl(var(--glass) / 0.6);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid hsl(var(--glass-border) / 0.3);
-    box-shadow: var(--shadow-xs);
-    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .fantasy-glass:hover {
-    border-color: hsl(var(--primary) / 0.3);
-    background: hsl(var(--background) / 0.7);
-  }
 
   /* ─── Cards & Panels ─── */
   .card {
@@ -346,54 +340,7 @@
   }
 
   /* Interactive card — link cards with glow */
-  .card-interactive {
-    background: hsl(var(--card));
-    color: hsl(var(--card-foreground));
-    border: 1px solid hsl(var(--border) / 0.5);
-    border-radius: var(--radius);
-    padding: var(--space-4) var(--space-5);
-    box-shadow: var(--shadow-sm);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-4);
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  }
-
-  .card-interactive:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-    border-color: hsl(var(--primary) / 0.4);
-  }
-
-  .card-interactive:active {
-    transform: translateY(0) scale(0.99);
-  }
-
   /* Section card — subtle left border accent */
-  .card-section {
-    background: hsl(var(--card));
-    color: hsl(var(--card-foreground));
-    border: 1px solid hsl(var(--border) / 0.4);
-    border-left: 3px solid hsl(var(--primary) / 0.6);
-    border-radius: var(--radius);
-    padding: var(--space-4);
-    box-shadow: var(--shadow-sm);
-  }
-
-  .parchment-panel {
-    background: hsl(var(--card) / 0.9);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: 1px solid hsl(var(--border));
-    box-shadow: var(--shadow-xs);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .parchment-panel:hover {
-    border-color: hsl(var(--primary) / 0.3);
-  }
 
   /* ─── Section Headers ─── */
   .section-header {
@@ -570,14 +517,6 @@
     outline: none;
     border-color: hsl(var(--ring));
     box-shadow: 0 0 0 3px hsl(var(--ring) / 0.15);
-  }
-
-  /* ─── HP Bar ─── */
-  .hp-bar {
-    height: 10px;
-    background: hsl(var(--muted));
-    border-radius: 5px;
-    overflow: hidden;
   }
 
   /* ─── Navigation ─── */
@@ -836,8 +775,7 @@
 
 /* Dark mode card elevation glow */
 .dark .card,
-.dark .parchment-card,
-.dark .card-interactive {
+.dark .parchment-card {
   box-shadow: 0 1px 3px hsl(0 0% 0% / 0.2), 0 0 0 1px hsl(var(--primary) / 0.04);
 }
 .dark .card:hover,
@@ -875,9 +813,7 @@
 
   .card,
   .parchment-card,
-  .card-interactive,
   .btn,
-  .fantasy-glass,
   .interactive-tap {
     transition: none !important;
   }

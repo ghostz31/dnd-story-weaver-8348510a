@@ -23,8 +23,8 @@ export function HexStat({ ability, score, modifier, isSaveProficient, skillCount
   const modText = modifier >= 0 ? `+${modifier}` : `${modifier}`
 
   return (
-    <div 
-      className={`relative flex flex-col items-center p-2 rounded-xl border-2 transition-all cursor-pointer hover:scale-105 ${
+    <div
+      className={`relative flex flex-col items-center p-2 rounded-xl border-2 transition-all ${
         isSaveProficient ? 'border-primary/50 bg-primary/5' : 'border-border bg-card'
       }`}
     >
