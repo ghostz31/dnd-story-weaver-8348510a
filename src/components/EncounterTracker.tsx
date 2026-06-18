@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Sword, Shield, Heart, Plus, Minus, Pencil, Scroll, Zap, Droplets, Eye, EyeOff, Smile, Users, Link, Snowflake, Clock, Ghost, Anchor, ArrowDown, Brain, Footprints, ShieldX, Save, RotateCcw, ChevronLeft, ChevronRight, Dice4, User, Calendar, Trash2, Share2, Folder, FolderPlus, FolderOpen, Check } from 'lucide-react';
+import { Sword, Shield, Heart, Plus, Minus, Pencil, Scroll, Zap, Droplets, Eye, EyeOff, Smile, Users, Link, Snowflake, Clock, Ghost, Anchor, ArrowDown, Brain, Footprints, ShieldX, Save, RotateCcw, ChevronLeft, ChevronRight, Dice4, User, Calendar, Trash2, Share2, Folder, FolderPlus, FolderOpen, Check, ScrollText } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,6 +18,13 @@ import SpellBrowser from './SpellBrowser';
 import { useAuth } from '../auth/AuthContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
 import { subscribeToFolders, createFolder, moveEncounterToFolder } from '../lib/firebaseApi';
 import { shareEncounter, getShareUrl } from '../lib/sharingApi';
 import { EncounterFolder } from '../lib/types';
@@ -148,6 +155,9 @@ const EncounterTracker: React.FC = () => {
   // Local UI State for TrackerTable
   const [hpModifierValue, setHpModifierValue] = useState(0);
   const [showHpModifier, setShowHpModifier] = useState<string | null>(null);
+
+  // Local UI State for mobile combat log drawer (M10)
+  const [combatLogOpen, setCombatLogOpen] = useState(false);
 
   // Handlers for Editors
   const openHpEditor = (participant: EncounterParticipant) => {
@@ -690,12 +700,43 @@ const EncounterTracker: React.FC = () => {
             )}
           </div>
 
-          {/* Combat Log - Collapsible on mobile */}
+          {/* Combat Log - Visible sur desktop, Drawer sur mobile (M10) */}
           <div className="lg:h-1/3 lg:min-h-[200px] hidden lg:block">
             <CombatLog logs={encounter.combatLog || []} />
           </div>
         </div>
       </div>
+
+      {/* Combat Log Drawer pour mobile (M10) */}
+      <Drawer open={combatLogOpen} onOpenChange={setCombatLogOpen}>
+        <DrawerContent className="h-[70vh] max-h-[80vh]">
+          <DrawerHeader className="text-left">
+            <DrawerTitle className="flex items-center gap-2 text-sm font-medium">
+              <ScrollText className="h-4 w-4" /> Journal de Combat
+            </DrawerTitle>
+          </DrawerHeader>
+          <div className="flex-1 min-h-0 px-2 pb-2">
+            <CombatLog logs={encounter.combatLog || []} className="h-full border-t" />
+          </div>
+        </DrawerContent>
+      </Drawer>
+
+      {/* Bouton flottant "Log" sur mobile (M10) */}
+      <Button
+        variant="outline"
+        size="icon"
+        className="lg:hidden fixed bottom-20 left-4 rounded-full h-12 w-12 shadow-lg touch-target bg-background z-40"
+        onClick={() => setCombatLogOpen(true)}
+        aria-label="Ouvrir le journal de combat"
+        title="Journal de combat"
+      >
+        <ScrollText className="h-5 w-5" />
+        {encounter.combatLog && encounter.combatLog.length > 0 && (
+          <span className="absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
+            {encounter.combatLog.length > 99 ? '99+' : encounter.combatLog.length}
+          </span>
+        )}
+      </Button>
 
       {/* Dialogue d'édition des PV */}
       {editingParticipant && (

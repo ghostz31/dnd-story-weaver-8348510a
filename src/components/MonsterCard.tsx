@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Shield, Image as ImageIcon, Skull, Zap, Eye, MessagesSquare, ScrollText, Swords } from 'lucide-react';
+import { Shield, Image as ImageIcon, Skull, Zap, Eye, MessagesSquare, ScrollText, Swords, Plus } from 'lucide-react';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { formatCR, getMonsterImageUrl, getAideDDMonsterSlug } from '../lib/monsterUtils';
@@ -285,9 +285,11 @@ interface MonsterCardProps {
   monster: any;
   onSelect?: () => void;
   isSelected?: boolean;
+  /** Variante d'affichage: 'default' (image 192px) ou 'compact' (image 64px, layout horizontal) */
+  variant?: 'default' | 'compact';
 }
 
-export function MonsterCard({ monster, onSelect, isSelected = false }: MonsterCardProps) {
+export function MonsterCard({ monster, onSelect, isSelected = false, variant = 'default' }: MonsterCardProps) {
   const [loading, setLoading] = useState(false);
 
   // Obtenir l'URL de la page AideDD du monstre
@@ -346,6 +348,63 @@ export function MonsterCard({ monster, onSelect, isSelected = false }: MonsterCa
     const modifier = Math.floor((value - 10) / 2);
     return modifier >= 0 ? `+${modifier}` : `${modifier}`;
   };
+
+  // Variante compacte: image 64×64 à gauche, infos à droite, bouton "Ajouter" icône-only (M6)
+  if (variant === 'compact') {
+    return (
+      <div className={`parchment-card flex items-center gap-3 p-2 rounded-lg group relative overflow-hidden ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-transparent' : ''}`}>
+        {/* Image 64×64 à gauche */}
+        <div className="relative h-16 w-16 flex-shrink-0 rounded-md overflow-hidden bg-muted">
+          <img
+            src={imageUrl}
+            alt={monster.name}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = '/images/monsters/unknown.jpg';
+            }}
+          />
+          {/* Badge CR overlay */}
+          <div className="absolute top-0.5 right-0.5">
+            <Badge className="bg-black/60 backdrop-blur-md text-white text-[10px] px-1 py-0 h-4 hover:bg-black/60">
+              {formatCR(monster.cr)}
+            </Badge>
+          </div>
+        </div>
+
+        {/* Infos à droite */}
+        <div className="flex-1 min-w-0 flex flex-col gap-1">
+          <h3 className="text-sm font-bold text-foreground font-cinzel leading-tight truncate" title={displayNames.main}>
+            {displayNames.main}
+          </h3>
+          {displayNames.sub && (
+            <p className="text-[10px] text-muted-foreground italic truncate">{displayNames.sub}</p>
+          )}
+          <div className="flex flex-wrap gap-1">
+            <Badge variant="outline" className="text-[10px] border-primary/30 bg-primary/5 text-primary px-1 py-0 h-4">
+              {typeTranslation[monster.type] || monster.type}
+            </Badge>
+            <Badge variant="outline" className="text-[10px] border-glass-border/30 bg-glass/20 px-1 py-0 h-4">
+              AC {monster.ac}
+            </Badge>
+            <Badge variant="outline" className="text-[10px] border-glass-border/30 bg-glass/20 px-1 py-0 h-4">
+              PV {formatHP(monster.hp).split(' ')[0]}
+            </Badge>
+          </div>
+        </div>
+
+        {/* Bouton icône-only à droite */}
+        <Button
+          onClick={onSelect}
+          size="icon"
+          className={`flex-shrink-0 h-8 w-8 ${isSelected ? 'bg-red-500 hover:bg-red-600' : 'bg-primary/80 hover:bg-primary'} text-white shadow-md`}
+          aria-label={isSelected ? `Retirer ${monster.name}` : `Ajouter ${monster.name}`}
+          aria-pressed={isSelected}
+        >
+          {isSelected ? <Skull className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className={`parchment-card h-full flex flex-col group relative overflow-hidden rounded-xl ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-transparent' : ''}`}>

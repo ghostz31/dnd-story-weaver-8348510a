@@ -10,11 +10,11 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { EncounterParticipant } from '@/lib/types';
-import { CONDITIONS, getConditionInfo, extractNumericHP } from '@/lib/EncounterUtils';
+import { extractNumericHP } from '@/lib/EncounterUtils';
 import { getMonsterImageUrl } from '@/lib/monsterUtils';
-import { getHPBarColor } from '@/lib/hpColorUtils';
+import { getHPBarColor, getHPStatusText } from '@/lib/hpColorUtils';
+import ConditionPicker from './ConditionPicker';
 
 interface TrackerTableProps {
     participants: EncounterParticipant[];
@@ -79,6 +79,17 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
         } else {
             return <Badge className="bg-[hsl(var(--status-success))] text-white">Indemne</Badge>;
         }
+    };
+
+    // Couleur du point de statut HP (visible sur mobile à côté du nom)
+    const getStatusDotColor = (participant: EncounterParticipant): string => {
+        const numericMaxHp = extractNumericHP(participant.maxHp);
+        if (participant.currentHp <= 0) return 'bg-gray-500';
+        const hpPercentage = (participant.currentHp / numericMaxHp) * 100;
+        if (hpPercentage <= 25) return 'bg-red-500';
+        if (hpPercentage <= 50) return 'bg-orange-500';
+        if (hpPercentage < 100) return 'bg-yellow-500';
+        return 'bg-green-500';
     };
 
     return (
@@ -189,6 +200,13 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                             <div className="flex-1">
                                                 <div className="font-medium text-sm flex items-center justify-between gap-1 w-full">
                                                     <div className="whitespace-nowrap flex items-center gap-1 flex-1 min-w-0" title={participant.name}>
+                                                        {/* Dot de statut HP visible sur tous les écrans (M4) */}
+                                                        <span
+                                                            className={`h-2 w-2 rounded-full flex-shrink-0 ${getStatusDotColor(participant)}`}
+                                                            role="img"
+                                                            aria-label={`Statut: ${getHPStatusText(extractNumericHP(participant.currentHp), extractNumericHP(participant.maxHp))}`}
+                                                            title={`Statut: ${getHPStatusText(extractNumericHP(participant.currentHp), extractNumericHP(participant.maxHp))}`}
+                                                        />
                                                         <span className="truncate">{participant.name}</span>
                                                         {participant.isPC && (
                                                             <Badge variant="outline" className="text-xs h-4 px-1 flex-shrink-0">PC</Badge>
@@ -208,6 +226,10 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                                         e.stopPropagation();
                                                                         onToggleCondition(participant.id, 'Concentré');
                                                                     }}
+                                                                    aria-label={participant.conditions.some(c => (typeof c === 'string' ? c : c.name) === 'Concentré')
+                                                                        ? `Arrêter la concentration de ${participant.name}`
+                                                                        : `Démarrer la concentration de ${participant.name}`}
+                                                                    aria-pressed={participant.conditions.some(c => (typeof c === 'string' ? c : c.name) === 'Concentré')}
                                                                 >
                                                                     <Brain className={`h-4 w-4 ${participant.conditions.some(c => (typeof c === 'string' ? c : c.name) === 'Concentré') ? 'animate-pulse drop-shadow-[0_0_2px_rgba(234,179,8,0.8)]' : ''}`} />
                                                                 </Button>
@@ -254,6 +276,7 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                         e.stopPropagation();
                                                         onMove(participant.id, 'up');
                                                     }}
+                                                    aria-label={`Monter ${participant.name}`}
                                                 >
                                                     <span className="text-[10px]">▲</span>
                                                 </Button>
@@ -265,6 +288,7 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                         e.stopPropagation();
                                                         onMove(participant.id, 'down');
                                                     }}
+                                                    aria-label={`Descendre ${participant.name}`}
                                                 >
                                                     <span className="text-[10px]">▼</span>
                                                 </Button>
@@ -298,58 +322,68 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                             {showHpModifier === participant.id && (
                                                 <div className="flex flex-col gap-1" onClick={(e) => e.stopPropagation()}>
                                                     <div className="flex items-center space-x-1 p-1 bg-muted rounded border">
-                                                        <input
+                                                        <Input
                                                             type="number"
                                                             value={hpModifierValue}
                                                             onChange={(e) => onSetHpModifier(parseInt(e.target.value) || 1)}
-                                                            className="w-12 h-6 text-xs border rounded px-1 bg-background"
-                                                            min="1"
-                                                            max="100"
+                                                            className="w-12 h-6 text-xs px-1"
+                                                            min={1}
+                                                            max={100}
+                                                            aria-label={`Valeur de modification des PV de ${participant.name}`}
+                                                            onClick={(e) => e.stopPropagation()}
                                                         />
-                                                        <button
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
                                                             onClick={() => {
                                                                 onUpdateHp(participant.id, hpModifierValue);
                                                                 onToggleHpModifier(null);
                                                             }}
-                                                            className="flex items-center justify-center w-6 h-6 bg-[hsl(var(--status-success))] hover:opacity-90 text-white rounded"
-                                                            title={`Soigner ${hpModifierValue} PV`}
+                                                            className="h-6 w-6 p-0 bg-[hsl(var(--status-success))] hover:opacity-90 text-white"
+                                                            aria-label={`Soigner ${hpModifierValue} PV à ${participant.name}`}
                                                         >
                                                             <Plus className="h-3 w-3" />
-                                                        </button>
-                                                        <button
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
                                                             onClick={() => {
                                                                 onUpdateHp(participant.id, -hpModifierValue);
                                                                 onToggleHpModifier(null);
                                                             }}
-                                                            className="flex items-center justify-center w-6 h-6 bg-[hsl(var(--status-danger))] hover:opacity-90 text-white rounded"
-                                                            title={`Infliger ${hpModifierValue} dégâts`}
+                                                            className="h-6 w-6 p-0 bg-[hsl(var(--status-danger))] hover:opacity-90 text-white"
+                                                            aria-label={`Infliger ${hpModifierValue} dégâts à ${participant.name}`}
                                                         >
                                                             <Minus className="h-3 w-3" />
-                                                        </button>
+                                                        </Button>
                                                         {onSetTempHp && (
-                                                            <button
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
                                                                 onClick={() => {
                                                                     onSetTempHp(participant.id, hpModifierValue);
                                                                     onToggleHpModifier(null);
                                                                 }}
-                                                                className="flex items-center justify-center w-6 h-6 bg-[hsl(var(--status-info))] hover:opacity-90 text-white rounded"
-                                                                title={`Ajouter ${hpModifierValue} PV Temporaires`}
+                                                                className="h-6 w-6 p-0 bg-[hsl(var(--status-info))] hover:opacity-90 text-white"
+                                                                aria-label={`Ajouter ${hpModifierValue} PV temporaires à ${participant.name}`}
                                                             >
                                                                 <Zap className="h-3 w-3" />
-                                                            </button>
+                                                            </Button>
                                                         )}
                                                     </div>
                                                     {typeof participant.tempHp === 'number' && participant.tempHp > 0 && onSetTempHp && (
-                                                        <button
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
                                                             onClick={() => {
                                                                 onSetTempHp(participant.id, 0);
                                                                 onToggleHpModifier(null);
                                                             }}
-                                                            className="flex items-center justify-center gap-1 w-full py-0.5 text-[10px] rounded bg-muted-foreground/10 text-muted-foreground hover:bg-muted-foreground/20 transition-colors"
-                                                            title="Retirer tous les PV temporaires"
+                                                            className="flex items-center justify-center gap-1 w-full py-0.5 h-5 text-[10px] rounded bg-muted-foreground/10 text-muted-foreground hover:bg-muted-foreground/20"
+                                                            aria-label={`Retirer ${participant.tempHp} PV temporaires de ${participant.name}`}
                                                         >
                                                             <ShieldX className="h-3 w-3" /> Retirer {participant.tempHp} PV temp.
-                                                        </button>
+                                                        </Button>
                                                     )}
                                                 </div>
                                             )}
@@ -359,30 +393,34 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                 <div className="flex flex-col mt-1 bg-muted border rounded p-1 text-xs">
                                                     <span className="font-semibold text-muted-foreground mb-1">Actions de groupe ({participants.filter(p => !p.isPC && p.id.substring(0, p.id.lastIndexOf('-')) === participant.id.substring(0, participant.id.lastIndexOf('-'))).length} cibles)</span>
                                                     <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-                                                        <button
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
                                                             onClick={() => {
                                                                 const baseId = participant.id.substring(0, participant.id.lastIndexOf('-'));
                                                                 const groupIds = participants.filter(p => !p.isPC && p.id.substring(0, p.id.lastIndexOf('-')) === baseId).map(p => p.id);
                                                                 onUpdateHpBatch(groupIds, hpModifierValue);
                                                                 onToggleHpModifier(null);
                                                             }}
-                                                            className="flex-1 flex items-center justify-center gap-1 bg-[hsl(var(--status-success))] hover:opacity-90 text-white rounded px-2 py-1"
-                                                            title={`Soigner tout le groupe de ${hpModifierValue} PV`}
+                                                            className="flex-1 h-7 bg-[hsl(var(--status-success))] hover:opacity-90 text-white gap-1"
+                                                            aria-label={`Soigner tout le groupe de ${hpModifierValue} PV`}
                                                         >
                                                             <Users className="h-3 w-3" /> <Plus className="h-3 w-3" />
-                                                        </button>
-                                                        <button
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
                                                             onClick={() => {
                                                                 const baseId = participant.id.substring(0, participant.id.lastIndexOf('-'));
                                                                 const groupIds = participants.filter(p => !p.isPC && p.id.substring(0, p.id.lastIndexOf('-')) === baseId).map(p => p.id);
                                                                 onUpdateHpBatch(groupIds, -hpModifierValue);
                                                                 onToggleHpModifier(null);
                                                             }}
-                                                            className="flex-1 flex items-center justify-center gap-1 bg-[hsl(var(--status-danger))] hover:opacity-90 text-white rounded px-2 py-1"
-                                                            title={`Infliger ${hpModifierValue} dégâts à tout le groupe`}
+                                                            className="flex-1 h-7 bg-[hsl(var(--status-danger))] hover:opacity-90 text-white gap-1"
+                                                            aria-label={`Infliger ${hpModifierValue} dégâts à tout le groupe`}
                                                         >
                                                             <Users className="h-3 w-3" /> <Minus className="h-3 w-3" />
-                                                        </button>
+                                                        </Button>
                                                     </div>
                                                 </div>
                                             )}
@@ -402,114 +440,22 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                 {getStatusBadge(participant)}
                                             </div>
 
-                                            {/* Affichage des conditions existantes avec icônes */}
-                                            {participant.conditions.length > 0 && (
-                                                <div className="flex flex-wrap gap-1">
-                                                    {participant.conditions.map(condition => {
-                                                        const conditionName = typeof condition === 'string' ? condition : condition.name;
-                                                        const conditionInfo = getConditionInfo(conditionName);
-                                                        const IconComponent = conditionInfo.icon;
-                                                        return (
-                                                            <TooltipProvider key={typeof condition === 'string' ? condition : condition.id}>
-                                                                <Tooltip>
-                                                                    <TooltipTrigger asChild>
-                                                                        <Badge
-                                                                            variant="outline"
-                                                                            className={`cursor-pointer text-xs flex items-center gap-1 ${conditionInfo.color} hover:opacity-75`}
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                onToggleCondition(participant.id, conditionName);
-                                                                            }}
-                                                                        >
-                                                                            <IconComponent className="h-3 w-3" />
-                                                                            {conditionName}
-                                                                            {typeof condition !== 'string' && condition.duration > 0 && (
-                                                                                <span className="ml-1 text-[10px] bg-gray-200 dark:bg-gray-700 px-1 rounded">{condition.duration}</span>
-                                                                            )}
-                                                                        </Badge>
-                                                                    </TooltipTrigger>
-                                                                    <TooltipContent side="top" className="max-w-md bg-stone-900 border-stone-800 text-stone-50 p-3 shadow-xl z-50">
-                                                                        <p className="font-bold mb-1">{conditionName}</p>
-                                                                        <div className="text-xs whitespace-pre-wrap">{conditionInfo.description}</div>
-                                                                    </TooltipContent>
-                                                                </Tooltip>
-                                                            </TooltipProvider>
-                                                        );
-                                                    })}
-                                                </div>
-                                            )}
-
-                                            {/* Popover grid pour ajouter/supprimer conditions */}
-                                            <div onClick={(e) => e.stopPropagation()}>
-                                                <Popover>
-                                                    <PopoverTrigger asChild>
-                                                        <Button variant="ghost" size="sm" className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground">
-                                                            + Conditions
-                                                        </Button>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent className="w-64 p-2">
-                                                        <div className="text-xs font-bold mb-2 text-muted-foreground">Gérer les conditions</div>
-                                                        <div className="grid grid-cols-2 gap-1">
-                                                            {CONDITIONS.map(conditionName => {
-                                                                const isActive = participant.conditions.some(c => (typeof c === 'string' ? c : c.name) === conditionName);
-                                                                const info = getConditionInfo(conditionName);
-                                                                const Icon = info.icon;
-                                                                return (
-                                                                    <button
-                                                                        key={conditionName}
-                                                                        onClick={() => onToggleCondition(participant.id, conditionName)}
-                                                                        className={`flex items-center gap-1.5 px-2 py-1.5 rounded text-xs transition-colors ${isActive ? 'bg-primary/10 text-primary font-medium' : 'hover:bg-muted text-muted-foreground'}`}
-                                                                    >
-                                                                        <Icon className="h-3 w-3" />
-                                                                        {conditionName}
-                                                                    </button>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    </PopoverContent>
-                                                </Popover>
-                                            </div>
+                                            {/* Conditions actives + grille d'ajout via ConditionPicker (M5) */}
+                                            <ConditionPicker
+                                                conditions={participant.conditions}
+                                                onToggle={(name) => onToggleCondition(participant.id, name)}
+                                            />
                                         </div>
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center space-x-0.5">
-                                            {/* Bouton conditions - visible sur petits écrans */}
-                                            <div className="lg:hidden" onClick={(e) => e.stopPropagation()}>
-                                                <Popover>
-                                                    <PopoverTrigger asChild>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className="h-6 w-6 p-0 relative"
-                                                            title="Conditions"
-                                                        >
-                                                            <ShieldX className="h-3 w-3" />
-                                                            {participant.conditions.length > 0 && (
-                                                                <span className="absolute -top-0.5 -right-0.5 h-2 w-2 bg-primary rounded-full" />
-                                                            )}
-                                                        </Button>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent className="w-64 p-2">
-                                                        <div className="text-xs font-bold mb-2 text-muted-foreground">Conditions</div>
-                                                        <div className="grid grid-cols-2 gap-1">
-                                                            {CONDITIONS.map(conditionName => {
-                                                                const isActive = participant.conditions.some(c => (typeof c === 'string' ? c : c.name) === conditionName);
-                                                                const info = getConditionInfo(conditionName);
-                                                                const Icon = info.icon;
-                                                                return (
-                                                                    <button
-                                                                        key={conditionName}
-                                                                        onClick={() => onToggleCondition(participant.id, conditionName)}
-                                                                        className={`flex items-center gap-1.5 px-2 py-1.5 rounded text-xs transition-colors ${isActive ? 'bg-primary/10 text-primary font-medium' : 'hover:bg-muted text-muted-foreground'}`}
-                                                                    >
-                                                                        <Icon className="h-3 w-3" />
-                                                                        {conditionName}
-                                                                    </button>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    </PopoverContent>
-                                                </Popover>
+                                            {/* Bouton conditions compact - visible sur petits écrans (M5) */}
+                                            <div className="lg:hidden">
+                                                <ConditionPicker
+                                                    conditions={participant.conditions}
+                                                    onToggle={(name) => onToggleCondition(participant.id, name)}
+                                                    compact
+                                                />
                                             </div>
 
                                             <Button
@@ -520,6 +466,7 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                     e.stopPropagation();
                                                     onOpenNotes(participant);
                                                 }}
+                                                aria-label={`Notes de ${participant.name}`}
                                                 title="Modifier les notes"
                                             >
                                                 <Square className="h-3 w-3" />
@@ -532,6 +479,7 @@ const TrackerTable: React.FC<TrackerTableProps> = ({
                                                     e.stopPropagation();
                                                     onRemove(participant.id);
                                                 }}
+                                                aria-label={`Supprimer ${participant.name}`}
                                                 title="Supprimer"
                                             >
                                                 <Skull className="h-3 w-3 text-red-500" />

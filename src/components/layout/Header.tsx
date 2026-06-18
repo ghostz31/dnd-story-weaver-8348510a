@@ -30,9 +30,25 @@ import {
   Scroll,
   Menu,
   X,
-  Gem
+  Gem,
+  Library
 } from 'lucide-react';
 import { ModeToggle } from '@/components/ModeToggle';
+
+// Éléments de navigation principaux (boutons directs)
+const primaryNav = [
+  { to: '/', label: 'Accueil', icon: Home, matchPaths: ['/'] },
+  { to: '/parties', label: 'Groupes', icon: Users, matchPaths: ['/parties'] },
+  { to: '/encounters', label: 'Rencontres', icon: PenTool, matchPaths: ['/encounters', '/custom'] },
+  { to: '/history', label: 'Historique', icon: History, matchPaths: ['/history'] },
+] as const;
+
+// Éléments regroupés dans le menu déroulant "Bibliothèque"
+const libraryNav = [
+  { to: '/monsters', label: 'Bestiaire', icon: Book, matchPaths: ['/monsters'] },
+  { to: '/grimoire', label: 'Grimoire', icon: Scroll, matchPaths: ['/grimoire'] },
+  { to: '/items', label: 'Objets magiques', icon: Gem, matchPaths: ['/items'] },
+] as const;
 
 const Header: React.FC = () => {
   const { user, logout } = useAuth();
@@ -40,9 +56,11 @@ const Header: React.FC = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
-  const isActive = (path: string) => {
-    return location.pathname === path;
+  const isActive = (paths: readonly string[]) => {
+    return paths.some((p) => location.pathname === p);
   };
+
+  const isLibraryActive = () => isActive(libraryNav.flatMap((n) => n.matchPaths));
 
   const handleLogout = async () => {
     try {
@@ -55,100 +73,69 @@ const Header: React.FC = () => {
 
   const closeMenu = () => setIsOpen(false);
 
-  const NavItems = ({ mobile = false }: { mobile?: boolean }) => (
-    <>
-      <Button
-        variant="ghost"
-        size={mobile ? "lg" : "sm"}
-        asChild
-        onClick={closeMenu}
-        className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${isActive('/') ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-          } ${mobile ? 'h-12 text-base' : ''}`}
-      >
-        <Link to="/" className="flex items-center" aria-current={isActive('/') ? 'page' : undefined}>
-          <Home className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Accueil
-        </Link>
-      </Button>
+  // Classes communes pour un bouton de nav (desktop ou mobile)
+  const navButtonClass = (active: boolean, mobile: boolean) =>
+    `w-full justify-start md:w-auto touch-target interactive-tap relative ${active ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+    } ${mobile ? 'h-12 text-base' : ''}`;
 
+  // Rendu d'un item de nav (bouton direct)
+  const renderNavItem = (item: typeof primaryNav[number], mobile: boolean) => {
+    const active = isActive(item.matchPaths);
+    const Icon = item.icon;
+    return (
       <Button
+        key={item.to}
         variant="ghost"
-        size={mobile ? "lg" : "sm"}
+        size={mobile ? 'lg' : 'sm'}
         asChild
         onClick={closeMenu}
-        className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${isActive('/parties') ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-          } ${mobile ? 'h-12 text-base' : ''}`}
+        className={navButtonClass(active, mobile)}
       >
-        <Link to="/parties" className="flex items-center" aria-current={isActive('/parties') ? 'page' : undefined}>
-          <Users className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Groupes
+        <Link to={item.to} className="flex items-center" aria-current={active ? 'page' : undefined}>
+          <Icon className={mobile ? 'mr-3 h-5 w-5' : 'mr-2 h-4 w-4'} /> {item.label}
         </Link>
       </Button>
+    );
+  };
 
-      <Button
-        variant="ghost"
-        size={mobile ? "lg" : "sm"}
-        asChild
-        onClick={closeMenu}
-        className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${isActive('/monsters') ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-          } ${mobile ? 'h-12 text-base' : ''}`}
-      >
-        <Link to="/monsters" className="flex items-center" aria-current={isActive('/monsters') ? 'page' : undefined}>
-          <Book className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Bestiaire
-        </Link>
-      </Button>
-
-      <Button
-        variant="ghost"
-        size={mobile ? "lg" : "sm"}
-        asChild
-        onClick={closeMenu}
-        className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${isActive('/grimoire') ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-          } ${mobile ? 'h-12 text-base' : ''}`}
-      >
-        <Link to="/grimoire" className="flex items-center" aria-current={isActive('/grimoire') ? 'page' : undefined}>
-          <Scroll className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Grimoire
-        </Link>
-      </Button>
-
-      <Button
-        variant="ghost"
-        size={mobile ? "lg" : "sm"}
-        asChild
-        onClick={closeMenu}
-        className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${isActive('/items') ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-          } ${mobile ? 'h-12 text-base' : ''}`}
-      >
-        <Link to="/items" className="flex items-center" aria-current={isActive('/items') ? 'page' : undefined}>
-          <Gem className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Objets
-        </Link>
-      </Button>
-
-      <Button
-        variant="ghost"
-        size={mobile ? "lg" : "sm"}
-        asChild
-        onClick={closeMenu}
-        className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${(isActive('/encounters') || isActive('/custom')) ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-          } ${mobile ? 'h-12 text-base' : ''}`}
-      >
-        <Link to="/encounters" className="flex items-center" aria-current={(isActive('/encounters') || isActive('/custom')) ? 'page' : undefined}>
-          <PenTool className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Rencontres
-        </Link>
-      </Button>
-
-      <Button
-        variant="ghost"
-        size={mobile ? "lg" : "sm"}
-        asChild
-        onClick={closeMenu}
-        className={`w-full justify-start md:w-auto touch-target interactive-tap relative ${isActive('/history') ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-          } ${mobile ? 'h-12 text-base' : ''}`}
-      >
-        <Link to="/history" className="flex items-center" aria-current={isActive('/history') ? 'page' : undefined}>
-          <History className={mobile ? "mr-3 h-5 w-5" : "mr-2 h-4 w-4"} /> Historique
-        </Link>
-      </Button>
-    </>
-  );
+  // Rendu du sous-menu Bibliothèque (dropdown desktop ou items mobile)
+  const renderLibraryItems = (mobile: boolean, onItemClick?: () => void) =>
+    libraryNav.map((item) => {
+      const active = isActive(item.matchPaths);
+      const Icon = item.icon;
+      if (mobile) {
+        return (
+          <Button
+            key={item.to}
+            variant="ghost"
+            size="lg"
+            asChild
+            onClick={() => {
+              closeMenu();
+              onItemClick?.();
+            }}
+            className={navButtonClass(active, true)}
+          >
+            <Link to={item.to} className="flex items-center" aria-current={active ? 'page' : undefined}>
+              <Icon className="mr-3 h-5 w-5" /> {item.label}
+            </Link>
+          </Button>
+        );
+      }
+      return (
+        <DropdownMenuItem key={item.to} asChild>
+          <Link
+            to={item.to}
+            className={`flex items-center cursor-pointer ${active ? 'bg-primary/10 text-primary font-semibold' : ''}`}
+            aria-current={active ? 'page' : undefined}
+            onClick={onItemClick}
+          >
+            <Icon className="mr-2 h-4 w-4" />
+            {item.label}
+          </Link>
+        </DropdownMenuItem>
+      );
+    });
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
@@ -170,7 +157,14 @@ const Header: React.FC = () => {
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-1 mt-6">
-                  <NavItems mobile />
+                  {primaryNav.map((item) => renderNavItem(item, true))}
+                  {/* Section Bibliothèque en mobile */}
+                  <div className="mt-2 pt-2 border-t border-border">
+                    <div className="px-3 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-2">
+                      <Library className="h-4 w-4" /> Bibliothèque
+                    </div>
+                    {renderLibraryItems(true)}
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>
@@ -185,7 +179,27 @@ const Header: React.FC = () => {
 
           {/* Navigation Desktop */}
           <nav className="hidden md:flex items-center space-x-1">
-            <NavItems />
+            {primaryNav.map((item) => renderNavItem(item, false))}
+
+            {/* Menu déroulant Bibliothèque */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`touch-target interactive-tap relative ${isLibraryActive() ? 'bg-primary/10 text-primary font-semibold after:absolute after:bottom-0 after:left-2 after:right-2 after:h-0.5 after:bg-primary after:rounded-full' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'}`}
+                >
+                  <Library className="mr-2 h-4 w-4" /> Bibliothèque
+                  <ChevronDown className="ml-1 h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuLabel>Bibliothèque</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {renderLibraryItems(false)}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <Button
               variant="outline"
               size="sm"

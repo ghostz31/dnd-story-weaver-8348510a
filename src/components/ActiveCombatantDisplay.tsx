@@ -128,13 +128,31 @@ const MonsterDisplay: React.FC<{ participant: EncounterParticipant; onUpdate?: (
                     </div>
                     {monsterData.actions && monsterData.actions.length > 0 && (
                         <div className="mt-4 pt-3 border-t border-border">
-                            <h4 className="text-xs font-bold text-muted-foreground uppercase mb-2">Action principale</h4>
-                            <div className="text-xs text-foreground/90">
-                                <span className="font-semibold">{monsterData.actions[0].name}</span>
-                                {monsterData.actions[0].description && (
-                                    <p className="mt-1 text-muted-foreground line-clamp-3">{monsterData.actions[0].description}</p>
-                                )}
+                            <h4 className="text-xs font-bold text-muted-foreground uppercase mb-2">Actions ({Math.min(3, monsterData.actions.length)})</h4>
+                            <div className="flex flex-col gap-2">
+                                {monsterData.actions.slice(0, 3).map((action: any, idx: number) => (
+                                    <div key={idx} className="text-xs text-foreground/90">
+                                        <span className="font-semibold">{action.name}</span>
+                                        {action.description && (
+                                            <p className="mt-0.5 text-muted-foreground line-clamp-2">{action.description}</p>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
+                        </div>
+                    )}
+                    {/* Badge actions légendaires (M7) */}
+                    {monsterData.legendaryActions && Array.isArray(monsterData.legendaryActions) && monsterData.legendaryActions.length > 0 && (
+                        <div className="mt-3 flex items-center gap-2">
+                            <Badge className="bg-amber-500/90 text-white hover:bg-amber-500">
+                                <Zap className="h-3 w-3 mr-1 fill-white" />
+                                {monsterData.legendaryActions.length} actions légendaires
+                            </Badge>
+                            {participant.legendaryActions && (
+                                <span className="text-xs text-muted-foreground">
+                                    {participant.legendaryActions.current}/{participant.legendaryActions.max} restantes
+                                </span>
+                            )}
                         </div>
                     )}
                 </div>
