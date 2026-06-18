@@ -65,18 +65,31 @@ export function FeatureCard({
             {/* Châtiment divin — affiche les emplacements de sort disponibles */}
             {feature.name === 'Châtiment divin' && spellSlotSummary.length > 0 && (
               <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-                {spellSlotSummary.map((slot) => (
-                  <div
-                    key={slot.level}
-                    className={`flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium ${
-                      slot.available === 0 ? 'bg-muted text-muted-foreground/40' : 'bg-magic/10 text-magic'
-                    }`}
-                    title={`Niveau ${slot.level} : ${slot.available}/${slot.max} restant${slot.available > 1 ? 's' : ''}`}
-                  >
-                    <span className="font-bold">{slot.level}</span>
-                    <span>{slot.available}/{slot.max}</span>
-                  </div>
-                ))}
+                {spellSlotSummary.map((slot) => {
+                  const isUsed = slot.available === 0
+                  return (
+                    <div
+                      key={slot.level}
+                      className={`spell-orb ${isUsed ? 'used' : ''}`}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        lineHeight: 1,
+                        ...(isUsed ? {} : {
+                          borderColor: 'hsl(var(--color-magic) / 0.5)',
+                          background: 'hsl(var(--color-magic) / 0.15)',
+                          color: 'hsl(var(--color-magic))',
+                        }),
+                      }}
+                      title={`Niveau ${slot.level} : ${slot.available}/${slot.max} restant${slot.available > 1 ? 's' : ''}`}
+                    >
+                      {slot.level}
+                    </div>
+                  )
+                })}
                 <span className="text-[10px] text-muted-foreground">Emplacements de sort</span>
               </div>
             )}

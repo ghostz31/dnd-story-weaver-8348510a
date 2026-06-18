@@ -63,7 +63,7 @@ import { categorizeFeatureForPage, type ViewMode, type FeatureCategory } from '.
 // ============================================================================
 
 export function CombatSheetPage() {
-  const { character, updateConditions, getModifier, getSavingThrowBonus, getSpellSlotsForLevel } = useCharacter()
+  const { character, updateConditions, getModifier, getSavingThrowBonus, getSpellSlotsForLevel, consumeSpellSlot, restoreSpellSlot } = useCharacter()
   const { settings } = useSettings()
   const beginnerMode = settings.beginnerMode
   const [viewMode, setViewMode] = useState<ViewMode>('all')
@@ -549,17 +549,37 @@ export function CombatSheetPage() {
                   {Array.from({ length: maxSpellLevel }, (_, i) => i + 1).map((level) => {
                     const { used, max } = getSpellSlotsForLevel(level)
                     const available = max - used
+                    const isUsed = available === 0
                     return (
-                      <div
+                      <button
                         key={level}
-                        className={`flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium ${
-                          available === 0 ? 'bg-muted text-muted-foreground/40' : 'bg-magic/10 text-magic'
-                        }`}
-                        title={`Niveau ${level} : ${available}/${max} restant${available > 1 ? 's' : ''}`}
+                        type="button"
+                        className={`spell-orb ${isUsed ? 'used' : ''}`}
+                        onClick={() => {
+                          if (isUsed) {
+                            void restoreSpellSlot(level)
+                          } else {
+                            void consumeSpellSlot(level)
+                          }
+                        }}
+                        aria-label={`Emplacement de sort niveau ${level} : ${available}/${max} restant${available > 1 ? 's' : ''}`}
+                        title={`Niveau ${level} : ${available}/${max} restant${available > 1 ? 's' : ''} — cliquer pour ${isUsed ? 'récupérer' : 'consommer'}`}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '0.7rem',
+                          fontWeight: 700,
+                          lineHeight: 1,
+                          ...(isUsed ? {} : {
+                            borderColor: 'hsl(var(--color-magic) / 0.5)',
+                            background: 'hsl(var(--color-magic) / 0.15)',
+                            color: 'hsl(var(--color-magic))',
+                          }),
+                        }}
                       >
-                        <span className="font-bold">{level}</span>
-                        <span>{available}/{max}</span>
-                      </div>
+                        {level}
+                      </button>
                     )
                   })}
                 </div>
@@ -608,7 +628,7 @@ export function CombatSheetPage() {
                     used ? 'bg-muted text-muted-foreground line-through' : 'bg-primary/10 text-primary'
                   }`}
                 >
-                  <div className={`w-2 h-2 rounded-full ${used ? 'bg-muted-foreground/50' : colors[type]}`} />
+                  <div className={`w-2 h-2 rounded-full ${used ? 'bg-muted-foreground/70' : colors[type]}`} />
                   {labels[type]}
                 </div>
               )
@@ -632,7 +652,7 @@ export function CombatSheetPage() {
             {!beginnerMode && (
               <button
                 onClick={() => setShowConditionPicker(true)}
-                className="text-xs px-2 py-1 rounded-full border border-dashed border-muted-foreground/50 text-muted-foreground hover:text-foreground hover:border-foreground/50 transition-colors"
+                className="text-xs px-2 py-1 rounded-full border border-dashed border-muted-foreground/70 text-muted-foreground hover:text-foreground hover:border-foreground/50 transition-colors"
               >
                 + Ajouter
               </button>

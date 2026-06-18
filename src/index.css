@@ -64,6 +64,20 @@
   --color-wis: hsl(var(--stat-wis));
   --color-cha: hsl(var(--stat-cha));
 
+  /* D&D Class Colors — 12 classes */
+  --color-class-barbarian: hsl(var(--class-barbarian));
+  --color-class-bard: hsl(var(--class-bard));
+  --color-class-cleric: hsl(var(--class-cleric));
+  --color-class-druid: hsl(var(--class-druid));
+  --color-class-fighter: hsl(var(--class-fighter));
+  --color-class-monk: hsl(var(--class-monk));
+  --color-class-paladin: hsl(var(--class-paladin));
+  --color-class-ranger: hsl(var(--class-ranger));
+  --color-class-rogue: hsl(var(--class-rogue));
+  --color-class-sorcerer: hsl(var(--class-sorcerer));
+  --color-class-warlock: hsl(var(--class-warlock));
+  --color-class-wizard: hsl(var(--class-wizard));
+
   /* Radius */
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
@@ -170,6 +184,20 @@
     --stat-wis: 270 60% 55%;
     --stat-cha: 40 90% 48%;
 
+    /* D&D Class Colors — 12 classes (mode clair) */
+    --class-barbarian: 0 72% 51%;
+    --class-bard: 280 60% 55%;
+    --class-cleric: 45 85% 50%;
+    --class-druid: 142 65% 40%;
+    --class-fighter: 25 80% 50%;
+    --class-monk: 35 90% 50%;
+    --class-paladin: 210 70% 50%;
+    --class-ranger: 100 55% 45%;
+    --class-rogue: 220 60% 45%;
+    --class-sorcerer: 300 70% 55%;
+    --class-warlock: 270 65% 50%;
+    --class-wizard: 195 80% 55%;
+
     /* Safe Areas */
     --safe-top: env(safe-area-inset-top, 0px);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -238,6 +266,20 @@
     --stat-int: 217 90% 65%;
     --stat-wis: 270 65% 65%;
     --stat-cha: 40 95% 58%;
+
+    /* D&D Class Colors — 12 classes (mode sombre, +10% luminosité) */
+    --class-barbarian: 0 78% 62%;
+    --class-bard: 280 65% 65%;
+    --class-cleric: 45 90% 60%;
+    --class-druid: 142 70% 50%;
+    --class-fighter: 25 85% 60%;
+    --class-monk: 35 95% 60%;
+    --class-paladin: 210 75% 60%;
+    --class-ranger: 100 60% 55%;
+    --class-rogue: 220 65% 55%;
+    --class-sorcerer: 300 75% 65%;
+    --class-warlock: 270 70% 60%;
+    --class-wizard: 195 85% 65%;
 
     /* Higher saturation HP colors in dark mode */
     --color-hp-crit: 0 84% 60%;

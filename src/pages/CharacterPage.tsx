@@ -25,6 +25,7 @@ import {
     SkillRow,
     CollapsibleCard,
     SavingThrowsSection,
+    Skeleton,
 } from '../components/ui'
 
 const abilityLabels: Record<keyof AbilityScores, string> = {
@@ -95,10 +96,10 @@ export function CharacterPage() {
     if (loading) {
         return (
             <div className="flex flex-col gap-4 animate-fade-in pb-8">
-                <div className="card h-32 animate-pulse bg-muted/20" />
+                <Skeleton className="card h-32" />
                 <div className="grid grid-cols-3 gap-3">
                     {[...Array(6)].map((_, i) => (
-                        <div key={i} className="card h-28 animate-pulse bg-muted/20" />
+                        <Skeleton key={i} className="card h-28" />
                     ))}
                 </div>
             </div>

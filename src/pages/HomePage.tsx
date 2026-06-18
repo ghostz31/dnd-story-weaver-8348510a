@@ -18,24 +18,16 @@ import { useAuth } from '../contexts/AuthContext'
 import { dataStore, type CharacterSummary } from '../lib/dataStore'
 import { CharacterAvatar } from '../components/CharacterAvatar'
 import { Dialog, DialogFooter } from '../components/ui/Dialog'
+import { Skeleton } from '../components/ui/Skeleton'
 import { importCharacterFromJSON, readUploadedJSON } from '../utils/characterImportExport'
+import { normalizeClassId } from '../utils/feature-helpers'
 
 const MAX_CHARACTERS = 5
 
-// Couleur thématique par classe
-const classColors: Record<string, string> = {
-    'Barbare': '0 72% 51%',
-    'Barde': '280 60% 55%',
-    'Clerc': '45 85% 48%',
-    'Druide': '142 71% 42%',
-    'Ensorceleur': '217 85% 55%',
-    'Guerrier': '25 95% 50%',
-    'Magicien': '217 85% 55%',
-    'Moine': '210 65% 52%',
-    'Paladin': '45 85% 48%',
-    'Rôdeur': '152 69% 38%',
-    'Roublard': '220 14% 40%',
-    'Sorcier': '270 60% 55%',
+// Couleur thématique par classe — via tokens CSS (--class-<id>)
+const getClassColor = (classId: string | undefined): string => {
+    const normalized = normalizeClassId(classId)
+    return normalized ? `var(--class-${normalized})` : 'var(--primary)'
 }
 
 export function HomePage() {
@@ -161,8 +153,6 @@ export function HomePage() {
     }
 
     const canCreateMore = characters.length < MAX_CHARACTERS
-
-    const getClassColor = (className: string) => classColors[className] || 'var(--primary)'
 
     return (
         <div className="space-y-10 pb-20 animate-fade-in px-4 max-w-5xl mx-auto">
@@ -290,13 +280,13 @@ export function HomePage() {
                 {loading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {[1, 2].map(i => (
-                            <div key={i} className="card h-36 animate-pulse bg-muted/20 border-border/30" />
+                            <Skeleton key={i} className="card h-36 border-border/30" />
                         ))}
                     </div>
                 ) : characters.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 stagger-children">
                         {characters.map((char) => {
-                            const classColor = getClassColor(char.characterClass.name)
+                            const classColor = getClassColor(char.characterClass?.id)
                             return (
                                 <div
                                     key={char.id}

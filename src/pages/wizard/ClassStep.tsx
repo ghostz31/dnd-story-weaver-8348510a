@@ -48,19 +48,10 @@ const roleTagMap: Record<string, string> = {
   wizard: 'DPS Magique / Contrôle / Utilitaire',
 }
 
-const classColorMap: Record<string, string> = {
-  barbarian: '#DC2626',
-  bard: '#8B5CF6',
-  cleric: '#F59E0B',
-  druid: '#059669',
-  fighter: '#B91C1C',
-  monk: '#0EA5E9',
-  paladin: '#EAB308',
-  ranger: '#65A30D',
-  rogue: '#374151',
-  sorcerer: '#7C3AED',
-  warlock: '#BE185D',
-  wizard: '#2563EB',
+// Couleur thématique par classe — via tokens CSS (--class-<id>)
+// Renvoie une expression CSS var() avec fallback sur --primary
+const getClassColor = (oldId: string): string => {
+  return `var(--class-${oldId}, var(--primary))`
 }
 
 function auroraIdToOldId(id: string): string {
@@ -137,7 +128,7 @@ export function ClassStep() {
           const isSelected = character.characterClass?.id === cls.id
           const isSpellcaster = !!cls.spellcasting
           const oldId = auroraIdToOldId(cls.id)
-          const color = classColorMap[oldId] || '#6B7280'
+          const color = getClassColor(oldId)
           const roleTag = roleTagMap[oldId] || 'Aventurier'
 
           return (
@@ -156,7 +147,7 @@ export function ClassStep() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <div
                         className="w-3 h-3 rounded-full shrink-0"
-                        style={{ backgroundColor: color }}
+                        style={{ backgroundColor: `hsl(${color})` }}
                       />
                       <h3 className="font-bold text-lg">{cls.name}</h3>
                       {isSpellcaster && (
@@ -241,6 +232,8 @@ function StatBadge({
   colorClass?: string
   highlight?: boolean
 }) {
+  // `color` est une expression var() CSS pointant vers --class-<id> ; on l'enveloppe dans hsl()
+  const colorStyle = color ? { color: `hsl(${color})` } : undefined
   return (
     <div
       className={`flex items-center gap-1 px-2 py-1 rounded-md text-[11px] ${
@@ -248,12 +241,12 @@ function StatBadge({
       }`}
     >
       {Icon && (
-        <span className={colorClass || ''} style={color ? { color } : undefined}>
+        <span className={colorClass || ''} style={colorStyle}>
           <Icon className="w-3 h-3" />
         </span>
       )}
       <span className="opacity-70">{label}:</span>
-      <span className={colorClass || ''} style={color ? { color } : undefined}>
+      <span className={colorClass || ''} style={colorStyle}>
         {value}
       </span>
     </div>
