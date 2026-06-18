@@ -2,6 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Spectral:wght@300;400;500;600;700&display=swap');
 
 @import "tailwindcss";
+@import "../../packages/shared-types/effects.css";
 
 @theme {
   /* Fonts */

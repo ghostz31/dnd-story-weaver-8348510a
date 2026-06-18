@@ -315,7 +315,7 @@ export function CombatSheetPage() {
         )}
 
         {/* Stats de combat rapides */}
-        <div className="grid grid-cols-4 gap-2">
+        <div className="stat-block grid grid-cols-4 gap-2">
           <QuickStat
             icon={ShieldCheckIcon}
             label="CA"

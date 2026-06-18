@@ -145,7 +145,7 @@ export function FeatureCard({
         {/* Description étendue */}
         {isExpanded && (
           <div className="mt-3 pt-3 border-t border-border/50">
-            <p className="text-sm text-muted-foreground">
+            <p className="drop-cap text-sm text-muted-foreground">
               {feature.description}
             </p>
             {feature.prerequisite && (

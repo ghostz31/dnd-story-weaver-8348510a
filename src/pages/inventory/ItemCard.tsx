@@ -33,7 +33,7 @@ export function ItemCard({
 }: ItemCardProps) {
     return (
         <div
-            className="card p-3"
+            className={`card p-3 ${item.rarity === 'legendary' ? 'legendary-item' : ''}`}
             style={item.magical ? {
                 borderColor: item.rarity ? `${rarityColors[item.rarity]}50` : 'hsl(var(--color-xp) / 0.5)',
                 background: item.rarity ? `${rarityColors[item.rarity]}08` : 'hsl(var(--color-xp) / 0.05)'

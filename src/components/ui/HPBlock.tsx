@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { HeartIcon, ShieldCheckIcon } from '@heroicons/react/24/solid'
+import { useSettings } from '../../hooks/useSettings'
 
 interface HPBlockProps {
   current: number
@@ -11,10 +12,30 @@ interface HPBlockProps {
 }
 
 export function HPBlock({ current, max, temp, onHeal, onDamage, onSetTempHP }: HPBlockProps) {
+  const { settings } = useSettings()
   const [inputValue, setInputValue] = useState('')
   const [editingTemp, setEditingTemp] = useState(false)
   const [tempEditValue, setTempEditValue] = useState('')
+  const [flashClass, setFlashClass] = useState('')
+  const prevCurrent = useRef(current)
   const hpPercent = (current / max) * 100
+
+  // Détection des variations de `current` pour flasher damage/heal.
+  // Conditionné par settings.effects.hpCounter.
+  useEffect(() => {
+    if (current === prevCurrent.current) return
+    if (settings.effects.hpCounter && prevCurrent.current !== undefined) {
+      if (current < prevCurrent.current) {
+        setFlashClass('flash-damage')
+      } else if (current > prevCurrent.current) {
+        setFlashClass('flash-heal')
+      }
+      const t = setTimeout(() => setFlashClass(''), 400)
+      prevCurrent.current = current
+      return () => clearTimeout(t)
+    }
+    prevCurrent.current = current
+  }, [current, settings.effects.hpCounter])
 
   const getHpStatus = () => {
     if (hpPercent <= 25) return 'crit'
@@ -89,7 +110,7 @@ export function HPBlock({ current, max, temp, onHeal, onDamage, onSetTempHP }: H
           )}
         </div>
         <div className="flex items-baseline gap-1">
-          <span className="text-xl font-bold font-cinzel" style={{ color }}>
+          <span className={`hp-counter ${flashClass} text-xl font-bold font-cinzel`} style={{ color }}>
             {current}
           </span>
           <span className="text-sm text-muted-foreground">/ {max}</span>

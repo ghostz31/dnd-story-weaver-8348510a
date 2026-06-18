@@ -12,7 +12,7 @@ export function ConditionBadge({ condition, onRemove }: ConditionBadgeProps) {
 
     return (
         <div
-            className="flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium"
+            className="condition-active flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium"
             style={{ backgroundColor: color + '20', color }}
         >
             <span>{icon}</span>

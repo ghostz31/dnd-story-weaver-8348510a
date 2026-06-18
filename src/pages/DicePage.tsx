@@ -1,10 +1,12 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import {
     ChevronLeftIcon,
     CubeIcon,
     TrashIcon,
 } from '@heroicons/react/24/solid'
+import { useSettings } from '../hooks/useSettings'
+import { RollToast } from '../components/ui/RollToast'
 
 interface RollEntry {
     id: string
@@ -43,18 +45,49 @@ function generateId(): string {
 }
 
 export function DicePage() {
+    const { settings } = useSettings()
     const [history, setHistory] = useState<RollEntry[]>([])
     const [modifier, setModifier] = useState(0)
     const [lastRoll, setLastRoll] = useState<RollEntry | null>(null)
     const [animating, setAnimating] = useState(false)
+    // Nombre de dés en cours de rolling (pour afficher les pastilles qui tournent)
+    const [pendingCount, setPendingCount] = useState(0)
+    // Toast de résultat (auto-dismiss 2.6s)
+    const [toast, setToast] = useState<{ result: number; modifier: number; total: number; label: string } | null>(null)
+    const resultCardRef = useRef<HTMLDivElement>(null)
+    const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
     const addRoll = useCallback((entry: RollEntry) => {
         setLastRoll(entry)
         setHistory(prev => [entry, ...prev].slice(0, 50))
     }, [])
 
+    // Déclenche le flash critique + screen-shake sur le conteneur de résultat.
+    // Rejouable : retire les classes, force un reflow, puis les réapplique.
+    const triggerCritFlash = useCallback(() => {
+        const el = resultCardRef.current
+        if (!el) return
+        el.classList.remove('crit-flash', 'screen-shake')
+        void el.offsetWidth
+        el.classList.add('crit-flash', 'screen-shake')
+        window.setTimeout(() => {
+            el.classList.remove('crit-flash', 'screen-shake')
+        }, 600)
+    }, [])
+
+    // Affiche le toast pendant 2.6s (durée de l'animation roll-toast dans effects.css)
+    const showToast = useCallback((data: { result: number; modifier: number; total: number; label: string }) => {
+        if (toastTimer.current) clearTimeout(toastTimer.current)
+        setToast(data)
+        toastTimer.current = setTimeout(() => setToast(null), 2600)
+    }, [])
+
+    // Durée de l'animation de rolling : 600ms si dice3d activé, sinon 200ms (feedback minimal)
+    const rollDuration = settings.effects.dice3d ? 600 : 200
+
     const rollDice = useCallback((sides: number, count: number, mod: number, label?: string) => {
         setAnimating(true)
+        setPendingCount(count)
         const results: number[] = []
         for (let i = 0; i < count; i++) {
             results.push(rollDie(sides))
@@ -75,8 +108,24 @@ export function DicePage() {
         setTimeout(() => {
             addRoll(entry)
             setAnimating(false)
-        }, 200)
-    }, [addRoll])
+            setPendingCount(0)
+
+            // Crit : dé unique dont le résultat est le max du dé (nat 20 pour d20, etc.)
+            if (settings.effects.critFlash && count === 1 && results[0] === sides) {
+                triggerCritFlash()
+            }
+
+            // Toast de résultat
+            if (settings.effects.chatToast) {
+                showToast({
+                    result: total - mod,
+                    modifier: mod,
+                    total,
+                    label: label || entry.dice,
+                })
+            }
+        }, rollDuration)
+    }, [addRoll, rollDuration, settings.effects.critFlash, settings.effects.chatToast, showToast, triggerCritFlash])
 
     const rollQuick = useCallback((config: typeof QUICK_ROLLS[0]) => {
         setAnimating(true)
@@ -107,11 +156,29 @@ export function DicePage() {
             label: config.label,
         }
 
+        // Nombre de pastilles affichées pendant l'animation = nombre de dés lancés
+        setPendingCount(count)
+
         setTimeout(() => {
             addRoll(entry)
             setAnimating(false)
-        }, 200)
-    }, [addRoll])
+            setPendingCount(0)
+
+            // Crit : dé unique (après keep) dont le résultat est le max du dé
+            if (settings.effects.critFlash && finalResults.length === 1 && finalResults[0] === sides) {
+                triggerCritFlash()
+            }
+
+            if (settings.effects.chatToast) {
+                showToast({
+                    result: total - config.modifier,
+                    modifier: config.modifier,
+                    total,
+                    label: config.label,
+                })
+            }
+        }, rollDuration)
+    }, [addRoll, rollDuration, settings.effects.critFlash, settings.effects.chatToast, showToast, triggerCritFlash])
 
     const clearHistory = () => {
         if (confirm('Effacer l\'historique ?')) {
@@ -136,30 +203,38 @@ export function DicePage() {
             </header>
 
             {/* Dernier résultat */}
-            <div className="card text-center py-6 relative overflow-hidden">
-                {animating && (
+            <div ref={resultCardRef} className="card text-center py-6 relative overflow-hidden">
+                {animating && !settings.effects.dice3d && (
                     <div className="absolute inset-0 flex items-center justify-center bg-card/80 z-10">
                         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
                     </div>
                 )}
-                {lastRoll ? (
+                {lastRoll || animating ? (
                     <div className="animate-fade-in">
                         <p className="text-xs text-muted-foreground mb-1">
-                            {lastRoll.label || lastRoll.dice}
-                            {lastRoll.modifier !== 0 && ` ${lastRoll.modifier > 0 ? '+' : ''}${lastRoll.modifier}`}
+                            {(animating && pendingCount > 0) ? 'Lancement…' : (lastRoll?.label || lastRoll?.dice)}
+                            {!animating && lastRoll && lastRoll.modifier !== 0 && ` ${lastRoll.modifier > 0 ? '+' : ''}${lastRoll.modifier}`}
                         </p>
                         <div className="flex items-center justify-center gap-2 flex-wrap mb-2">
-                            {lastRoll.results.map((r, i) => (
-                                <span
-                                    key={i}
-                                    className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-muted text-lg font-bold"
-                                >
-                                    {r}
-                                </span>
-                            ))}
+                            {animating
+                                ? Array.from({ length: pendingCount }).map((_, i) => (
+                                    <span
+                                        key={i}
+                                        className={`dice-3d rolling inline-flex items-center justify-center w-10 h-10 rounded-lg bg-muted text-lg font-bold${settings.effects.dice3d ? '' : ' opacity-60'}`}
+                                        aria-hidden="true"
+                                    />
+                                ))
+                                : lastRoll?.results.map((r, i) => (
+                                    <span
+                                        key={i}
+                                        className={`dice-3d inline-flex items-center justify-center w-10 h-10 rounded-lg bg-muted text-lg font-bold`}
+                                    >
+                                        {r}
+                                    </span>
+                                ))}
                         </div>
                         <p className="text-4xl font-bold font-cinzel" style={{ color: 'hsl(var(--primary))' }}>
-                            {lastRoll.total}
+                            {animating ? '…' : lastRoll?.total}
                         </p>
                     </div>
                 ) : (
@@ -264,6 +339,17 @@ export function DicePage() {
                         ))}
                     </div>
                 </div>
+            )}
+
+            {/* Toast de résultat — affiché 2.6s après chaque roll si chatToast activé */}
+            {toast && (
+                <RollToast
+                    result={toast.result}
+                    modifier={toast.modifier}
+                    total={toast.total}
+                    label={toast.label}
+                    visible={!!toast}
+                />
             )}
         </div>
     )

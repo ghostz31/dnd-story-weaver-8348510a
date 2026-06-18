@@ -34,7 +34,7 @@ export function CombatBadge({ type, value, label, suffix, breakdown }: CombatBad
           {suffix && <span className="text-[10px] md:text-xs">{suffix}</span>}
         </span>
       </div>
-      <span className="mt-1.5 text-[10px] md:text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      <span className="stat-label mt-1.5 text-[10px] md:text-xs font-semibold uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
     </div>

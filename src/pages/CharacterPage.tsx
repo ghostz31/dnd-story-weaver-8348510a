@@ -214,7 +214,7 @@ export function CharacterPage() {
                 <div className="contents lg:block lg:space-y-4">
                     {/* Combat Badges — mobile first, puis ordonné après hex en desktop */}
                     <div className="order-1 lg:order-none lg:hidden">
-                        <div className="flex justify-around py-4 bg-card rounded-xl border border-border">
+                        <div className="stat-block flex justify-around py-4 bg-card rounded-xl border border-border">
                             <CombatBadge type="ac" value={ac} label="AC" breakdown={acBreakdown} />
                             <CombatBadge type="initiative" value={initiative} label="Initiative" breakdown={initiativeBreakdown} />
                             <CombatBadge type="speed" value={speed} label="Speed" suffix="m" />
@@ -238,7 +238,7 @@ export function CharacterPage() {
                     {character.activeConditions && character.activeConditions.length > 0 && (
                         <div className="order-2.5 lg:order-none lg:hidden flex flex-wrap gap-1.5 px-1">
                             {character.activeConditions.map(cond => (
-                                <span key={cond} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium"
+                                <span key={cond} className="condition-active inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium"
                                     style={{ backgroundColor: 'hsl(var(--destructive) / 0.15)', color: 'hsl(var(--destructive))' }}>
                                     {cond}
                                 </span>
@@ -402,7 +402,7 @@ export function CharacterPage() {
 
                 {/* ─── COLONNE 3 — Combat (desktop) ─── */}
                 <div className="hidden lg:block space-y-4">
-                    <div className="card p-4">
+                    <div className="stat-block card p-4">
                         <div className="grid grid-cols-2 gap-4">
                             <CombatBadge type="ac" value={ac} label="CA" breakdown={acBreakdown} />
                             <CombatBadge type="initiative" value={initiative} label="Initiative" breakdown={initiativeBreakdown} />
@@ -423,7 +423,7 @@ export function CharacterPage() {
                     {character.activeConditions && character.activeConditions.length > 0 && (
                         <div className="flex flex-wrap gap-1.5">
                             {character.activeConditions.map(cond => (
-                                <span key={cond} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium"
+                                <span key={cond} className="condition-active inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium"
                                     style={{ backgroundColor: 'hsl(var(--destructive) / 0.15)', color: 'hsl(var(--destructive))' }}>
                                     {cond}
                                 </span>

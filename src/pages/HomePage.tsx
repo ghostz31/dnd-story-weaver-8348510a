@@ -156,6 +156,9 @@ export function HomePage() {
 
     return (
         <div className="space-y-10 pb-20 animate-fade-in px-4 max-w-5xl mx-auto">
+            {/* Aurora vignette — activée via .fx-aurora sur <html> */}
+            <div className="aurora-bg" aria-hidden="true" />
+
             {/* Hero Section */}
             <section className="relative overflow-hidden pt-14 pb-6 text-center flex flex-col items-center">
                 <div

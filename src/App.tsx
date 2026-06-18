@@ -12,6 +12,7 @@ import { CreateCharacterPage } from './pages/CreateCharacterPage'
 import LevelUpPage from './pages/LevelUpPage'
 import { CharacterProvider } from './contexts/CharacterContext'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import { PageTransition } from './components/PageTransition'
 import { NotFoundPage } from './pages/NotFoundPage'
 
 function App() {
@@ -30,7 +31,9 @@ function App() {
                 <Route
                     element={
                         <CharacterProvider>
-                            <Layout />
+                            <PageTransition>
+                                <Layout />
+                            </PageTransition>
                         </CharacterProvider>
                     }
                 >

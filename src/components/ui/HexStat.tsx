@@ -29,7 +29,7 @@ export function HexStat({ ability, score, modifier, isSaveProficient, skillCount
       }`}
     >
       {/* Label */}
-      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+      <span className="stat-label text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
         {label}
       </span>
       
