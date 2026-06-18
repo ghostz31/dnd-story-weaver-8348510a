@@ -9,7 +9,7 @@ export function Toaster() {
             theme={dark ? 'dark' : 'light'}
             position="top-right"
             toastOptions={{
-                className: 'font-inter',
+                className: 'font-body',
                 style: {
                     borderRadius: 'var(--radius)',
                     border: '1px solid hsl(var(--border))',
