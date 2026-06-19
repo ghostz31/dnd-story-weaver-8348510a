@@ -1,143 +1,18 @@
 // Données de progression par classe et niveau
 
-// Progression des Rages du Barbarian
-export const barbarianRages: number[] = [2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 999]
+export * from './classFeatures/types'
+export * from './classFeatures/barbarian'
+export * from './classFeatures/ranger'
+export * from './classFeatures/druid'
+export * from './classFeatures/rogue'
+export * from './classFeatures/monk'
+export * from './classFeatures/sorcerer'
+export * from './classFeatures/bard'
+export * from './classFeatures/paladin'
+export * from './classFeatures/fighter'
+export * from './classFeatures/warlock'
 
-// Bonus de dégâts de Rage
-export const barbarianRageDamage: number[] = [2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4]
-
-// ============================================================================
-// RANGER-SPECIFIC TABLES
-// ============================================================================
-
-// Nombre d'ennemis jurés choisis (niv 1 = 1, niv 6 = 2, niv 14 = 3)
-export const rangerFavoredEnemyCount: number[] = [1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3]
-
-// Nombre de terrains favoris choisis (niv 1 = 1, niv 6 = 2, niv 10 = 3)
-export const rangerNaturalExplorerCount: number[] = [1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
-
-// Nombre de sorts connus du Rôdeur (niv 1 = 0 car demi-incantateur, niv 2 = 2, etc.)
-export const rangerKnownSpells: number[] = [0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11]
-
-// ============================================================================
-// DRUID-SPECIFIC TABLES
-// ============================================================================
-
-// FP maximum de Forme sauvage (0 avant niv 2)
-export const druidWildShapeMaxCR: number[] = [0, 0, 0.25, 0.25, 0.5, 0.5, 0.5, 0.5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-
-// Nombre d'utilisations de Forme sauvage (2 à partir du niv 2, illimité au niv 20)
-export const druidWildShapeUses: number[] = [0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 999]
-
-// Restriction de vol pour Forme sauvage (débloqué au niv 8)
-export const druidWildShapeCanFly: boolean[] = [
-    false, false, false, false, false, false, false, false,
-    true, true, true, true, true, true, true, true, true, true, true, true
-]
-
-// Restriction de forme aquatique (débloquée au niv 4)
-export const druidWildShapeCanSwim: boolean[] = [
-    false, false, false, false,
-    true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true
-]
-
-// Sneak Attack du Roublard (en nombre de d6)
-export const rogueSneakAttackDice: number[] = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10]
-
-// Points de Ki du Moine (= niveau, mais commence à 2)
-export const monkKiPoints: number[] = [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-
-// Dé d'arts martiaux du Moine
-export const monkMartialArtsDie: string[] = [
-    'd4', 'd4', 'd4', 'd4', 'd6', 'd6', 'd6', 'd6', 'd6', 'd6',
-    'd8', 'd8', 'd8', 'd8', 'd8', 'd8', 'd10', 'd10', 'd10', 'd10'
-]
-
-// Bonus de déplacement sans armure du Moine (en mètres)
-export const monkUnarmoredMovement: number[] = [
-    0, 3, 3, 3, 3, 4.5, 4.5, 4.5, 4.5, 6,
-    6, 6, 6, 7.5, 7.5, 7.5, 7.5, 9, 9, 9
-]
-
-// Points de Sorcellerie (= niveau pour Ensorceleur)
-export const sorcererSorceryPoints: number[] = [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-
-// Dé d'Inspiration Bardique
-export const bardInspirationDie: string[] = [
-    'd6', 'd6', 'd6', 'd6', 'd8', 'd8', 'd8', 'd8', 'd8', 'd10',
-    'd10', 'd10', 'd10', 'd10', 'd12', 'd12', 'd12', 'd12', 'd12', 'd12'
-]
-
-// Utilisations d'Inspiration Bardique par repos long
-export const bardInspirationUses: number[] = [0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5]
-
-// Imposition des mains du Paladin (pool de PV = niveau × 5)
-export const paladinLayOnHandsPool: number[] = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95]
-
-// Second souffle du Guerrier (utilisations par repos court)
-export const fighterSecondWindUses: number[] = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-
-// Niveau maximum de slot Warlock
-export const warlockSlotLevel: number[] = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
-
-// Nombre de slots Warlock
-export const warlockSlotCount: number[] = [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4]
-
-// Aptitudes de classe par niveau (descriptions courtes FR)
-export interface ClassFeature {
-    name: string
-    description: string
-}
-
-// Capacités de classe actionnables (trackées avec des ressources)
-export interface ClassAction {
-    key: string
-    name: string
-    description: string
-    icon: string
-    restoreOn: 'short' | 'long' | 'never'
-}
-
-// ============================================================================
-// BARBARIAN-SPECIFIC TABLES
-// ============================================================================
-
-// Bonus de vitesse du Barbare (Déplacement rapide, niveau 5+)
-export const barbarianFastMovement: number[] = [0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
-
-// Dés de Critique Brutal du Barbare (0 avant niveau 9)
-export const barbarianBrutalCriticalDice: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]
-
-// ============================================================================
-// FIGHTER-SPECIFIC TABLES
-// ============================================================================
-
-// Nombre de dés de supériorité du Maître de bataille (4 au niv 3, 5 au niv 10, 6 au niv 18)
-export const battleMasterDiceCount: number[] = [0, 0, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6]
-
-// Type de dé de supériorité du Maître de bataille (d6 → d10 au niv 10 → d12 au niv 18)
-export const battleMasterDieSize: string[] = [
-    'd6', 'd6', 'd6', 'd6', 'd6', 'd6', 'd6', 'd6', 'd6', 'd10', 'd10',
-    'd10', 'd10', 'd10', 'd10', 'd10', 'd10', 'd12', 'd12', 'd12'
-]
-
-// Nombre de manœuvres connues du Maître de bataille (3 au niv 3, +2 au niv 7/10/15/18)
-export const battleMasterManeuversKnown: number[] = [0, 0, 3, 3, 3, 3, 5, 5, 5, 7, 7, 7, 7, 7, 9, 9, 9, 11, 11, 11]
-
-// Tirs arcaniques de l'Archer arcanique (2 par repos court ou long)
-export const arcaneArcherShots: number[] = [0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
-
-// Esprit combatif du Samouraï (3 par repos long)
-export const samuraiFightingSpirit: number[] = [0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
-
-// Dés d'énergie psionique du Guerrier psionique (2 × bonus maîtrise)
-export const psiWarriorDiceCount: number[] = [0, 0, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 8, 8, 8, 8, 8, 8, 8, 8]
-
-// Type de dé d'énergie psionique (d6 → d8 au niv 11 → d10 au niv 17)
-export const psiWarriorDieSize: string[] = [
-    'd6', 'd6', 'd6', 'd6', 'd6', 'd6', 'd6', 'd6', 'd6', 'd6', 'd8',
-    'd8', 'd8', 'd8', 'd8', 'd8', 'd10', 'd10', 'd10', 'd10'
-]
+import type { ClassFeature, ClassAction } from './classFeatures/types'
 
 // ============================================================================
 export const classActionsByLevel: Record<string, Record<number, ClassAction[]>> = {
