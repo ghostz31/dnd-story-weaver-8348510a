@@ -39,10 +39,13 @@ export default defineConfig(({ mode }) => ({
     componentTagger(),
   ].filter(Boolean),
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-      "@trame-besace/shared-types": path.resolve(__dirname, "../packages/shared-types/index.ts"),
-    },
+    alias: [
+      { find: '@trame-besace/shared-types/use-effects-hook', replacement: path.resolve(__dirname, '../packages/shared-types/use-effects-hook.ts') },
+      { find: '@trame-besace/shared-types/use-effects', replacement: path.resolve(__dirname, '../packages/shared-types/use-effects.ts') },
+      { find: '@trame-besace/shared-types/combat-sync', replacement: path.resolve(__dirname, '../packages/shared-types/combat-sync.ts') },
+      { find: '@trame-besace/shared-types', replacement: path.resolve(__dirname, '../packages/shared-types/index.ts') },
+      { find: '@', replacement: path.resolve(__dirname, './src') },
+    ],
   },
   test: {
     globals: true,
