@@ -1,10 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import tailwindcss from "@tailwindcss/vite";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(() => ({
   server: {
     host: true,
     port: 8080,
@@ -35,9 +35,8 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    mode === 'development' &&
-    componentTagger(),
-  ].filter(Boolean),
+    tailwindcss(),
+  ],
   resolve: {
     alias: [
       { find: '@trame-besace/shared-types/use-effects-hook', replacement: path.resolve(__dirname, '../packages/shared-types/use-effects-hook.ts') },
