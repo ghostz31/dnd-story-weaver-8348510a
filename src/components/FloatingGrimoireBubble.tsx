@@ -74,7 +74,7 @@ const FloatingGrimoireBubble: React.FC<FloatingGrimoireBubbleProps> = ({ onOpen 
 
     // Canvas Refs
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const animationFrameRef = useRef<number>();
+    const animationFrameRef = useRef<number | undefined>(undefined);
     const particlesRef = useRef<Particle[]>([]);
     const hueRef = useRef(0);
 
