@@ -1,6 +1,8 @@
 # Deployer D&D Story Weaver sur QNAP NAS (Via Container Station)
 
-Ce guide vous explique comment déployer l'application sur votre NAS QNAP TS-453D-4G en utilisant **Container Station**.
+Ce guide vous explique comment déployer l'application sur un NAS QNAP compatible en utilisant **Container Station**.
+
+Les noms de serveur, d’utilisateur et de dossier ci-dessous sont des paramètres d’exemple à remplacer localement. Les ports des fichiers YAML sont des exemples de déploiement.
 
 ## Prérequis
 - **Container Station** installé et activé sur le NAS.
@@ -12,9 +14,9 @@ Cette méthode utilise le fichier `docker-compose.yml` que nous avons créé.
 
 1.  **Préparer les fichiers** :
     - **Où le mettre ?** : Le mieux est d'utiliser le dossier partagé par défaut de Container Station.
-    - **Accès depuis Windows** : Ouvrez votre explorateur de fichiers et tapez `\\192.168.1.137\Container` (ou juste `\\192.168.1.137` pour voir tous les dossiers).
+    - **Accès depuis Windows** : Ouvrez votre explorateur de fichiers et tapez `\\NOM_DU_NAS\PARTAGE` (ou juste `\\NOM_DU_NAS` pour voir tous les dossiers).
     - Créez-y un dossier nommé `dnd-story-weaver`.
-    - Copiez **tous** les fichiers de votre projet (y compris `docker-compose.yml`, `Dockerfile`, `src`, etc.) à l'intérieur de ce dossier `\\192.168.1.137\Container\dnd-story-weaver`.
+    - Copiez **tous** les fichiers de votre projet (y compris `docker-compose.yml`, `Dockerfile`, `src`, etc.) à l'intérieur de ce dossier `\\NOM_DU_NAS\PARTAGE\DOSSIER_PROJET`.
     
     - *Alternativement* : Vous pouvez construire l'image sur votre PC et l'envoyer au NAS, mais le plus simple est de laisser le NAS construire l'image (cela peut prendre du temps sur un Celeron).
 
@@ -56,12 +58,12 @@ C'est la méthode qui évite l'erreur "Dockerfile not found".
 
 1.  **Activez SSH** sur le NAS (Panneau de configuration > Réseau > Telnet/SSH).
 2.  Ouvrez un terminal sur votre PC (PowerShell ou CMD).
-3.  Tapez : `ssh admin@192.168.1.137` (entrez votre mot de passe).
+3.  Tapez : `ssh UTILISATEUR_SSH@NOM_DU_NAS` (entrez votre mot de passe).
 4.  Allez dans le dossier où vous avez copié les fichiers :
     ```bash
-    cd /share/Container/Trame
+    cd /CHEMIN/PARTAGE/DOSSIER_PROJET
     ```
-    *(Astuce : tapez `cd /share/Cont` puis appuyez sur Tab pour compléter)*
+    *(Utilisez le chemin du dossier de votre projet sur votre NAS.)*
 5.  Lancez le build et le démarrage :
     ```bash
     docker-compose up -d --build
@@ -80,7 +82,7 @@ Si vous ne pouvez pas utiliser SSH, vous devez "apporter" l'image toute faite au
     docker build -t trame:latest .
     docker save -o trame.tar trame:latest
     ```
-2.  Copiez le fichier `trame.tar` sur le NAS (dans `/Container/Trame`).
+2.  Copiez le fichier `trame.tar` sur le NAS (dans le dossier de votre projet).
 3.  Dans **Container Station** > **Images** > **Import**, choisissez le fichier `.tar`.
 4.  Une fois l'image importée, retournez créer l'application avec ce YAML **modifié** (sans la ligne `build: .`):
 
