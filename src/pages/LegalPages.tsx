@@ -26,7 +26,7 @@ export const PrivacyPage = () => (
 Bienvenue sur Trame. Nous attachons une importance capitale à la confidentialité de vos données et à la transparence de nos processus. Cette politique de confidentialité explique comment vos informations sont collectées, utilisées et protégées lorsque vous utilisez notre application.
 
 1. Identité du Responsable de Traitement
-Trame est un outil indépendant destiné aux passionnés de jeux de rôle. Pour toute question concernant vos données, vous pouvez nous contacter à l'adresse : contact@trame.app.
+Trame est un outil indépendant destiné aux passionnés de jeux de rôle.
 
 2. Nature des Données Collectées
 Nous limitons la collecte aux données strictement nécessaires à la fourniture de nos services :
@@ -74,10 +74,7 @@ Conformément au Règlement Général sur la Protection des Données (RGPD), vou
 - Droit de rectification des données inexactes.
 - Droit à l'effacement ("droit à l'oubli").
 - Droit d'opposition ou de limitation du traitement.
-Vous pouvez exercer ces droits directement depuis votre interface utilisateur ou en nous écrivant.
-
-10. Contact
-Pour toute interrogation sur cette politique ou pour exercer vos droits, contactez-nous par e-mail : contact@trame.app.`}
+Vous pouvez exercer ces droits directement depuis votre interface utilisateur.`}
     />
 );
 
@@ -120,9 +117,7 @@ La fonctionnalité de synchronisation avec D&D Beyond est un outil communautaire
 Nous nous réservons le droit de modifier ces conditions à tout moment. Vous pouvez cesser d'utiliser le service et supprimer votre compte à tout moment.
 
 8. Loi Applicable
-Bien que Trame soit distribué mondialement, tout litige sera traité en priorité selon les principes du droit français et européen.
-
-Pour toute question : contact@trame.app`}
+Bien que Trame soit distribué mondialement, tout litige sera traité en priorité selon les principes du droit français et européen.`}
     />
 );
 
